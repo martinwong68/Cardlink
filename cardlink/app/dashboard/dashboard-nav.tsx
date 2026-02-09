@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { Bell, CreditCard, Home, Settings, Users } from "lucide-react";
 
 const navItems = [
-  { href: "/dashboard", label: "Feed", icon: Home },
-  { href: "/dashboard/crm", label: "CRM", icon: Users },
+  { href: "/dashboard/feed", label: "Feed", icon: Home },
+  { href: "/dashboard/contacts", label: "CRM", icon: Users },
   { href: "/dashboard/card", label: "My Card", icon: CreditCard, primary: true },
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
@@ -19,7 +19,8 @@ export default function DashboardNav() {
     <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl items-stretch justify-between px-4">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
           const isPrimary = item.primary;
 
