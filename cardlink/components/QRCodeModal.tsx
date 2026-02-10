@@ -21,7 +21,13 @@ export default function QRCodeModal({
 
   const url = useMemo(() => {
     const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
-    return `${base.replace(/\/$/, "")}/c/${slug}`;
+    if (base) {
+      return `${base.replace(/\/$/, "")}/c/${slug}`;
+    }
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return `${window.location.origin}/c/${slug}`;
   }, [slug]);
 
   const handleCopy = async () => {

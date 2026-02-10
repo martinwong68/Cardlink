@@ -238,7 +238,7 @@ export default function ContactDetailPage({
       setMessage(error.message);
       return;
     }
-    router.push("/dashboard/contacts");
+    router.push("/dashboard/card?tab=contacts");
   };
 
   const persistTags = async (nextTags: string[]) => {
@@ -767,7 +767,7 @@ export default function ContactDetailPage({
       ) : null}
 
       <button
-        onClick={() => router.push("/dashboard/contacts")}
+        onClick={() => router.push("/dashboard/card?tab=contacts")}
         className="text-sm font-semibold text-violet-600 hover:text-violet-700"
       >
         Back to contacts

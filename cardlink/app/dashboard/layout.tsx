@@ -25,9 +25,9 @@ export default async function DashboardLayout({
   const avatarInitial = displayName.trim().charAt(0).toUpperCase() || "U";
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
+    <div className="min-h-screen bg-slate-50 pb-24 md:pb-10">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
               CardLink
@@ -40,11 +40,10 @@ export default async function DashboardLayout({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-6">
-        {children}
-      </main>
-
-      <DashboardNav />
+      <div className="mx-auto flex w-full max-w-6xl gap-6 px-4 py-6">
+        <DashboardNav />
+        <main className="flex-1">{children}</main>
+      </div>
     </div>
   );
 }

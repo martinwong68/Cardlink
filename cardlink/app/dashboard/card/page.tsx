@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { createClient } from "@/src/lib/supabase/client";
 import QRCodeModal from "@/components/QRCodeModal";
+import ContactsPanel from "@/components/ContactsPanel";
 
 const visibilityStyles: Record<string, string> = {
   public: "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -33,11 +35,13 @@ type BusinessCard = {
 
 export default function CardPage() {
   const supabase = useMemo(() => createClient(), []);
+  const searchParams = useSearchParams();
   const [card, setCard] = useState<BusinessCard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [isQrOpen, setIsQrOpen] = useState(false);
+  const activeTab = searchParams.get("tab") === "contacts" ? "contacts" : "cards";
   const shareUrl = useMemo(() => {
     if (!card?.slug) {
       return "";
@@ -128,7 +132,7 @@ export default function CardPage() {
     void loadDefaultCard();
   }, []);
 
-  if (isLoading) {
+  if (isLoading && activeTab === "cards") {
     return (
       <div className="flex min-h-[60vh] items-center justify-center text-sm text-slate-500">
         Loading card...
@@ -136,7 +140,7 @@ export default function CardPage() {
     );
   }
 
-  if (!card) {
+  if (!card && activeTab === "cards") {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
         <h1 className="text-2xl font-semibold text-slate-900">
@@ -160,7 +164,7 @@ export default function CardPage() {
     );
   }
 
-  const cardFields = card.card_fields ?? [];
+  const cardFields = card?.card_fields ?? [];
 
   const handleCopyLink = async () => {
     if (!shareUrl) {
@@ -197,94 +201,132 @@ export default function CardPage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-900 p-6 text-white shadow-xl">
-        <div className="space-y-3">
-          <div>
-            <p className="text-2xl font-semibold">
-              {card.full_name || "Your Name"}
-            </p>
-            <p className="text-sm text-slate-200">
-              {card.title || "Your title"}
-            </p>
-            <p className="text-sm text-slate-300">
-              {card.company || "Your company"}
-            </p>
-          </div>
-          <p className="text-sm text-slate-200">
-            {card.bio || "Add a short bio to introduce yourself."}
-          </p>
-        </div>
-        <div className="mt-6 space-y-3">
-          {cardFields.length === 0 ? (
-            <p className="text-sm text-slate-300">
-              Add contact fields to make your card shareable.
-            </p>
-          ) : (
-            cardFields.map((field) => (
-              <div key={field.id} className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-white">
-                    {field.field_label || field.field_type}
-                  </p>
-                  <p className="text-xs text-slate-300">{field.field_value}</p>
-                </div>
-                <span
-                  className={`rounded-full border px-2 py-1 text-[11px] font-semibold capitalize ${
-                    visibilityStyles[field.visibility]
-                  }`}
-                >
-                  {field.visibility}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
-
-      {errorMessage ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
-          {errorMessage}
-        </p>
-      ) : null}
-
-      {shareMessage ? (
-        <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
-          {shareMessage}
-        </p>
-      ) : null}
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        <button
-          onClick={() => setIsQrOpen(true)}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href="/dashboard/card"
+          className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+            activeTab === "cards"
+              ? "bg-violet-600 text-white"
+              : "border border-slate-200 bg-white text-slate-500"
+          }`}
         >
-          Share QR Code
-        </button>
-        <button
-          onClick={handleShareNfc}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+          My Cards
+        </Link>
+        <Link
+          href="/dashboard/card?tab=contacts"
+          className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+            activeTab === "contacts"
+              ? "bg-violet-600 text-white"
+              : "border border-slate-200 bg-white text-slate-500"
+          }`}
         >
-          Share via NFC
-        </button>
-        <button
-          onClick={handleCopyLink}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
-        >
-          Copy Link
-        </button>
+          Contacts / CRM
+        </Link>
       </div>
 
-      <Link
-        href="/dashboard/card/edit"
-        className="flex w-full items-center justify-center rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
-      >
-        Edit Card
-      </Link>
+      {activeTab === "contacts" ? (
+        <ContactsPanel />
+      ) : (
+        <>
+          <section className="rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-900 p-6 text-white shadow-xl">
+            <div className="space-y-3">
+              <div>
+                <p className="text-2xl font-semibold">
+                  {card?.full_name || "Your Name"}
+                </p>
+                <p className="text-sm text-slate-200">
+                  {card?.title || "Your title"}
+                </p>
+                <p className="text-sm text-slate-300">
+                  {card?.company || "Your company"}
+                </p>
+              </div>
+              <p className="text-sm text-slate-200">
+                {card?.bio || "Add a short bio to introduce yourself."}
+              </p>
+            </div>
+            <div className="mt-6 space-y-3">
+              {cardFields.length === 0 ? (
+                <p className="text-sm text-slate-300">
+                  Add contact fields to make your card shareable.
+                </p>
+              ) : (
+                cardFields.map((field) => (
+                  <div key={field.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-white">
+                        {field.field_label || field.field_type}
+                      </p>
+                      <p className="text-xs text-slate-300">
+                        {field.field_value}
+                      </p>
+                    </div>
+                    <span
+                      className={`rounded-full border px-2 py-1 text-[11px] font-semibold capitalize ${
+                        visibilityStyles[field.visibility]
+                      }`}
+                    >
+                      {field.visibility}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
 
-      {isQrOpen ? (
+          {errorMessage ? (
+            <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+              {errorMessage}
+            </p>
+          ) : null}
+
+          {shareMessage ? (
+            <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+              {shareMessage}
+            </p>
+          ) : null}
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <button
+              onClick={() => setIsQrOpen(true)}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+            >
+              Show QR Code
+            </button>
+            <button
+              onClick={handleCopyLink}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+            >
+              Copy Share Link
+            </button>
+            <button
+              onClick={handleShareNfc}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+            >
+              Share via NFC
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/dashboard/card/edit"
+              className="rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            >
+              Edit Card Details
+            </Link>
+            <Link
+              href="/dashboard/card/edit?tab=fields"
+              className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+            >
+              Manage Fields
+            </Link>
+          </div>
+        </>
+      )}
+      {isQrOpen && card ? (
         <QRCodeModal
           slug={card.slug ?? ""}
-          fullName={card.full_name || "CardLink"}
+          fullName={card.full_name ?? "CardLink User"}
           title={card.title}
           onClose={() => setIsQrOpen(false)}
         />

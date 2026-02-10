@@ -9,7 +9,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", origin));
   }
 
-  const response = NextResponse.redirect(new URL("/dashboard", origin));
+  const response = NextResponse.redirect(
+    new URL("/dashboard/community", origin)
+  );
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

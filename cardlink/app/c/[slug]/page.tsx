@@ -89,11 +89,18 @@ function buildVCard(card: CardRecord) {
   return lines.join("\n");
 }
 
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    value
+  );
+}
+
 export default async function PublicCardPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   const supabase = await createClient();
   const {
     data: { user },
@@ -109,16 +116,38 @@ export default async function PublicCardPage({
     viewerPlan = profile?.plan === "premium" ? "premium" : "free";
   }
 
-  const { data: card, error } = await supabase
+  const { data: cardBySlug, error: slugError } = await supabase
     .from("business_cards")
     .select(
       "id, user_id, full_name, title, company, bio, slug, card_fields(id, field_type, field_label, field_value, visibility, sort_order), profiles(id, full_name, avatar_url)"
     )
-    .or(`slug.eq.${params.slug},id.eq.${params.slug}`)
+    .eq("slug", slug)
     .order("sort_order", { foreignTable: "card_fields", ascending: true })
     .maybeSingle<CardRecord>();
 
+  let card = cardBySlug ?? null;
+  let error = slugError ?? null;
+
+  if (!card && isUuid(slug)) {
+    const { data: cardById, error: idError } = await supabase
+      .from("business_cards")
+      .select(
+        "id, user_id, full_name, title, company, bio, slug, card_fields(id, field_type, field_label, field_value, visibility, sort_order), profiles(id, full_name, avatar_url)"
+      )
+      .eq("id", slug)
+      .order("sort_order", { foreignTable: "card_fields", ascending: true })
+      .maybeSingle<CardRecord>();
+    card = cardById ?? null;
+    error = idError ?? null;
+  }
+
   if (error || !card) {
+    console.error("Public card lookup failed", {
+      slug,
+      slugError: slugError?.message ?? null,
+      idError: error?.message ?? null,
+      hasCard: Boolean(card),
+    });
     notFound();
   }
 
@@ -162,7 +191,7 @@ export default async function PublicCardPage({
 
         <PublicCardConnectionSection
           ownerId={card.user_id}
-          slug={card.slug ?? params.slug}
+          slug={card.slug ?? slug}
           viewerId={viewerId}
           viewerPlan={viewerPlan}
           cardFields={card.card_fields ?? []}

@@ -7,21 +7,38 @@ import { createClient } from "@/src/lib/supabase/client";
 export default function ProfileSettingsPage() {
   const supabase = useMemo(() => createClient(), []);
   const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
   const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [initials, setInitials] = useState("CL");
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
-      const { data } = await supabase.from("profiles").select("full_name, bio").maybeSingle();
-      if (data?.full_name) {
-        setFullName(data.full_name);
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        setMessage("Please sign in to edit your profile.");
+        return;
       }
-      if (data?.bio) {
-        setBio(data.bio);
-      }
-      const name = data?.full_name ?? "CardLink";
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, email, title, company, bio, avatar_url")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+
+      setFullName(data?.full_name ?? "");
+      setEmail(data?.email ?? userData.user.email ?? "");
+      setTitle(data?.title ?? "");
+      setCompany(data?.company ?? "");
+      setBio(data?.bio ?? "");
+      setAvatarUrl(data?.avatar_url ?? "");
+
+      const name = data?.full_name ?? userData.user.email ?? "CardLink";
       const parts = name
         .split(" ")
         .map((part: string) => part.trim())
@@ -38,6 +55,21 @@ export default function ProfileSettingsPage() {
     void loadProfile();
   }, [supabase]);
 
+  useEffect(() => {
+    const name = fullName.trim() || "CardLink";
+    const parts = name
+      .split(" ")
+      .map((part) => part.trim())
+      .filter(Boolean);
+    setInitials(
+      parts.length === 0
+        ? "CL"
+        : parts.length === 1
+        ? parts[0].slice(0, 2).toUpperCase()
+        : `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+    );
+  }, [fullName]);
+
   const handleSave = async () => {
     setIsSaving(true);
     setMessage(null);
@@ -53,7 +85,11 @@ export default function ProfileSettingsPage() {
       .from("profiles")
       .update({
         full_name: fullName.trim(),
+        email: email.trim(),
+        title: title.trim(),
+        company: company.trim(),
         bio: bio.trim(),
+        avatar_url: avatarUrl.trim() || null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", userData.user.id);
@@ -103,6 +139,40 @@ export default function ProfileSettingsPage() {
             />
           </div>
           <div>
+            <label className="text-sm font-medium text-slate-700" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-700" htmlFor="title">
+              Title
+            </label>
+            <input
+              id="title"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-700" htmlFor="company">
+              Company
+            </label>
+            <input
+              id="company"
+              value={company}
+              onChange={(event) => setCompany(event.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+            />
+          </div>
+          <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="bio">
               Bio
             </label>
@@ -111,6 +181,17 @@ export default function ProfileSettingsPage() {
               rows={4}
               value={bio}
               onChange={(event) => setBio(event.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-700" htmlFor="avatarUrl">
+              Avatar URL
+            </label>
+            <input
+              id="avatarUrl"
+              value={avatarUrl}
+              onChange={(event) => setAvatarUrl(event.target.value)}
               className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
             />
           </div>
