@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, MessageSquare, User } from "lucide-react";
+import { CreditCard, MessageSquare, Settings } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard/community", label: "Community", icon: MessageSquare },
   { href: "/dashboard/cards", label: "Cards", icon: CreditCard, primary: true },
-  { href: "/dashboard/profile", label: "Profile", icon: User },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export default function DashboardNav() {

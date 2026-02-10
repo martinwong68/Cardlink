@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/src/lib/supabase/server";
@@ -34,9 +35,13 @@ export default async function DashboardLayout({
             </p>
             <p className="text-sm text-slate-500">Dashboard</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-sm font-semibold text-white">
+          <Link
+            href="/dashboard/settings/profile"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-sm font-semibold text-white"
+            aria-label="View profile settings"
+          >
             {avatarInitial}
-          </div>
+          </Link>
         </div>
       </header>
 
