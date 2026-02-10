@@ -2,39 +2,26 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-if (!stripeSecretKey) {
-  throw new Error("Missing STRIPE_SECRET_KEY");
-}
-
-if (!webhookSecret) {
-  throw new Error("Missing STRIPE_WEBHOOK_SECRET");
-}
-
-const webhookSecretValue = webhookSecret as string;
-
-if (!supabaseServiceRoleKey) {
-  throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY");
-}
-
-if (!supabaseUrl) {
-  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
-}
-
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: "2026-01-28.clover",
-});
-
-const supabaseAdmin = createClient(
-  supabaseUrl,
-  supabaseServiceRoleKey
-);
-
 export async function POST(request: Request) {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!stripeSecretKey || !webhookSecret || !supabaseServiceRoleKey || !supabaseUrl) {
+    return NextResponse.json(
+      { error: "Missing required environment variables" },
+      { status: 500 }
+    );
+  }
+
+  const webhookSecretValue = webhookSecret as string;
+
+  const stripe = new Stripe(stripeSecretKey, {
+    apiVersion: "2026-01-28.clover",
+  });
+
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
   const signature = request.headers.get("stripe-signature");
   if (!signature) {
     return NextResponse.json({ error: "Missing signature" }, { status: 400 });
