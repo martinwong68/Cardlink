@@ -4,18 +4,28 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Bell,
+  Calendar,
   Globe,
   Link2,
   Mail,
   MessageCircle,
+  Pencil,
   Phone,
+  Plus,
   ShieldAlert,
+  Tag,
+  Trash2,
   Twitter,
   User,
 } from "lucide-react";
 
 import { createClient } from "@/src/lib/supabase/client";
 import { rejectConnection } from "@/src/lib/connections";
+import {
+  canAccessCRM,
+  getVisibleFields,
+  type ViewerPlan,
+} from "@/src/lib/visibility";
 
 type CardField = {
   id: string;
@@ -44,6 +54,34 @@ type ConnectionRecord = {
   connected_at: string | null;
   created_at: string | null;
 };
+
+type CrmNote = {
+  id: string;
+  owner_id: string;
+  contact_id: string;
+  note_text: string | null;
+  tags: string[] | null;
+  reminder_date: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+type CardShare = {
+  id: string;
+  card_id: string;
+  viewed_by_user_id: string | null;
+  share_method: string | null;
+  shared_at: string | null;
+};
+
+const suggestedTags = [
+  "client",
+  "investor",
+  "partner",
+  "met at event",
+  "follow up",
+  "VIP",
+];
 
 const iconByType: Record<string, typeof Phone> = {
   Phone,
@@ -81,8 +119,55 @@ export default function ContactDetailPage({
   const [card, setCard] = useState<CardRecord | null>(null);
   const [connection, setConnection] = useState<ConnectionRecord | null>(null);
   const [viewerId, setViewerId] = useState<string | null>(null);
+  const [viewerPlan, setViewerPlan] = useState<ViewerPlan>("free");
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const [crmNotes, setCrmNotes] = useState<CrmNote[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+  const [isAddingTag, setIsAddingTag] = useState(false);
+  const [activeTagRecordId, setActiveTagRecordId] = useState<string | null>(
+    null
+  );
+  const [noteDraft, setNoteDraft] = useState("");
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
+  const [reminderDate, setReminderDate] = useState("");
+  const [shareHistory, setShareHistory] = useState<CardShare[]>([]);
+
+  const loadCrm = async (ownerId: string, cardId: string) => {
+    const [{ data: notes, error: notesError }, { data: shares }] =
+      await Promise.all([
+        supabase
+          .from("crm_notes")
+          .select(
+            "id, owner_id, contact_id, note_text, tags, reminder_date, created_at, updated_at"
+          )
+          .eq("owner_id", ownerId)
+          .eq("contact_id", params.id)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("card_shares")
+          .select("id, card_id, viewed_by_user_id, share_method, shared_at")
+          .eq("card_id", cardId)
+          .eq("viewed_by_user_id", ownerId)
+          .order("shared_at", { ascending: false }),
+      ]);
+
+    if (notesError) {
+      setMessage(notesError.message);
+      return;
+    }
+
+    const notesList = notes ?? [];
+    setCrmNotes(notesList);
+    setShareHistory(shares ?? []);
+
+    const tagSource = notesList.find((note) => (note.tags ?? []).length > 0);
+    setTags(tagSource?.tags ?? []);
+    setActiveTagRecordId(tagSource?.id ?? null);
+  };
 
   const loadContact = async () => {
     setIsLoading(true);
@@ -97,27 +182,35 @@ export default function ContactDetailPage({
 
     setViewerId(userData.user.id);
 
-    const [{ data: cardData, error: cardError }, { data: connectionData }] =
-      await Promise.all([
-        supabase
-          .from("business_cards")
-          .select(
-            "id, user_id, full_name, title, company, bio, card_fields(id, field_type, field_label, field_value, visibility, sort_order)"
-          )
-          .eq("user_id", params.id)
-          .eq("is_default", true)
-          .order("sort_order", { foreignTable: "card_fields", ascending: true })
-          .maybeSingle<CardRecord>(),
-        supabase
-          .from("connections")
-          .select(
-            "id, status, requester_id, receiver_id, connected_at, created_at"
-          )
-          .or(
-            `and(requester_id.eq.${userData.user.id},receiver_id.eq.${params.id}),and(requester_id.eq.${params.id},receiver_id.eq.${userData.user.id})`
-          )
-          .maybeSingle<ConnectionRecord>(),
-      ]);
+    const [
+      { data: cardData, error: cardError },
+      { data: connectionData },
+      { data: profileData },
+    ] = await Promise.all([
+      supabase
+        .from("business_cards")
+        .select(
+          "id, user_id, full_name, title, company, bio, card_fields(id, field_type, field_label, field_value, visibility, sort_order)"
+        )
+        .eq("user_id", params.id)
+        .eq("is_default", true)
+        .order("sort_order", { foreignTable: "card_fields", ascending: true })
+        .maybeSingle<CardRecord>(),
+      supabase
+        .from("connections")
+        .select(
+          "id, status, requester_id, receiver_id, connected_at, created_at"
+        )
+        .or(
+          `and(requester_id.eq.${userData.user.id},receiver_id.eq.${params.id}),and(requester_id.eq.${params.id},receiver_id.eq.${userData.user.id})`
+        )
+        .maybeSingle<ConnectionRecord>(),
+      supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", userData.user.id)
+        .maybeSingle(),
+    ]);
 
     if (cardError || !cardData) {
       setMessage(cardError?.message ?? "Unable to load contact card.");
@@ -127,14 +220,14 @@ export default function ContactDetailPage({
 
     setCard(cardData);
     setConnection(connectionData ?? null);
+    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
+    await loadCrm(userData.user.id, cardData.id);
     setIsLoading(false);
   };
 
   useEffect(() => {
     void loadContact();
   }, [params.id]);
-
-  const isFriend = connection?.status === "accepted";
 
   const handleRemove = async () => {
     if (!connection) {
@@ -146,6 +239,152 @@ export default function ContactDetailPage({
       return;
     }
     router.push("/dashboard/contacts");
+  };
+
+  const persistTags = async (nextTags: string[]) => {
+    if (!viewerId) {
+      return;
+    }
+
+    if (activeTagRecordId) {
+      const { error } = await supabase
+        .from("crm_notes")
+        .update({ tags: nextTags, updated_at: new Date().toISOString() })
+        .eq("id", activeTagRecordId);
+
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("crm_notes")
+        .insert({
+          owner_id: viewerId,
+          contact_id: params.id,
+          tags: nextTags,
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
+      setActiveTagRecordId(data?.id ?? null);
+    }
+
+    setTags(nextTags);
+  };
+
+  const handleAddTag = async (value: string) => {
+    const normalized = value.trim();
+    if (!normalized) {
+      return;
+    }
+    if (tags.includes(normalized)) {
+      setTagInput("");
+      setIsAddingTag(false);
+      return;
+    }
+
+    await persistTags([...tags, normalized]);
+    setTagInput("");
+    setIsAddingTag(false);
+  };
+
+  const handleRemoveTag = async (tag: string) => {
+    const nextTags = tags.filter((item) => item !== tag);
+    await persistTags(nextTags);
+  };
+
+  const handleAddNote = async () => {
+    if (!viewerId || !noteDraft.trim()) {
+      return;
+    }
+
+    const { error } = await supabase.from("crm_notes").insert({
+      owner_id: viewerId,
+      contact_id: params.id,
+      note_text: noteDraft.trim(),
+    });
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    setNoteDraft("");
+    setIsAddingNote(false);
+    if (card) {
+      await loadCrm(viewerId, card.id);
+    }
+  };
+
+  const handleEditNote = (note: CrmNote) => {
+    setEditingNoteId(note.id);
+    setEditingText(note.note_text ?? "");
+  };
+
+  const handleSaveNote = async (noteId: string) => {
+    if (!editingText.trim()) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("crm_notes")
+      .update({
+        note_text: editingText.trim(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", noteId);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    setEditingNoteId(null);
+    setEditingText("");
+    if (viewerId && card) {
+      await loadCrm(viewerId, card.id);
+    }
+  };
+
+  const handleDeleteNote = async (noteId: string) => {
+    const { error } = await supabase.from("crm_notes").delete().eq("id", noteId);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    if (viewerId && card) {
+      await loadCrm(viewerId, card.id);
+    }
+  };
+
+  const handleAddReminder = async () => {
+    if (!viewerId || !reminderDate) {
+      return;
+    }
+
+    const { error } = await supabase.from("crm_notes").insert({
+      owner_id: viewerId,
+      contact_id: params.id,
+      reminder_date: new Date(reminderDate).toISOString(),
+    });
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    setReminderDate("");
+    if (card) {
+      await loadCrm(viewerId, card.id);
+    }
   };
 
   if (isLoading) {
@@ -163,6 +402,21 @@ export default function ContactDetailPage({
       </div>
     );
   }
+
+  const connectionStatus = !viewerId
+    ? "none"
+    : viewerId === params.id
+    ? "self"
+    : connection?.status === "accepted"
+    ? "accepted"
+    : connection?.status === "pending"
+    ? "pending"
+    : "none";
+  const visibleFields = getVisibleFields(
+    card.card_fields ?? [],
+    viewerPlan,
+    connectionStatus
+  );
 
   const fullName = card.full_name ?? "CardLink User";
   const initials = getInitials(fullName);
@@ -199,14 +453,14 @@ export default function ContactDetailPage({
           Contact fields
         </h2>
         <div className="space-y-3">
-          {(card.card_fields ?? []).map((field) => {
-            if (field.visibility === "hidden") {
+          {visibleFields.map((field) => {
+            if (!field.visible) {
               return null;
             }
 
-            const isFriendsOnly = field.visibility === "friends";
-            const isLocked = isFriendsOnly && !isFriend;
+            const isLocked = !!field.message;
             const Icon = iconByType[field.field_type] ?? User;
+            const displayValue = field.message ?? field.field_value;
 
             return (
               <div
@@ -226,7 +480,7 @@ export default function ContactDetailPage({
                         isLocked ? "blur-sm select-none" : ""
                       }`}
                     >
-                      {isLocked ? "Connect to see" : field.field_value}
+                      {displayValue}
                     </p>
                   </div>
                 </div>
@@ -239,15 +493,263 @@ export default function ContactDetailPage({
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      {canAccessCRM(viewerPlan) ? (
+        <div className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
           <Bell className="h-4 w-4 text-violet-600" />
           CRM
         </div>
-        <p className="mt-2 text-sm text-slate-500">
-          CRM notes and follow-ups will appear here in Phase 5.
-        </p>
+
+        <div className="border-t border-slate-100 pt-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+              <Tag className="h-4 w-4 text-violet-600" />
+              Tags
+            </div>
+            <button
+              onClick={() => setIsAddingTag((prev) => !prev)}
+              className="flex items-center gap-1 text-xs font-semibold text-violet-600"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Tag
+            </button>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {tags.length === 0 ? (
+              <span className="text-xs text-slate-400">No tags yet.</span>
+            ) : (
+              tags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleRemoveTag(tag)}
+                  className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600"
+                >
+                  {tag}
+                </button>
+              ))
+            )}
+          </div>
+
+          {isAddingTag ? (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <input
+                value={tagInput}
+                onChange={(event) => setTagInput(event.target.value)}
+                placeholder="Type a tag"
+                className="flex-1 rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-700"
+              />
+              <button
+                onClick={() => handleAddTag(tagInput)}
+                className="rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white"
+              >
+                Add
+              </button>
+            </div>
+          ) : null}
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {suggestedTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => handleAddTag(tag)}
+                className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-500"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-slate-100 pt-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+              <Pencil className="h-4 w-4 text-violet-600" />
+              Notes
+            </div>
+            <button
+              onClick={() => setIsAddingNote((prev) => !prev)}
+              className="flex items-center gap-1 text-xs font-semibold text-violet-600"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Note
+            </button>
+          </div>
+
+          {isAddingNote ? (
+            <div className="mt-3 space-y-2">
+              <textarea
+                value={noteDraft}
+                onChange={(event) => setNoteDraft(event.target.value)}
+                rows={3}
+                placeholder="Write a private note..."
+                className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAddNote}
+                  className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
+                >
+                  Save Note
+                </button>
+                <button
+                  onClick={() => setIsAddingNote(false)}
+                  className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="mt-4 space-y-3">
+            {crmNotes.filter((note) => note.note_text).length === 0 ? (
+              <p className="text-xs text-slate-400">No notes yet.</p>
+            ) : null}
+
+            {crmNotes
+              .filter((note) => note.note_text)
+              .map((note) => (
+                <div
+                  key={note.id}
+                  className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                >
+                  {editingNoteId === note.id ? (
+                    <div className="space-y-2">
+                      <textarea
+                        value={editingText}
+                        onChange={(event) => setEditingText(event.target.value)}
+                        rows={3}
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleSaveNote(note.id)}
+                          className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingNoteId(null)}
+                          className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm text-slate-700">
+                          {note.note_text}
+                        </p>
+                        <p className="mt-2 text-xs text-slate-400">
+                          {note.created_at
+                            ? new Date(note.created_at).toLocaleDateString()
+                            : ""}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditNote(note)}
+                          className="text-xs font-semibold text-violet-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNote(note.id)}
+                          className="text-xs font-semibold text-rose-500"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+          </div>
+        </div>
+
+        <div className="border-t border-slate-100 pt-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+              <Calendar className="h-4 w-4 text-violet-600" />
+              Reminders
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={reminderDate}
+                onChange={(event) => setReminderDate(event.target.value)}
+                className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600"
+              />
+              <button
+                onClick={handleAddReminder}
+                className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
+              >
+                Set Reminder
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            {crmNotes.filter((note) => note.reminder_date).length === 0 ? (
+              <p className="text-xs text-slate-400">No reminders set.</p>
+            ) : null}
+            {crmNotes
+              .filter((note) => note.reminder_date)
+              .map((note) => {
+                const reminder = new Date(note.reminder_date as string);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const isOverdue = reminder < today;
+
+                return (
+                  <div
+                    key={note.id}
+                    className={`rounded-2xl border px-4 py-2 text-xs font-semibold ${
+                      isOverdue
+                        ? "border-rose-200 bg-rose-50 text-rose-600"
+                        : "border-amber-200 bg-amber-50 text-amber-700"
+                    }`}
+                  >
+                    Follow up on {reminder.toLocaleDateString()}
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
+        <div className="border-t border-slate-100 pt-5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+            <Bell className="h-4 w-4 text-violet-600" />
+            Interaction history
+          </div>
+          <div className="mt-3 space-y-2 text-xs text-slate-500">
+            {shareHistory.length === 0 ? (
+              <p>No card exchanges recorded.</p>
+            ) : (
+              shareHistory.map((share) => (
+                <div key={share.id} className="flex items-center justify-between">
+                  <span>
+                    Connected via {share.share_method ?? "link"}
+                  </span>
+                  <span>
+                    {share.shared_at
+                      ? new Date(share.shared_at).toLocaleDateString()
+                      : ""}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
+      ) : (
+        <div className="rounded-3xl border border-violet-100 bg-violet-50 p-6 text-sm text-violet-700">
+          Upgrade to Premium to unlock CRM notes, tags, and reminders.
+        </div>
+      )}
 
       <button
         onClick={handleRemove}

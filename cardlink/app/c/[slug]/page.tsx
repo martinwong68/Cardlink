@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/src/lib/supabase/server";
 import PublicCardConnectionSection from "@/components/PublicCardConnectionSection";
+import type { ViewerPlan } from "@/src/lib/visibility";
 
 type CardField = {
   id: string;
@@ -98,6 +99,16 @@ export default async function PublicCardPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  let viewerPlan: ViewerPlan = "anonymous";
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle();
+    viewerPlan = profile?.plan === "premium" ? "premium" : "free";
+  }
+
   const { data: card, error } = await supabase
     .from("business_cards")
     .select(
@@ -153,6 +164,7 @@ export default async function PublicCardPage({
           ownerId={card.user_id}
           slug={card.slug ?? params.slug}
           viewerId={viewerId}
+          viewerPlan={viewerPlan}
           cardFields={card.card_fields ?? []}
           vcardHref={vcardHref}
         />

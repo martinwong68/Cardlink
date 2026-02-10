@@ -19,6 +19,11 @@ import {
   sendConnectionRequest,
   type ConnectionStatus,
 } from "@/src/lib/connections";
+import {
+  getVisibleFields,
+  type ViewerPlan,
+  type ConnectionStatus as VisibilityStatus,
+} from "@/src/lib/visibility";
 
 type CardField = {
   id: string;
@@ -33,6 +38,7 @@ type PublicCardConnectionSectionProps = {
   ownerId: string;
   slug: string;
   viewerId: string | null;
+  viewerPlan: ViewerPlan;
   cardFields: CardField[];
   vcardHref: string;
 };
@@ -49,16 +55,11 @@ const iconByType: Record<string, typeof Phone> = {
   Other: Link2,
 };
 
-const visibilityBadgeStyles: Record<string, string> = {
-  public: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  friends: "border-amber-200 bg-amber-50 text-amber-700",
-  hidden: "border-slate-200 bg-slate-100 text-slate-600",
-};
-
 export default function PublicCardConnectionSection({
   ownerId,
   slug,
   viewerId,
+  viewerPlan,
   cardFields,
   vcardHref,
 }: PublicCardConnectionSectionProps) {
@@ -135,7 +136,18 @@ export default function PublicCardConnectionSection({
     setPendingConnectionId(null);
   };
 
-  const canSeeFriendsFields = viewerIsOwner || status === "accepted";
+  const connectionStatus: VisibilityStatus = viewerIsOwner
+    ? "self"
+    : status === "accepted"
+    ? "accepted"
+    : status === "pending_received" || status === "pending_sent"
+    ? "pending"
+    : "none";
+  const visibleFields = getVisibleFields(
+    cardFields,
+    viewerPlan,
+    connectionStatus
+  );
 
   return (
     <>
@@ -144,14 +156,14 @@ export default function PublicCardConnectionSection({
           Contact
         </h2>
         <div className="space-y-3">
-          {cardFields.map((field) => {
-            if (field.visibility === "hidden" && !viewerIsOwner) {
+          {visibleFields.map((field) => {
+            if (!field.visible) {
               return null;
             }
 
-            const isFriendsOnly = field.visibility === "friends";
-            const isLocked = isFriendsOnly && !canSeeFriendsFields;
+            const isLocked = !!field.message;
             const Icon = iconByType[field.field_type] ?? iconByType.Other ?? User;
+            const displayValue = field.message ?? field.field_value;
 
             return (
               <div
@@ -171,19 +183,11 @@ export default function PublicCardConnectionSection({
                         isLocked ? "blur-sm select-none" : ""
                       }`}
                     >
-                      {isLocked ? "Connect to see" : field.field_value}
+                      {displayValue}
                     </p>
                   </div>
                 </div>
-                {viewerIsOwner ? (
-                  <span
-                    className={`rounded-full border px-2 py-1 text-[10px] font-semibold capitalize ${
-                      visibilityBadgeStyles[field.visibility]
-                    }`}
-                  >
-                    {field.visibility}
-                  </span>
-                ) : isLocked ? (
+                {isLocked ? (
                   <span className="text-xs font-semibold text-amber-500">🔒</span>
                 ) : null}
               </div>

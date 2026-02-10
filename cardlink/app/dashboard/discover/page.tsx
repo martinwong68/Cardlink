@@ -1,0 +1,357 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { Search, UserPlus } from "lucide-react";
+
+import { createClient } from "@/src/lib/supabase/client";
+
+type ProfileRow = {
+  id: string;
+  full_name: string | null;
+  title: string | null;
+  company: string | null;
+  avatar_url: string | null;
+  business_cards: { slug: string | null; is_default: boolean | null }[] | null;
+};
+
+type ConnectionRow = {
+  requester_id: string;
+  receiver_id: string;
+  status: "pending" | "accepted" | "blocked";
+};
+
+type ConnectionStatus = "none" | "pending" | "connected";
+
+type ViewerPlan = "free" | "premium";
+
+const pageSize = 20;
+
+function getInitials(name: string) {
+  const parts = name
+    .split(" ")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length === 0) {
+    return "CL";
+  }
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+function getPrimarySlug(profile: ProfileRow) {
+  const cards = profile.business_cards ?? [];
+  const defaultCard = cards.find((card) => card.is_default && card.slug);
+  return defaultCard?.slug ?? cards.find((card) => card.slug)?.slug ?? null;
+}
+
+export default function DiscoverPage() {
+  const supabase = useMemo(() => createClient(), []);
+  const [viewerId, setViewerId] = useState<string | null>(null);
+  const [viewerPlan, setViewerPlan] = useState<ViewerPlan>("free");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [results, setResults] = useState<ProfileRow[]>([]);
+  const [suggested, setSuggested] = useState<ProfileRow[]>([]);
+  const [connections, setConnections] = useState<ConnectionRow[]>([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const loadViewer = async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      setMessage("Please sign in to search.");
+      setIsLoading(false);
+      return null;
+    }
+
+    setViewerId(data.user.id);
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    setViewerPlan(profile?.plan === "premium" ? "premium" : "free");
+
+    const { data: connectionRows } = await supabase
+      .from("connections")
+      .select("requester_id, receiver_id, status")
+      .or(
+        `and(requester_id.eq.${data.user.id}),and(receiver_id.eq.${data.user.id})`
+      );
+
+    setConnections(connectionRows ?? []);
+
+    return data.user.id;
+  };
+
+  const connectionStatusFor = (profileId: string): ConnectionStatus => {
+    if (!viewerId) {
+      return "none";
+    }
+
+    const connection = connections.find(
+      (row) =>
+        (row.requester_id === viewerId && row.receiver_id === profileId) ||
+        (row.receiver_id === viewerId && row.requester_id === profileId)
+    );
+
+    if (!connection) {
+      return "none";
+    }
+
+    if (connection.status === "accepted") {
+      return "connected";
+    }
+
+    if (connection.status === "pending") {
+      return "pending";
+    }
+
+    return "none";
+  };
+
+  const fetchResults = async (reset: boolean) => {
+    setIsLoading(true);
+    setMessage(null);
+
+    const userId = viewerId ?? (await loadViewer());
+    if (!userId) {
+      return;
+    }
+
+    const currentPage = reset ? 0 : page;
+    const from = currentPage * pageSize;
+    const to = from + pageSize - 1;
+
+    const query = supabase
+      .from("profiles")
+      .select(
+        "id, full_name, title, company, avatar_url, business_cards(slug, is_default)"
+      )
+      .neq("id", userId)
+      .not("business_cards.slug", "is", null)
+      .or(
+        `full_name.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`
+      )
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    const { data, error } = await query;
+
+    if (error) {
+      setMessage(error.message);
+      setIsLoading(false);
+      return;
+    }
+
+    const nextResults = (data ?? []).filter((profile) => getPrimarySlug(profile));
+    setResults((prev) => (reset ? nextResults : [...prev, ...nextResults]));
+    setHasMore(nextResults.length === pageSize);
+    setPage(reset ? 1 : currentPage + 1);
+    setIsLoading(false);
+  };
+
+  const fetchSuggested = async () => {
+    if (!viewerId) {
+      return;
+    }
+
+    const connectedIds = new Set(
+      connections.map((row) =>
+        row.requester_id === viewerId ? row.receiver_id : row.requester_id
+      )
+    );
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select(
+        "id, full_name, title, company, avatar_url, business_cards(slug, is_default)"
+      )
+      .neq("id", viewerId)
+      .not("business_cards.slug", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(8);
+
+    if (error) {
+      return;
+    }
+
+    const filtered = (data ?? []).filter(
+      (profile) => !connectedIds.has(profile.id) && getPrimarySlug(profile)
+    );
+
+    setSuggested(filtered);
+  };
+
+  useEffect(() => {
+    void loadViewer();
+  }, []);
+
+  useEffect(() => {
+    if (!viewerId) {
+      return;
+    }
+    void fetchSuggested();
+  }, [viewerId, connections]);
+
+  const handleSearch = async () => {
+    setPage(0);
+    await fetchResults(true);
+  };
+
+  const handleConnect = async (profileId: string) => {
+    if (!viewerId) {
+      return;
+    }
+
+    const { error } = await supabase.from("connections").insert({
+      requester_id: viewerId,
+      receiver_id: profileId,
+      status: "pending",
+    });
+
+    if (!error) {
+      setConnections((prev) => [
+        ...prev,
+        { requester_id: viewerId, receiver_id: profileId, status: "pending" },
+      ]);
+    }
+  };
+
+  const renderProfileCard = (profile: ProfileRow) => {
+    const slug = getPrimarySlug(profile);
+    if (!slug) {
+      return null;
+    }
+
+    const name = profile.full_name ?? "CardLink User";
+    const initials = getInitials(name);
+    const status = connectionStatusFor(profile.id);
+
+    const titleCompany =
+      viewerPlan === "premium"
+        ? [profile.title, profile.company].filter(Boolean).join(" @ ")
+        : "Upgrade to see details";
+
+    return (
+      <div
+        key={profile.id}
+        className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+      >
+        <Link href={`/c/${slug}`} className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-600 text-sm font-semibold text-white">
+            {initials}
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">{name}</p>
+            <p className="text-xs text-slate-500">{titleCompany}</p>
+          </div>
+        </Link>
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-slate-500">
+            {status === "connected"
+              ? "Connected"
+              : status === "pending"
+              ? "Pending"
+              : "Connect"}
+          </span>
+          {status === "none" ? (
+            <button
+              onClick={() => handleConnect(profile.id)}
+              className="flex items-center gap-1 rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              Connect
+            </button>
+          ) : null}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+          CardLink
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+          Discover
+        </h1>
+        <p className="mt-2 text-sm text-slate-500">
+          Find people and grow your network.
+        </p>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Search className="h-4 w-4 text-slate-400" />
+          <input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search by name, title, or company"
+            className="w-full text-sm text-slate-700 outline-none"
+          />
+          <button
+            onClick={handleSearch}
+            className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+
+      {message ? (
+        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+          {message}
+        </p>
+      ) : null}
+
+      {isLoading ? (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+          Loading results...
+        </div>
+      ) : results.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+          No results found.
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {results.map(renderProfileCard)}
+        </div>
+      )}
+
+      {hasMore && results.length > 0 ? (
+        <button
+          onClick={() => fetchResults(false)}
+          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+        >
+          Load more
+        </button>
+      ) : null}
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-slate-900">
+            People you may know
+          </h2>
+        </div>
+        {suggested.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+            No suggestions yet.
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {suggested.map(renderProfileCard)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
