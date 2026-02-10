@@ -1,8 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Search, X } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ExternalLink,
+  Handshake,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import { createClient } from "@/src/lib/supabase/client";
 import {
@@ -10,11 +19,8 @@ import {
   getFriends,
   getPendingRequests,
   rejectConnection,
+  removeConnection,
 } from "@/src/lib/connections";
-
-const filters = ["all", "friends", "pending"] as const;
-
-type Filter = (typeof filters)[number];
 
 type ContactRow = {
   connectionId: string;
@@ -23,9 +29,9 @@ type ContactRow = {
   title: string | null;
   company: string | null;
   avatarUrl: string | null;
+  cardSlug: string | null;
   connectedAt: string | null;
   createdAt: string | null;
-  type: "friend" | "pending";
 };
 
 function getInitials(name: string) {
@@ -56,11 +62,19 @@ export default function ContactsPanel() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [contacts, setContacts] = useState<ContactRow[]>([]);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [pendingRequests, setPendingRequests] = useState<
+    Array<
+      ContactRow & {
+        requesterCardId: string | null;
+        message: string | null;
+      }
+    >
+  >([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [defaultCardId, setDefaultCardId] = useState<string | null>(null);
+  const [pendingOpen, setPendingOpen] = useState(true);
 
   const loadContacts = async () => {
     setIsLoading(true);
@@ -73,24 +87,32 @@ export default function ContactsPanel() {
       return;
     }
 
-    const [friends, pending] = await Promise.all([
+    const [{ data: cards }, friends, pending] = await Promise.all([
+      supabase
+        .from("business_cards")
+        .select("id, is_default")
+        .eq("user_id", userData.user.id),
       getFriends(userData.user.id),
       getPendingRequests(userData.user.id),
     ]);
 
-    const rows: ContactRow[] = [
-      ...friends.map((friend) => ({
-        ...friend,
-        type: "friend" as const,
-      })),
-      ...pending.map((request) => ({
-        ...request,
-        connectedAt: null,
-        type: "pending" as const,
-      })),
-    ];
+    const defaultCard = (cards ?? []).find((card) => card.is_default);
+    setDefaultCardId(defaultCard?.id ?? null);
 
-    setContacts(rows);
+    const sortedFriends = [...friends].sort((a, b) => {
+      const aDate = new Date(a.connectedAt ?? a.createdAt ?? 0).getTime();
+      const bDate = new Date(b.connectedAt ?? b.createdAt ?? 0).getTime();
+      return bDate - aDate;
+    });
+
+    setContacts(sortedFriends);
+    setPendingRequests(
+      pending.map((request) => ({
+        ...request,
+        cardSlug: null,
+        connectedAt: null,
+      }))
+    );
     setIsLoading(false);
   };
 
@@ -99,12 +121,6 @@ export default function ContactsPanel() {
   }, []);
 
   const filteredContacts = contacts.filter((contact) => {
-    if (filter === "friends" && contact.type !== "friend") {
-      return false;
-    }
-    if (filter === "pending" && contact.type !== "pending") {
-      return false;
-    }
     if (!search.trim()) {
       return true;
     }
@@ -116,7 +132,11 @@ export default function ContactsPanel() {
   });
 
   const handleAccept = async (connectionId: string) => {
-    const { error } = await acceptConnection(connectionId);
+    if (!defaultCardId) {
+      setMessage("Create a card first to accept requests.");
+      return;
+    }
+    const { error } = await acceptConnection(connectionId, defaultCardId);
     if (error) {
       setMessage(error.message);
       return;
@@ -126,6 +146,21 @@ export default function ContactsPanel() {
 
   const handleDecline = async (connectionId: string) => {
     const { error } = await rejectConnection(connectionId);
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+    await loadContacts();
+  };
+
+  const handleRemove = async (connectionId: string) => {
+    const confirmed = window.confirm(
+      "Remove this connection? This will delete the connection for both of you."
+    );
+    if (!confirmed) {
+      return;
+    }
+    const { error } = await removeConnection(connectionId);
     if (error) {
       setMessage(error.message);
       return;
@@ -149,7 +184,7 @@ export default function ContactsPanel() {
             CardLink
           </p>
           <h2 className="text-2xl font-semibold text-slate-900">
-            Contacts & CRM
+            Contacts
           </h2>
         </div>
         <div className="relative w-full sm:max-w-xs">
@@ -163,53 +198,111 @@ export default function ContactsPanel() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {filters.map((tag) => {
-          const active = filter === tag;
-          return (
-            <button
-              key={tag}
-              onClick={() => setFilter(tag)}
-              className={`rounded-full px-4 py-1 text-xs font-semibold transition ${
-                active
-                  ? "bg-violet-600 text-white"
-                  : "border border-slate-200 bg-white text-slate-500"
-              }`}
-            >
-              {tag === "all" ? "All" : tag === "friends" ? "Friends" : "Pending"}
-            </button>
-          );
-        })}
-      </div>
-
       {message ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
           {message}
         </p>
       ) : null}
 
+      {pendingRequests.length > 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setPendingOpen((prev) => !prev)}
+            className="flex w-full items-center justify-between text-left"
+          >
+            <span className="text-sm font-semibold text-slate-900">
+              Pending Requests ({pendingRequests.length})
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 text-slate-400 transition ${
+                pendingOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          {pendingOpen ? (
+            <div className="mt-4 space-y-3">
+              {pendingRequests.map((request) => {
+                const initials = getInitials(request.fullName);
+                return (
+                  <div
+                    key={`pending-${request.connectionId}`}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                        {initials}
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {request.fullName}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {[request.title, request.company]
+                            .filter(Boolean)
+                            .join(" • ")}
+                        </p>
+                        {request.message ? (
+                          <p className="mt-1 text-xs text-slate-400">
+                            {request.message}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleAccept(request.connectionId)}
+                        className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleDecline(request.connectionId)}
+                        className="flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="space-y-3">
         {filteredContacts.length === 0 ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-            No contacts yet.
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+              <Handshake className="h-5 w-5" />
+            </div>
+            No connections yet.
+            <p className="mt-2 text-xs text-slate-400">
+              Exchange cards with people to build your network.
+            </p>
           </div>
         ) : null}
 
         {filteredContacts.map((contact) => {
           const initials = getInitials(contact.fullName);
-          const dateLabel = contact.type === "friend" ? "Connected" : "Requested";
           const dateValue = contact.connectedAt ?? contact.createdAt;
 
           return (
             <div
-              key={`${contact.type}-${contact.connectionId}`}
-              className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+              key={`friend-${contact.connectionId}`}
+              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
             >
-              <div
-                onClick={() => router.push(`/dashboard/contacts/${contact.userId}`)}
-                className="flex cursor-pointer items-center justify-between gap-3"
-              >
-                <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.push(`/dashboard/contacts/${contact.userId}`)
+                  }
+                  className="flex items-center gap-3 text-left"
+                >
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-600 text-sm font-semibold text-white">
                     {initials}
                   </div>
@@ -218,50 +311,35 @@ export default function ContactsPanel() {
                       {contact.fullName}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {[contact.title, contact.company].filter(Boolean).join(" • ")}
+                      {[contact.title, contact.company]
+                        .filter(Boolean)
+                        .join(" • ")}
                     </p>
+                    {dateValue ? (
+                      <p className="mt-1 text-xs text-slate-400">
+                        Connected on {formatDate(dateValue)}
+                      </p>
+                    ) : null}
                   </div>
+                </button>
+                <div className="flex flex-wrap gap-2">
+                  {contact.cardSlug ? (
+                    <Link
+                      href={`/c/${contact.cardSlug}`}
+                      className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      View Card
+                    </Link>
+                  ) : null}
+                  <button
+                    onClick={() => handleRemove(contact.connectionId)}
+                    className="flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Remove
+                  </button>
                 </div>
-                {contact.type === "pending" ? (
-                  <div className="flex gap-2" onClick={(event) => event.stopPropagation()}>
-                    <button
-                      onClick={() => handleAccept(contact.connectionId)}
-                      className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600"
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                      Accept
-                    </button>
-                    <button
-                      onClick={() => handleDecline(contact.connectionId)}
-                      className="flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                      Decline
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Notes
-                </label>
-                <textarea
-                  rows={2}
-                  value={notes[contact.userId] ?? ""}
-                  onChange={(event) =>
-                    setNotes((prev) => ({
-                      ...prev,
-                      [contact.userId]: event.target.value,
-                    }))
-                  }
-                  placeholder="Add a quick reminder about this contact"
-                  className="mt-2 w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                />
-              </div>
-
-              <div className="text-xs text-slate-400">
-                {dateValue ? `${dateLabel} ${formatDate(dateValue)}` : ""}
               </div>
             </div>
           );

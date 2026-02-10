@@ -51,6 +51,7 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const [defaultCardId, setDefaultCardId] = useState<string | null>(null);
 
   const loadNotifications = async () => {
     setIsLoading(true);
@@ -64,6 +65,12 @@ export default function NotificationsPage() {
     }
 
     const viewerId = userData.user.id;
+    const { data: cards } = await supabase
+      .from("business_cards")
+      .select("id, is_default")
+      .eq("user_id", viewerId);
+    const defaultCard = (cards ?? []).find((card) => card.is_default);
+    setDefaultCardId(defaultCard?.id ?? null);
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     const weekAgoIso = weekAgo.toISOString();
@@ -78,10 +85,10 @@ export default function NotificationsPage() {
           .eq("status", "pending"),
         supabase
           .from("connections")
-          .select("id, receiver_id, connected_at")
+          .select("id, receiver_id, updated_at")
           .eq("requester_id", viewerId)
           .eq("status", "accepted")
-          .gte("connected_at", weekAgoIso),
+          .gte("updated_at", weekAgoIso),
         supabase
           .from("business_cards")
           .select("id, full_name")
@@ -147,7 +154,7 @@ export default function NotificationsPage() {
           id: `accepted-${row.id}`,
           type: "accepted" as const,
           title: `${name} accepted your connection request`,
-          date: row.connected_at ?? new Date().toISOString(),
+          date: row.updated_at ?? new Date().toISOString(),
           actorId: row.receiver_id,
         };
       }),
@@ -194,7 +201,11 @@ export default function NotificationsPage() {
     if (!connectionId) {
       return;
     }
-    const { error } = await acceptConnection(connectionId);
+    if (!defaultCardId) {
+      setMessage("Create a card first to accept requests.");
+      return;
+    }
+    const { error } = await acceptConnection(connectionId, defaultCardId);
     if (error) {
       setMessage(error.message);
       return;

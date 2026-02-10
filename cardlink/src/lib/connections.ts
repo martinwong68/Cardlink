@@ -4,9 +4,12 @@ type ConnectionRow = {
   id: string;
   requester_id: string;
   receiver_id: string;
-  status: "pending" | "accepted" | "blocked";
-  connected_at: string | null;
+  status: "pending" | "accepted" | "declined";
+  requester_card_id: string | null;
+  receiver_card_id: string | null;
+  message: string | null;
   created_at: string | null;
+  updated_at: string | null;
 };
 
 type ProfileRow = {
@@ -21,6 +24,7 @@ type CardRow = {
   full_name: string | null;
   title: string | null;
   company: string | null;
+  slug?: string | null;
 };
 
 export type ConnectionStatus =
@@ -28,7 +32,7 @@ export type ConnectionStatus =
   | "pending_sent"
   | "pending_received"
   | "accepted"
-  | "blocked";
+  | "declined";
 
 export type FriendContact = {
   connectionId: string;
@@ -37,6 +41,7 @@ export type FriendContact = {
   title: string | null;
   company: string | null;
   avatarUrl: string | null;
+  cardSlug: string | null;
   connectedAt: string | null;
   createdAt: string | null;
 };
@@ -48,40 +53,53 @@ export type PendingRequest = {
   title: string | null;
   company: string | null;
   avatarUrl: string | null;
+  requesterCardId: string | null;
+  message: string | null;
   createdAt: string | null;
 };
 
 export async function sendConnectionRequest(
   requesterId: string,
-  receiverId: string
+  receiverId: string,
+  requesterCardId: string | null,
+  message?: string | null
 ) {
   const supabase = createClient();
   return supabase.from("connections").insert({
     requester_id: requesterId,
     receiver_id: receiverId,
+    requester_card_id: requesterCardId,
     status: "pending",
+    message: message ?? null,
   });
 }
 
-export async function acceptConnection(connectionId: string) {
+export async function acceptConnection(
+  connectionId: string,
+  receiverCardId: string | null
+) {
   const supabase = createClient();
   return supabase
     .from("connections")
-    .update({ status: "accepted", connected_at: new Date().toISOString() })
+    .update({
+      status: "accepted",
+      receiver_card_id: receiverCardId,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", connectionId);
 }
 
 export async function rejectConnection(connectionId: string) {
   const supabase = createClient();
-  return supabase.from("connections").delete().eq("id", connectionId);
-}
-
-export async function blockConnection(connectionId: string) {
-  const supabase = createClient();
   return supabase
     .from("connections")
-    .update({ status: "blocked" })
+    .update({ status: "declined", updated_at: new Date().toISOString() })
     .eq("id", connectionId);
+}
+
+export async function removeConnection(connectionId: string) {
+  const supabase = createClient();
+  return supabase.from("connections").delete().eq("id", connectionId);
 }
 
 export async function getConnectionStatus(
@@ -100,14 +118,14 @@ export async function getConnectionStatus(
     return "none";
   }
 
-  const hasBlocked = data.some((row) => row.status === "blocked");
-  if (hasBlocked) {
-    return "blocked";
-  }
-
   const hasAccepted = data.some((row) => row.status === "accepted");
   if (hasAccepted) {
     return "accepted";
+  }
+
+  const hasDeclined = data.some((row) => row.status === "declined");
+  if (hasDeclined) {
+    return "declined";
   }
 
   const sentByUser1 = data.find(
@@ -131,7 +149,9 @@ export async function getFriends(userId: string): Promise<FriendContact[]> {
   const supabase = createClient();
   const { data: connections, error } = await supabase
     .from("connections")
-    .select("id, requester_id, receiver_id, status, connected_at, created_at")
+    .select(
+      "id, requester_id, receiver_id, status, created_at, updated_at"
+    )
     .or(
       `and(requester_id.eq.${userId},status.eq.accepted),and(receiver_id.eq.${userId},status.eq.accepted)`
     );
@@ -148,7 +168,7 @@ export async function getFriends(userId: string): Promise<FriendContact[]> {
 
   const { data: cards } = await supabase
     .from("business_cards")
-    .select("id, user_id, full_name, title, company")
+    .select("id, user_id, full_name, title, company, slug")
     .eq("is_default", true)
     .in("user_id", friendIds);
 
@@ -179,8 +199,9 @@ export async function getFriends(userId: string): Promise<FriendContact[]> {
       title: card?.title ?? null,
       company: card?.company ?? null,
       avatarUrl: profile?.avatar_url ?? null,
-      connectedAt: connection.connected_at,
-      createdAt: connection.created_at,
+      cardSlug: card?.slug ?? null,
+      connectedAt: connection.updated_at ?? null,
+      createdAt: connection.created_at ?? null,
     };
   });
 }
@@ -191,7 +212,9 @@ export async function getPendingRequests(
   const supabase = createClient();
   const { data: connections, error } = await supabase
     .from("connections")
-    .select("id, requester_id, receiver_id, status, created_at")
+    .select(
+      "id, requester_id, receiver_id, status, requester_card_id, message, created_at"
+    )
     .eq("receiver_id", userId)
     .eq("status", "pending");
 
@@ -232,6 +255,8 @@ export async function getPendingRequests(
       title: card?.title ?? null,
       company: card?.company ?? null,
       avatarUrl: profile?.avatar_url ?? null,
+      requesterCardId: connection.requester_card_id ?? null,
+      message: connection.message ?? null,
       createdAt: connection.created_at,
     };
   });

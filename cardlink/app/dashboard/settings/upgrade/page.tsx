@@ -12,15 +12,10 @@ export default function UpgradePage() {
     setMessage(null);
     setIsLoading(interval);
 
-    const priceId =
-      interval === "yearly"
-        ? process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY
-        : process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY;
-
     const response = await fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId, interval }),
+      body: JSON.stringify({ interval }),
     });
 
     if (!response.ok) {

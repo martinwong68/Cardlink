@@ -112,7 +112,7 @@ export default function PublicCardConnectionSection({
       return;
     }
 
-    const { error } = await sendConnectionRequest(viewerId, ownerId);
+    const { error } = await sendConnectionRequest(viewerId, ownerId, null, null);
     if (error) {
       setMessage(error.message);
       return;
@@ -126,7 +126,7 @@ export default function PublicCardConnectionSection({
       return;
     }
 
-    const { error } = await acceptConnection(pendingConnectionId);
+    const { error } = await acceptConnection(pendingConnectionId, null);
     if (error) {
       setMessage(error.message);
       return;
@@ -240,10 +240,6 @@ export default function PublicCardConnectionSection({
         ) : status === "pending_sent" ? (
           <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500">
             Request Sent ✓
-          </div>
-        ) : status === "blocked" ? (
-          <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500">
-            Connection blocked
           </div>
         ) : (
           <button

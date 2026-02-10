@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/src/lib/supabase/server";
 
 import DashboardNav from "./dashboard-nav";
+import NotificationBell from "@/components/NotificationBell";
 
 export default async function DashboardLayout({
   children,
@@ -19,12 +19,6 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const displayName =
-    typeof user.user_metadata?.full_name === "string"
-      ? user.user_metadata.full_name
-      : user.email ?? "User";
-  const avatarInitial = displayName.trim().charAt(0).toUpperCase() || "U";
-
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-10">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -35,13 +29,7 @@ export default async function DashboardLayout({
             </p>
             <p className="text-sm text-slate-500">Dashboard</p>
           </div>
-          <Link
-            href="/dashboard/settings/profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-sm font-semibold text-white"
-            aria-label="View profile settings"
-          >
-            {avatarInitial}
-          </Link>
+          <NotificationBell userId={user.id} />
         </div>
       </header>
 

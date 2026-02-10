@@ -169,6 +169,8 @@ export default async function PublicCardPage({
       title={card.title}
       company={card.company}
       bio={card.bio}
+      ownerId={card.user_id}
+      viewerId={user?.id ?? null}
       slug={card.slug ?? slug}
       avatarUrl={card.profiles?.avatar_url ?? null}
       backgroundPattern={card.background_pattern}

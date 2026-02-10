@@ -18,7 +18,7 @@ type ProfileRow = {
 type ConnectionRow = {
   requester_id: string;
   receiver_id: string;
-  status: "pending" | "accepted" | "blocked";
+  status: "pending" | "accepted" | "declined";
 };
 
 type ConnectionStatus = "none" | "pending" | "connected";
@@ -51,6 +51,7 @@ export default function DiscoverPage() {
   const supabase = useMemo(() => createClient(), []);
   const [viewerId, setViewerId] = useState<string | null>(null);
   const [viewerPlan, setViewerPlan] = useState<ViewerPlan>("free");
+  const [defaultCardId, setDefaultCardId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<ProfileRow[]>([]);
   const [suggested, setSuggested] = useState<ProfileRow[]>([]);
@@ -77,6 +78,13 @@ export default function DiscoverPage() {
       .maybeSingle();
 
     setViewerPlan(profile?.plan === "premium" ? "premium" : "free");
+
+    const { data: cards } = await supabase
+      .from("business_cards")
+      .select("id, is_default")
+      .eq("user_id", data.user.id);
+    const defaultCard = (cards ?? []).find((card) => card.is_default);
+    setDefaultCardId(defaultCard?.id ?? null);
 
     const { data: connectionRows } = await supabase
       .from("connections")
@@ -209,10 +217,15 @@ export default function DiscoverPage() {
     if (!viewerId) {
       return;
     }
+    if (!defaultCardId) {
+      setMessage("Create a card first to exchange cards.");
+      return;
+    }
 
     const { error } = await supabase.from("connections").insert({
       requester_id: viewerId,
       receiver_id: profileId,
+      requester_card_id: defaultCardId,
       status: "pending",
     });
 
@@ -254,12 +267,20 @@ export default function DiscoverPage() {
           </div>
         </Link>
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-slate-500">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              status === "connected"
+                ? "bg-emerald-50 text-emerald-600"
+                : status === "pending"
+                ? "bg-amber-50 text-amber-600"
+                : "bg-slate-100 text-slate-500"
+            }`}
+          >
             {status === "connected"
               ? "Connected"
               : status === "pending"
               ? "Pending"
-              : "Connect"}
+              : "Not connected"}
           </span>
           {status === "none" ? (
             <button

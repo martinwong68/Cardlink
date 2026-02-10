@@ -30,8 +30,8 @@ export async function POST(request: Request) {
   const interval = body?.interval ?? "monthly";
   const priceId =
     interval === "yearly"
-      ? process.env.STRIPE_PRICE_YEARLY
-      : process.env.STRIPE_PRICE_MONTHLY;
+      ? process.env.STRIPE_PREMIUM_YEARLY_PRICE_ID
+      : process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID;
 
   const selectedPriceId = priceId ?? body?.priceId;
 
