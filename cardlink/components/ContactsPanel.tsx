@@ -42,6 +42,16 @@ function getInitials(name: string) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
+function formatDate(value: string) {
+  try {
+    return new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
+      new Date(value)
+    );
+  } catch {
+    return value;
+  }
+}
+
 export default function ContactsPanel() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
@@ -251,7 +261,7 @@ export default function ContactsPanel() {
               </div>
 
               <div className="text-xs text-slate-400">
-                {dateValue ? `${dateLabel} ${new Date(dateValue).toLocaleDateString()}` : ""}
+                {dateValue ? `${dateLabel} ${formatDate(dateValue)}` : ""}
               </div>
             </div>
           );

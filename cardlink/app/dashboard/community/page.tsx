@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 
 import { createClient } from "@/src/lib/supabase/client";
+import RelativeTime from "@/components/RelativeTime";
 
 type BoardRow = {
   id: string;
@@ -320,11 +320,10 @@ export default function CommunityPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs text-slate-400">
-                    {formatDistanceToNow(new Date(lastActivity), {
-                      addSuffix: true,
-                    })}
-                  </span>
+                  <RelativeTime
+                    className="text-xs text-slate-400"
+                    date={lastActivity}
+                  />
                 </div>
                 <p className="mt-3 text-xs text-slate-500">
                   {(post.body ?? "").slice(0, 140)}

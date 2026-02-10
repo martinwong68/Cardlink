@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 import {
   Bell,
   CheckCircle,
@@ -12,6 +11,7 @@ import {
 
 import { createClient } from "@/src/lib/supabase/client";
 import { acceptConnection, rejectConnection } from "@/src/lib/connections";
+import RelativeTime from "@/components/RelativeTime";
 
 type ProfileRow = {
   id: string;
@@ -283,9 +283,7 @@ export default function NotificationsPage() {
                       </p>
                     ) : null}
                     <p className="mt-1 text-xs text-slate-400">
-                      {formatDistanceToNow(new Date(item.date), {
-                        addSuffix: true,
-                      })}
+                      <RelativeTime date={item.date} />
                     </p>
                   </div>
                 </div>

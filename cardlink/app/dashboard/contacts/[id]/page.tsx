@@ -109,6 +109,16 @@ function getInitials(name: string) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
+function formatDateValue(value: string | Date) {
+  try {
+    return new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
+      new Date(value)
+    );
+  } catch {
+    return typeof value === "string" ? value : value.toISOString();
+  }
+}
+
 export default function ContactDetailPage({
   params,
 }: {
@@ -238,7 +248,7 @@ export default function ContactDetailPage({
       setMessage(error.message);
       return;
     }
-    router.push("/dashboard/card?tab=contacts");
+    router.push("/dashboard/cards?tab=contacts");
   };
 
   const persistTags = async (nextTags: string[]) => {
@@ -441,9 +451,9 @@ export default function ContactDetailPage({
 
         <div className="mt-4 text-xs text-slate-400">
           {connection?.connected_at
-            ? `Connected ${new Date(connection.connected_at).toLocaleDateString()}`
+            ? `Connected ${formatDateValue(connection.connected_at)}`
             : connection?.created_at
-            ? `Requested ${new Date(connection.created_at).toLocaleDateString()}`
+            ? `Requested ${formatDateValue(connection.created_at)}`
             : ""}
         </div>
       </div>
@@ -645,7 +655,7 @@ export default function ContactDetailPage({
                         </p>
                         <p className="mt-2 text-xs text-slate-400">
                           {note.created_at
-                            ? new Date(note.created_at).toLocaleDateString()
+                            ? formatDateValue(note.created_at)
                             : ""}
                         </p>
                       </div>
@@ -713,7 +723,7 @@ export default function ContactDetailPage({
                         : "border-amber-200 bg-amber-50 text-amber-700"
                     }`}
                   >
-                    Follow up on {reminder.toLocaleDateString()}
+                    Follow up on {formatDateValue(reminder)}
                   </div>
                 );
               })}
@@ -736,7 +746,7 @@ export default function ContactDetailPage({
                   </span>
                   <span>
                     {share.shared_at
-                      ? new Date(share.shared_at).toLocaleDateString()
+                      ? formatDateValue(share.shared_at)
                       : ""}
                   </span>
                 </div>
@@ -767,7 +777,7 @@ export default function ContactDetailPage({
       ) : null}
 
       <button
-        onClick={() => router.push("/dashboard/card?tab=contacts")}
+        onClick={() => router.push("/dashboard/cards?tab=contacts")}
         className="text-sm font-semibold text-violet-600 hover:text-violet-700"
       >
         Back to contacts

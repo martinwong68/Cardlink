@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 
 import { createClient } from "@/src/lib/supabase/client";
+import RelativeTime from "@/components/RelativeTime";
 
 type BoardRow = {
   id: string;
@@ -291,9 +291,7 @@ export default function PostDetailPage() {
                 {authorName}
               </p>
               <p className="text-xs text-slate-500">
-                {formatDistanceToNow(new Date(post.created_at), {
-                  addSuffix: true,
-                })}
+                <RelativeTime date={post.created_at} />
               </p>
             </div>
           </div>
@@ -390,9 +388,7 @@ export default function PostDetailPage() {
                       {replyName}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {formatDistanceToNow(new Date(reply.created_at), {
-                        addSuffix: true,
-                      })}
+                      <RelativeTime date={reply.created_at} />
                     </p>
                   </div>
                 </div>

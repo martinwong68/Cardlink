@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/src/lib/supabase/server";
-import PublicCardConnectionSection from "@/components/PublicCardConnectionSection";
-import type { ViewerPlan } from "@/src/lib/visibility";
+import PublicCardView from "@/components/PublicCardView";
 
 type CardField = {
   id: string;
@@ -10,6 +9,24 @@ type CardField = {
   field_label: string | null;
   field_value: string;
   visibility: "public" | "friends" | "hidden";
+  sort_order: number | null;
+};
+
+type CardLink = {
+  id: string;
+  label: string;
+  url: string;
+  icon: string | null;
+  sort_order: number | null;
+};
+
+type CardExperience = {
+  id: string;
+  role: string;
+  company: string;
+  start_date: string | null;
+  end_date: string | null;
+  description: string | null;
   sort_order: number | null;
 };
 
@@ -21,24 +38,14 @@ type CardRecord = {
   company: string | null;
   bio: string | null;
   slug: string | null;
+  background_pattern: string | null;
+  background_color: string | null;
   card_fields: CardField[] | null;
+  card_links: CardLink[] | null;
+  card_experiences: CardExperience[] | null;
   profiles: { id: string; full_name: string | null; avatar_url: string | null } | null;
 };
 
-
-function getInitials(name: string) {
-  const parts = name
-    .split(" ")
-    .map((part) => part.trim())
-    .filter(Boolean);
-  if (parts.length === 0) {
-    return "CL";
-  }
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-}
 
 function buildVCard(card: CardRecord) {
   const lines = [
@@ -73,11 +80,11 @@ function buildVCard(card: CardRecord) {
         lines.push(`URL:${field.field_value}`);
         break;
       case "LinkedIn":
-      case "Twitter/X":
+      case "Twitter":
       case "WeChat":
       case "WhatsApp":
-      case "XHS":
-      case "Other":
+      case "Telegram":
+      case "Instagram":
       default:
         lines.push(`URL:${field.field_value}`);
         break;
@@ -106,23 +113,15 @@ export default async function PublicCardPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  let viewerPlan: ViewerPlan = "anonymous";
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("plan")
-      .eq("id", user.id)
-      .maybeSingle();
-    viewerPlan = profile?.plan === "premium" ? "premium" : "free";
-  }
-
   const { data: cardBySlug, error: slugError } = await supabase
     .from("business_cards")
     .select(
-      "id, user_id, full_name, title, company, bio, slug, card_fields(id, field_type, field_label, field_value, visibility, sort_order), profiles(id, full_name, avatar_url)"
+      "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
     )
     .eq("slug", slug)
     .order("sort_order", { foreignTable: "card_fields", ascending: true })
+    .order("sort_order", { foreignTable: "card_links", ascending: true })
+    .order("sort_order", { foreignTable: "card_experiences", ascending: true })
     .maybeSingle<CardRecord>();
 
   let card = cardBySlug ?? null;
@@ -132,10 +131,12 @@ export default async function PublicCardPage({
     const { data: cardById, error: idError } = await supabase
       .from("business_cards")
       .select(
-        "id, user_id, full_name, title, company, bio, slug, card_fields(id, field_type, field_label, field_value, visibility, sort_order), profiles(id, full_name, avatar_url)"
+        "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
       )
       .eq("id", slug)
       .order("sort_order", { foreignTable: "card_fields", ascending: true })
+      .order("sort_order", { foreignTable: "card_links", ascending: true })
+      .order("sort_order", { foreignTable: "card_experiences", ascending: true })
       .maybeSingle<CardRecord>();
     card = cardById ?? null;
     error = idError ?? null;
@@ -157,51 +158,25 @@ export default async function PublicCardPage({
     share_method: "link",
   });
 
-  const viewerId = user?.id ?? null;
   const fullName =
     card.full_name || card.profiles?.full_name || "CardLink User";
-  const initials = getInitials(fullName);
   const vcard = buildVCard(card);
   const vcardHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
 
   return (
-    <div className="min-h-screen bg-white px-4 py-10">
-      <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-violet-600 text-xl font-semibold text-white">
-              {initials}
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-slate-900">
-                {fullName}
-              </h1>
-              <p className="text-sm text-slate-500">
-                {card.title || ""}
-                {card.title && card.company ? " • " : ""}
-                {card.company || ""}
-              </p>
-            </div>
-          </div>
-
-          {card.bio ? (
-            <p className="mt-4 text-sm text-slate-600">{card.bio}</p>
-          ) : null}
-        </div>
-
-        <PublicCardConnectionSection
-          ownerId={card.user_id}
-          slug={card.slug ?? slug}
-          viewerId={viewerId}
-          viewerPlan={viewerPlan}
-          cardFields={card.card_fields ?? []}
-          vcardHref={vcardHref}
-        />
-
-        <div className="pt-8 text-center text-xs text-slate-400">
-          CardLink
-        </div>
-      </div>
-    </div>
+    <PublicCardView
+      fullName={fullName}
+      title={card.title}
+      company={card.company}
+      bio={card.bio}
+      slug={card.slug ?? slug}
+      avatarUrl={card.profiles?.avatar_url ?? null}
+      backgroundPattern={card.background_pattern}
+      backgroundColor={card.background_color}
+      vcardHref={vcardHref}
+      cardFields={card.card_fields ?? []}
+      cardLinks={card.card_links ?? []}
+      cardExperiences={card.card_experiences ?? []}
+    />
   );
 }
