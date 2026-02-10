@@ -65,11 +65,11 @@ export default function NotificationsPage() {
     }
 
     const viewerId = userData.user.id;
-    const { data: cards } = await supabase
+    const { data: viewerCards } = await supabase
       .from("business_cards")
       .select("id, is_default")
       .eq("user_id", viewerId);
-    const defaultCard = (cards ?? []).find((card) => card.is_default);
+    const defaultCard = (viewerCards ?? []).find((card) => card.is_default);
     setDefaultCardId(defaultCard?.id ?? null);
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
