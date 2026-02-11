@@ -1,31 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import {
   AtSign,
-  Check,
-  Clock,
   Globe,
   Instagram,
   Link2,
   Mail,
   MessageCircle,
   Phone,
-  Repeat2,
   Send,
   Twitter,
   User,
-  UserPlus,
-  X,
 } from "lucide-react";
-
-import { createClient } from "@/src/lib/supabase/client";
-import {
-  getConnectionStatus,
-  sendConnectionRequest,
-  type ConnectionStatus,
-} from "@/src/lib/connections";
 
 const patternClassMap: Record<string, string> = {
   "gradient-1": "cardlink-pattern-gradient-1",
@@ -113,8 +100,6 @@ type PublicCardViewProps = {
   title: string | null;
   company: string | null;
   bio: string | null;
-  ownerId: string;
-  viewerId: string | null;
   slug: string;
   avatarUrl: string | null;
   backgroundPattern: string | null;
@@ -123,15 +108,6 @@ type PublicCardViewProps = {
   cardFields: CardField[];
   cardLinks: CardLink[];
   cardExperiences: CardExperience[];
-};
-
-type ViewerCard = {
-  id: string;
-  card_name: string | null;
-  full_name: string | null;
-  title: string | null;
-  company: string | null;
-  is_default: boolean | null;
 };
 
 function getInitials(name: string) {
@@ -215,8 +191,6 @@ export default function PublicCardView({
   title,
   company,
   bio,
-  ownerId,
-  viewerId,
   slug,
   avatarUrl,
   backgroundPattern,
@@ -226,19 +200,9 @@ export default function PublicCardView({
   cardLinks,
   cardExperiences,
 }: PublicCardViewProps) {
-  const supabase = useMemo(() => createClient(), []);
-  const router = useRouter();
   const initials = getInitials(fullName);
   const [toast, setToast] = useState<string | null>(null);
   const [wechatValue, setWechatValue] = useState<string | null>(null);
-  const [status, setStatus] = useState<ConnectionStatus | "loading">(
-    "loading"
-  );
-  const [viewerCards, setViewerCards] = useState<ViewerCard[]>([]);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [messageText, setMessageText] = useState("");
-  const [exchangeOpen, setExchangeOpen] = useState(false);
-  const [isSending, setIsSending] = useState(false);
   const shareUrl = useMemo(() => {
     const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
     if (base) {
@@ -271,40 +235,6 @@ export default function PublicCardView({
     setToast(message);
     window.setTimeout(() => setToast(null), 2200);
   };
-
-  const viewerIsOwner = !!viewerId && viewerId === ownerId;
-
-  useEffect(() => {
-    const loadExchangeData = async () => {
-      if (!viewerId) {
-        setStatus("none");
-        setViewerCards([]);
-        setSelectedCardId(null);
-        return;
-      }
-
-      if (viewerId === ownerId) {
-        setStatus("accepted");
-        return;
-      }
-
-      const nextStatus = await getConnectionStatus(viewerId, ownerId);
-      setStatus(nextStatus);
-
-      const { data: cards } = await supabase
-        .from("business_cards")
-        .select("id, card_name, full_name, title, company, is_default")
-        .eq("user_id", viewerId)
-        .order("created_at", { ascending: false });
-
-      const list = (cards ?? []) as ViewerCard[];
-      setViewerCards(list);
-      const defaultCard = list.find((card) => card.is_default);
-      setSelectedCardId(defaultCard?.id ?? list[0]?.id ?? null);
-    };
-
-    void loadExchangeData();
-  }, [viewerId, ownerId, supabase]);
 
   const handleShare = async () => {
     if (!shareUrl) {
@@ -346,55 +276,6 @@ export default function PublicCardView({
     } catch {
       pushToast("Unable to copy WeChat ID.");
     }
-  };
-
-  const handleOpenExchange = () => {
-    if (!viewerId) {
-      const returnUrl = encodeURIComponent(`/c/${slug}`);
-      pushToast("Log in to exchange cards.");
-      router.push(`/login?redirect=${returnUrl}`);
-      return;
-    }
-
-    if (status === "pending_received") {
-      pushToast("They already sent you a request. Check your requests.");
-      router.push("/dashboard/cards?tab=contacts");
-      return;
-    }
-
-    setExchangeOpen(true);
-  };
-
-  const handleSendRequest = async () => {
-    if (!viewerId || !selectedCardId) {
-      pushToast("Select a card to share.");
-      return;
-    }
-
-    setIsSending(true);
-    const { error } = await sendConnectionRequest(
-      viewerId,
-      ownerId,
-      selectedCardId,
-      messageText.trim() || null
-    );
-
-    if (error) {
-      const isDuplicate = error.code === "23505";
-      pushToast(
-        isDuplicate
-          ? "You've already sent a request to this person"
-          : error.message
-      );
-      setIsSending(false);
-      return;
-    }
-
-    setStatus("pending_sent");
-    setExchangeOpen(false);
-    setMessageText("");
-    pushToast("Card exchange request sent!");
-    setIsSending(false);
   };
 
   return (
@@ -459,53 +340,6 @@ export default function PublicCardView({
               Share
             </button>
           </div>
-          {!viewerIsOwner ? (
-            <div className="mt-4">
-              {!viewerId ? (
-                <button
-                  type="button"
-                  onClick={handleOpenExchange}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-indigo-700"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Exchange Cards
-                </button>
-              ) : status === "loading" ? (
-                <div className="flex w-full items-center justify-center gap-2 rounded-full bg-slate-100 px-6 py-3 text-sm font-semibold text-slate-500">
-                  <Clock className="h-4 w-4" />
-                  Loading...
-                </div>
-              ) : status === "accepted" ? (
-                <div className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-emerald-500 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-600">
-                  <Check className="h-4 w-4" />
-                  Connected
-                </div>
-              ) : status === "pending_sent" ? (
-                <div className="flex w-full items-center justify-center gap-2 rounded-full bg-slate-100 px-6 py-3 text-sm font-semibold text-slate-500">
-                  <Clock className="h-4 w-4" />
-                  Request Pending
-                </div>
-              ) : status === "pending_received" ? (
-                <button
-                  type="button"
-                  onClick={handleOpenExchange}
-                  className="flex w-full items-center justify-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-6 py-3 text-sm font-semibold text-amber-700"
-                >
-                  <Repeat2 className="h-4 w-4" />
-                  Respond to Request
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleOpenExchange}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-indigo-700"
-                >
-                  <Repeat2 className="h-4 w-4" />
-                  Exchange Cards
-                </button>
-              )}
-            </div>
-          ) : null}
         </section>
 
         <section className="cardlink-section cardlink-delay-3 mt-6 rounded-3xl bg-white p-6 shadow-sm">
@@ -607,111 +441,8 @@ export default function PublicCardView({
         </footer>
       </div>
 
-      {exchangeOpen ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 px-4 py-6 backdrop-blur-sm md:items-center">
-          <div className="w-full max-w-md rounded-t-2xl bg-white p-6 shadow-xl md:rounded-2xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
-                  CardLink
-                </p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-900">
-                  Exchange Cards with {fullName}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setExchangeOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="mt-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Select which card to share
-              </p>
-              {viewerCards.length === 0 ? (
-                <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-                  You do not have a card yet. Create one in your dashboard.
-                </div>
-              ) : (
-                <div className="mt-3 space-y-2">
-                  {viewerCards.map((card) => {
-                    const label = card.card_name || card.full_name || "My Card";
-                    const subtitle = [card.title, card.company]
-                      .filter(Boolean)
-                      .join(" • ");
-
-                    return (
-                      <label
-                        key={card.id}
-                        className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
-                          selectedCardId === card.id
-                            ? "border-indigo-400 bg-indigo-50"
-                            : "border-slate-200 bg-white"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="card"
-                          className="mt-1"
-                          checked={selectedCardId === card.id}
-                          onChange={() => setSelectedCardId(card.id)}
-                        />
-                        <div>
-                          <p className="font-semibold text-slate-900">
-                            {label}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {subtitle || ""}
-                          </p>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div className="mt-4">
-              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Add a message (optional)
-              </label>
-              <textarea
-                rows={3}
-                value={messageText}
-                onChange={(event) => setMessageText(event.target.value)}
-                placeholder="Say hi and add a quick note"
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-              />
-            </div>
-
-            <div className="mt-5 space-y-2">
-              <button
-                type="button"
-                onClick={handleSendRequest}
-                disabled={isSending || !selectedCardId}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
-              >
-                <Send className="h-4 w-4" />
-                {isSending ? "Sending..." : "Send Request"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setExchangeOpen(false)}
-                className="w-full rounded-full px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-700"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg md:bottom-auto md:left-auto md:right-6 md:top-6 md:translate-x-0">
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
           {toast}
         </div>
       ) : null}

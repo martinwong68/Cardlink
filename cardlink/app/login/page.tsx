@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { createClient } from "@/src/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+  const returnToParam = searchParams.get("returnTo");
+  const returnTo = returnToParam && returnToParam.startsWith("/")
+    ? returnToParam
+    : null;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -31,7 +36,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard/community");
+    router.push(returnTo ?? "/dashboard/community");
   };
 
   return (
@@ -100,7 +105,10 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           New to CardLink?{" "}
-          <Link className="font-semibold text-violet-600 hover:text-violet-700" href="/signup">
+          <Link
+            className="font-semibold text-violet-600 hover:text-violet-700"
+            href={returnTo ? `/signup?returnTo=${encodeURIComponent(returnTo)}` : "/signup"}
+          >
             Create an account
           </Link>
         </p>

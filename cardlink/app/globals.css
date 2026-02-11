@@ -34,6 +34,96 @@ body {
 .cardlink-pattern-gradient-1 {
   background-image: linear-gradient(
     135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(0, 0, 0, 0.2)
+  );
+}
+
+.cardlink-pattern-gradient-2 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(0, 0, 0, 0.24)
+  );
+}
+
+.cardlink-pattern-gradient-3 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(0, 0, 0, 0.26)
+  );
+}
+
+.cardlink-pattern-gradient-4 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(0, 0, 0, 0.22)
+  );
+}
+
+.cardlink-pattern-gradient-5 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(0, 0, 0, 0.3)
+  );
+}
+
+.cardlink-pattern-dots {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.35) 1.5px, transparent 1.6px);
+  background-size: 18px 18px;
+}
+
+.cardlink-pattern-waves {
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.25) 0,
+      rgba(255, 255, 255, 0.25) 2px,
+      transparent 2px,
+      transparent 12px
+    );
+}
+
+.cardlink-pattern-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.25) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.cardlink-pattern-circles {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.32) 0, rgba(255, 255, 255, 0.32) 20%, transparent 21%),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.26) 0, rgba(255, 255, 255, 0.26) 18%, transparent 19%),
+    radial-gradient(circle at 40% 75%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) 22%, transparent 23%);
+}
+
+.cardlink-pattern-topography {
+  background-image:
+    repeating-radial-gradient(
+      circle at 20% 30%,
+      transparent 0,
+      transparent 10px,
+      rgba(255, 255, 255, 0.3) 11px,
+      rgba(255, 255, 255, 0.3) 12px
+    ),
+    repeating-radial-gradient(
+      circle at 80% 70%,
+      transparent 0,
+      transparent 12px,
+      rgba(255, 255, 255, 0.24) 13px,
+      rgba(255, 255, 255, 0.24) 14px
+    );
+}
+
+@supports (background: color-mix(in srgb, #000000 50%, #ffffff)) {
+  .cardlink-pattern-gradient-1 {
+  background-image: linear-gradient(
+    135deg,
     color-mix(in srgb, var(--cardlink-base) 75%, #312e81),
     color-mix(in srgb, var(--cardlink-base) 65%, #a855f7)
   );
@@ -144,6 +234,7 @@ body {
       color-mix(in srgb, var(--cardlink-base) 70%, #ffffff) 13px,
       color-mix(in srgb, var(--cardlink-base) 70%, #ffffff) 14px
     );
+}
 }
 
 @keyframes cardlink-fade-up {

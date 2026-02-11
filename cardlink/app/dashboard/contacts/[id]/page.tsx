@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 import { createClient } from "@/src/lib/supabase/client";
-import { removeConnection } from "@/src/lib/connections";
+import { rejectConnection } from "@/src/lib/connections";
 import {
   canAccessCRM,
   getVisibleFields,
@@ -48,10 +48,10 @@ type CardRecord = {
 
 type ConnectionRecord = {
   id: string;
-  status: "pending" | "accepted" | "declined";
+  status: "pending" | "accepted" | "blocked";
   requester_id: string;
   receiver_id: string;
-  updated_at: string | null;
+  connected_at: string | null;
   created_at: string | null;
 };
 
@@ -209,7 +209,7 @@ export default function ContactDetailPage({
       supabase
         .from("connections")
         .select(
-          "id, status, requester_id, receiver_id, updated_at, created_at"
+          "id, status, requester_id, receiver_id, connected_at, created_at"
         )
         .or(
           `and(requester_id.eq.${userData.user.id},receiver_id.eq.${params.id}),and(requester_id.eq.${params.id},receiver_id.eq.${userData.user.id})`
@@ -243,7 +243,7 @@ export default function ContactDetailPage({
     if (!connection) {
       return;
     }
-    const { error } = await removeConnection(connection.id);
+    const { error } = await rejectConnection(connection.id);
     if (error) {
       setMessage(error.message);
       return;
@@ -450,8 +450,8 @@ export default function ContactDetailPage({
         ) : null}
 
         <div className="mt-4 text-xs text-slate-400">
-          {connection?.updated_at
-            ? `Connected ${formatDateValue(connection.updated_at)}`
+          {connection?.connected_at
+            ? `Connected ${formatDateValue(connection.connected_at)}`
             : connection?.created_at
             ? `Requested ${formatDateValue(connection.created_at)}`
             : ""}
@@ -763,7 +763,7 @@ export default function ContactDetailPage({
 
       <button
         onClick={handleRemove}
-        disabled={!connection}
+        disabled={!connection || connection.status === "blocked"}
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <ShieldAlert className="h-4 w-4" />

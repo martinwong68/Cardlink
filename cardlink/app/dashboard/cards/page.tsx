@@ -15,6 +15,7 @@ import {
 import { createClient } from "@/src/lib/supabase/client";
 import QRCodeModal from "@/components/QRCodeModal";
 import ContactsPanel from "@/components/ContactsPanel";
+import NfcCardsPanel from "@/components/NfcCardsPanel";
 
 const patternClassMap: Record<string, string> = {
   "gradient-1": "cardlink-pattern-gradient-1",
@@ -59,10 +60,49 @@ function formatDate(value: string) {
   }
 }
 
+function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Link
+        href="/dashboard/cards"
+        className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+          activeTab === "cards"
+            ? "bg-violet-600 text-white"
+            : "border border-slate-200 bg-white text-slate-500"
+        }`}
+      >
+        My Cards
+      </Link>
+      <Link
+        href="/dashboard/cards?tab=contacts"
+        className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+          activeTab === "contacts"
+            ? "bg-violet-600 text-white"
+            : "border border-slate-200 bg-white text-slate-500"
+        }`}
+      >
+        Contacts
+      </Link>
+      <Link
+        href="/dashboard/cards?tab=nfc"
+        className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+          activeTab === "nfc"
+            ? "bg-violet-600 text-white"
+            : "border border-slate-200 bg-white text-slate-500"
+        }`}
+      >
+        NFC Cards
+      </Link>
+    </div>
+  );
+}
+
 export default function CardsDashboardPage() {
   const supabase = useMemo(() => createClient(), []);
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") === "contacts" ? "contacts" : "cards";
+  const tabParam = searchParams.get("tab");
+  const activeTab =
+    tabParam === "contacts" ? "contacts" : tabParam === "nfc" ? "nfc" : "cards";
   const [cards, setCards] = useState<CardRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -200,21 +240,17 @@ export default function CardsDashboardPage() {
   if (activeTab === "contacts") {
     return (
       <div className="space-y-6">
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/dashboard/cards"
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-500 transition"
-          >
-            My Cards
-          </Link>
-          <Link
-            href="/dashboard/cards?tab=contacts"
-            className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white transition"
-          >
-            Contacts
-          </Link>
-        </div>
+        <CardsTabs activeTab="contacts" />
         <ContactsPanel />
+      </div>
+    );
+  }
+
+  if (activeTab === "nfc") {
+    return (
+      <div className="space-y-6">
+        <CardsTabs activeTab="nfc" />
+        <NfcCardsPanel />
       </div>
     );
   }
@@ -243,20 +279,7 @@ export default function CardsDashboardPage() {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/dashboard/cards"
-          className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white transition"
-        >
-          My Cards
-        </Link>
-        <Link
-          href="/dashboard/cards?tab=contacts"
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-500 transition"
-        >
-          Contacts
-        </Link>
-      </div>
+      <CardsTabs activeTab="cards" />
 
       {message ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">

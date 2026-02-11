@@ -2,11 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { createClient } from "@/src/lib/supabase/client";
 
 export default function SignupPage() {
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const returnToParam = searchParams.get("returnTo");
+  const returnTo = returnToParam && returnToParam.startsWith("/")
+    ? returnToParam
+    : null;
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -130,7 +136,10 @@ export default function SignupPage() {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link className="font-semibold text-violet-600 hover:text-violet-700" href="/login">
+          <Link
+            className="font-semibold text-violet-600 hover:text-violet-700"
+            href={returnTo ? `/login?returnTo=${encodeURIComponent(returnTo)}` : "/login"}
+          >
             Sign in
           </Link>
         </p>
