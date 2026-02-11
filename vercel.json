@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd cardlink && npm install",
-  "buildCommand": "cd cardlink && npm run build",
-  "outputDirectory": "cardlink/.next"
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next"
 }
