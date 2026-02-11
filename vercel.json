@@ -1,4 +1,6 @@
 {
-  "framework": "nextjs",
-  "rootDirectory": "cardlink"
+  "builds": [{
+    "src": "cardlink/package.json",
+    "use": "@vercel/next"
+  }]
 }
