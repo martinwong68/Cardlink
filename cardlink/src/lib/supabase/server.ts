@@ -12,6 +12,11 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
+        setAll(cookies) {
+          cookies.forEach(({ name, value, options }) => {
+            cookieStore.set({ name, value, ...options });
+          });
+        },
       },
     }
   );
