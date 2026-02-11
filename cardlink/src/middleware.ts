@@ -13,6 +13,10 @@ const intlMiddleware = createIntlMiddleware({
 
 export async function middleware(request: NextRequest) {
   const response = intlMiddleware(request);
+  const localeCookie = request.cookies.get("NEXT_LOCALE")?.value;
+  if (localeCookie && !locales.includes(localeCookie as (typeof locales)[number])) {
+    response.cookies.delete("NEXT_LOCALE");
+  }
   return updateSession(request, response);
 }
 
