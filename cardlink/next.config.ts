@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: __dirname,
   turbopack: {
     root: __dirname,
   },
