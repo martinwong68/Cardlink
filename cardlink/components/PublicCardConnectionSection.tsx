@@ -11,6 +11,7 @@ import {
   Twitter,
   User,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import {
@@ -64,6 +65,7 @@ export default function PublicCardConnectionSection({
   vcardHref,
 }: PublicCardConnectionSectionProps) {
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("publicConnect");
   const [status, setStatus] = useState<ConnectionStatus | "loading">("loading");
   const [message, setMessage] = useState<string | null>(null);
   const [pendingConnectionId, setPendingConnectionId] = useState<string | null>(null);
@@ -153,7 +155,7 @@ export default function PublicCardConnectionSection({
     <>
       <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-          Contact
+          {t("contactTitle")}
         </h2>
         <div className="space-y-3">
           {visibleFields.map((field) => {
@@ -208,7 +210,7 @@ export default function PublicCardConnectionSection({
           download={`${slug || "card"}.vcf`}
           className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
         >
-          Save Contact
+          {t("actions.saveContact")}
         </a>
 
         {viewerIsOwner ? (
@@ -216,18 +218,18 @@ export default function PublicCardConnectionSection({
             href="/dashboard/card/edit"
             className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
           >
-            Edit Card
+            {t("actions.editCard")}
           </Link>
         ) : !viewerId ? (
           <Link
             href="/signup"
             className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
           >
-            Sign up to connect
+            {t("actions.signupToConnect")}
           </Link>
         ) : status === "accepted" ? (
           <div className="flex items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
-            Connected ✓
+            {t("actions.connected")}
           </div>
         ) : status === "pending_received" ? (
           <button
@@ -235,11 +237,11 @@ export default function PublicCardConnectionSection({
             onClick={handleAccept}
             className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
           >
-            Accept Connection
+            {t("actions.acceptConnection")}
           </button>
         ) : status === "pending_sent" ? (
           <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500">
-            Request Sent ✓
+            {t("actions.requestSent")}
           </div>
         ) : (
           <button
@@ -247,7 +249,7 @@ export default function PublicCardConnectionSection({
             onClick={handleConnect}
             className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
           >
-            Connect
+            {t("actions.connect")}
           </button>
         )}
       </div>

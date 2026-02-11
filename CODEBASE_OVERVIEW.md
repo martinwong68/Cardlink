@@ -123,6 +123,7 @@
 		│           └── page.tsx
 		├── components
 		│   ├── ContactsPanel.tsx
+		│   ├── LanguageSwitcher.tsx
 		│   ├── NfcCardsPanel.tsx
 		│   ├── NotificationBell.tsx
 		│   ├── PublicCardConnectionSection.tsx
@@ -138,6 +139,11 @@
 		│   ├── sw.js
 		│   ├── vercel.svg
 		│   └── window.svg
+		├── messages
+		│   ├── en.json
+		│   ├── zh-CN.json
+		│   ├── zh-HK.json
+		│   └── zh-TW.json
 		└── src
 				├── middleware.ts
 				└── lib
@@ -164,11 +170,15 @@ Expected environment variables by code:
 - STRIPE_SECRET_KEY
 - STRIPE_PREMIUM_MONTHLY_PRICE_ID
 - STRIPE_PREMIUM_YEARLY_PRICE_ID
+- NEXT_PUBLIC_NFC_CARD_PRICE_ID (NFC card checkout price)
+- NEXT_PUBLIC_NFC_CARD_PRICE_DISPLAY (NFC card display price)
 - STRIPE_WEBHOOK_SECRET
 
 ## 5. App Shell and Layout
 - Root layout defines fonts, manifest, viewport, theme-color, and registers a service worker: cardlink/app/layout.tsx.
 - Global styling and CardLink pattern utilities live in cardlink/app/globals.css.
+- Locale detection and message loading are configured via next-intl in cardlink/i18n.ts and cardlink/i18n/request.ts.
+- Locale settings live in cardlink/next-intl.config.ts and are applied in cardlink/src/middleware.ts.
 
 ## 6. Public Routes
 - Home page with forum previews and redirect to dashboard when authenticated: cardlink/app/page.tsx.
@@ -186,7 +196,7 @@ Expected environment variables by code:
 	- Community (authenticated posting/editing): cardlink/app/dashboard/community
 	- Discover people: cardlink/app/dashboard/discover/page.tsx
 	- Notifications summary: cardlink/app/dashboard/notifications/page.tsx
-	- NFC redirect (legacy route) to the Cards NFC tab: cardlink/app/dashboard/nfc/page.tsx
+	- NFC “Get a Card” page with Stripe checkout: cardlink/app/dashboard/nfc/page.tsx
 	- Settings and upgrade: cardlink/app/dashboard/settings
 
 ## 8. API Routes and Server Endpoints

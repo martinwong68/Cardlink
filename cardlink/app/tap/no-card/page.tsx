@@ -1,14 +1,16 @@
 import { CreditCard } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import StatusLayout from "../StatusLayout";
 
-export default function TapNoCardPage() {
+export default async function TapNoCardPage() {
+  const t = await getTranslations("tap");
   return (
     <StatusLayout
       icon={CreditCard}
-      title="No Card Linked"
-      body="This NFC card hasn't been linked to a digital business card yet."
-      linkLabel="Set up your card"
+      title={t("noCard.title")}
+      body={t("noCard.body")}
+      linkLabel={t("noCard.link")}
       linkHref="/dashboard"
     />
   );

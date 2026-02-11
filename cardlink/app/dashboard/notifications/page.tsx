@@ -12,6 +12,7 @@ import {
 import { createClient } from "@/src/lib/supabase/client";
 import { acceptConnection, rejectConnection } from "@/src/lib/connections";
 import RelativeTime from "@/components/RelativeTime";
+import { useTranslations } from "next-intl";
 
 type ProfileRow = {
   id: string;
@@ -48,6 +49,7 @@ function getInitials(name: string) {
 
 export default function NotificationsPage() {
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("notificationsPage");
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export default function NotificationsPage() {
 
     const { data: userData, error } = await supabase.auth.getUser();
     if (error || !userData.user) {
-      setMessage("Please sign in to view notifications.");
+      setMessage(t("errors.signIn"));
       setIsLoading(false);
       return;
     }
@@ -137,11 +139,11 @@ export default function NotificationsPage() {
     const nextNotifications: NotificationItem[] = [
       ...pending.map((row) => {
         const profile = profileMap.get(row.requester_id);
-        const name = profile?.full_name ?? "Someone";
+        const name = profile?.full_name ?? t("labels.someone");
         return {
           id: `pending-${row.id}`,
           type: "request" as const,
-          title: `${name} sent you a connection request`,
+          title: t("items.request", { name }),
           date: row.created_at ?? new Date().toISOString(),
           actorId: row.requester_id,
           action: { acceptId: row.id, declineId: row.id },
@@ -149,11 +151,11 @@ export default function NotificationsPage() {
       }),
       ...accepted.map((row) => {
         const profile = profileMap.get(row.receiver_id);
-        const name = profile?.full_name ?? "Someone";
+        const name = profile?.full_name ?? t("labels.someone");
         return {
           id: `accepted-${row.id}`,
           type: "accepted" as const,
-          title: `${name} accepted your connection request`,
+          title: t("items.accepted", { name }),
           date: row.updated_at ?? new Date().toISOString(),
           actorId: row.receiver_id,
         };
@@ -162,23 +164,25 @@ export default function NotificationsPage() {
         const profile = row.viewed_by_user_id
           ? profileMap.get(row.viewed_by_user_id)
           : null;
-        const name = profile?.full_name ?? "Someone";
+        const name = profile?.full_name ?? t("labels.someone");
         return {
           id: `view-${row.id}`,
           type: "view" as const,
-          title: `${name} viewed your business card`,
-          subtitle: row.share_method ? `via ${row.share_method}` : undefined,
+          title: t("items.viewed", { name }),
+          subtitle: row.share_method
+            ? t("items.via", { method: row.share_method })
+            : undefined,
           date: row.shared_at ?? new Date().toISOString(),
           actorId: row.viewed_by_user_id,
         };
       }),
       ...reminders.map((row) => {
         const profile = profileMap.get(row.contact_id);
-        const name = profile?.full_name ?? "this contact";
+        const name = profile?.full_name ?? t("labels.thisContact");
         return {
           id: `reminder-${row.id}`,
           type: "reminder" as const,
-          title: `Reminder: Follow up with ${name}`,
+          title: t("items.reminder", { name }),
           date: row.reminder_date ?? new Date().toISOString(),
           actorId: row.contact_id,
         };
@@ -202,7 +206,7 @@ export default function NotificationsPage() {
       return;
     }
     if (!defaultCardId) {
-      setMessage("Create a card first to accept requests.");
+      setMessage(t("errors.needCard"));
       return;
     }
     const { error } = await acceptConnection(connectionId, defaultCardId);
@@ -244,13 +248,13 @@ export default function NotificationsPage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-          CardLink
+          {t("brand")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-          Notifications
+          {t("title")}
         </h1>
         <p className="mt-2 text-sm text-slate-500">
-          Stay on top of new connections and reminders.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -262,11 +266,11 @@ export default function NotificationsPage() {
 
       {isLoading ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-          Loading notifications...
+          {t("loading")}
         </div>
       ) : notifications.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-          No notifications yet.
+          {t("empty")}
         </div>
       ) : (
         <div className="space-y-3">
@@ -306,14 +310,14 @@ export default function NotificationsPage() {
                       className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600"
                     >
                       <CheckCircle className="h-3.5 w-3.5" />
-                      Accept
+                      {t("actions.accept")}
                     </button>
                     <button
                       onClick={() => handleDecline(item.action?.declineId)}
                       className="flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600"
                     >
                       <XCircle className="h-3.5 w-3.5" />
-                      Decline
+                      {t("actions.decline")}
                     </button>
                   </div>
                 ) : null}

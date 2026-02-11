@@ -1,19 +1,21 @@
 "use client";
 
 import { QrCode } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ScanPage() {
+  const t = useTranslations("scan");
   return (
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-          CardLink
+          {t("brand")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-          Scan
+          {t("title")}
         </h1>
         <p className="mt-2 text-sm text-slate-500">
-          Scan QR codes to add new connections.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -22,7 +24,7 @@ export default function ScanPage() {
           <QrCode className="h-8 w-8" />
         </div>
         <p className="mt-4 text-sm text-slate-600">
-          Camera access will be enabled here soon.
+          {t("comingSoon")}
         </p>
       </div>
     </div>

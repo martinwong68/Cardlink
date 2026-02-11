@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
 
 import DashboardNav from "./dashboard-nav";
 import NotificationBell from "@/components/NotificationBell";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default async function DashboardLayout({
   children,
@@ -11,6 +13,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
+  const t = await getTranslations("dashboard");
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -25,11 +28,14 @@ export default async function DashboardLayout({
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-              CardLink
+              {t("brand")}
             </p>
-            <p className="text-sm text-slate-500">Dashboard</p>
+            <p className="text-sm text-slate-500">{t("title")}</p>
           </div>
-          <NotificationBell userId={user.id} />
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <NotificationBell userId={user.id} />
+          </div>
         </div>
       </header>
 

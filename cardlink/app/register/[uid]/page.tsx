@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { CheckCircle, CreditCard, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -43,6 +44,7 @@ export default function RegisterNfcCardPage() {
   const params = useParams();
   const uid = typeof params.uid === "string" ? params.uid : "";
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("register");
 
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -93,7 +95,7 @@ export default function RegisterNfcCardPage() {
 
   const handleRegister = async () => {
     if (!selectedCardId) {
-      setMessage("Select a business card first.");
+      setMessage(t("errors.selectCard"));
       return;
     }
 
@@ -136,7 +138,7 @@ export default function RegisterNfcCardPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <p className="text-sm text-slate-500">Loading...</p>
+        <p className="text-sm text-slate-500">{t("loading")}</p>
       </div>
     );
   }
@@ -146,7 +148,7 @@ export default function RegisterNfcCardPage() {
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-50 px-4 py-12">
         <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-8 text-center">
           <div className="rounded-full bg-indigo-600 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white">
-            CardLink
+            {t("brand")}
           </div>
           <div className="relative h-44 w-72 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 shadow-2xl">
             <div className="absolute inset-0 rounded-3xl border border-white/40" />
@@ -155,11 +157,10 @@ export default function RegisterNfcCardPage() {
           </div>
           <div>
             <h1 className="text-3xl font-semibold text-slate-900">
-              Activate Your CardLink Card
+              {t("guest.title")}
             </h1>
             <p className="mt-3 text-sm text-slate-600">
-              Sign in or create an account to link this NFC card to your digital
-              business card.
+              {t("guest.subtitle")}
             </p>
           </div>
           <div className="flex w-full flex-col gap-3">
@@ -167,13 +168,13 @@ export default function RegisterNfcCardPage() {
               href={`/login?returnTo=${encodeURIComponent(returnTo)}`}
               className="flex items-center justify-center rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
             >
-              Sign In
+              {t("guest.signIn")}
             </Link>
             <Link
               href={`/signup?returnTo=${encodeURIComponent(returnTo)}`}
               className="flex items-center justify-center rounded-full border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-600 shadow-sm transition hover:border-indigo-300"
             >
-              Create Account
+              {t("guest.createAccount")}
             </Link>
           </div>
         </div>
@@ -189,18 +190,17 @@ export default function RegisterNfcCardPage() {
             <CheckCircle className="h-8 w-8 text-emerald-600 motion-safe:animate-bounce" />
           </div>
           <h1 className="mt-6 text-2xl font-semibold text-slate-900">
-            Your card is active!
+            {t("success.title")}
           </h1>
           <p className="mt-3 text-sm text-slate-600">
-            When someone taps your NFC card, they'll see your business card.
+            {t("success.subtitle")}
           </p>
           <div className="mt-6 w-full rounded-2xl border border-slate-200 bg-white p-5 text-left">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-              Test your card
+              {t("success.testTitle")}
             </p>
             <p className="mt-2 text-sm text-slate-600">
-              Tap your NFC card on a phone to confirm everything is working.
-              Share the tap link if you want to preview it.
+              {t("success.testBody")}
             </p>
           </div>
           <div className="mt-6 flex w-full flex-col gap-3">
@@ -208,13 +208,13 @@ export default function RegisterNfcCardPage() {
               href="/dashboard"
               className="flex items-center justify-center rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
             >
-              Go to Dashboard
+              {t("success.goDashboard")}
             </Link>
             <Link
               href={`/tap/${uid}`}
               className="flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700"
             >
-              Test your card
+              {t("success.testButton")}
             </Link>
           </div>
         </div>
@@ -228,18 +228,16 @@ export default function RegisterNfcCardPage() {
         <div className="flex flex-col items-start gap-3">
           <div className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white">
             <Sparkles className="h-3 w-3" />
-            CardLink
+            {t("brand")}
           </div>
           <h1 className="text-3xl font-semibold text-slate-900">
-            Link Your NFC Card
+            {t("title")}
           </h1>
           <p className="text-sm text-slate-600">
-            Card ID: <span className="font-semibold">{maskUid(uid)}</span>
+            {t("cardId", { id: maskUid(uid) })}
           </p>
           <p className="text-sm text-slate-600">
-            Choose which business card you want to link to this physical NFC
-            card. When someone taps your card, they'll see the linked business
-            card.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -247,16 +245,16 @@ export default function RegisterNfcCardPage() {
           <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center">
             <CreditCard className="mx-auto h-10 w-10 text-slate-400" />
             <h2 className="mt-4 text-lg font-semibold text-slate-900">
-              Create a business card first
+              {t("empty.title")}
             </h2>
             <p className="mt-2 text-sm text-slate-500">
-              You'll need at least one digital card to link this NFC card.
+              {t("empty.body")}
             </p>
             <Link
               href="/dashboard/cards"
               className="mt-6 inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"
             >
-              Go to My Cards
+              {t("empty.cta")}
             </Link>
           </div>
         ) : (
@@ -304,10 +302,10 @@ export default function RegisterNfcCardPage() {
         {registerState === "error" ? (
           <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
             {registerError === "already"
-              ? "This card is already linked to an account. If this is your card, go to Dashboard to manage it."
+              ? t("errors.alreadyLinked")
               : registerError === "invalid"
-              ? "This card ID is not recognized. Please contact support."
-              : "Something went wrong while activating your card. Please try again."}
+              ? t("errors.invalid")
+              : t("errors.generic")}
           </p>
         ) : null}
 
@@ -318,13 +316,15 @@ export default function RegisterNfcCardPage() {
             disabled={registerState === "submitting" || cards.length === 0}
             className="flex flex-1 items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {registerState === "submitting" ? "Activating..." : "Activate Card"}
+            {registerState === "submitting"
+              ? t("actions.activating")
+              : t("actions.activate")}
           </button>
           <Link
             href="/dashboard"
             className="flex flex-1 items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700"
           >
-            Go to Dashboard
+            {t("actions.goDashboard")}
           </Link>
         </div>
       </div>

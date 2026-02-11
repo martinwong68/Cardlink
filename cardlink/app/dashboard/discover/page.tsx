@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Search, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -49,6 +50,7 @@ function getPrimarySlug(profile: ProfileRow) {
 
 export default function DiscoverPage() {
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("discover");
   const [viewerId, setViewerId] = useState<string | null>(null);
   const [viewerPlan, setViewerPlan] = useState<ViewerPlan>("free");
   const [defaultCardId, setDefaultCardId] = useState<string | null>(null);
@@ -64,7 +66,7 @@ export default function DiscoverPage() {
   const loadViewer = async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) {
-      setMessage("Please sign in to search.");
+      setMessage(t("errors.signIn"));
       setIsLoading(false);
       return null;
     }
@@ -218,7 +220,7 @@ export default function DiscoverPage() {
       return;
     }
     if (!defaultCardId) {
-      setMessage("Create a card first to exchange cards.");
+      setMessage(t("errors.needCard"));
       return;
     }
 
@@ -243,14 +245,14 @@ export default function DiscoverPage() {
       return null;
     }
 
-    const name = profile.full_name ?? "CardLink User";
+    const name = profile.full_name ?? t("defaults.user");
     const initials = getInitials(name);
     const status = connectionStatusFor(profile.id);
 
     const titleCompany =
       viewerPlan === "premium"
         ? [profile.title, profile.company].filter(Boolean).join(" @ ")
-        : "Upgrade to see details";
+        : t("upgradePrompt");
 
     return (
       <div
@@ -277,10 +279,10 @@ export default function DiscoverPage() {
             }`}
           >
             {status === "connected"
-              ? "Connected"
+              ? t("status.connected")
               : status === "pending"
-              ? "Pending"
-              : "Not connected"}
+              ? t("status.pending")
+              : t("status.none")}
           </span>
           {status === "none" ? (
             <button
@@ -288,7 +290,7 @@ export default function DiscoverPage() {
               className="flex items-center gap-1 rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
             >
               <UserPlus className="h-3.5 w-3.5" />
-              Connect
+              {t("actions.connect")}
             </button>
           ) : null}
         </div>
@@ -300,13 +302,13 @@ export default function DiscoverPage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-          CardLink
+          {t("brand")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-          Discover
+          {t("title")}
         </h1>
         <p className="mt-2 text-sm text-slate-500">
-          Find people and grow your network.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -316,14 +318,14 @@ export default function DiscoverPage() {
           <input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search by name, title, or company"
+            placeholder={t("search.placeholder")}
             className="w-full text-sm text-slate-700 outline-none"
           />
           <button
             onClick={handleSearch}
             className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
           >
-            Search
+            {t("search.action")}
           </button>
         </div>
       </div>
@@ -336,11 +338,11 @@ export default function DiscoverPage() {
 
       {isLoading ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-          Loading results...
+          {t("loading")}
         </div>
       ) : results.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-          No results found.
+          {t("empty.results")}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -353,19 +355,19 @@ export default function DiscoverPage() {
           onClick={() => fetchResults(false)}
           className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
         >
-          Load more
+          {t("actions.loadMore")}
         </button>
       ) : null}
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-slate-900">
-            People you may know
+            {t("suggested.title")}
           </h2>
         </div>
         {suggested.length === 0 ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-            No suggestions yet.
+            {t("suggested.empty")}
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">

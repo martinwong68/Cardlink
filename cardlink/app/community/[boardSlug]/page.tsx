@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { zhCN, zhHK, zhTW } from "date-fns/locale";
+import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -67,6 +69,10 @@ export default function PublicBoardPage() {
     ? params.boardSlug[0]
     : params.boardSlug;
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("communityBoard");
+  const locale = useLocale();
+  const dateLocale =
+    locale === "zh-CN" ? zhCN : locale === "zh-TW" ? zhTW : locale === "zh-HK" ? zhHK : undefined;
   const [board, setBoard] = useState<BoardRow | null>(null);
   const [subBoards, setSubBoards] = useState<SubBoardRow[]>([]);
   const [postsBySubBoard, setPostsBySubBoard] = useState<
@@ -86,7 +92,7 @@ export default function PublicBoardPage() {
       .maybeSingle();
 
     if (!boardData) {
-      setMessage("Board not found.");
+      setMessage(t("errors.notFound"));
       setIsLoading(false);
       return;
     }
@@ -133,7 +139,7 @@ export default function PublicBoardPage() {
     return (
       <div className="min-h-screen bg-white px-4 py-10">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-          Loading board...
+          {t("loading")}
         </div>
       </div>
     );
@@ -143,7 +149,7 @@ export default function PublicBoardPage() {
     return (
       <div className="min-h-screen bg-white px-4 py-10">
         <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-600 shadow-sm">
-          {message ?? "Board not found."}
+          {message ?? t("errors.notFound")}
         </div>
       </div>
     );
@@ -157,13 +163,13 @@ export default function PublicBoardPage() {
             href="/community"
             className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600"
           >
-            CardLink
+            {t("brand")}
           </Link>
           <Link
             href="/auth"
             className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:text-violet-600"
           >
-            Login to post
+            {t("actions.loginToPost")}
           </Link>
         </div>
       </header>
@@ -171,7 +177,7 @@ export default function PublicBoardPage() {
       <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-10">
         <div>
           <Link href="/community" className="text-xs font-semibold text-violet-600">
-            Community
+            {t("actions.community")}
           </Link>
           <h1 className="mt-2 text-2xl font-semibold text-slate-900">
             <span className="mr-2">{board.icon}</span>
@@ -202,20 +208,20 @@ export default function PublicBoardPage() {
                     href={`/community/${board.slug}/${subBoard.slug}`}
                     className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:text-violet-600"
                   >
-                    View
+                    {t("actions.view")}
                   </Link>
                 </div>
 
                 <div className="mt-4 space-y-3">
                   {posts.length === 0 ? (
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-                      No posts yet.
+                      {t("emptyPosts")}
                     </div>
                   ) : null}
 
                   {posts.slice(0, 3).map((post) => {
                     const author = normalizeSingle(post.profiles);
-                    const authorName = author?.full_name ?? "CardLink Member";
+                    const authorName = author?.full_name ?? t("member");
                     const initials = getInitials(authorName);
                     const lastActivity = post.last_activity_at ?? post.created_at;
 
@@ -242,6 +248,7 @@ export default function PublicBoardPage() {
                           <span className="text-xs text-slate-400">
                             {formatDistanceToNow(new Date(lastActivity), {
                               addSuffix: true,
+                              locale: dateLocale,
                             })}
                           </span>
                         </div>
@@ -250,7 +257,7 @@ export default function PublicBoardPage() {
                           {post.body && post.body.length > 140 ? "..." : ""}
                         </p>
                         <div className="mt-3 text-xs text-slate-400">
-                          {post.reply_count ?? 0} replies
+                          {t("stats.replies", { count: post.reply_count ?? 0 })}
                         </div>
                       </Link>
                     );

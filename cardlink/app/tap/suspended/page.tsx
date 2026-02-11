@@ -1,14 +1,16 @@
 import { ShieldOff } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import StatusLayout from "../StatusLayout";
 
-export default function TapSuspendedPage() {
+export default async function TapSuspendedPage() {
+  const t = await getTranslations("tap");
   return (
     <StatusLayout
       icon={ShieldOff}
-      title="Card Suspended"
-      body="This card has been temporarily suspended. Please contact the card owner or CardLink support."
-      linkLabel="Learn more"
+      title={t("suspended.title")}
+      body={t("suspended.body")}
+      linkLabel={t("suspended.link")}
       linkHref="/support"
       tone="muted"
     />

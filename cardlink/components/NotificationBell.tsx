@@ -8,6 +8,7 @@ import {
   Send,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import {
@@ -110,6 +111,7 @@ function normalizeSingle<T>(value: T[] | T | null | undefined): T | null {
 export default function NotificationBell({ userId }: NotificationBellProps) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const t = useTranslations("notifications");
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
@@ -278,7 +280,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       .maybeSingle();
 
     if (!connection) {
-      pushToast("Unable to load this request.");
+      pushToast(t("errors.loadRequest"));
       return;
     }
 
@@ -335,7 +337,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
 
   const handleAccept = async () => {
     if (!requestModal || !selectedCardId) {
-      pushToast("Select a card to share.");
+      pushToast(t("errors.selectCard"));
       return;
     }
 
@@ -350,7 +352,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     }
 
     setRequestModal(null);
-    pushToast("Cards exchanged! This person is now in your contacts.");
+    pushToast(t("toast.exchanged"));
     await markAsRead(requestModal.notificationId);
     await loadNotifications();
   };
@@ -367,7 +369,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     }
 
     setRequestModal(null);
-    pushToast("Request declined.");
+    pushToast(t("toast.declined"));
     await markAsRead(requestModal.notificationId);
     await loadNotifications();
   };
@@ -380,7 +382,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className="relative flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition hover:text-slate-900"
-        aria-label="Notifications"
+        aria-label={t("labels.ariaNotifications")}
       >
         <Bell className="h-6 w-6" />
         {unreadCount > 0 ? (
@@ -394,20 +396,20 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
         <div className="absolute right-0 mt-3 w-80 rounded-xl border border-slate-200 bg-white shadow-xl md:w-96">
           <div className="flex items-center justify-between px-4 py-3">
             <p className="text-sm font-semibold text-slate-900">
-              Notifications
+              {t("title")}
             </p>
             <button
               type="button"
               onClick={handleMarkAllRead}
               className="text-xs font-semibold text-indigo-600"
             >
-              Mark all as read
+              {t("actions.markAllRead")}
             </button>
           </div>
           <div className="max-h-96 overflow-y-auto border-t border-slate-100">
             {isLoading ? (
               <div className="px-4 py-8 text-center text-sm text-slate-500">
-                Loading notifications...
+                {t("loading")}
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center gap-2 px-6 py-10 text-center text-sm text-slate-500">
@@ -415,11 +417,10 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                   <Bell className="h-5 w-5" />
                 </div>
                 <p className="text-sm font-semibold text-slate-700">
-                  No notifications yet
+                  {t("empty.title")}
                 </p>
                 <p className="text-xs text-slate-400">
-                  You will be notified when someone wants to exchange cards
-                  with you.
+                  {t("empty.body")}
                 </p>
               </div>
             ) : (
@@ -443,7 +444,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                       {profile?.avatar_url ? (
                         <img
                           src={profile.avatar_url}
-                          alt={profile.full_name ?? "Avatar"}
+                          alt={profile.full_name ?? t("labels.avatar")}
                           className="h-full w-full object-cover"
                         />
                       ) : (
@@ -485,7 +486,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
           <div className="w-full max-w-md rounded-t-2xl bg-white p-6 shadow-xl md:rounded-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-slate-900">
-                Card Exchange Request
+                {t("request.title")}
               </h3>
               <button
                 type="button"
@@ -501,18 +502,18 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                 {requestModal.requester?.avatar_url ? (
                   <img
                     src={requestModal.requester.avatar_url}
-                    alt={requestModal.requester.full_name ?? "Avatar"}
+                    alt={requestModal.requester.full_name ?? t("labels.avatar")}
                     className="h-full w-full object-cover"
                   />
                 ) : (
                   getInitials(
-                    requestModal.requester?.full_name ?? "CardLink"
+                    requestModal.requester?.full_name ?? t("labels.cardlink")
                   )
                 )}
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">
-                  {requestModal.requester?.full_name ?? "CardLink Member"}
+                  {requestModal.requester?.full_name ?? t("labels.member")}
                 </p>
                 <p className="text-xs text-slate-500">
                   {[requestModal.card?.title, requestModal.card?.company]
@@ -544,7 +545,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                   }
                 />
                 <p className="mt-3 text-sm font-semibold text-slate-900">
-                  {requestModal.card.full_name ?? "Shared Card"}
+                  {requestModal.card.full_name ?? t("labels.sharedCard")}
                 </p>
                 <p className="text-xs text-slate-500">
                   {[requestModal.card.title, requestModal.card.company]
@@ -559,7 +560,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                     className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-indigo-600"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
-                    View Full Card
+                    {t("actions.viewFullCard")}
                   </a>
                 ) : null}
               </div>
@@ -567,17 +568,17 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
 
             <div className="mt-4">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Share your card back
+                {t("labels.shareBack")}
               </p>
               <div className="mt-2 space-y-2">
                 {viewerCards.length === 0 ? (
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-                    Create a card first to accept this request.
+                    {t("errors.needCard")}
                   </div>
                 ) : (
                   viewerCards.map((card) => {
                     const label =
-                      card.card_name || card.full_name || "My Card";
+                      card.card_name || card.full_name || t("labels.myCard");
                     const subtitle = [card.title, card.company]
                       .filter(Boolean)
                       .join(" • ");
@@ -621,7 +622,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                 className="flex flex-1 items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
               >
                 <Send className="h-4 w-4" />
-                Accept & Exchange
+                {t("actions.acceptExchange")}
               </button>
               <button
                 type="button"
@@ -629,7 +630,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                 className="flex flex-1 items-center justify-center gap-2 rounded-full border border-rose-300 px-4 py-3 text-sm font-semibold text-rose-600"
               >
                 <X className="h-4 w-4" />
-                Decline
+                {t("actions.decline")}
               </button>
             </div>
           </div>

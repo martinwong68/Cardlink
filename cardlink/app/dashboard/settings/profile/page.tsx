@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 
 export default function ProfileSettingsPage() {
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("profile");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
@@ -21,7 +23,7 @@ export default function ProfileSettingsPage() {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
       if (userError || !userData.user) {
-        setMessage("Please sign in to edit your profile.");
+        setMessage(t("errors.signInEdit"));
         return;
       }
 
@@ -38,7 +40,7 @@ export default function ProfileSettingsPage() {
       setBio(data?.bio ?? "");
       setAvatarUrl(data?.avatar_url ?? "");
 
-      const name = data?.full_name ?? userData.user.email ?? "CardLink";
+      const name = data?.full_name ?? userData.user.email ?? t("defaults.name");
       const parts = name
         .split(" ")
         .map((part: string) => part.trim())
@@ -56,7 +58,7 @@ export default function ProfileSettingsPage() {
   }, [supabase]);
 
   useEffect(() => {
-    const name = fullName.trim() || "CardLink";
+    const name = fullName.trim() || t("defaults.name");
     const parts = name
       .split(" ")
       .map((part) => part.trim())
@@ -76,7 +78,7 @@ export default function ProfileSettingsPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("Please sign in to save your profile.");
+      setMessage(t("errors.signInSave"));
       setIsSaving(false);
       return;
     }
@@ -100,7 +102,7 @@ export default function ProfileSettingsPage() {
       return;
     }
 
-    setMessage("Profile updated.");
+    setMessage(t("toast.updated"));
     setIsSaving(false);
   };
 
@@ -108,10 +110,10 @@ export default function ProfileSettingsPage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-          CardLink
+          {t("brand")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-          Edit Profile
+          {t("title")}
         </h1>
       </div>
 
@@ -121,15 +123,15 @@ export default function ProfileSettingsPage() {
             {initials}
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">Avatar</p>
-            <p className="text-xs text-slate-500">Upload coming soon</p>
+            <p className="text-sm font-semibold text-slate-900">{t("avatar.title")}</p>
+            <p className="text-xs text-slate-500">{t("avatar.subtitle")}</p>
           </div>
         </div>
 
         <div className="mt-6 space-y-4">
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
-              Full name
+              {t("fields.fullName")}
             </label>
             <input
               id="fullName"
@@ -140,7 +142,7 @@ export default function ProfileSettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="email">
-              Email
+              {t("fields.email")}
             </label>
             <input
               id="email"
@@ -152,7 +154,7 @@ export default function ProfileSettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="title">
-              Title
+              {t("fields.title")}
             </label>
             <input
               id="title"
@@ -163,7 +165,7 @@ export default function ProfileSettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="company">
-              Company
+              {t("fields.company")}
             </label>
             <input
               id="company"
@@ -174,7 +176,7 @@ export default function ProfileSettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="bio">
-              Bio
+              {t("fields.bio")}
             </label>
             <textarea
               id="bio"
@@ -186,7 +188,7 @@ export default function ProfileSettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="avatarUrl">
-              Avatar URL
+              {t("fields.avatarUrl")}
             </label>
             <input
               id="avatarUrl"
@@ -207,7 +209,7 @@ export default function ProfileSettingsPage() {
           disabled={isSaving}
           className="mt-6 rounded-full bg-violet-600 px-6 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving ? t("actions.saving") : t("actions.save")}
         </button>
       </div>
     </div>

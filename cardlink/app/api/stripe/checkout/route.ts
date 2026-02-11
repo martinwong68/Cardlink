@@ -28,12 +28,13 @@ export async function POST(request: Request) {
     | null;
 
   const interval = body?.interval ?? "monthly";
-  const priceId =
+  const subscriptionPriceId =
     interval === "yearly"
       ? process.env.STRIPE_PREMIUM_YEARLY_PRICE_ID
       : process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID;
 
-  const selectedPriceId = priceId ?? body?.priceId;
+  const selectedPriceId = body?.priceId ?? subscriptionPriceId;
+  const checkoutMode = body?.priceId ? "payment" : "subscription";
 
   if (!selectedPriceId) {
     return NextResponse.json(
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
   }
 
   const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
+    mode: checkoutMode,
     customer: customerId,
     line_items: [{ price: selectedPriceId, quantity: 1 }],
     client_reference_id: user.id,

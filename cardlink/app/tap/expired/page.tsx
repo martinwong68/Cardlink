@@ -1,14 +1,16 @@
 import { Clock } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import StatusLayout from "../StatusLayout";
 
-export default function TapExpiredPage() {
+export default async function TapExpiredPage() {
+  const t = await getTranslations("tap");
   return (
     <StatusLayout
       icon={Clock}
-      title="Subscription Expired"
-      body="The owner's subscription has expired. If this is your card, please renew your subscription."
-      linkLabel="Renew Subscription"
+      title={t("expired.title")}
+      body={t("expired.body")}
+      linkLabel={t("expired.link")}
       linkHref="/dashboard/billing"
     />
   );

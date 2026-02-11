@@ -1,0 +1,653 @@
+{
+  "app": {
+    "name": "CardLink"
+  },
+  "language": {
+    "label": "语言"
+  },
+  "login": {
+    "brand": "CardLink",
+    "title": "欢迎回来",
+    "subtitle": "登录以管理你的数字名片。",
+    "fields": {
+      "email": "邮箱",
+      "password": "密码"
+    },
+    "actions": {
+      "signIn": "登录",
+      "signingIn": "正在登录...",
+      "createAccount": "创建账号"
+    },
+    "footer": {
+      "newHere": "初次使用 CardLink？"
+    }
+  },
+  "signup": {
+    "brand": "CardLink",
+    "title": "创建账号",
+    "subtitle": "几分钟内开始分享你的名片。",
+    "fields": {
+      "fullName": "姓名",
+      "email": "邮箱",
+      "password": "密码"
+    },
+    "actions": {
+      "create": "创建账号",
+      "creating": "正在创建账号...",
+      "signIn": "登录"
+    },
+    "footer": {
+      "haveAccount": "已有账号？"
+    },
+    "messages": {
+      "checkEmail": "请查看邮箱完成账号确认。"
+    }
+  },
+  "auth": {
+    "brand": "CardLink",
+    "title": "开始使用",
+    "subtitle": "登录或创建账号以加入社区。",
+    "actions": {
+      "createAccount": "创建账号",
+      "signIn": "登录",
+      "browseCommunity": "先浏览社区"
+    }
+  },
+  "dashboard": {
+    "brand": "CardLink",
+    "title": "仪表板"
+  },
+  "dashboardNav": {
+    "community": "社区",
+    "cards": "名片",
+    "settings": "设置"
+  },
+  "getCard": {
+    "brand": "CardLink",
+    "title": "获取你的 NFC 名片",
+    "subtitle": "订购一张轻触分享的名片，直接链接你的 CardLink 个人页。快速发货，资料始终保持最新。",
+    "highlights": {
+      "shipping": "3-5 个工作日内发货",
+      "customize": "选择你的名片样式",
+      "linked": "资料实时更新",
+      "analytics": "查看轻触分析"
+    },
+    "cta": {
+      "badge": "一次性购买",
+      "price": "{price}",
+      "note": "包含 1 张 NFC 名片及免费资料更新。",
+      "action": "前往结账",
+      "loading": "正在跳转..."
+    },
+    "features": {
+      "instant": {
+        "title": "即时分享",
+        "description": "轻触任何手机即可分享名片，无需安装 App。"
+      },
+      "durable": {
+        "title": "耐用质感",
+        "description": "高质感材质，防水且耐刮。"
+      },
+      "tap": {
+        "title": "智能 NFC 芯片",
+        "description": "安全芯片，直接链接至你的 CardLink 个人页。"
+      }
+    },
+    "faq": {
+      "badge": "常见问题",
+      "title": "常见问题",
+      "shipping": {
+        "question": "你们送货到哪里？",
+        "answer": "我们提供全球配送，送货时间因地区而异。"
+      },
+      "compatibility": {
+        "question": "iPhone 和 Android 都可以用吗？",
+        "answer": "可以。大多数支持 NFC 的手机都可读取。"
+      },
+      "management": {
+        "question": "之后可以更改资料吗？",
+        "answer": "你在 CardLink 的更新会即时同步到名片。"
+      },
+      "teams": {
+        "question": "提供企业或团队方案吗？",
+        "answer": "有。请联系我们获取批量订购与定制方案。"
+      }
+    },
+    "errors": {
+      "checkout": "无法开始结账，请再试一次。",
+      "unavailable": "目前无法结账。",
+      "missingPrice": "缺少价格配置，请联系支持。"
+    }
+  },
+  "cards": {
+    "brand": "CardLink",
+    "title": "我的名片",
+    "subtitle": "管理并分享你的数字名片。",
+    "loading": "正在加载名片...",
+    "empty": "还没有名片。创建第一张名片开始使用。",
+    "errors": {
+      "signInView": "请登录以查看名片。",
+      "signInCreate": "请登录以创建名片。",
+      "createFailed": "无法创建新名片。",
+      "missingLink": "缺少名片链接。",
+      "copyFailed": "无法复制链接。"
+    },
+    "toast": {
+      "created": "名片已创建。",
+      "linkCopied": "链接已复制。",
+      "deleted": "名片已删除。"
+    },
+    "actions": {
+      "create": "创建新名片",
+      "edit": "编辑",
+      "share": "分享",
+      "qr": "二维码",
+      "delete": "删除",
+      "confirmDelete": "删除此名片？此操作不可撤销。"
+    },
+    "card": {
+      "defaultName": "我的名片",
+      "defaultUser": "CardLink 用户",
+      "unpublished": "未发布",
+      "slug": "Slug：{slug}",
+      "created": "创建于 {date}"
+    },
+    "tabs": {
+      "cards": "我的名片",
+      "contacts": "联系人",
+      "nfc": "NFC 名片"
+    }
+  },
+  "contacts": {
+    "brand": "CardLink",
+    "title": "联系人",
+    "searchPlaceholder": "搜索联系人",
+    "loading": "正在加载联系人...",
+    "pendingTitle": "待处理请求（{count}）",
+    "connectedOn": "连接于 {date}",
+    "errors": {
+      "signIn": "请登录以查看联系人。",
+      "needCard": "请先创建名片以接受请求。"
+    },
+    "actions": {
+      "accept": "接受",
+      "decline": "拒绝",
+      "viewCard": "查看名片",
+      "remove": "移除",
+      "removeConfirm": "移除此连接？双方的连接都会被删除。"
+    },
+    "empty": {
+      "title": "暂无联系人。",
+      "body": "与他人交换名片，建立你的网络。"
+    }
+  },
+  "nfc": {
+    "brand": "CardLink",
+    "title": "NFC 名片",
+    "subtitle": "管理你的实体 NFC 名片及其绑定的数字名片。",
+    "loading": "正在加载 NFC 名片...",
+    "empty": {
+      "title": "还没有 NFC 名片",
+      "body": "购买 NFC 名片，轻触即可分享你的名片。",
+      "cta": "获取名片"
+    },
+    "errors": {
+      "signIn": "请登录以查看 NFC 名片。",
+      "updateLinkedCard": "无法更新绑定的名片。"
+    },
+    "actions": {
+      "confirmDeactivate": "停用此 NFC 名片？",
+      "changeLinkedCard": "更换绑定名片",
+      "deactivate": "停用"
+    },
+    "status": {
+      "active": "已启用",
+      "suspended": "已暂停",
+      "deactivated": "已停用",
+      "other": "不可用"
+    },
+    "linkedTo": "已绑定",
+    "noCardSelected": "未选择名片",
+    "personal": "个人",
+    "stats": {
+      "totalTaps": "共 {count} 次触碰",
+      "lastTapped": "最近感应：{date}"
+    },
+    "never": "从未",
+    "chart": {
+      "label": "感应记录",
+      "title": "最近 7 天"
+    },
+    "modal": {
+      "label": "更换绑定名片",
+      "title": "选择一张名片",
+      "close": "关闭",
+      "untitled": "未命名名片",
+      "cancel": "取消",
+      "saving": "保存中...",
+      "save": "保存更改"
+    }
+  },
+  "qr": {
+    "close": "关闭",
+    "download": "下载二维码",
+    "copy": "复制链接",
+    "copied": "已复制"
+  },
+  "publicConnect": {
+    "contactTitle": "联系方式",
+    "actions": {
+      "saveContact": "保存联系人",
+      "editCard": "编辑名片",
+      "signupToConnect": "注册以连接",
+      "connected": "已连接 ✓",
+      "acceptConnection": "接受连接",
+      "requestSent": "请求已发送 ✓",
+      "connect": "连接"
+    }
+  },
+  "publicCard": {
+    "defaultUser": "CardLink 用户",
+    "errors": {
+      "missingShare": "缺少分享链接。",
+      "copyLink": "无法复制链接。",
+      "missingContact": "缺少联系方式。",
+      "copyWechat": "无法复制微信 ID。"
+    },
+    "toast": {
+      "linkCopied": "链接已复制到剪贴板。",
+      "wechatCopied": "微信 ID 已复制。"
+    },
+    "actions": {
+      "saveContact": "保存联系人",
+      "share": "分享"
+    },
+    "sections": {
+      "contact": "联系方式",
+      "links": "链接",
+      "experience": "经历"
+    },
+    "empty": {
+      "contact": "暂无公开联系方式。"
+    },
+    "experience": {
+      "roleAt": "{company} · {role}",
+      "present": "至今"
+    },
+    "footer": {
+      "madeWith": "由 CardLink 制作"
+    },
+    "wechat": {
+      "title": "微信 ID",
+      "close": "关闭",
+      "copy": "复制微信 ID"
+    }
+  },
+  "notifications": {
+    "errors": {
+      "loadRequest": "无法加载该请求。",
+      "selectCard": "请选择一张名片进行分享。",
+      "needCard": "请先创建名片以接受此请求。"
+    },
+    "toast": {
+      "exchanged": "已交换名片！此人已加入你的联系人。",
+      "declined": "已拒绝请求。"
+    },
+    "labels": {
+      "ariaNotifications": "通知",
+      "avatar": "头像",
+      "cardlink": "CardLink",
+      "member": "CardLink 成员",
+      "sharedCard": "共享名片",
+      "shareBack": "回赠你的名片",
+      "myCard": "我的名片"
+    },
+    "title": "通知",
+    "actions": {
+      "markAllRead": "全部标记为已读",
+      "viewFullCard": "查看完整名片",
+      "acceptExchange": "接受并交换",
+      "decline": "拒绝"
+    },
+    "loading": "正在加载通知...",
+    "empty": {
+      "title": "暂无通知",
+      "body": "当有人想与你交换名片时，你会收到通知。"
+    },
+    "request": {
+      "title": "名片交换请求"
+    }
+  },
+  "notificationsPage": {
+    "brand": "CardLink",
+    "title": "通知",
+    "subtitle": "及时掌握新连接与提醒。",
+    "loading": "正在加载通知...",
+    "empty": "暂无通知。",
+    "errors": {
+      "signIn": "请登录以查看通知。",
+      "needCard": "请先创建名片以接受请求。"
+    },
+    "labels": {
+      "someone": "某位用户",
+      "thisContact": "该联系人"
+    },
+    "items": {
+      "request": "{name} 向你发送了连接请求",
+      "accepted": "{name} 接受了你的连接请求",
+      "viewed": "{name} 查看了你的名片",
+      "via": "通过 {method}",
+      "reminder": "提醒：跟进 {name}"
+    },
+    "actions": {
+      "accept": "接受",
+      "decline": "拒绝"
+    }
+  },
+  "tap": {
+    "suspended": {
+      "title": "名片已暂停",
+      "body": "此名片已暂时停用，请联系名片持有人或 CardLink 支持。",
+      "link": "了解更多"
+    },
+    "deactivated": {
+      "title": "名片已停用",
+      "body": "此名片已不再有效。"
+    },
+    "expired": {
+      "title": "订阅已到期",
+      "body": "持有人的订阅已到期。如果这是你的名片，请续订。",
+      "link": "续订"
+    },
+    "noCard": {
+      "title": "未绑定名片",
+      "body": "此 NFC 名片尚未绑定数字名片。",
+      "link": "设置你的名片"
+    },
+    "error": {
+      "title": "未找到名片",
+      "body": "此 NFC 名片无法识别。"
+    }
+  },
+  "register": {
+    "brand": "CardLink",
+    "loading": "加载中...",
+    "title": "绑定 NFC 名片",
+    "subtitle": "选择要绑定到此实体 NFC 名片的数字名片。有人轻触时将看到该名片。",
+    "cardId": "名片 ID：{id}",
+    "guest": {
+      "title": "激活你的 CardLink 名片",
+      "subtitle": "登录或创建账号以绑定此 NFC 名片到你的数字名片。",
+      "signIn": "登录",
+      "createAccount": "创建账号"
+    },
+    "empty": {
+      "title": "请先创建数字名片",
+      "body": "你需要至少一张数字名片来绑定此 NFC 名片。",
+      "cta": "前往我的名片"
+    },
+    "success": {
+      "title": "名片已激活！",
+      "subtitle": "当有人轻触你的 NFC 名片时，会看到你的名片。",
+      "testTitle": "测试名片",
+      "testBody": "用手机轻触 NFC 名片确认功能正常。如需预览，可分享轻触链接。",
+      "goDashboard": "前往仪表板",
+      "testButton": "测试你的名片"
+    },
+    "actions": {
+      "activating": "正在激活...",
+      "activate": "激活名片",
+      "goDashboard": "前往仪表板"
+    },
+    "errors": {
+      "selectCard": "请先选择一张名片。",
+      "alreadyLinked": "此名片已绑定到其他账号。如果是你的名片，请前往仪表板管理。",
+      "invalid": "该名片 ID 无法识别，请联系支持。",
+      "generic": "激活失败，请重试。"
+    }
+  },
+  "home": {
+    "brand": "CardLink",
+    "hero": {
+      "kicker": "电子名片",
+      "title": "让每一次介绍都更轻松。",
+      "subtitle": "创建可分享的名片、管理联系人，并发现对你职业有价值的社区讨论。"
+    },
+    "actions": {
+      "signIn": "登录",
+      "getStarted": "开始使用",
+      "browseCommunity": "浏览社区"
+    },
+    "features": {
+      "share": { "title": "即时分享", "body": "二维码、NFC 或链接名片。" },
+      "crm": { "title": "建立 CRM", "body": "记录并管理连接关系。" },
+      "discover": { "title": "发现人脉", "body": "在论坛结识同行。" }
+    },
+    "forum": {
+      "kicker": "论坛最新",
+      "empty": "暂无帖子。成为第一个发起讨论的人。",
+      "member": "CardLink 成员",
+      "replies": "{count} 条回复"
+    }
+  },
+  "community": {
+    "brand": "CardLink",
+    "title": "社区",
+    "subtitle": "探索 CardLink 论坛。登录后可发布内容。",
+    "loadingBoards": "正在加载板块...",
+    "actions": {
+      "loginToPost": "登录发帖"
+    },
+    "stats": {
+      "posts": "{count} 帖子",
+      "replies": "{count} 条回复"
+    },
+    "latest": {
+      "title": "社区最新动态",
+      "empty": "暂无帖子。"
+    },
+    "member": "CardLink 成员"
+  },
+  "communityBoard": {
+    "brand": "CardLink",
+    "loading": "正在加载板块...",
+    "errors": {
+      "notFound": "未找到板块。"
+    },
+    "actions": {
+      "loginToPost": "登录发帖",
+      "community": "社区",
+      "view": "查看"
+    },
+    "emptyPosts": "暂无帖子。",
+    "member": "CardLink 成员",
+    "stats": {
+      "replies": "{count} 条回复"
+    }
+  },
+  "communitySubBoard": {
+    "brand": "CardLink",
+    "loading": "正在加载帖子...",
+    "errors": {
+      "boardNotFound": "未找到板块。",
+      "subBoardNotFound": "未找到子板块。"
+    },
+    "actions": {
+      "loginToPost": "登录发帖"
+    },
+    "cta": {
+      "loginToPost": "登录以发布或回复。"
+    },
+    "empty": "暂无帖子。",
+    "member": "CardLink 成员",
+    "stats": {
+      "replies": "{count} 条回复"
+    }
+  },
+  "communityPost": {
+    "brand": "CardLink",
+    "loading": "正在加载帖子...",
+    "errors": {
+      "notFound": "未找到帖子。"
+    },
+    "actions": {
+      "loginToPost": "登录发帖"
+    },
+    "cta": {
+      "loginToReply": "登录以回复或开启新讨论。"
+    },
+    "replies": {
+      "title": "回复",
+      "empty": "暂无回复。"
+    },
+    "member": "CardLink 成员",
+    "stats": {
+      "replies": "{count} 条回复"
+    }
+  },
+  "scan": {
+    "brand": "CardLink",
+    "title": "扫码",
+    "subtitle": "扫描二维码以添加新连接。",
+    "comingSoon": "相机功能即将上线。"
+  },
+  "settings": {
+    "brand": "CardLink",
+    "title": "设置",
+    "subtitle": "管理你的账号与偏好设置。",
+    "errors": {
+      "upgradeToExport": "升级到高级版以导出联系人。",
+      "signInExport": "请登录以导出联系人。"
+    },
+    "export": {
+      "headers": {
+        "name": "姓名",
+        "title": "职称",
+        "company": "公司",
+        "connectedAt": "连接时间"
+      },
+      "fileName": "cardlink-contacts.csv"
+    },
+    "links": {
+      "profile": "编辑资料",
+      "privacy": "隐私设置",
+      "subscription": "订阅方案",
+      "orderNfc": "订购 NFC 名片",
+      "export": "导出联系人",
+      "support": "帮助与支持"
+    },
+    "actions": {
+      "logout": "退出登录"
+    }
+  },
+  "profile": {
+    "brand": "CardLink",
+    "title": "编辑资料",
+    "avatar": {
+      "title": "头像",
+      "subtitle": "上传功能即将上线"
+    },
+    "fields": {
+      "fullName": "姓名",
+      "email": "邮箱",
+      "title": "职称",
+      "company": "公司",
+      "bio": "简介",
+      "avatarUrl": "头像链接"
+    },
+    "errors": {
+      "signInEdit": "请登录以编辑资料。",
+      "signInSave": "请登录以保存资料。"
+    },
+    "defaults": {
+      "name": "CardLink"
+    },
+    "toast": {
+      "updated": "资料已更新。"
+    },
+    "actions": {
+      "saving": "保存中...",
+      "save": "保存更改"
+    }
+  },
+  "upgrade": {
+    "brand": "CardLink",
+    "title": "升级",
+    "subtitle": "解锁高级工具以拓展人脉。",
+    "errors": {
+      "checkout": "无法开始结账。",
+      "unavailable": "结账不可用。"
+    },
+    "free": {
+      "title": "免费",
+      "badge": "永久免费",
+      "features": {
+        "cards": "1 张名片",
+        "fields": "5 个联系方式",
+        "public": "仅查看公开信息",
+        "connect": "与他人连接",
+        "feed": "基础动态访问"
+      }
+    },
+    "premium": {
+      "badge": "热门",
+      "title": "高级版",
+      "monthlyLabel": "$9.99/月",
+      "yearlyLabel": "或 $99/年",
+      "features": {
+        "unlimitedCards": "无限名片",
+        "unlimitedFields": "无限联系方式",
+        "fullDetails": "查看好友完整信息",
+        "crm": "CRM 备注、标签与提醒",
+        "analytics": "名片扫描分析",
+        "export": "导出联系人（CSV/vCard）",
+        "themes": "自定义名片主题",
+        "support": "优先支持"
+      }
+    },
+    "actions": {
+      "redirecting": "正在跳转...",
+      "upgradeMonthly": "按月升级",
+      "upgradeYearly": "按年升级"
+    }
+  },
+  "upgradeSuccess": {
+    "title": "欢迎升级到高级版！🎉",
+    "subtitle": "你的账号已升级。",
+    "action": "返回仪表板"
+  },
+  "discover": {
+    "brand": "CardLink",
+    "title": "发现",
+    "subtitle": "寻找人脉并拓展网络。",
+    "search": {
+      "placeholder": "按姓名、职称或公司搜索",
+      "action": "搜索"
+    },
+    "loading": "正在加载结果...",
+    "empty": {
+      "results": "未找到结果。"
+    },
+    "suggested": {
+      "title": "你可能认识的人",
+      "empty": "暂无推荐。"
+    },
+    "errors": {
+      "signIn": "请登录以搜索。",
+      "needCard": "请先创建名片以交换名片。"
+    },
+    "defaults": {
+      "user": "CardLink 用户"
+    },
+    "upgradePrompt": "升级以查看详情",
+    "status": {
+      "connected": "已连接",
+      "pending": "待处理",
+      "none": "未连接"
+    },
+    "actions": {
+      "connect": "连接",
+      "loadMore": "加载更多"
+    }
+  }
+}

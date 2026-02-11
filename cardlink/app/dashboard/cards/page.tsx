@@ -11,6 +11,7 @@ import {
   QrCode,
   Trash2,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import QRCodeModal from "@/components/QRCodeModal";
@@ -50,9 +51,9 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-function formatDate(value: string) {
+function formatDate(value: string, locale: string) {
   try {
-    return new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
+    return new Intl.DateTimeFormat(locale, { timeZone: "UTC" }).format(
       new Date(value)
     );
   } catch {
@@ -61,6 +62,7 @@ function formatDate(value: string) {
 }
 
 function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
+  const t = useTranslations("cards.tabs");
   return (
     <div className="flex flex-wrap gap-2">
       <Link
@@ -71,7 +73,7 @@ function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
             : "border border-slate-200 bg-white text-slate-500"
         }`}
       >
-        My Cards
+        {t("cards")}
       </Link>
       <Link
         href="/dashboard/cards?tab=contacts"
@@ -81,7 +83,7 @@ function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
             : "border border-slate-200 bg-white text-slate-500"
         }`}
       >
-        Contacts
+        {t("contacts")}
       </Link>
       <Link
         href="/dashboard/cards?tab=nfc"
@@ -91,7 +93,7 @@ function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
             : "border border-slate-200 bg-white text-slate-500"
         }`}
       >
-        NFC Cards
+        {t("nfc")}
       </Link>
     </div>
   );
@@ -100,6 +102,8 @@ function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
 export default function CardsDashboardPage() {
   const supabase = useMemo(() => createClient(), []);
   const searchParams = useSearchParams();
+  const t = useTranslations("cards");
+  const locale = useLocale();
   const tabParam = searchParams.get("tab");
   const activeTab =
     tabParam === "contacts" ? "contacts" : tabParam === "nfc" ? "nfc" : "cards";
@@ -120,7 +124,7 @@ export default function CardsDashboardPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("Please sign in to view your cards.");
+      setMessage(t("errors.signInView"));
       setIsLoading(false);
       return;
     }
@@ -152,7 +156,7 @@ export default function CardsDashboardPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("Please sign in to create a card.");
+      setMessage(t("errors.signInCreate"));
       return;
     }
 
@@ -181,12 +185,12 @@ export default function CardsDashboardPage() {
       .single();
 
     if (error || !data) {
-      setMessage(error?.message ?? "Unable to create a new card.");
+      setMessage(error?.message ?? t("errors.createFailed"));
       return;
     }
 
     setCards((prev) => [data as CardRow, ...prev]);
-    pushToast("Card created.");
+    pushToast(t("toast.created"));
   };
 
   const shareUrlFor = (slug: string | null) => {
@@ -206,19 +210,19 @@ export default function CardsDashboardPage() {
   const handleCopyLink = async (slug: string | null) => {
     const url = shareUrlFor(slug);
     if (!url) {
-      pushToast("Missing card link.");
+      pushToast(t("errors.missingLink"));
       return;
     }
     try {
       await navigator.clipboard.writeText(url);
-      pushToast("Link copied.");
+      pushToast(t("toast.linkCopied"));
     } catch {
-      pushToast("Unable to copy link.");
+      pushToast(t("errors.copyFailed"));
     }
   };
 
   const handleDelete = async (cardId: string) => {
-    const confirmed = window.confirm("Delete this card? This cannot be undone.");
+    const confirmed = window.confirm(t("actions.confirmDelete"));
     if (!confirmed) {
       return;
     }
@@ -234,7 +238,7 @@ export default function CardsDashboardPage() {
     }
 
     setCards((prev) => prev.filter((card) => card.id !== cardId));
-    pushToast("Card deleted.");
+    pushToast(t("toast.deleted"));
   };
 
   if (activeTab === "contacts") {
@@ -260,13 +264,13 @@ export default function CardsDashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-            CardLink
+            {t("brand")}
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-            My Cards
+            {t("title")}
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Manage and share your digital business cards.
+            {t("subtitle")}
           </p>
         </div>
         <button
@@ -275,7 +279,7 @@ export default function CardsDashboardPage() {
           className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          Create New Card
+          {t("actions.create")}
         </button>
       </div>
 
@@ -289,13 +293,13 @@ export default function CardsDashboardPage() {
 
       {isLoading ? (
         <div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-500">
-          Loading cards...
+          {t("loading")}
         </div>
       ) : null}
 
       {!isLoading && cards.length === 0 ? (
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
-          No cards yet. Create your first card to get started.
+          {t("empty")}
         </div>
       ) : null}
 
@@ -320,20 +324,28 @@ export default function CardsDashboardPage() {
                 />
                 <div className="flex-1">
                   <p className="text-lg font-semibold text-slate-900">
-                    {card.card_name || "My Card"}
+                    {card.card_name || t("card.defaultName")}
                   </p>
                   <p className="text-sm text-slate-600">
-                    {card.full_name || "CardLink User"}
+                    {card.full_name || t("card.defaultUser")}
                   </p>
                   <p className="text-xs text-slate-400">
                     {card.title || ""}
                   </p>
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                    <span>Slug: {card.slug || "Unpublished"}</span>
+                    <span>
+                      {t("card.slug", {
+                        slug: card.slug || t("card.unpublished"),
+                      })}
+                    </span>
                     <span className="flex items-center gap-1">
                       <Eye className="h-3 w-3" /> {viewCount}
                     </span>
-                    <span>Created {formatDate(card.created_at)}</span>
+                    <span>
+                      {t("card.created", {
+                        date: formatDate(card.created_at, locale),
+                      })}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -344,7 +356,7 @@ export default function CardsDashboardPage() {
                   className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <Pencil className="h-3.5 w-3.5" />
-                  Edit
+                  {t("actions.edit")}
                 </Link>
                 <button
                   type="button"
@@ -352,7 +364,7 @@ export default function CardsDashboardPage() {
                   className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <Copy className="h-3.5 w-3.5" />
-                  Share
+                  {t("actions.share")}
                 </button>
                 <button
                   type="button"
@@ -360,7 +372,7 @@ export default function CardsDashboardPage() {
                   className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <QrCode className="h-3.5 w-3.5" />
-                  QR Code
+                  {t("actions.qr")}
                 </button>
                 <button
                   type="button"
@@ -368,7 +380,7 @@ export default function CardsDashboardPage() {
                   className="flex items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:border-rose-300"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  Delete
+                  {t("actions.delete")}
                 </button>
               </div>
             </div>
@@ -379,7 +391,7 @@ export default function CardsDashboardPage() {
       {qrCard ? (
         <QRCodeModal
           slug={qrCard.slug ?? ""}
-          fullName={qrCard.full_name ?? qrCard.card_name ?? "CardLink User"}
+          fullName={qrCard.full_name ?? qrCard.card_name ?? t("card.defaultUser")}
           title={qrCard.title}
           onClose={() => setQrCard(null)}
         />

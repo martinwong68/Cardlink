@@ -12,6 +12,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import {
@@ -48,9 +49,9 @@ function getInitials(name: string) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
-function formatDate(value: string) {
+function formatDate(value: string, locale: string) {
   try {
-    return new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
+    return new Intl.DateTimeFormat(locale, { timeZone: "UTC" }).format(
       new Date(value)
     );
   } catch {
@@ -61,6 +62,8 @@ function formatDate(value: string) {
 export default function ContactsPanel() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const t = useTranslations("contacts");
+  const locale = useLocale();
   const [contacts, setContacts] = useState<ContactRow[]>([]);
   const [pendingRequests, setPendingRequests] = useState<
     Array<
@@ -82,7 +85,7 @@ export default function ContactsPanel() {
 
     const { data: userData, error } = await supabase.auth.getUser();
     if (error || !userData.user) {
-      setMessage("Please sign in to view your contacts.");
+      setMessage(t("errors.signIn"));
       setIsLoading(false);
       return;
     }
@@ -133,7 +136,7 @@ export default function ContactsPanel() {
 
   const handleAccept = async (connectionId: string) => {
     if (!defaultCardId) {
-      setMessage("Create a card first to accept requests.");
+      setMessage(t("errors.needCard"));
       return;
     }
     const { error } = await acceptConnection(connectionId, defaultCardId);
@@ -154,9 +157,7 @@ export default function ContactsPanel() {
   };
 
   const handleRemove = async (connectionId: string) => {
-    const confirmed = window.confirm(
-      "Remove this connection? This will delete the connection for both of you."
-    );
+    const confirmed = window.confirm(t("actions.removeConfirm"));
     if (!confirmed) {
       return;
     }
@@ -171,7 +172,7 @@ export default function ContactsPanel() {
   if (isLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-500">
-        Loading contacts...
+        {t("loading")}
       </div>
     );
   }
@@ -181,10 +182,10 @@ export default function ContactsPanel() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-            CardLink
+            {t("brand")}
           </p>
           <h2 className="text-2xl font-semibold text-slate-900">
-            Contacts
+            {t("title")}
           </h2>
         </div>
         <div className="relative w-full sm:max-w-xs">
@@ -192,7 +193,7 @@ export default function ContactsPanel() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search contacts"
+            placeholder={t("searchPlaceholder")}
             className="w-full rounded-full border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-700 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
           />
         </div>
@@ -212,7 +213,7 @@ export default function ContactsPanel() {
             className="flex w-full items-center justify-between text-left"
           >
             <span className="text-sm font-semibold text-slate-900">
-              Pending Requests ({pendingRequests.length})
+              {t("pendingTitle", { count: pendingRequests.length })}
             </span>
             <ChevronDown
               className={`h-4 w-4 text-slate-400 transition ${
@@ -255,14 +256,14 @@ export default function ContactsPanel() {
                         className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600"
                       >
                         <Check className="h-3.5 w-3.5" />
-                        Accept
+                        {t("actions.accept")}
                       </button>
                       <button
                         onClick={() => handleDecline(request.connectionId)}
                         className="flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600"
                       >
                         <X className="h-3.5 w-3.5" />
-                        Decline
+                        {t("actions.decline")}
                       </button>
                     </div>
                   </div>
@@ -279,9 +280,9 @@ export default function ContactsPanel() {
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
               <Handshake className="h-5 w-5" />
             </div>
-            No connections yet.
+            {t("empty.title")}
             <p className="mt-2 text-xs text-slate-400">
-              Exchange cards with people to build your network.
+              {t("empty.body")}
             </p>
           </div>
         ) : null}
@@ -317,7 +318,9 @@ export default function ContactsPanel() {
                     </p>
                     {dateValue ? (
                       <p className="mt-1 text-xs text-slate-400">
-                        Connected on {formatDate(dateValue)}
+                        {t("connectedOn", {
+                          date: formatDate(dateValue, locale),
+                        })}
                       </p>
                     ) : null}
                   </div>
@@ -329,7 +332,7 @@ export default function ContactsPanel() {
                       className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
-                      View Card
+                      {t("actions.viewCard")}
                     </Link>
                   ) : null}
                   <button
@@ -337,7 +340,7 @@ export default function ContactsPanel() {
                     className="flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    Remove
+                    {t("actions.remove")}
                   </button>
                 </div>
               </div>

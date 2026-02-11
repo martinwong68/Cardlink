@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import { zhCN, zhHK, zhTW } from "date-fns/locale";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
 
@@ -57,6 +59,10 @@ function normalizeSingle<T>(value: T[] | T | null | undefined): T | null {
 }
 
 export default async function HomePage() {
+  const t = await getTranslations("home");
+  const locale = await getLocale();
+  const dateLocale =
+    locale === "zh-CN" ? zhCN : locale === "zh-TW" ? zhTW : locale === "zh-HK" ? zhHK : undefined;
   const supabase = await createClient();
   const {
     data: { user },
@@ -92,13 +98,13 @@ export default async function HomePage() {
       <header className="border-b border-slate-100">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-            CardLink
+            {t("brand")}
           </p>
           <Link
             href="/auth"
             className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:text-violet-600"
           >
-            Sign in
+            {t("actions.signIn")}
           </Link>
         </div>
       </header>
@@ -107,42 +113,41 @@ export default async function HomePage() {
         <section className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-6">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-500">
-              Digital business cards
+              {t("hero.kicker")}
             </p>
             <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-              Make every introduction effortless with CardLink.
+              {t("hero.title")}
             </h1>
             <p className="text-base text-slate-500 sm:text-lg">
-              Build a shareable card, manage contacts, and discover the community
-              conversations that matter to your career.
+              {t("hero.subtitle")}
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/auth"
                 className="rounded-full bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
               >
-                Get Started
+                {t("actions.getStarted")}
               </Link>
               <Link
                 href="/community"
                 className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
               >
-                Browse Community
+                {t("actions.browseCommunity")}
               </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {[
                 {
-                  label: "Share instantly",
-                  text: "QR, NFC, or link-based cards.",
+                  label: t("features.share.title"),
+                  text: t("features.share.body"),
                 },
                 {
-                  label: "Build CRM",
-                  text: "Save connections with context.",
+                  label: t("features.crm.title"),
+                  text: t("features.crm.body"),
                 },
                 {
-                  label: "Discover people",
-                  text: "Meet peers in the forum.",
+                  label: t("features.discover.title"),
+                  text: t("features.discover.body"),
                 },
               ].map((item) => (
                 <div
@@ -160,16 +165,16 @@ export default async function HomePage() {
 
           <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-              Latest in the forum
+              {t("forum.kicker")}
             </p>
             <div className="mt-4 space-y-4">
               {previewPosts.length === 0 ? (
                 <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center text-sm text-slate-500">
-                  No posts yet. Be the first to start a conversation.
+                  {t("forum.empty")}
                 </div>
               ) : (
                 previewPosts.map((post) => {
-                  const name = post.author?.full_name ?? "CardLink Member";
+                  const name = post.author?.full_name ?? t("forum.member");
                   const initials = getInitials(name);
                   const lastActivity = post.last_activity_at ?? post.created_at;
                   const boardLabel = [post.board?.icon, post.board?.name]
@@ -199,6 +204,7 @@ export default async function HomePage() {
                         <span className="text-xs text-slate-400">
                           {formatDistanceToNow(new Date(lastActivity), {
                             addSuffix: true,
+                            locale: dateLocale,
                           })}
                         </span>
                       </div>
@@ -212,7 +218,9 @@ export default async function HomePage() {
                           {boardLabel && subBoardLabel ? " • " : ""}
                           {subBoardLabel}
                         </span>
-                        <span>{post.reply_count ?? 0} replies</span>
+                        <span>
+                          {t("forum.replies", { count: post.reply_count ?? 0 })}
+                        </span>
                       </div>
                     </div>
                   );
@@ -225,7 +233,7 @@ export default async function HomePage() {
 
       <footer className="border-t border-slate-100 py-8">
         <div className="mx-auto w-full max-w-6xl px-4 text-xs text-slate-400">
-          CardLink
+          {t("brand")}
         </div>
       </footer>
     </div>

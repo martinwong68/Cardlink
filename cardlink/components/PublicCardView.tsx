@@ -13,6 +13,7 @@ import {
   Twitter,
   User,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 const patternClassMap: Record<string, string> = {
   "gradient-1": "cardlink-pattern-gradient-1",
@@ -52,21 +53,6 @@ const iconByType: Record<string, typeof User> = {
   Website: Globe,
   Other: AtSign,
 };
-
-const months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
 
 type CardField = {
   id: string;
@@ -165,21 +151,29 @@ function buildContactUrl(fieldType: string, value: string) {
   }
 }
 
-function formatDate(value: string | null) {
+function formatDate(value: string | null, locale: string) {
   if (!value) {
     return "";
   }
   if (/^\d{4}-\d{2}$/.test(value)) {
     const [year, month] = value.split("-");
-    const monthIndex = Math.max(0, Math.min(11, Number(month) - 1));
-    return `${months[monthIndex]} ${year}`;
+    const date = new Date(Number(year), Number(month) - 1, 1);
+    return new Intl.DateTimeFormat(locale, {
+      month: "short",
+      year: "numeric",
+    }).format(date);
   }
   return value;
 }
 
-function formatDateRange(start: string | null, end: string | null) {
-  const startLabel = formatDate(start);
-  const endLabel = end ? formatDate(end) : "Present";
+function formatDateRange(
+  start: string | null,
+  end: string | null,
+  locale: string,
+  presentLabel: string
+) {
+  const startLabel = formatDate(start, locale);
+  const endLabel = end ? formatDate(end, locale) : presentLabel;
   if (!startLabel && !endLabel) {
     return "";
   }
@@ -200,6 +194,8 @@ export default function PublicCardView({
   cardLinks,
   cardExperiences,
 }: PublicCardViewProps) {
+  const t = useTranslations("publicCard");
+  const locale = useLocale();
   const initials = getInitials(fullName);
   const [toast, setToast] = useState<string | null>(null);
   const [wechatValue, setWechatValue] = useState<string | null>(null);
@@ -238,14 +234,14 @@ export default function PublicCardView({
 
   const handleShare = async () => {
     if (!shareUrl) {
-      pushToast("Missing share link.");
+      pushToast(t("errors.missingShare"));
       return;
     }
     try {
       await navigator.clipboard.writeText(shareUrl);
-      pushToast("Link copied to clipboard.");
+      pushToast(t("toast.linkCopied"));
     } catch {
-      pushToast("Unable to copy link.");
+      pushToast(t("errors.copyLink"));
     }
   };
 
@@ -256,7 +252,7 @@ export default function PublicCardView({
     }
     const target = buildContactUrl(fieldType, value);
     if (!target) {
-      pushToast("Missing contact info.");
+      pushToast(t("errors.missingContact"));
       return;
     }
     if (target.startsWith("mailto:") || target.startsWith("tel:")) {
@@ -272,9 +268,9 @@ export default function PublicCardView({
     }
     try {
       await navigator.clipboard.writeText(wechatValue);
-      pushToast("WeChat ID copied.");
+      pushToast(t("toast.wechatCopied"));
     } catch {
-      pushToast("Unable to copy WeChat ID.");
+      pushToast(t("errors.copyWechat"));
     }
   };
 
@@ -330,26 +326,26 @@ export default function PublicCardView({
               download={`${slug || "card"}.vcf`}
               className="flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-violet-200 hover:text-violet-600"
             >
-              Save Contact
+              {t("actions.saveContact")}
             </a>
             <button
               type="button"
               onClick={handleShare}
               className="flex items-center justify-center rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
             >
-              Share
+              {t("actions.share")}
             </button>
           </div>
         </section>
 
         <section className="cardlink-section cardlink-delay-3 mt-6 rounded-3xl bg-white p-6 shadow-sm">
           <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Contact
+            {t("sections.contact")}
           </h2>
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {visibleFields.length === 0 ? (
               <p className="col-span-full text-sm text-slate-500">
-                No contact info shared yet.
+                {t("empty.contact")}
               </p>
             ) : null}
             {visibleFields.map((field) => {
@@ -378,7 +374,7 @@ export default function PublicCardView({
         {sortedLinks.length > 0 ? (
           <section className="cardlink-section cardlink-delay-4 mt-6 rounded-3xl bg-white p-6 shadow-sm">
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-              Links
+              {t("sections.links")}
             </h2>
             <div className="mt-4 space-y-3">
               {sortedLinks.map((link) => (
@@ -405,7 +401,7 @@ export default function PublicCardView({
         {sortedExperiences.length > 0 ? (
           <section className="cardlink-section cardlink-delay-5 mt-6 rounded-3xl bg-white p-6 shadow-sm">
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-              Experience
+              {t("sections.experience")}
             </h2>
             <div className="mt-5 space-y-6">
               {sortedExperiences.map((experience) => (
@@ -414,12 +410,17 @@ export default function PublicCardView({
                   <span className="absolute left-[-5px] top-1.5 h-3 w-3 rounded-full bg-indigo-600" />
                   <div>
                     <p className="text-sm font-semibold text-slate-900">
-                      {experience.role} at {experience.company}
+                      {t("experience.roleAt", {
+                        role: experience.role,
+                        company: experience.company,
+                      })}
                     </p>
                     <p className="text-xs text-slate-500">
                       {formatDateRange(
                         experience.start_date,
-                        experience.end_date
+                        experience.end_date,
+                        locale,
+                        t("experience.present")
                       )}
                     </p>
                     {experience.description ? (
@@ -436,7 +437,7 @@ export default function PublicCardView({
 
         <footer className="mt-8 text-center text-xs text-slate-400">
           <a href="/" className="hover:text-indigo-600">
-            Made with CardLink
+            {t("footer.madeWith")}
           </a>
         </footer>
       </div>
@@ -452,14 +453,14 @@ export default function PublicCardView({
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-slate-900">
-                WeChat ID
+                {t("wechat.title")}
               </h3>
               <button
                 type="button"
                 onClick={() => setWechatValue(null)}
                 className="text-sm font-semibold text-slate-400 hover:text-slate-600"
               >
-                Close
+                {t("wechat.close")}
               </button>
             </div>
             <p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -470,7 +471,7 @@ export default function PublicCardView({
               onClick={handleCopyWeChat}
               className="mt-4 w-full rounded-full bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
             >
-              Copy WeChat ID
+              {t("wechat.copy")}
             </button>
           </div>
         </div>

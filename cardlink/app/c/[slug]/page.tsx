@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
 import PublicCardView from "@/components/PublicCardView";
@@ -109,6 +110,7 @@ export default async function PublicCardPage({
 }) {
   const { slug } = await params;
   const supabase = await createClient();
+  const t = await getTranslations("publicCard");
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -159,7 +161,7 @@ export default async function PublicCardPage({
   });
 
   const fullName =
-    card.full_name || card.profiles?.full_name || "CardLink User";
+    card.full_name || card.profiles?.full_name || t("defaultUser");
   const vcard = buildVCard(card);
   const vcardHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
 

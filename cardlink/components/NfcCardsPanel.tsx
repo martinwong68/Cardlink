@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { CreditCard, Nfc, PencilLine, Power, Zap } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -50,12 +51,12 @@ const formatUid = (uid: string | null) => {
   return `NFC_${uid.slice(-6).toUpperCase()}`;
 };
 
-const formatDate = (value: string | null) => {
+const formatDate = (value: string | null, locale: string, fallback: string) => {
   if (!value) {
-    return "Never";
+    return fallback;
   }
   try {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat(locale, {
       month: "short",
       day: "numeric",
       hour: "numeric",
@@ -66,13 +67,13 @@ const formatDate = (value: string | null) => {
   }
 };
 
-const buildTapSeries = (timestamps: string[]) => {
+const buildTapSeries = (timestamps: string[], locale: string) => {
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(today);
     date.setDate(today.getDate() - (6 - index));
     const key = date.toISOString().slice(0, 10);
-    const label = date.toLocaleDateString("en-US", { weekday: "short" });
+    const label = date.toLocaleDateString(locale, { weekday: "short" });
     return { key, label };
   });
 
@@ -90,6 +91,8 @@ const buildTapSeries = (timestamps: string[]) => {
 
 export default function NfcCardsPanel() {
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("nfc");
+  const locale = useLocale();
   const [nfcCards, setNfcCards] = useState<NfcCard[]>([]);
   const [businessCards, setBusinessCards] = useState<BusinessCard[]>([]);
   const [tapSeries, setTapSeries] = useState<TapSeriesPoint[]>([]);
@@ -106,7 +109,7 @@ export default function NfcCardsPanel() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("Please sign in to view NFC cards.");
+      setMessage(t("errors.signIn"));
       setIsLoading(false);
       return;
     }
@@ -166,9 +169,9 @@ export default function NfcCardsPanel() {
       const timestamps = (tapLogs ?? [])
         .map((row) => row.tapped_at as string)
         .filter(Boolean);
-      setTapSeries(buildTapSeries(timestamps));
+      setTapSeries(buildTapSeries(timestamps, locale));
     } else {
-      setTapSeries(buildTapSeries([]));
+      setTapSeries(buildTapSeries([], locale));
     }
 
     setIsLoading(false);
@@ -204,7 +207,7 @@ export default function NfcCardsPanel() {
     }
 
     if (data && typeof data.success === "boolean" && !data.success) {
-      setMessage(data.error ?? "Unable to update linked card.");
+      setMessage(data.error ?? t("errors.updateLinkedCard"));
       setIsSaving(false);
       return;
     }
@@ -228,7 +231,7 @@ export default function NfcCardsPanel() {
   };
 
   const handleDeactivate = async (card: NfcCard) => {
-    if (!window.confirm("Deactivate this NFC card?")) {
+    if (!window.confirm(t("actions.confirmDeactivate"))) {
       return;
     }
 
@@ -253,7 +256,7 @@ export default function NfcCardsPanel() {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-slate-500">Loading NFC cards...</p>
+        <p className="text-sm text-slate-500">{t("loading")}</p>
       </div>
     );
   }
@@ -265,16 +268,16 @@ export default function NfcCardsPanel() {
           <Nfc className="h-7 w-7 text-indigo-500" />
         </div>
         <h1 className="text-2xl font-semibold text-slate-900">
-          No NFC Cards Yet
+          {t("empty.title")}
         </h1>
         <p className="max-w-md text-sm text-slate-500">
-          Purchase an NFC card to start sharing your business card with a tap.
+          {t("empty.body")}
         </p>
         <Link
-          href="/pricing"
+          href="/dashboard/nfc"
           className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white"
         >
-          Get a Card
+          {t("empty.cta")}
         </Link>
       </div>
     );
@@ -284,11 +287,13 @@ export default function NfcCardsPanel() {
     <div className="space-y-8">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-          CardLink
+          {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">NFC Cards</h1>
+        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+          {t("title")}
+        </h1>
         <p className="mt-2 text-sm text-slate-500">
-          Manage your physical NFC cards and their linked business cards.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -307,6 +312,14 @@ export default function NfcCardsPanel() {
                 : card.status === "suspended"
                 ? "bg-rose-500"
                 : "bg-slate-400";
+            const statusLabel =
+              card.status === "active"
+                ? t("status.active")
+                : card.status === "suspended"
+                ? t("status.suspended")
+                : card.status === "deactivated"
+                ? t("status.deactivated")
+                : t("status.other");
             const linked = card.linked_card;
             const patternClass =
               patternClassMap[linked?.background_pattern ?? "gradient-1"] ??
@@ -321,14 +334,13 @@ export default function NfcCardsPanel() {
                   <div>
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                       <span className={`h-2 w-2 rounded-full ${statusColor}`} />
-                      {card.status.charAt(0).toUpperCase() +
-                        card.status.slice(1)}
+                      {statusLabel}
                     </div>
                     <p className="mt-2 text-xl font-semibold text-slate-900">
                       {formatUid(card.nfc_uid)}
                     </p>
                     <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
-                      Linked to
+                      {t("linkedTo")}
                     </p>
                     <div className="mt-2 flex items-center gap-3">
                       <div
@@ -342,10 +354,10 @@ export default function NfcCardsPanel() {
                         <p className="text-sm font-semibold text-slate-800">
                           {linked?.card_name ??
                             linked?.full_name ??
-                            "No card selected"}
+                            t("noCardSelected")}
                         </p>
                         <p className="text-xs text-slate-500">
-                          {linked?.title ?? "Personal"}
+                          {linked?.title ?? t("personal")}
                         </p>
                       </div>
                     </div>
@@ -354,10 +366,16 @@ export default function NfcCardsPanel() {
                   <div className="flex flex-col gap-2 text-right">
                     <div className="flex items-center justify-end gap-2 text-sm text-slate-500">
                       <Zap className="h-4 w-4 text-indigo-500" />
-                      {card.total_taps ?? 0} total taps
+                      {t("stats.totalTaps", { count: card.total_taps ?? 0 })}
                     </div>
                     <p className="text-xs text-slate-400">
-                      Last tapped: {formatDate(card.last_tapped_at)}
+                      {t("stats.lastTapped", {
+                        date: formatDate(
+                          card.last_tapped_at,
+                          locale,
+                          t("never")
+                        ),
+                      })}
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                       <button
@@ -367,7 +385,7 @@ export default function NfcCardsPanel() {
                         className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <PencilLine className="h-3 w-3" />
-                        Change Linked Card
+                        {t("actions.changeLinkedCard")}
                       </button>
                       <button
                         type="button"
@@ -376,7 +394,7 @@ export default function NfcCardsPanel() {
                         className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <Power className="h-3 w-3" />
-                        Deactivate
+                        {t("actions.deactivate")}
                       </button>
                     </div>
                   </div>
@@ -390,10 +408,10 @@ export default function NfcCardsPanel() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                Tap Activity
+                {t("chart.label")}
               </p>
               <h2 className="mt-2 text-lg font-semibold text-slate-900">
-                Last 7 Days
+                {t("chart.title")}
               </h2>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50">
@@ -425,10 +443,10 @@ export default function NfcCardsPanel() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Change Linked Card
+                  {t("modal.label")}
                 </p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-900">
-                  Select a business card
+                  {t("modal.title")}
                 </h3>
               </div>
               <button
@@ -436,7 +454,7 @@ export default function NfcCardsPanel() {
                 onClick={() => setIsModalOpen(false)}
                 className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-500"
               >
-                Close
+                {t("modal.close")}
               </button>
             </div>
 
@@ -464,10 +482,12 @@ export default function NfcCardsPanel() {
                       } as CSSProperties}
                     />
                     <p className="mt-3 text-sm font-semibold text-slate-900">
-                      {card.card_name ?? card.full_name ?? "Untitled Card"}
+                      {card.card_name ??
+                        card.full_name ??
+                        t("modal.untitled")}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {card.title ?? "Personal"}
+                      {card.title ?? t("personal")}
                     </p>
                   </button>
                 );
@@ -480,7 +500,7 @@ export default function NfcCardsPanel() {
                 onClick={() => setIsModalOpen(false)}
                 className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600"
               >
-                Cancel
+                {t("modal.cancel")}
               </button>
               <button
                 type="button"
@@ -488,7 +508,7 @@ export default function NfcCardsPanel() {
                 disabled={isSaving || !selectedLinkedCardId}
                 className="rounded-full bg-indigo-600 px-5 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isSaving ? "Saving..." : "Save Changes"}
+                {isSaving ? t("modal.saving") : t("modal.save")}
               </button>
             </div>
           </div>

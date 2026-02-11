@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
@@ -13,13 +15,15 @@ export const metadata: Metadata = {
   description: "CardLink",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#7c3aed" />
@@ -32,7 +36,9 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${inter.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}
       >
-        {children}
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
         <ServiceWorkerRegister />
       </body>
     </html>

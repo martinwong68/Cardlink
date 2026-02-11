@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { zhCN, zhHK, zhTW } from "date-fns/locale";
+import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -46,6 +48,10 @@ type PostRow = {
   sub_boards?: SubBoardJoin[] | SubBoardJoin | null;
 };
 
+type PostCountRow = {
+  sub_boards?: { board_id: string | null }[] | { board_id: string | null } | null;
+};
+
 function normalizeSingle<T>(value: T[] | T | null | undefined): T | null {
   if (!value) {
     return null;
@@ -69,6 +75,10 @@ function getInitials(name: string) {
 
 export default function PublicCommunityPage() {
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("community");
+  const locale = useLocale();
+  const dateLocale =
+    locale === "zh-CN" ? zhCN : locale === "zh-TW" ? zhTW : locale === "zh-HK" ? zhHK : undefined;
   const [boards, setBoards] = useState<BoardRow[]>([]);
   const [posts, setPosts] = useState<PostRow[]>([]);
   const [postCounts, setPostCounts] = useState<Record<string, number>>({});
@@ -99,11 +109,8 @@ export default function PublicCommunityPage() {
 
     const counts: Record<string, number> = {};
     (postData ?? []).forEach((post) => {
-      const subBoard = normalizeSingle(post.sub_boards as
-        | { board_id: string | null }[]
-        | { board_id: string | null }
-        | null);
-      const boardId = subBoard?.board_id;
+      const subBoard = normalizeSingle((post as PostCountRow).sub_boards);
+      const boardId = subBoard?.board_id ?? null;
       if (!boardId) {
         return;
       }
@@ -158,13 +165,13 @@ export default function PublicCommunityPage() {
             href="/"
             className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600"
           >
-            CardLink
+            {t("brand")}
           </Link>
           <Link
             href="/auth"
             className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:text-violet-600"
           >
-            Login to post
+            {t("actions.loginToPost")}
           </Link>
         </div>
       </header>
@@ -172,10 +179,10 @@ export default function PublicCommunityPage() {
       <main className="mx-auto w-full max-w-6xl space-y-8 px-4 py-10">
         <div>
           <h1 className="text-3xl font-semibold text-slate-900">
-            Community
+            {t("title")}
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Explore the CardLink forums. Sign in to start a post.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -188,7 +195,7 @@ export default function PublicCommunityPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {isLoading ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm">
-              Loading boards...
+              {t("loadingBoards")}
             </div>
           ) : null}
 
@@ -209,7 +216,7 @@ export default function PublicCommunityPage() {
                   </p>
                 </div>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
-                  {postCounts[board.id] ?? 0} posts
+                  {t("stats.posts", { count: postCounts[board.id] ?? 0 })}
                 </span>
               </div>
             </Link>
@@ -218,18 +225,18 @@ export default function PublicCommunityPage() {
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-slate-900">
-            Latest from the community
+            {t("latest.title")}
           </h2>
 
           <div className="space-y-3">
             {normalizedPosts.length === 0 ? (
               <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-                No posts yet.
+                {t("latest.empty")}
               </div>
             ) : null}
 
             {normalizedPosts.map((post) => {
-              const authorName = post.author?.full_name ?? "CardLink Member";
+              const authorName = post.author?.full_name ?? t("member");
               const initials = getInitials(authorName);
               const lastActivity = post.last_activity_at ?? post.created_at;
 
@@ -256,6 +263,7 @@ export default function PublicCommunityPage() {
                     <span className="text-xs text-slate-400">
                       {formatDistanceToNow(new Date(lastActivity), {
                         addSuffix: true,
+                        locale: dateLocale,
                       })}
                     </span>
                   </div>
@@ -270,7 +278,9 @@ export default function PublicCommunityPage() {
                         .join(" ")}
                       {post.subBoard?.name ? ` • ${post.subBoard.name}` : ""}
                     </span>
-                    <span>{post.reply_count ?? 0} replies</span>
+                    <span>
+                      {t("stats.replies", { count: post.reply_count ?? 0 })}
+                    </span>
                   </div>
                 </Link>
               );

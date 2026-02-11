@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { useTranslations } from "next-intl";
 
 type QRCodeModalProps = {
   slug: string;
@@ -18,6 +19,7 @@ export default function QRCodeModal({
 }: QRCodeModalProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const t = useTranslations("qr");
 
   const url = useMemo(() => {
     const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
@@ -86,7 +88,7 @@ export default function QRCodeModal({
           onClick={onClose}
           className="absolute right-4 top-4 text-sm font-semibold text-slate-400 hover:text-slate-600"
         >
-          Close
+          {t("close")}
         </button>
 
         <div className="flex flex-col items-center gap-4 text-center">
@@ -117,14 +119,14 @@ export default function QRCodeModal({
               onClick={handleDownload}
               className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
             >
-              Download QR
+              {t("download")}
             </button>
             <button
               type="button"
               onClick={handleCopy}
               className="flex-1 rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
             >
-              {copyState === "copied" ? "Copied" : "Copy Link"}
+              {copyState === "copied" ? t("copied") : t("copy")}
             </button>
           </div>
         </div>

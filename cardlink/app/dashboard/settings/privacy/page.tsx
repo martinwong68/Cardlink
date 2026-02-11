@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { Eye, EyeOff, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-const options = [
-  { value: "public", label: "Public", icon: Eye },
-  { value: "friends", label: "Friends Only", icon: Users },
-  { value: "hidden", label: "Hidden", icon: EyeOff },
-] as const;
-
-type Visibility = (typeof options)[number]["value"];
+type Visibility = "public" | "friends" | "hidden";
 
 export default function PrivacySettingsPage() {
+  const t = useTranslations("privacy");
+  const options = [
+    { value: "public", label: t("options.public"), icon: Eye },
+    { value: "friends", label: t("options.friends"), icon: Users },
+    { value: "hidden", label: t("options.hidden"), icon: EyeOff },
+  ] as const;
   const [defaultVisibility, setDefaultVisibility] = useState<Visibility>(
     "public"
   );
@@ -22,23 +23,23 @@ export default function PrivacySettingsPage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-          CardLink
+          {t("brand")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-          Privacy Settings
+          {t("title")}
         </h1>
         <p className="mt-2 text-sm text-slate-500">
-          Control how your card is shared.
+          {t("subtitle")}
         </p>
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">
-            Default field visibility
+            {t("defaultVisibility.title")}
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            This will be applied to new contact fields.
+            {t("defaultVisibility.subtitle")}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {options.map((option) => {
@@ -66,10 +67,10 @@ export default function PrivacySettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-slate-900">
-                Show my profile in search results
+                {t("search.title")}
               </p>
               <p className="text-xs text-slate-500">
-                Let others find your card when searching.
+                {t("search.subtitle")}
               </p>
             </div>
             <button
@@ -93,10 +94,10 @@ export default function PrivacySettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-slate-900">
-                Allow connection requests from anyone
+                {t("requests.title")}
               </p>
               <p className="text-xs text-slate-500">
-                Restrict if you only accept known contacts.
+                {t("requests.subtitle")}
               </p>
             </div>
             <button
