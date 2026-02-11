@@ -1,6 +1,6 @@
 {
-  "builds": [{
-    "src": "cardlink/package.json",
-    "use": "@vercel/next"
-  }]
+  "framework": "nextjs",
+  "installCommand": "cd cardlink && npm install",
+  "buildCommand": "cd cardlink && npm run build",
+  "outputDirectory": "cardlink/.next"
 }
