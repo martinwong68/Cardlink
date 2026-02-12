@@ -82,11 +82,6 @@ export default function PostDetailPage() {
   const [viewerId, setViewerId] = useState<string | null>(null);
   const [replyBody, setReplyBody] = useState("");
   const [isPosting, setIsPosting] = useState(false);
-  const [isEditingPost, setIsEditingPost] = useState(false);
-  const [postTitle, setPostTitle] = useState("");
-  const [postBody, setPostBody] = useState("");
-  const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
-  const [replyDraft, setReplyDraft] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -124,8 +119,6 @@ export default function PostDetailPage() {
     setSubBoard(subBoardData);
     setBoard(boardData);
     setReplies(replyData ?? []);
-    setPostTitle(postData.title);
-    setPostBody(postData.body);
     setIsLoading(false);
   };
 
@@ -166,56 +159,6 @@ export default function PostDetailPage() {
     setIsPosting(false);
   };
 
-  const handleUpdatePost = async () => {
-    if (!post || !postTitle.trim() || !postBody.trim()) {
-      return;
-    }
-
-    const { error } = await supabase
-      .from("forum_posts")
-      .update({
-        title: postTitle.trim(),
-        body: postBody.trim(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", post.id);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    setIsEditingPost(false);
-    await loadPost();
-  };
-
-
-  const handleEditReply = (reply: ReplyRow) => {
-    setEditingReplyId(reply.id);
-    setReplyDraft(reply.body);
-  };
-
-  const handleUpdateReply = async () => {
-    if (!editingReplyId || !replyDraft.trim()) {
-      return;
-    }
-
-    const { error } = await supabase
-      .from("forum_replies")
-      .update({ body: replyDraft.trim(), updated_at: new Date().toISOString() })
-      .eq("id", editingReplyId);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    setEditingReplyId(null);
-    setReplyDraft("");
-    await loadPost();
-  };
-
-
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
@@ -235,8 +178,6 @@ export default function PostDetailPage() {
   const author = normalizeSingle(post.profiles);
   const authorName = author?.full_name ?? "CardLink Member";
   const initials = getInitials(authorName);
-  const canEditPost = viewerId === post.author_id;
-
   return (
     <div className="space-y-6">
       <div>
@@ -271,50 +212,9 @@ export default function PostDetailPage() {
           </span>
         </div>
 
-        {isEditingPost ? (
-          <div className="mt-4 space-y-3">
-            <input
-              value={postTitle}
-              onChange={(event) => setPostTitle(event.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-            />
-            <textarea
-              value={postBody}
-              onChange={(event) => setPostBody(event.target.value)}
-              rows={6}
-              className="w-full resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-            />
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={handleUpdatePost}
-                className="rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white shadow-sm"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setIsEditingPost(false)}
-                className="rounded-full border border-slate-200 px-5 py-2 text-xs font-semibold text-slate-600"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <p className="mt-4 whitespace-pre-wrap text-sm text-slate-700">
-            {post.body}
-          </p>
-        )}
-
-        {canEditPost ? (
-          <div className="mt-4 flex flex-wrap gap-2 text-xs">
-            <button
-              onClick={() => setIsEditingPost(true)}
-              className="rounded-full border border-slate-200 px-4 py-2 font-semibold text-slate-600"
-            >
-              Edit
-            </button>
-          </div>
-        ) : null}
+        <p className="mt-4 whitespace-pre-wrap text-sm text-slate-700">
+          {post.body}
+        </p>
       </div>
 
       {message ? (
@@ -336,8 +236,6 @@ export default function PostDetailPage() {
           const replyAuthor = normalizeSingle(reply.profiles);
           const replyName = replyAuthor?.full_name ?? "CardLink Member";
           const replyInitials = getInitials(replyName);
-          const canEditReply = viewerId === reply.author_id;
-
           return (
             <div
               key={reply.id}
@@ -359,45 +257,9 @@ export default function PostDetailPage() {
                 </div>
               </div>
 
-              {editingReplyId === reply.id ? (
-                <div className="mt-3 space-y-2">
-                  <textarea
-                    value={replyDraft}
-                    onChange={(event) => setReplyDraft(event.target.value)}
-                    rows={3}
-                    className="w-full resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                  />
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={handleUpdateReply}
-                      className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => setEditingReplyId(null)}
-                      className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
-                  {reply.body}
-                </p>
-              )}
-
-              {canEditReply ? (
-                <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                  <button
-                    onClick={() => handleEditReply(reply)}
-                    className="rounded-full border border-slate-200 px-4 py-2 font-semibold text-slate-600"
-                  >
-                    Edit
-                  </button>
-                </div>
-              ) : null}
+              <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
+                {reply.body}
+              </p>
             </div>
           );
         })}

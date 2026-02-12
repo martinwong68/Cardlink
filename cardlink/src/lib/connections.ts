@@ -186,7 +186,7 @@ export async function getFriends(userId: string): Promise<FriendContact[]> {
       title: card?.title ?? null,
       company: card?.company ?? null,
       avatarUrl: profile?.avatar_url ?? null,
-      cardSlug: card?.slug ?? null,
+      cardSlug: card?.slug ?? card?.id ?? null,
       connectedAt: connection.connected_at ?? null,
       createdAt: connection.created_at ?? null,
     };
