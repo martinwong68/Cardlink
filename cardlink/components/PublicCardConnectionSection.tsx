@@ -42,6 +42,8 @@ type PublicCardConnectionSectionProps = {
   viewerPlan: ViewerPlan;
   cardFields: CardField[];
   vcardHref: string;
+  showFields?: boolean;
+  showSaveContact?: boolean;
 };
 
 const iconByType: Record<string, typeof Phone> = {
@@ -63,6 +65,8 @@ export default function PublicCardConnectionSection({
   viewerPlan,
   cardFields,
   vcardHref,
+  showFields = true,
+  showSaveContact = true,
 }: PublicCardConnectionSectionProps) {
   const supabase = useMemo(() => createClient(), []);
   const t = useTranslations("publicConnect");
@@ -153,50 +157,52 @@ export default function PublicCardConnectionSection({
 
   return (
     <>
-      <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-          {t("contactTitle")}
-        </h2>
-        <div className="space-y-3">
-          {visibleFields.map((field) => {
-            if (!field.visible) {
-              return null;
-            }
+      {showFields ? (
+        <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+            {t("contactTitle")}
+          </h2>
+          <div className="space-y-3">
+            {visibleFields.map((field) => {
+              if (!field.visible) {
+                return null;
+              }
 
-            const isLocked = !!field.message;
-            const Icon = iconByType[field.field_type] ?? iconByType.Other ?? User;
-            const displayValue = field.message ?? field.field_value;
+              const isLocked = !!field.message;
+              const Icon = iconByType[field.field_type] ?? iconByType.Other ?? User;
+              const displayValue = field.message ?? field.field_value;
 
-            return (
-              <div
-                key={field.id}
-                className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-violet-600 shadow-sm">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-slate-800">
-                      {field.field_label || field.field_type}
-                    </p>
-                    <p
-                      className={`text-xs text-slate-500 ${
-                        isLocked ? "blur-sm select-none" : ""
-                      }`}
-                    >
-                      {displayValue}
-                    </p>
+              return (
+                <div
+                  key={field.id}
+                  className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-violet-600 shadow-sm">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">
+                        {field.field_label || field.field_type}
+                      </p>
+                      <p
+                        className={`text-xs text-slate-500 ${
+                          isLocked ? "blur-sm select-none" : ""
+                        }`}
+                      >
+                        {displayValue}
+                      </p>
+                    </div>
                   </div>
+                  {isLocked ? (
+                    <span className="text-xs font-semibold text-amber-500">🔒</span>
+                  ) : null}
                 </div>
-                {isLocked ? (
-                  <span className="text-xs font-semibold text-amber-500">🔒</span>
-                ) : null}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {message ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
@@ -204,14 +210,20 @@ export default function PublicCardConnectionSection({
         </p>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <a
-          href={vcardHref}
-          download={`${slug || "card"}.vcf`}
-          className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
-        >
-          {t("actions.saveContact")}
-        </a>
+      <div
+        className={`grid gap-3 ${
+          showSaveContact ? "sm:grid-cols-2" : "sm:grid-cols-1"
+        }`}
+      >
+        {showSaveContact ? (
+          <a
+            href={vcardHref}
+            download={`${slug || "card"}.vcf`}
+            className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+          >
+            {t("actions.saveContact")}
+          </a>
+        ) : null}
 
         {viewerIsOwner ? (
           <Link

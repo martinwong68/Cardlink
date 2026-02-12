@@ -14,6 +14,8 @@ import {
   User,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import PublicCardConnectionSection from "@/components/PublicCardConnectionSection";
+import type { ViewerPlan } from "@/src/lib/visibility";
 
 const patternClassMap: Record<string, string> = {
   "gradient-1": "cardlink-pattern-gradient-1",
@@ -94,6 +96,9 @@ type PublicCardViewProps = {
   cardFields: CardField[];
   cardLinks: CardLink[];
   cardExperiences: CardExperience[];
+  ownerId: string;
+  viewerId: string | null;
+  viewerPlan: ViewerPlan;
 };
 
 function getInitials(name: string) {
@@ -193,6 +198,9 @@ export default function PublicCardView({
   cardFields,
   cardLinks,
   cardExperiences,
+  ownerId,
+  viewerId,
+  viewerPlan,
 }: PublicCardViewProps) {
   const t = useTranslations("publicCard");
   const locale = useLocale();
@@ -339,6 +347,19 @@ export default function PublicCardView({
         </section>
 
         <section className="cardlink-section cardlink-delay-3 mt-6 rounded-3xl bg-white p-6 shadow-sm">
+          <PublicCardConnectionSection
+            ownerId={ownerId}
+            slug={slug}
+            viewerId={viewerId}
+            viewerPlan={viewerPlan}
+            cardFields={cardFields}
+            vcardHref={vcardHref}
+            showFields={false}
+            showSaveContact={false}
+          />
+        </section>
+
+        <section className="cardlink-section cardlink-delay-4 mt-6 rounded-3xl bg-white p-6 shadow-sm">
           <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
             {t("sections.contact")}
           </h2>
@@ -372,7 +393,7 @@ export default function PublicCardView({
         </section>
 
         {sortedLinks.length > 0 ? (
-          <section className="cardlink-section cardlink-delay-4 mt-6 rounded-3xl bg-white p-6 shadow-sm">
+          <section className="cardlink-section cardlink-delay-5 mt-6 rounded-3xl bg-white p-6 shadow-sm">
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
               {t("sections.links")}
             </h2>
@@ -399,7 +420,7 @@ export default function PublicCardView({
         ) : null}
 
         {sortedExperiences.length > 0 ? (
-          <section className="cardlink-section cardlink-delay-5 mt-6 rounded-3xl bg-white p-6 shadow-sm">
+          <section className="cardlink-section cardlink-delay-6 mt-6 rounded-3xl bg-white p-6 shadow-sm">
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
               {t("sections.experience")}
             </h2>

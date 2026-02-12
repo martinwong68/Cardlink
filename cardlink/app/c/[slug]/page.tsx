@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
+import type { ViewerPlan } from "@/src/lib/visibility";
 import PublicCardView from "@/components/PublicCardView";
 
 type CardField = {
@@ -115,6 +116,16 @@ export default async function PublicCardPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  let viewerPlan: ViewerPlan = "anonymous";
+  if (user?.id) {
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle();
+    viewerPlan = profileData?.plan === "premium" ? "premium" : "free";
+  }
+
   const { data: cardBySlug, error: slugError } = await supabase
     .from("business_cards")
     .select(
@@ -179,6 +190,9 @@ export default async function PublicCardPage({
       cardFields={card.card_fields ?? []}
       cardLinks={card.card_links ?? []}
       cardExperiences={card.card_experiences ?? []}
+      ownerId={card.user_id}
+      viewerId={user?.id ?? null}
+      viewerPlan={viewerPlan}
     />
   );
 }
