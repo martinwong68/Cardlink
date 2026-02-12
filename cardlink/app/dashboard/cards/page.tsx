@@ -112,6 +112,7 @@ export default function CardsDashboardPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [qrCard, setQrCard] = useState<CardRow | null>(null);
+  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
 
   const pushToast = (text: string) => {
     setToast(text);
@@ -129,13 +130,22 @@ export default function CardsDashboardPage() {
       return;
     }
 
-    const { data, error } = await supabase
-      .from("business_cards")
-      .select(
-        "id, card_name, slug, full_name, title, background_pattern, background_color, created_at, card_shares(count)"
-      )
-      .eq("user_id", userData.user.id)
-      .order("created_at", { ascending: false });
+    const [{ data, error }, { data: profileData }] = await Promise.all([
+      supabase
+        .from("business_cards")
+        .select(
+          "id, card_name, slug, full_name, title, background_pattern, background_color, created_at, card_shares(count)"
+        )
+        .eq("user_id", userData.user.id)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", userData.user.id)
+        .maybeSingle(),
+    ]);
+
+    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
 
     if (error) {
       setMessage(error.message);
@@ -157,6 +167,11 @@ export default function CardsDashboardPage() {
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
       setMessage(t("errors.signInCreate"));
+      return;
+    }
+
+    if (viewerPlan === "free" && cards.length >= 1) {
+      setMessage(t("errors.upgradeToCreate"));
       return;
     }
 
@@ -276,7 +291,8 @@ export default function CardsDashboardPage() {
         <button
           type="button"
           onClick={createCard}
-          className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+          disabled={viewerPlan === "free" && cards.length >= 1}
+          className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           <Plus className="h-4 w-4" />
           {t("actions.create")}

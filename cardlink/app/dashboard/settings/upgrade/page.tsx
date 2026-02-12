@@ -1,14 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+
+import { createClient } from "@/src/lib/supabase/client";
 
 type Interval = "monthly" | "yearly";
 
 export default function UpgradePage() {
+  const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState<Interval | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
   const t = useTranslations("upgrade");
+
+  useEffect(() => {
+    const loadPlan = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("plan")
+        .maybeSingle();
+      setViewerPlan(data?.plan === "premium" ? "premium" : "free");
+    };
+
+    void loadPlan();
+  }, [supabase]);
 
   const handleCheckout = async (interval: Interval) => {
     setMessage(null);
@@ -98,27 +114,35 @@ export default function UpgradePage() {
             <li>{t("premium.features.themes")}</li>
             <li>{t("premium.features.support")}</li>
           </ul>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => handleCheckout("monthly")}
-              disabled={isLoading !== null}
-              className="rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isLoading === "monthly"
-                ? t("actions.redirecting")
-                : t("actions.upgradeMonthly")}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleCheckout("yearly")}
-              disabled={isLoading !== null}
-              className="rounded-full border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-600 shadow-sm transition hover:border-violet-300 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isLoading === "yearly"
-                ? t("actions.redirecting")
-                : t("actions.upgradeYearly")}
-            </button>
+          <div className="mt-6">
+            {viewerPlan === "premium" ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600">
+                {t("premium.status")}
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => handleCheckout("monthly")}
+                  disabled={isLoading !== null}
+                  className="rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isLoading === "monthly"
+                    ? t("actions.redirecting")
+                    : t("actions.upgradeMonthly")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCheckout("yearly")}
+                  disabled={isLoading !== null}
+                  className="rounded-full border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-600 shadow-sm transition hover:border-violet-300 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isLoading === "yearly"
+                    ? t("actions.redirecting")
+                    : t("actions.upgradeYearly")}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

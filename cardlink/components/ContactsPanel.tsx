@@ -73,6 +73,7 @@ export default function ContactsPanel() {
   const [message, setMessage] = useState<string | null>(null);
   const [defaultCardId, setDefaultCardId] = useState<string | null>(null);
   const [pendingOpen, setPendingOpen] = useState(true);
+  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
 
   const loadContacts = async () => {
     setIsLoading(true);
@@ -85,14 +86,21 @@ export default function ContactsPanel() {
       return;
     }
 
-    const [{ data: cards }, friends, pending] = await Promise.all([
+    const [{ data: cards }, friends, pending, { data: profileData }] = await Promise.all([
       supabase
         .from("business_cards")
         .select("id, is_default")
         .eq("user_id", userData.user.id),
       getFriends(userData.user.id),
       getPendingRequests(userData.user.id),
+      supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", userData.user.id)
+        .maybeSingle(),
     ]);
+
+    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
 
     const defaultCard = (cards ?? []).find((card) => card.is_default);
     setDefaultCardId(defaultCard?.id ?? null);
@@ -321,7 +329,13 @@ export default function ContactsPanel() {
                       href={`/c/${contact.cardSlug}`}
                       className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600"
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
+                      <ExternalLink
+                        className={`h-3.5 w-3.5 ${
+                          viewerPlan === "premium"
+                            ? "text-slate-400"
+                            : "text-slate-600"
+                        }`}
+                      />
                       {t("actions.viewCard")}
                     </Link>
                   ) : null}
