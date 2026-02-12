@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -73,7 +73,6 @@ function getInitials(name: string) {
 
 export default function PostDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const postId = Array.isArray(params.postId) ? params.postId[0] : params.postId;
   const [post, setPost] = useState<PostRow | null>(null);
@@ -190,24 +189,6 @@ export default function PostDetailPage() {
     await loadPost();
   };
 
-  const handleDeletePost = async () => {
-    if (!post) {
-      return;
-    }
-
-    const { error } = await supabase.from("forum_posts").delete().eq("id", post.id);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    if (board?.slug && subBoard?.slug) {
-      router.push(`/dashboard/community/${board.slug}/${subBoard.slug}`);
-    } else {
-      router.push("/dashboard/community");
-    }
-  };
 
   const handleEditReply = (reply: ReplyRow) => {
     setEditingReplyId(reply.id);
@@ -234,16 +215,6 @@ export default function PostDetailPage() {
     await loadPost();
   };
 
-  const handleDeleteReply = async (replyId: string) => {
-    const { error } = await supabase.from("forum_replies").delete().eq("id", replyId);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    await loadPost();
-  };
 
   if (isLoading) {
     return (
@@ -342,12 +313,6 @@ export default function PostDetailPage() {
             >
               Edit
             </button>
-            <button
-              onClick={handleDeletePost}
-              className="rounded-full border border-rose-200 px-4 py-2 font-semibold text-rose-600"
-            >
-              Delete
-            </button>
           </div>
         ) : null}
       </div>
@@ -430,12 +395,6 @@ export default function PostDetailPage() {
                     className="rounded-full border border-slate-200 px-4 py-2 font-semibold text-slate-600"
                   >
                     Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteReply(reply.id)}
-                    className="rounded-full border border-rose-200 px-4 py-2 font-semibold text-rose-600"
-                  >
-                    Delete
                   </button>
                 </div>
               ) : null}
