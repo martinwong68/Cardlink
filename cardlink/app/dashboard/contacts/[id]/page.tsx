@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Bell,
   Calendar,
+  ExternalLink,
   Globe,
   Link2,
   Mail,
@@ -43,6 +45,7 @@ type CardRecord = {
   title: string | null;
   company: string | null;
   bio: string | null;
+  slug: string | null;
   card_fields: CardField[] | null;
 };
 
@@ -200,7 +203,7 @@ export default function ContactDetailPage({
       supabase
         .from("business_cards")
         .select(
-          "id, user_id, full_name, title, company, bio, card_fields(id, field_type, field_label, field_value, visibility, sort_order)"
+          "id, user_id, full_name, title, company, bio, slug, card_fields(id, field_type, field_label, field_value, visibility, sort_order)"
         )
         .eq("user_id", params.id)
         .eq("is_default", true)
@@ -434,7 +437,8 @@ export default function ContactDetailPage({
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-lg font-semibold text-white">
             {initials}
           </div>
@@ -444,6 +448,14 @@ export default function ContactDetailPage({
               {[card.title, card.company].filter(Boolean).join(" • ")}
             </p>
           </div>
+          </div>
+          <Link
+            href={`/c/${card.slug ?? card.id}`}
+            className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            View Card
+          </Link>
         </div>
         {card.bio ? (
           <p className="mt-4 text-sm text-slate-600">{card.bio}</p>
