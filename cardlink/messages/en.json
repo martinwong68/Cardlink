@@ -129,6 +129,7 @@
       "signInView": "Please sign in to view your cards.",
       "signInCreate": "Please sign in to create a card.",
       "createFailed": "Unable to create a new card.",
+      "upgradeToCreate": "Upgrade to Premium to create more than one card.",
       "missingLink": "Missing card link.",
       "copyFailed": "Unable to copy link."
     },
@@ -532,6 +533,8 @@
       "profile": "Edit Profile",
       "privacy": "Privacy Settings",
       "subscription": "Subscription Plan",
+      "subscriptionActive": "Subscription",
+      "premiumBadge": "Premium",
       "orderNfc": "Order NFC Card",
       "export": "Export Contacts",
       "support": "Help & Support"
@@ -594,6 +597,7 @@
       "title": "Premium",
       "monthlyLabel": "$9.99/month",
       "yearlyLabel": "Or $99/year",
+      "status": "You are in Premium now.",
       "features": {
         "unlimitedCards": "Unlimited business cards",
         "unlimitedFields": "Unlimited contact fields",

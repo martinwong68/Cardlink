@@ -453,7 +453,11 @@ export default function ContactDetailPage({
             href={`/c/${card.slug ?? card.id}`}
             className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600"
           >
-            <ExternalLink className="h-3.5 w-3.5" />
+            <ExternalLink
+              className={`h-3.5 w-3.5 ${
+                viewerPlan === "premium" ? "text-slate-400" : "text-slate-600"
+              }`}
+            />
             View Card
           </Link>
         </div>

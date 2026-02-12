@@ -129,6 +129,7 @@
       "signInView": "請登入以查看名片。",
       "signInCreate": "請登入以建立名片。",
       "createFailed": "無法建立新名片。",
+      "upgradeToCreate": "升級至高級版以建立多於 1 張名片。",
       "missingLink": "缺少名片連結。",
       "copyFailed": "無法複製連結。"
     },
@@ -532,6 +533,8 @@
       "profile": "編輯個人資料",
       "privacy": "私隱設定",
       "subscription": "訂閱方案",
+      "subscriptionActive": "訂閱狀態",
+      "premiumBadge": "高級版",
       "orderNfc": "訂購 NFC 名片",
       "export": "匯出聯絡人",
       "support": "協助與支援"
@@ -594,6 +597,7 @@
       "title": "高級版",
       "monthlyLabel": "$9.99/月",
       "yearlyLabel": "或 $99/年",
+      "status": "你已是高級版用戶。",
       "features": {
         "unlimitedCards": "無限名片",
         "unlimitedFields": "無限聯絡欄位",

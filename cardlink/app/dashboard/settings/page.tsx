@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Download, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -16,6 +16,7 @@ export default function SettingsPage() {
   const t = useTranslations("settings");
   const [message, setMessage] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
 
   const getViewerPlan = async () => {
     const { data } = await supabase
@@ -78,6 +79,15 @@ export default function SettingsPage() {
     setIsExporting(false);
   };
 
+  useEffect(() => {
+    const loadPlan = async () => {
+      const plan = await getViewerPlan();
+      setViewerPlan(plan);
+    };
+
+    void loadPlan();
+  }, []);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
@@ -114,13 +124,22 @@ export default function SettingsPage() {
           <ChevronRight className="h-4 w-4 text-slate-400" />
         </Link>
 
-        <Link
-          href="/dashboard/settings/upgrade"
-          className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-violet-200"
-        >
-          {t("links.subscription")}
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </Link>
+        {viewerPlan === "premium" ? (
+          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-700 shadow-sm">
+            {t("links.subscriptionActive")}
+            <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
+              {t("links.premiumBadge")}
+            </span>
+          </div>
+        ) : (
+          <Link
+            href="/dashboard/settings/upgrade"
+            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-violet-200"
+          >
+            {t("links.subscription")}
+            <ChevronRight className="h-4 w-4 text-slate-400" />
+          </Link>
+        )}
 
         <Link
           href="/dashboard/settings/nfc"
