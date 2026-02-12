@@ -13,9 +13,20 @@ export async function createClient() {
           return cookieStore.getAll();
         },
         setAll(cookies) {
-          cookies.forEach(({ name, value, options }) => {
-            cookieStore.set({ name, value, ...options });
-          });
+          // Server Components cannot mutate cookies. Ignore refresh writes here.
+          try {
+            cookies.forEach(({ name, value, options }) => {
+              cookieStore.set({ name, value, ...options });
+            });
+          } catch (error) {
+            if (
+              error instanceof Error &&
+              error.message.includes("Cookies can only be modified")
+            ) {
+              return;
+            }
+            throw error;
+          }
         },
       },
     }
