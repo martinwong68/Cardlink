@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { cookies } from "next/headers";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import { defaultLocale, locales } from "@/next-intl.config";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,10 +22,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get("NEXT_LOCALE")?.value;
+  const resolvedLocale = locales.includes(cookieLocale as (typeof locales)[number])
+    ? (cookieLocale as (typeof locales)[number])
+    : defaultLocale;
+  setRequestLocale(resolvedLocale);
   const messages = await getMessages();
   return (
-    <html lang={locale}>
+    <html lang={resolvedLocale}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#7c3aed" />
@@ -36,7 +43,7 @@ export default async function RootLayout({
       <body
         className={`${inter.className} ${inter.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}
       >
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
           {children}
         </NextIntlClientProvider>
         <ServiceWorkerRegister />
