@@ -118,7 +118,7 @@ export default function PublicCardConnectionSection({
       return;
     }
 
-    const { error } = await sendConnectionRequest(viewerId, ownerId, null, null);
+    const { error } = await sendConnectionRequest(viewerId, ownerId);
     if (error) {
       setMessage(error.message);
       return;
@@ -132,7 +132,7 @@ export default function PublicCardConnectionSection({
       return;
     }
 
-    const { error } = await acceptConnection(pendingConnectionId, null);
+    const { error } = await acceptConnection(pendingConnectionId);
     if (error) {
       setMessage(error.message);
       return;

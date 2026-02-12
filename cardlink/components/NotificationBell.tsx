@@ -71,7 +71,6 @@ type RequestModalState = {
     background_pattern: string | null;
     background_color: string | null;
   } | null;
-  message: string | null;
 };
 
 const patternClassMap: Record<string, string> = {
@@ -275,7 +274,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
 
     const { data: connection } = await supabase
       .from("connections")
-      .select("id, requester_id, requester_card_id, message")
+      .select("id, requester_id")
       .eq("id", item.related_connection_id)
       .maybeSingle();
 
@@ -290,22 +289,20 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       .eq("id", connection.requester_id)
       .maybeSingle();
 
-    const { data: card } = connection.requester_card_id
-      ? await supabase
-          .from("business_cards")
-          .select(
-            "id, slug, full_name, title, company, background_pattern, background_color"
-          )
-          .eq("id", connection.requester_card_id)
-          .maybeSingle()
-      : { data: null };
+    const { data: card } = await supabase
+      .from("business_cards")
+      .select(
+        "id, slug, full_name, title, company, background_pattern, background_color"
+      )
+      .eq("user_id", connection.requester_id)
+      .eq("is_default", true)
+      .maybeSingle();
 
     setRequestModal({
       notificationId: item.id,
       connectionId: connection.id,
       requester: requester ?? null,
       card: (card as RequestModalState["card"]) ?? null,
-      message: connection.message ?? null,
     });
     setOpen(false);
   };
@@ -341,10 +338,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       return;
     }
 
-    const { error } = await acceptConnection(
-      requestModal.connectionId,
-      selectedCardId
-    );
+    const { error } = await acceptConnection(requestModal.connectionId);
 
     if (error) {
       pushToast(error.message);
@@ -522,12 +516,6 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                 </p>
               </div>
             </div>
-
-            {requestModal.message ? (
-              <blockquote className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm italic text-slate-600">
-                "{requestModal.message}"
-              </blockquote>
-            ) : null}
 
             {requestModal.card ? (
               <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">

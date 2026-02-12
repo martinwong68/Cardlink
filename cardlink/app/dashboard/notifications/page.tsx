@@ -87,10 +87,10 @@ export default function NotificationsPage() {
           .eq("status", "pending"),
         supabase
           .from("connections")
-          .select("id, receiver_id, updated_at")
+          .select("id, receiver_id, connected_at")
           .eq("requester_id", viewerId)
           .eq("status", "accepted")
-          .gte("updated_at", weekAgoIso),
+          .gte("connected_at", weekAgoIso),
         supabase
           .from("business_cards")
           .select("id, full_name")
@@ -156,7 +156,7 @@ export default function NotificationsPage() {
           id: `accepted-${row.id}`,
           type: "accepted" as const,
           title: t("items.accepted", { name }),
-          date: row.updated_at ?? new Date().toISOString(),
+          date: row.connected_at ?? new Date().toISOString(),
           actorId: row.receiver_id,
         };
       }),
@@ -209,7 +209,7 @@ export default function NotificationsPage() {
       setMessage(t("errors.needCard"));
       return;
     }
-    const { error } = await acceptConnection(connectionId, defaultCardId);
+    const { error } = await acceptConnection(connectionId);
     if (error) {
       setMessage(error.message);
       return;

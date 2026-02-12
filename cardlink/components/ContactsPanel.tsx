@@ -66,12 +66,7 @@ export default function ContactsPanel() {
   const locale = useLocale();
   const [contacts, setContacts] = useState<ContactRow[]>([]);
   const [pendingRequests, setPendingRequests] = useState<
-    Array<
-      ContactRow & {
-        requesterCardId: string | null;
-        message: string | null;
-      }
-    >
+    Array<ContactRow>
   >([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -139,7 +134,7 @@ export default function ContactsPanel() {
       setMessage(t("errors.needCard"));
       return;
     }
-    const { error } = await acceptConnection(connectionId, defaultCardId);
+    const { error } = await acceptConnection(connectionId);
     if (error) {
       setMessage(error.message);
       return;
@@ -243,11 +238,6 @@ export default function ContactsPanel() {
                             .filter(Boolean)
                             .join(" • ")}
                         </p>
-                        {request.message ? (
-                          <p className="mt-1 text-xs text-slate-400">
-                            {request.message}
-                          </p>
-                        ) : null}
                       </div>
                     </div>
                     <div className="flex gap-2">

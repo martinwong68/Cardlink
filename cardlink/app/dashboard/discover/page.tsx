@@ -227,7 +227,6 @@ export default function DiscoverPage() {
     const { error } = await supabase.from("connections").insert({
       requester_id: viewerId,
       receiver_id: profileId,
-      requester_card_id: defaultCardId,
       status: "pending",
     });
 
