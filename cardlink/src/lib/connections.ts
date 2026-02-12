@@ -21,6 +21,7 @@ type CardRow = {
   full_name: string | null;
   title: string | null;
   company: string | null;
+  is_default?: boolean | null;
   slug?: string | null;
 };
 
@@ -155,8 +156,7 @@ export async function getFriends(userId: string): Promise<FriendContact[]> {
 
   const { data: cards } = await supabase
     .from("business_cards")
-    .select("id, user_id, full_name, title, company, slug")
-    .eq("is_default", true)
+    .select("id, user_id, full_name, title, company, slug, is_default")
     .in("user_id", friendIds);
 
   const { data: profiles } = await supabase
@@ -164,9 +164,17 @@ export async function getFriends(userId: string): Promise<FriendContact[]> {
     .select("id, full_name, avatar_url")
     .in("id", friendIds);
 
-  const cardMap = new Map(
-    (cards ?? []).map((card) => [card.user_id, card])
-  );
+  const cardMap = new Map<string, CardRow>();
+  (cards ?? []).forEach((card) => {
+    const existing = cardMap.get(card.user_id);
+    if (!existing) {
+      cardMap.set(card.user_id, card);
+      return;
+    }
+    if (card.is_default && !existing.is_default) {
+      cardMap.set(card.user_id, card);
+    }
+  });
   const profileMap = new Map(
     (profiles ?? []).map((profile) => [profile.id, profile])
   );
