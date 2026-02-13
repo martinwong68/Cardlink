@@ -193,7 +193,7 @@ Expected environment variables by code:
 	- Cards list with Contacts + NFC tabs: cardlink/app/dashboard/cards/page.tsx
 	- Card editor: cardlink/app/dashboard/cards/[cardId]/edit/page.tsx
 	- Contacts detail and CRM: cardlink/app/dashboard/contacts/[id]/page.tsx
-	- Community (authenticated posting/editing): cardlink/app/dashboard/community
+	- Community (authenticated posting; no edit/delete in UI): cardlink/app/dashboard/community
 	- Discover people: cardlink/app/dashboard/discover/page.tsx
 	- Notifications summary: cardlink/app/dashboard/notifications/page.tsx
 	- NFC “Get a Card” page with Stripe checkout: cardlink/app/dashboard/nfc/page.tsx
@@ -247,6 +247,7 @@ Tables referenced in code:
 ## 14. Billing and Stripe
 - Checkout uses subscription mode with monthly or yearly price IDs.
 - Webhook updates profiles.plan to premium or free based on subscription state.
+- Premium indicator is profiles.plan ('free' | 'premium'); UI gates on this value.
 - Success and cancel routes are under dashboard settings upgrade pages.
 
 ## 15. NFC Tap and Card Linking
@@ -256,13 +257,14 @@ Tables referenced in code:
 
 ## 16. Community Forum Features
 - Public browsing for boards, sub-boards, and posts in /community.
-- Authenticated dashboard community allows creating, editing, and deleting posts and replies.
+- Authenticated dashboard community allows creating posts and replies (edit/delete disabled in UI).
 - Posts are sorted by last activity and display author profiles.
 
 ## 17. Contacts and CRM Features
 - Connections helper functions handle requests, acceptance, rejection, and removal.
 - Contacts list and details support CRM notes, tags, reminders, and interaction history.
 - Field visibility logic in cardlink/src/lib/visibility.ts gates access based on plan and connection status.
+- Contacts list/detail show a premium-styled external link indicator when plan is premium.
 
 ## 18. PWA, Assets, and Notes
 - PWA manifest and service worker: cardlink/public/manifest.json, cardlink/public/sw.js.
