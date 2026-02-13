@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.cardlink-cover {
+  background-color: var(--cardlink-base, #6366f1);
+  background-size: cover;
+  background-position: center;
+}
+
+.cardlink-pattern-gradient-1 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(0, 0, 0, 0.2)
+  );
+}
+
+.cardlink-pattern-gradient-2 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(0, 0, 0, 0.24)
+  );
+}
+
+.cardlink-pattern-gradient-3 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(0, 0, 0, 0.26)
+  );
+}
+
+.cardlink-pattern-gradient-4 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(0, 0, 0, 0.22)
+  );
+}
+
+.cardlink-pattern-gradient-5 {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(0, 0, 0, 0.3)
+  );
+}
+
+.cardlink-pattern-dots {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.35) 1.5px, transparent 1.6px);
+  background-size: 18px 18px;
+}
+
+.cardlink-pattern-waves {
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.25) 0,
+      rgba(255, 255, 255, 0.25) 2px,
+      transparent 2px,
+      transparent 12px
+    );
+}
+
+.cardlink-pattern-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.25) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.cardlink-pattern-circles {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.32) 0, rgba(255, 255, 255, 0.32) 20%, transparent 21%),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.26) 0, rgba(255, 255, 255, 0.26) 18%, transparent 19%),
+    radial-gradient(circle at 40% 75%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) 22%, transparent 23%);
+}
+
+.cardlink-pattern-topography {
+  background-image:
+    repeating-radial-gradient(
+      circle at 20% 30%,
+      transparent 0,
+      transparent 10px,
+      rgba(255, 255, 255, 0.3) 11px,
+      rgba(255, 255, 255, 0.3) 12px
+    ),
+    repeating-radial-gradient(
+      circle at 80% 70%,
+      transparent 0,
+      transparent 12px,
+      rgba(255, 255, 255, 0.24) 13px,
+      rgba(255, 255, 255, 0.24) 14px
+    );
+}
+
+@supports (background: color-mix(in srgb, #000000 50%, #ffffff)) {
+  .cardlink-pattern-gradient-1 {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cardlink-base) 75%, #312e81),
+    color-mix(in srgb, var(--cardlink-base) 65%, #a855f7)
+  );
+}
+
+.cardlink-pattern-gradient-2 {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cardlink-base) 75%, #1d4ed8),
+    color-mix(in srgb, var(--cardlink-base) 65%, #06b6d4)
+  );
+}
+
+.cardlink-pattern-gradient-3 {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cardlink-base) 70%, #e11d48),
+    color-mix(in srgb, var(--cardlink-base) 60%, #fb923c)
+  );
+}
+
+.cardlink-pattern-gradient-4 {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cardlink-base) 75%, #16a34a),
+    color-mix(in srgb, var(--cardlink-base) 65%, #14b8a6)
+  );
+}
+
+.cardlink-pattern-gradient-5 {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cardlink-base) 70%, #0f172a),
+    color-mix(in srgb, var(--cardlink-base) 60%, #312e81)
+  );
+}
+
+.cardlink-pattern-dots {
+  background-image:
+    radial-gradient(
+      circle at 1px 1px,
+      color-mix(in srgb, var(--cardlink-base) 70%, #ffffff) 1.5px,
+      transparent 1.6px
+    );
+  background-size: 18px 18px;
+}
+
+.cardlink-pattern-waves {
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--cardlink-base) 80%, #ffffff) 0,
+      color-mix(in srgb, var(--cardlink-base) 80%, #ffffff) 2px,
+      transparent 2px,
+      transparent 12px
+    );
+}
+
+.cardlink-pattern-grid {
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--cardlink-base) 80%, #ffffff) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--cardlink-base) 80%, #ffffff) 1px,
+      transparent 1px
+    );
+  background-size: 24px 24px;
+}
+
+.cardlink-pattern-circles {
+  background-image:
+    radial-gradient(
+      circle at 20% 20%,
+      color-mix(in srgb, var(--cardlink-base) 75%, #ffffff) 0,
+      color-mix(in srgb, var(--cardlink-base) 75%, #ffffff) 20%,
+      transparent 21%
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      color-mix(in srgb, var(--cardlink-base) 70%, #ffffff) 0,
+      color-mix(in srgb, var(--cardlink-base) 70%, #ffffff) 18%,
+      transparent 19%
+    ),
+    radial-gradient(
+      circle at 40% 75%,
+      color-mix(in srgb, var(--cardlink-base) 65%, #ffffff) 0,
+      color-mix(in srgb, var(--cardlink-base) 65%, #ffffff) 22%,
+      transparent 23%
+    );
+}
+
+.cardlink-pattern-topography {
+  background-image:
+    repeating-radial-gradient(
+      circle at 20% 30%,
+      transparent 0,
+      transparent 10px,
+      color-mix(in srgb, var(--cardlink-base) 75%, #ffffff) 11px,
+      color-mix(in srgb, var(--cardlink-base) 75%, #ffffff) 12px
+    ),
+    repeating-radial-gradient(
+      circle at 80% 70%,
+      transparent 0,
+      transparent 12px,
+      color-mix(in srgb, var(--cardlink-base) 70%, #ffffff) 13px,
+      color-mix(in srgb, var(--cardlink-base) 70%, #ffffff) 14px
+    );
+}
+}
+
+@keyframes cardlink-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardlink-section {
+  opacity: 0;
+  animation: cardlink-fade-up 0.6s ease-out forwards;
+}
+
+.cardlink-delay-1 {
+  animation-delay: 0.05s;
+}
+
+.cardlink-delay-2 {
+  animation-delay: 0.12s;
+}
+
+.cardlink-delay-3 {
+  animation-delay: 0.2s;
+}
+
+.cardlink-delay-4 {
+  animation-delay: 0.28s;
+}
+
+.cardlink-delay-5 {
+  animation-delay: 0.36s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardlink-section {
+    opacity: 1;
+    animation: none;
+  }
+}
