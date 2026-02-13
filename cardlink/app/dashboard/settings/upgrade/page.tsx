@@ -16,9 +16,16 @@ export default function UpgradePage() {
 
   useEffect(() => {
     const loadPlan = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) {
+        setViewerPlan("free");
+        return;
+      }
+
       const { data } = await supabase
         .from("profiles")
         .select("plan")
+        .eq("id", userData.user.id)
         .maybeSingle();
       setViewerPlan(data?.plan === "premium" ? "premium" : "free");
     };

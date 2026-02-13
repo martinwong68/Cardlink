@@ -329,8 +329,15 @@ export default function CardsDashboardPage() {
           return (
             <div
               key={card.id}
-              className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="relative rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
             >
+              {viewerPlan === "premium" ? (
+                <div className="absolute -right-2 top-4 z-10">
+                  <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow">
+                    Premium
+                  </span>
+                </div>
+              ) : null}
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <div
                   className={`cardlink-cover ${patternClass} h-24 w-full rounded-2xl sm:h-28 sm:w-40`}

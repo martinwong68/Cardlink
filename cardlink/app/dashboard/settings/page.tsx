@@ -19,9 +19,15 @@ export default function SettingsPage() {
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
 
   const getViewerPlan = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData?.user) {
+      return "free" as const;
+    }
+
     const { data } = await supabase
       .from("profiles")
       .select("plan")
+      .eq("id", userData.user.id)
       .maybeSingle();
     return data?.plan === "premium" ? "premium" : "free";
   };
@@ -142,7 +148,7 @@ export default function SettingsPage() {
         )}
 
         <Link
-          href="/dashboard/settings/nfc"
+          href="/dashboard/cards?tab=nfc"
           className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-violet-200"
         >
           {t("links.orderNfc")}

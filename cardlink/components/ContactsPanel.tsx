@@ -329,13 +329,15 @@ export default function ContactsPanel() {
                       href={`/c/${contact.cardSlug}`}
                       className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600"
                     >
-                      <ExternalLink
-                        className={`h-3.5 w-3.5 ${
+                      <span
+                        className={`inline-flex h-5 w-5 items-center justify-center rounded-full border ${
                           viewerPlan === "premium"
-                            ? "text-slate-400"
-                            : "text-slate-600"
+                            ? "border-slate-300 text-slate-400"
+                            : "border-slate-400 text-slate-600"
                         }`}
-                      />
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                      </span>
                       {t("actions.viewCard")}
                     </Link>
                   ) : null}
