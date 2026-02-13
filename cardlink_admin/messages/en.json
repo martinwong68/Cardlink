@@ -1,0 +1,657 @@
+{
+  "app": {
+    "name": "CardLink"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "login": {
+    "brand": "CardLink",
+    "title": "Welcome back",
+    "subtitle": "Sign in to manage your digital card.",
+    "fields": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "createAccount": "Create an account"
+    },
+    "footer": {
+      "newHere": "New to CardLink?"
+    }
+  },
+  "signup": {
+    "brand": "CardLink",
+    "title": "Create your account",
+    "subtitle": "Start sharing your card in minutes.",
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password"
+    },
+    "actions": {
+      "create": "Create account",
+      "creating": "Creating account...",
+      "signIn": "Sign in"
+    },
+    "footer": {
+      "haveAccount": "Already have an account?"
+    },
+    "messages": {
+      "checkEmail": "Check your email to confirm your account."
+    }
+  },
+  "auth": {
+    "brand": "CardLink",
+    "title": "Get started",
+    "subtitle": "Sign in or create an account to join the community.",
+    "actions": {
+      "createAccount": "Create account",
+      "signIn": "Sign in",
+      "browseCommunity": "Browse community instead"
+    }
+  },
+  "dashboard": {
+    "brand": "CardLink",
+    "title": "Dashboard"
+  },
+  "dashboardNav": {
+    "community": "Community",
+    "cards": "Cards",
+    "settings": "Settings"
+  },
+  "getCard": {
+    "brand": "CardLink",
+    "title": "Get your NFC card",
+    "subtitle": "Order a tap-to-share card that links to your CardLink profile. We ship fast and keep your details always up to date.",
+    "highlights": {
+      "shipping": "Ships in 3-5 business days",
+      "customize": "Choose your card style",
+      "linked": "Profile updates in real time",
+      "analytics": "See tap analytics"
+    },
+    "cta": {
+      "badge": "One-time purchase",
+      "price": "{price}",
+      "note": "Includes one NFC card and free profile updates.",
+      "action": "Checkout",
+      "loading": "Redirecting..."
+    },
+    "features": {
+      "instant": {
+        "title": "Instant sharing",
+        "description": "Tap any phone to share your card without an app."
+      },
+      "durable": {
+        "title": "Built to last",
+        "description": "Premium material with waterproof, scratch-resistant finish."
+      },
+      "tap": {
+        "title": "Smart NFC chip",
+        "description": "Secure chip that links directly to your CardLink profile."
+      }
+    },
+    "faq": {
+      "badge": "FAQ",
+      "title": "Questions, answered",
+      "shipping": {
+        "question": "Where do you ship?",
+        "answer": "We ship worldwide. Delivery times vary by region."
+      },
+      "compatibility": {
+        "question": "Will it work on iPhone and Android?",
+        "answer": "Yes. All modern NFC-enabled phones can read the card."
+      },
+      "management": {
+        "question": "Can I change my info later?",
+        "answer": "Any updates you make in CardLink are reflected instantly."
+      },
+      "teams": {
+        "question": "Do you offer team orders?",
+        "answer": "Yes. Contact us for bulk pricing and custom branding."
+      }
+    },
+    "errors": {
+      "checkout": "Unable to start checkout. Please try again.",
+      "unavailable": "Checkout is unavailable right now.",
+      "missingPrice": "Price configuration is missing. Please contact support."
+    }
+  },
+  "cards": {
+    "brand": "CardLink",
+    "title": "My Cards",
+    "subtitle": "Manage and share your digital business cards.",
+    "loading": "Loading cards...",
+    "empty": "No cards yet. Create your first card to get started.",
+    "errors": {
+      "signInView": "Please sign in to view your cards.",
+      "signInCreate": "Please sign in to create a card.",
+      "createFailed": "Unable to create a new card.",
+      "upgradeToCreate": "Upgrade to Premium to create more than one card.",
+      "missingLink": "Missing card link.",
+      "copyFailed": "Unable to copy link."
+    },
+    "toast": {
+      "created": "Card created.",
+      "linkCopied": "Link copied.",
+      "deleted": "Card deleted."
+    },
+    "actions": {
+      "create": "Create New Card",
+      "edit": "Edit",
+      "share": "Share",
+      "qr": "QR Code",
+      "delete": "Delete",
+      "confirmDelete": "Delete this card? This cannot be undone."
+    },
+    "card": {
+      "defaultName": "My Card",
+      "defaultUser": "CardLink User",
+      "unpublished": "Unpublished",
+      "slug": "Slug: {slug}",
+      "created": "Created {date}"
+    },
+    "tabs": {
+      "cards": "My Cards",
+      "contacts": "Contacts",
+      "nfc": "NFC Cards"
+    }
+  },
+  "contacts": {
+    "brand": "CardLink",
+    "title": "Contacts",
+    "searchPlaceholder": "Search contacts",
+    "loading": "Loading contacts...",
+    "pendingTitle": "Pending Requests ({count})",
+    "connectedOn": "Connected on {date}",
+    "errors": {
+      "signIn": "Please sign in to view your contacts.",
+      "needCard": "Create a card first to accept requests."
+    },
+    "actions": {
+      "accept": "Accept",
+      "decline": "Decline",
+      "viewCard": "View Card",
+      "remove": "Remove",
+      "removeConfirm": "Remove this connection? This will delete the connection for both of you."
+    },
+    "empty": {
+      "title": "No connections yet.",
+      "body": "Exchange cards with people to build your network."
+    }
+  },
+  "nfc": {
+    "brand": "CardLink",
+    "title": "NFC Cards",
+    "subtitle": "Manage your physical NFC cards and their linked business cards.",
+    "loading": "Loading NFC cards...",
+    "empty": {
+      "title": "No NFC Cards Yet",
+      "body": "Purchase an NFC card to start sharing your business card with a tap.",
+      "cta": "Get a Card"
+    },
+    "errors": {
+      "signIn": "Please sign in to view NFC cards.",
+      "updateLinkedCard": "Unable to update linked card."
+    },
+    "actions": {
+      "confirmDeactivate": "Deactivate this NFC card?",
+      "changeLinkedCard": "Change Linked Card",
+      "deactivate": "Deactivate"
+    },
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "deactivated": "Deactivated",
+      "other": "Inactive"
+    },
+    "linkedTo": "Linked to",
+    "noCardSelected": "No card selected",
+    "personal": "Personal",
+    "stats": {
+      "totalTaps": "{count} total taps",
+      "lastTapped": "Last tapped: {date}"
+    },
+    "never": "Never",
+    "chart": {
+      "label": "Tap Activity",
+      "title": "Last 7 Days"
+    },
+    "modal": {
+      "label": "Change Linked Card",
+      "title": "Select a business card",
+      "close": "Close",
+      "untitled": "Untitled Card",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save Changes"
+    }
+  },
+  "qr": {
+    "close": "Close",
+    "download": "Download QR",
+    "copy": "Copy Link",
+    "copied": "Copied"
+  },
+  "publicConnect": {
+    "contactTitle": "Contact",
+    "actions": {
+      "saveContact": "Save Contact",
+      "editCard": "Edit Card",
+      "signupToConnect": "Sign up to connect",
+      "connected": "Connected ✓",
+      "acceptConnection": "Accept Connection",
+      "requestSent": "Request Sent ✓",
+      "connect": "Connect"
+    }
+  },
+  "publicCard": {
+    "defaultUser": "CardLink User",
+    "errors": {
+      "missingShare": "Missing share link.",
+      "copyLink": "Unable to copy link.",
+      "missingContact": "Missing contact info.",
+      "copyWechat": "Unable to copy WeChat ID."
+    },
+    "toast": {
+      "linkCopied": "Link copied to clipboard.",
+      "wechatCopied": "WeChat ID copied."
+    },
+    "actions": {
+      "saveContact": "Save Contact",
+      "share": "Share"
+    },
+    "sections": {
+      "contact": "Contact",
+      "links": "Links",
+      "experience": "Experience"
+    },
+    "empty": {
+      "contact": "No contact info shared yet."
+    },
+    "experience": {
+      "roleAt": "{role} at {company}",
+      "present": "Present"
+    },
+    "footer": {
+      "madeWith": "Made with CardLink"
+    },
+    "wechat": {
+      "title": "WeChat ID",
+      "close": "Close",
+      "copy": "Copy WeChat ID"
+    }
+  },
+  "notifications": {
+    "errors": {
+      "loadRequest": "Unable to load this request.",
+      "selectCard": "Select a card to share.",
+      "needCard": "Create a card first to accept this request."
+    },
+    "toast": {
+      "exchanged": "Cards exchanged! This person is now in your contacts.",
+      "declined": "Request declined."
+    },
+    "labels": {
+      "ariaNotifications": "Notifications",
+      "avatar": "Avatar",
+      "cardlink": "CardLink",
+      "member": "CardLink Member",
+      "sharedCard": "Shared Card",
+      "shareBack": "Share your card back",
+      "myCard": "My Card"
+    },
+    "title": "Notifications",
+    "actions": {
+      "markAllRead": "Mark all as read",
+      "viewFullCard": "View Full Card",
+      "acceptExchange": "Accept & Exchange",
+      "decline": "Decline"
+    },
+    "loading": "Loading notifications...",
+    "empty": {
+      "title": "No notifications yet",
+      "body": "You will be notified when someone wants to exchange cards with you."
+    },
+    "request": {
+      "title": "Card Exchange Request"
+    }
+  },
+  "notificationsPage": {
+    "brand": "CardLink",
+    "title": "Notifications",
+    "subtitle": "Stay on top of new connections and reminders.",
+    "loading": "Loading notifications...",
+    "empty": "No notifications yet.",
+    "errors": {
+      "signIn": "Please sign in to view notifications.",
+      "needCard": "Create a card first to accept requests."
+    },
+    "labels": {
+      "someone": "Someone",
+      "thisContact": "this contact"
+    },
+    "items": {
+      "request": "{name} sent you a connection request",
+      "accepted": "{name} accepted your connection request",
+      "viewed": "{name} viewed your business card",
+      "via": "via {method}",
+      "reminder": "Reminder: Follow up with {name}"
+    },
+    "actions": {
+      "accept": "Accept",
+      "decline": "Decline"
+    }
+  },
+  "tap": {
+    "suspended": {
+      "title": "Card Suspended",
+      "body": "This card has been temporarily suspended. Please contact the card owner or CardLink support.",
+      "link": "Learn more"
+    },
+    "deactivated": {
+      "title": "Card Deactivated",
+      "body": "This card is no longer active."
+    },
+    "expired": {
+      "title": "Subscription Expired",
+      "body": "The owner's subscription has expired. If this is your card, please renew your subscription.",
+      "link": "Renew Subscription"
+    },
+    "noCard": {
+      "title": "No Card Linked",
+      "body": "This NFC card hasn't been linked to a digital business card yet.",
+      "link": "Set up your card"
+    },
+    "error": {
+      "title": "Card Not Found",
+      "body": "This NFC card is not recognized."
+    }
+  },
+  "register": {
+    "brand": "CardLink",
+    "loading": "Loading...",
+    "title": "Link Your NFC Card",
+    "subtitle": "Choose which business card you want to link to this physical NFC card. When someone taps your card, they'll see the linked business card.",
+    "cardId": "Card ID: {id}",
+    "guest": {
+      "title": "Activate Your CardLink Card",
+      "subtitle": "Sign in or create an account to link this NFC card to your digital business card.",
+      "signIn": "Sign In",
+      "createAccount": "Create Account"
+    },
+    "empty": {
+      "title": "Create a business card first",
+      "body": "You'll need at least one digital card to link this NFC card.",
+      "cta": "Go to My Cards"
+    },
+    "success": {
+      "title": "Your card is active!",
+      "subtitle": "When someone taps your NFC card, they'll see your business card.",
+      "testTitle": "Test your card",
+      "testBody": "Tap your NFC card on a phone to confirm everything is working. Share the tap link if you want to preview it.",
+      "goDashboard": "Go to Dashboard",
+      "testButton": "Test your card"
+    },
+    "actions": {
+      "activating": "Activating...",
+      "activate": "Activate Card",
+      "goDashboard": "Go to Dashboard"
+    },
+    "errors": {
+      "selectCard": "Select a business card first.",
+      "alreadyLinked": "This card is already linked to an account. If this is your card, go to Dashboard to manage it.",
+      "invalid": "This card ID is not recognized. Please contact support.",
+      "generic": "Something went wrong while activating your card. Please try again."
+    }
+  },
+  "home": {
+    "brand": "CardLink",
+    "hero": {
+      "kicker": "Digital business cards",
+      "title": "Make every introduction effortless with CardLink.",
+      "subtitle": "Build a shareable card, manage contacts, and discover the community conversations that matter to your career."
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "getStarted": "Get Started",
+      "browseCommunity": "Browse Community"
+    },
+    "features": {
+      "share": { "title": "Share instantly", "body": "QR, NFC, or link-based cards." },
+      "crm": { "title": "Build CRM", "body": "Save connections with context." },
+      "discover": { "title": "Discover people", "body": "Meet peers in the forum." }
+    },
+    "forum": {
+      "kicker": "Latest in the forum",
+      "empty": "No posts yet. Be the first to start a conversation.",
+      "member": "CardLink Member",
+      "replies": "{count} replies"
+    }
+  },
+  "community": {
+    "brand": "CardLink",
+    "title": "Community",
+    "subtitle": "Explore the CardLink forums. Sign in to start a post.",
+    "loadingBoards": "Loading boards...",
+    "actions": {
+      "loginToPost": "Login to post"
+    },
+    "stats": {
+      "posts": "{count} posts",
+      "replies": "{count} replies"
+    },
+    "latest": {
+      "title": "Latest from the community",
+      "empty": "No posts yet."
+    },
+    "member": "CardLink Member"
+  },
+  "communityBoard": {
+    "brand": "CardLink",
+    "loading": "Loading board...",
+    "errors": {
+      "notFound": "Board not found."
+    },
+    "actions": {
+      "loginToPost": "Login to post",
+      "community": "Community",
+      "view": "View"
+    },
+    "emptyPosts": "No posts yet.",
+    "member": "CardLink Member",
+    "stats": {
+      "replies": "{count} replies"
+    }
+  },
+  "communitySubBoard": {
+    "brand": "CardLink",
+    "loading": "Loading posts...",
+    "errors": {
+      "boardNotFound": "Board not found.",
+      "subBoardNotFound": "Sub-board not found."
+    },
+    "actions": {
+      "loginToPost": "Login to post"
+    },
+    "cta": {
+      "loginToPost": "Log in to start a new post or reply."
+    },
+    "empty": "No posts yet.",
+    "member": "CardLink Member",
+    "stats": {
+      "replies": "{count} replies"
+    }
+  },
+  "communityPost": {
+    "brand": "CardLink",
+    "loading": "Loading post...",
+    "errors": {
+      "notFound": "Post not found."
+    },
+    "actions": {
+      "loginToPost": "Login to post"
+    },
+    "cta": {
+      "loginToReply": "Log in to reply or start a new discussion."
+    },
+    "replies": {
+      "title": "Replies",
+      "empty": "No replies yet."
+    },
+    "member": "CardLink Member",
+    "stats": {
+      "replies": "{count} replies"
+    }
+  },
+  "scan": {
+    "brand": "CardLink",
+    "title": "Scan",
+    "subtitle": "Scan QR codes to add new connections.",
+    "comingSoon": "Camera access will be enabled here soon."
+  },
+  "settings": {
+    "brand": "CardLink",
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences.",
+    "errors": {
+      "upgradeToExport": "Upgrade to Premium to export contacts.",
+      "signInExport": "Please sign in to export contacts."
+    },
+    "export": {
+      "headers": {
+        "name": "Name",
+        "title": "Title",
+        "company": "Company",
+        "connectedAt": "Connected At"
+      },
+      "fileName": "cardlink-contacts.csv"
+    },
+    "links": {
+      "profile": "Edit Profile",
+      "privacy": "Privacy Settings",
+      "subscription": "Subscription Plan",
+      "subscriptionActive": "Subscription",
+      "premiumBadge": "Premium",
+      "orderNfc": "Order NFC Card",
+      "export": "Export Contacts",
+      "support": "Help & Support"
+    },
+    "actions": {
+      "logout": "Log Out"
+    }
+  },
+  "profile": {
+    "brand": "CardLink",
+    "title": "Edit Profile",
+    "avatar": {
+      "title": "Avatar",
+      "subtitle": "Upload coming soon"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "title": "Title",
+      "company": "Company",
+      "bio": "Bio",
+      "avatarUrl": "Avatar URL"
+    },
+    "errors": {
+      "signInEdit": "Please sign in to edit your profile.",
+      "signInSave": "Please sign in to save your profile."
+    },
+    "defaults": {
+      "name": "CardLink"
+    },
+    "toast": {
+      "updated": "Profile updated."
+    },
+    "actions": {
+      "saving": "Saving...",
+      "save": "Save Changes"
+    }
+  },
+  "upgrade": {
+    "brand": "CardLink",
+    "title": "Upgrade",
+    "subtitle": "Unlock premium tools to grow your network.",
+    "errors": {
+      "checkout": "Unable to start checkout.",
+      "unavailable": "Checkout unavailable."
+    },
+    "free": {
+      "title": "Free",
+      "badge": "Free forever",
+      "features": {
+        "cards": "1 business card",
+        "fields": "5 contact fields",
+        "public": "View public info only",
+        "connect": "Connect with others",
+        "feed": "Basic feed access"
+      }
+    },
+    "premium": {
+      "badge": "Popular",
+      "title": "Premium",
+      "monthlyLabel": "$9.99/month",
+      "yearlyLabel": "Or $99/year",
+      "status": "You are in Premium now.",
+      "features": {
+        "unlimitedCards": "Unlimited business cards",
+        "unlimitedFields": "Unlimited contact fields",
+        "fullDetails": "See friends' full details",
+        "crm": "CRM notes, tags & reminders",
+        "analytics": "Card scan analytics",
+        "export": "Export contacts (CSV/vCard)",
+        "themes": "Custom card themes",
+        "support": "Priority support"
+      }
+    },
+    "actions": {
+      "redirecting": "Redirecting...",
+      "upgradeMonthly": "Upgrade Monthly",
+      "upgradeYearly": "Upgrade Yearly"
+    }
+  },
+  "upgradeSuccess": {
+    "title": "Welcome to Premium! 🎉",
+    "subtitle": "Your account is now upgraded.",
+    "action": "Back to dashboard"
+  },
+  "discover": {
+    "brand": "CardLink",
+    "title": "Discover",
+    "subtitle": "Find people and grow your network.",
+    "search": {
+      "placeholder": "Search by name, title, or company",
+      "action": "Search"
+    },
+    "loading": "Loading results...",
+    "empty": {
+      "results": "No results found."
+    },
+    "suggested": {
+      "title": "People you may know",
+      "empty": "No suggestions yet."
+    },
+    "errors": {
+      "signIn": "Please sign in to search.",
+      "needCard": "Create a card first to exchange cards."
+    },
+    "defaults": {
+      "user": "CardLink User"
+    },
+    "upgradePrompt": "Upgrade to see details",
+    "status": {
+      "connected": "Connected",
+      "pending": "Pending",
+      "none": "Not connected"
+    },
+    "actions": {
+      "connect": "Connect",
+      "loadMore": "Load more"
+    }
+  }
+}
