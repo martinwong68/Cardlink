@@ -27,11 +27,23 @@ export async function GET(
     user_agent: requestUserAgent,
   });
 
+  // Debug logging
+  console.log("NFC Tap Debug:", {
+    uid,
+    hasData: !!data,
+    data,
+    hasError: !!error,
+    error: error?.message,
+  });
+
   if (error || !data) {
+    console.error("NFC tap error:", error);
     return redirectFor(request.url, "/tap/error");
   }
 
   const action = typeof data.action === "string" ? data.action : "error";
+
+  console.log("NFC Tap Action:", action, "Full data:", data);
 
   if (action === "redirect") {
     const slug =

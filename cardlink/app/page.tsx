@@ -75,8 +75,9 @@ export default async function HomePage() {
   const { data: posts } = await supabase
     .from("forum_posts")
     .select(
-      "id, title, body, reply_count, last_activity_at, created_at, sub_boards(id, name, slug, boards(id, name, slug, icon)), profiles(id, full_name, avatar_url)"
+      "id, title, body, reply_count, last_activity_at, created_at, sub_boards(id, name, slug, boards(id, name, slug, icon)), profiles!author_id(id, full_name, avatar_url)"
     )
+    .eq("is_banned", false)
     .order("last_activity_at", { ascending: false, nullsFirst: false })
     .limit(8);
 

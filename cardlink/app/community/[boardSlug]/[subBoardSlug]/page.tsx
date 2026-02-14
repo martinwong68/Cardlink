@@ -112,9 +112,10 @@ export default function PublicSubBoardPage() {
     const { data: postData } = await supabase
       .from("forum_posts")
       .select(
-        "id, title, body, reply_count, last_activity_at, created_at, profiles(id, full_name, avatar_url)"
+        "id, title, body, reply_count, last_activity_at, created_at, profiles!author_id(id, full_name, avatar_url)"
       )
       .eq("sub_board_id", subBoardData.id)
+      .eq("is_banned", false)
       .order("last_activity_at", { ascending: false, nullsFirst: false });
 
     setBoard(boardData);

@@ -109,9 +109,10 @@ export default function PublicBoardPage() {
       ? await supabase
           .from("forum_posts")
           .select(
-            "id, sub_board_id, title, body, reply_count, last_activity_at, created_at, profiles(id, full_name, avatar_url)"
+            "id, sub_board_id, title, body, reply_count, last_activity_at, created_at, profiles!author_id(id, full_name, avatar_url)"
           )
           .in("sub_board_id", subBoardIds)
+          .eq("is_banned", false)
           .order("last_activity_at", { ascending: false, nullsFirst: false })
           .limit(30)
       : { data: [] as PostRow[] };

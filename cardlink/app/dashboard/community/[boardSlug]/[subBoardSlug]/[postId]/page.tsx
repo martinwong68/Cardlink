@@ -95,9 +95,10 @@ export default function PostDetailPage() {
     const { data: postData, error: postError } = await supabase
       .from("forum_posts")
       .select(
-        "id, title, body, author_id, reply_count, created_at, updated_at, last_activity_at, profiles(id, full_name, avatar_url), sub_boards(id, name, slug, boards(id, name, slug, icon))"
+        "id, title, body, author_id, reply_count, created_at, updated_at, last_activity_at, profiles!author_id(id, full_name, avatar_url), sub_boards(id, name, slug, boards(id, name, slug, icon))"
       )
       .eq("id", postId)
+      .eq("is_banned", false)
       .maybeSingle();
 
     if (postError || !postData) {
@@ -108,7 +109,7 @@ export default function PostDetailPage() {
 
     const { data: replyData } = await supabase
       .from("forum_replies")
-      .select("id, post_id, author_id, body, created_at, updated_at, profiles(id, full_name, avatar_url)")
+      .select("id, post_id, author_id, body, created_at, updated_at, profiles!author_id(id, full_name, avatar_url)")
       .eq("post_id", postId)
       .order("created_at", { ascending: true });
 

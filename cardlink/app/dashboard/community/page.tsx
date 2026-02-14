@@ -84,6 +84,7 @@ export default function CommunityPage() {
         supabase
           .from("forum_posts")
           .select("id, sub_board_id")
+          .eq("is_banned", false)
           .order("created_at", { ascending: false }),
       ]);
 
@@ -128,6 +129,7 @@ export default function CommunityPage() {
       .select(
         "id, title, body, reply_count, last_activity_at, created_at, author_id, sub_board_id"
       )
+      .eq("is_banned", false)
       .order("last_activity_at", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false })
       .limit(8);
