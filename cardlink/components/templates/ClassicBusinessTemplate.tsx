@@ -1,5 +1,8 @@
 "use client";
 
+// Classic Business Template - Traditional corporate style
+// This is essentially the current default template with minor modifications
+
 import { useMemo, useState } from "react";
 import {
   AtSign,
@@ -15,9 +18,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import PublicCardConnectionSection from "@/components/PublicCardConnectionSection";
-import type { ViewerPlan } from "@/src/lib/visibility";
-import TemplateRenderer from "@/components/templates/TemplateRenderer";
-import type { TemplateId } from "@/src/lib/templates";
+import type { TemplateRendererProps } from "./types";
 
 const patternClassMap: Record<string, string> = {
   "gradient-1": "cardlink-pattern-gradient-1",
@@ -56,52 +57,6 @@ const iconByType: Record<string, typeof User> = {
   Twitter,
   Website: Globe,
   Other: AtSign,
-};
-
-type CardField = {
-  id: string;
-  field_type: string;
-  field_label: string | null;
-  field_value: string;
-  visibility: "public" | "friends" | "hidden";
-  sort_order: number | null;
-};
-
-type CardLink = {
-  id: string;
-  label: string;
-  url: string;
-  icon: string | null;
-  sort_order: number | null;
-};
-
-type CardExperience = {
-  id: string;
-  role: string;
-  company: string;
-  start_date: string | null;
-  end_date: string | null;
-  description: string | null;
-  sort_order: number | null;
-};
-
-type PublicCardViewProps = {
-  fullName: string;
-  title: string | null;
-  company: string | null;
-  bio: string | null;
-  slug: string;
-  avatarUrl: string | null;
-  backgroundPattern: string | null;
-  backgroundColor: string | null;
-  vcardHref: string;
-  cardFields: CardField[];
-  cardLinks: CardLink[];
-  cardExperiences: CardExperience[];
-  ownerId: string;
-  viewerId: string | null;
-  viewerPlan: ViewerPlan;
-  template?: TemplateId | null;
 };
 
 function getInitials(name: string) {
@@ -188,49 +143,25 @@ function formatDateRange(
   return `${startLabel || ""} — ${endLabel}`.trim();
 }
 
-export default function PublicCardView({
-  fullName,
-  title,
-  company,
-  bio,
-  slug,
-  avatarUrl,
-  backgroundPattern,
-  backgroundColor,
-  vcardHref,
-  cardFields,
-  cardLinks,
-  cardExperiences,
-  ownerId,
-  viewerId,
-  viewerPlan,
-  template,
-}: PublicCardViewProps) {
-  // If a template is specified, use the template renderer
-  if (template) {
-    return (
-      <TemplateRenderer
-        template={template}
-        fullName={fullName}
-        title={title}
-        company={company}
-        bio={bio}
-        slug={slug}
-        avatarUrl={avatarUrl}
-        backgroundPattern={backgroundPattern}
-        backgroundColor={backgroundColor}
-        vcardHref={vcardHref}
-        cardFields={cardFields}
-        cardLinks={cardLinks}
-        cardExperiences={cardExperiences}
-        ownerId={ownerId}
-        viewerId={viewerId}
-        viewerPlan={viewerPlan}
-      />
-    );
-  }
+export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
+  const {
+    fullName,
+    title,
+    company,
+    bio,
+    slug,
+    avatarUrl,
+    backgroundPattern,
+    backgroundColor,
+    vcardHref,
+    cardFields,
+    cardLinks,
+    cardExperiences,
+    ownerId,
+    viewerId,
+    viewerPlan,
+  } = props;
 
-  // Otherwise, use the default classic business template
   const t = useTranslations("publicCard");
   const locale = useLocale();
   const initials = getInitials(fullName);
@@ -251,7 +182,7 @@ export default function PublicCardView({
     patternClassMap[backgroundPattern ?? "gradient-1"] ??
     patternClassMap["gradient-1"];
   const coverStyle = {
-    "--cardlink-base": backgroundColor ?? "#6366f1",
+    "--cardlink-base": backgroundColor ?? "#1e40af",
   } as React.CSSProperties;
 
   const visibleFields = [...cardFields]
@@ -333,7 +264,7 @@ export default function PublicCardView({
               ) : (
                 <div
                   className="flex h-full w-full items-center justify-center text-lg font-semibold text-white"
-                  style={{ backgroundColor: backgroundColor ?? "#6366f1" }}
+                  style={{ backgroundColor: backgroundColor ?? "#1e40af" }}
                 >
                   {initials}
                 </div>

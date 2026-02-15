@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 
 import { createClient } from "@/src/lib/supabase/client";
+import TemplateSelector from "@/components/TemplateSelector";
+import type { TemplateId } from "@/src/lib/templates";
 
 const fieldTypes = [
   "Phone",
@@ -63,6 +65,7 @@ type CardState = {
   slug: string;
   background_pattern: string;
   background_color: string;
+  template: TemplateId | null;
 };
 
 const patternOptions = [
@@ -162,6 +165,7 @@ export default function CardEditorPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
 
   const loadCard = async () => {
     setIsLoading(true);
@@ -179,7 +183,7 @@ export default function CardEditorPage() {
         supabase
           .from("business_cards")
           .select(
-            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
+            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
           )
           .eq("id", cardId)
           .eq("user_id", userData.user.id)
@@ -192,7 +196,7 @@ export default function CardEditorPage() {
           .maybeSingle(),
         supabase
           .from("profiles")
-          .select("avatar_url")
+          .select("avatar_url, plan")
           .eq("id", userData.user.id)
           .maybeSingle(),
       ]);
@@ -213,7 +217,10 @@ export default function CardEditorPage() {
       slug: cardData.slug ?? "",
       background_pattern: cardData.background_pattern ?? "gradient-1",
       background_color: cardData.background_color ?? "#6366f1",
+      template: (cardData.template as TemplateId) ?? null,
     });
+
+    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
 
     setFields(
       (cardData.card_fields ?? []).map((field) => ({
@@ -401,6 +408,7 @@ export default function CardEditorPage() {
         bio: card.bio.trim(),
         background_pattern: card.background_pattern,
         background_color: card.background_color,
+        template: card.template,
         updated_at: new Date().toISOString(),
       })
       .eq("id", card.id)
@@ -676,6 +684,16 @@ export default function CardEditorPage() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <TemplateSelector
+            currentTemplate={card.template}
+            isPremiumUser={viewerPlan === "premium"}
+            onChange={(template) =>
+              setCard((prev) => (prev ? { ...prev, template } : prev))
+            }
+          />
         </section>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -1170,10 +1188,20 @@ export default function CardEditorPage() {
               } as React.CSSProperties}
             />
             <div className="-mt-8 flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white text-sm font-semibold text-slate-700 shadow-md">
-                {card.full_name.trim()
-                  ? card.full_name.trim().slice(0, 2).toUpperCase()
-                  : "CL"}
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white text-sm font-semibold text-slate-700 shadow-md">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar preview"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span>
+                    {card.full_name.trim()
+                      ? card.full_name.trim().slice(0, 2).toUpperCase()
+                      : "CL"}
+                  </span>
+                )}
               </div>
             </div>
             <div className="px-4 pb-4 pt-2">
