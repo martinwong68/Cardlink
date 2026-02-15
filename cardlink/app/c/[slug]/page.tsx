@@ -49,23 +49,85 @@ type CardRecord = {
   profiles: { id: string; full_name: string | null; avatar_url: string | null } | null;
 };
 
+function escapeVCardValue(value: string) {
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/\n/g, "\\n")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,");
+}
 
-function buildVCard(card: CardRecord) {
+function normalizePhone(value: string) {
+  return value.trim().replace(/[^0-9+()\-\s]/g, "");
+}
+
+function normalizeEmail(value: string) {
+  return value.trim();
+}
+
+function ensureUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
+function normalizeHandle(value: string) {
+  return value.trim().replace(/^@/, "");
+}
+
+function buildProfileUrl(fieldType: string, rawValue: string) {
+  const value = rawValue.trim();
+  if (!value) {
+    return "";
+  }
+
+  switch (fieldType) {
+    case "LinkedIn":
+      return ensureUrl(value.includes("linkedin.com") ? value : `linkedin.com/in/${normalizeHandle(value)}`);
+    case "Twitter":
+      return ensureUrl(value.includes("x.com") || value.includes("twitter.com") ? value : `x.com/${normalizeHandle(value)}`);
+    case "Instagram":
+      return ensureUrl(value.includes("instagram.com") ? value : `instagram.com/${normalizeHandle(value)}`);
+    case "Telegram":
+      return ensureUrl(value.includes("t.me") ? value : `t.me/${normalizeHandle(value)}`);
+    case "WhatsApp": {
+      const digits = value.replace(/[^0-9]/g, "");
+      return digits ? `https://wa.me/${digits}` : "";
+    }
+    default:
+      return ensureUrl(value);
+  }
+}
+
+
+function buildVCard(card: CardRecord, resolvedFullName: string) {
+  const nameParts = resolvedFullName.trim().split(/\s+/).filter(Boolean);
+  const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : nameParts[0] ?? "";
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+
   const lines = [
     "BEGIN:VCARD",
     "VERSION:3.0",
-    `FN:${card.full_name ?? ""}`,
+    `FN:${escapeVCardValue(resolvedFullName)}`,
+    `N:${escapeVCardValue(lastName)};${escapeVCardValue(firstName)};;;`,
   ];
 
   if (card.title) {
-    lines.push(`TITLE:${card.title}`);
+    lines.push(`TITLE:${escapeVCardValue(card.title)}`);
   }
   if (card.company) {
-    lines.push(`ORG:${card.company}`);
+    lines.push(`ORG:${escapeVCardValue(card.company)}`);
   }
   if (card.bio) {
-    lines.push(`NOTE:${card.bio}`);
+    lines.push(`NOTE:${escapeVCardValue(card.bio)}`);
   }
+
+  let urlItemIndex = 1;
 
   (card.card_fields ?? []).forEach((field) => {
     if (field.visibility !== "public") {
@@ -73,24 +135,46 @@ function buildVCard(card: CardRecord) {
     }
 
     switch (field.field_type) {
-      case "Phone":
-        lines.push(`TEL;TYPE=cell:${field.field_value}`);
+      case "Phone": {
+        const phone = normalizePhone(field.field_value);
+        if (phone) {
+          lines.push(`TEL;TYPE=CELL:${phone}`);
+        }
         break;
-      case "Email":
-        lines.push(`EMAIL:${field.field_value}`);
+      }
+      case "Email": {
+        const email = normalizeEmail(field.field_value);
+        if (email) {
+          lines.push(`EMAIL:${escapeVCardValue(email)}`);
+        }
         break;
-      case "Website":
-        lines.push(`URL:${field.field_value}`);
+      }
+      case "Website": {
+        const website = ensureUrl(field.field_value);
+        if (website) {
+          lines.push(`item${urlItemIndex}.URL:${escapeVCardValue(website)}`);
+          lines.push(`item${urlItemIndex}.X-ABLabel:${escapeVCardValue(field.field_label || "Website")}`);
+          urlItemIndex += 1;
+        }
         break;
+      }
       case "LinkedIn":
       case "Twitter":
       case "WeChat":
       case "WhatsApp":
       case "Telegram":
       case "Instagram":
-      default:
-        lines.push(`URL:${field.field_value}`);
+      default: {
+        const url = buildProfileUrl(field.field_type, field.field_value);
+        if (url) {
+          lines.push(`item${urlItemIndex}.URL:${escapeVCardValue(url)}`);
+          lines.push(
+            `item${urlItemIndex}.X-ABLabel:${escapeVCardValue(field.field_label || field.field_type)}`
+          );
+          urlItemIndex += 1;
+        }
         break;
+      }
     }
   });
 
@@ -174,7 +258,7 @@ export default async function PublicCardPage({
 
   const fullName =
     card.full_name || card.profiles?.full_name || t("defaultUser");
-  const vcard = buildVCard(card);
+  const vcard = buildVCard(card, fullName);
   const vcardHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
 
   return (
