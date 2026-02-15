@@ -315,14 +315,16 @@ export default function PublicCardView({
     <div className="min-h-screen bg-slate-50 pb-16">
       <div className="mx-auto w-full max-w-lg px-4 pb-10">
         <section
-          className="cardlink-section cardlink-delay-1 relative mt-6 overflow-hidden rounded-3xl shadow-md"
+          className="cardlink-section cardlink-delay-1 relative mt-6 rounded-3xl shadow-md"
           style={coverStyle}
         >
-          <div
-            className={`cardlink-cover ${patternClass} h-52 w-full md:h-64`}
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/10" />
-          <div className="absolute -bottom-10 left-1/2 flex -translate-x-1/2 items-center justify-center">
+          <div className="overflow-hidden rounded-3xl">
+            <div
+              className={`cardlink-cover ${patternClass} h-52 w-full md:h-64`}
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/10" />
+          </div>
+          <div className="absolute -bottom-12 left-1/2 z-10 flex -translate-x-1/2 items-center justify-center">
             <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white shadow-lg">
               {avatarUrl ? (
                 <img
@@ -340,7 +342,7 @@ export default function PublicCardView({
               )}
             </div>
           </div>
-          <div className="h-12" />
+          <div className="h-14" />
         </section>
 
         <section className="cardlink-section cardlink-delay-2 mt-12 rounded-3xl bg-white p-6 shadow-sm">
