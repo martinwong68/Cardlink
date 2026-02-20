@@ -375,7 +375,7 @@ export default function CardsDashboardPage() {
 
               <div className="mt-4 grid gap-2 sm:grid-cols-4">
                 <Link
-                  href={`/dashboard/cards/${card.id}/edit`}
+                  href={`/dashboard/cards/${card.id}`}
                   className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <Pencil className="h-3.5 w-3.5" />

@@ -1,10 +1,10 @@
 "use client";
 
-// Minimalist Template - Clean and simple design with centered layout
+// Minimalist Template - Premium white-card editorial layout
 
 import { useMemo, useState } from "react";
 import { Mail, Phone, Globe, Link2 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import PublicCardConnectionSection from "@/components/PublicCardConnectionSection";
 import type { TemplateRendererProps } from "./types";
 
@@ -23,12 +23,60 @@ function getInitials(name: string) {
 
 function buildContactUrl(fieldType: string, value: string) {
   const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const isSpecialScheme = /^(mailto:|tel:)/i.test(trimmed);
+  const hasDomain = (domain: string) => trimmed.toLowerCase().includes(domain);
+
   switch (fieldType) {
     case "Email": return `mailto:${trimmed}`;
     case "Phone": return `tel:${trimmed}`;
+    case "WhatsApp": {
+      if (isSpecialScheme || hasDomain("wa.me") || hasDomain("whatsapp.com")) {
+        return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
+      }
+      const digits = trimmed.replace(/[^0-9]/g, "");
+      return digits ? `https://wa.me/${digits}` : null;
+    }
+    case "LinkedIn": {
+      if (trimmed.startsWith("http") || hasDomain("linkedin.com")) {
+        return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
+      }
+      const handle = trimmed.replace(/^@/, "").replace(/^in\//i, "");
+      return `https://linkedin.com/in/${handle}`;
+    }
+    case "GitHub":
+      return trimmed.startsWith("http") || hasDomain("github.com")
+        ? (trimmed.startsWith("http") ? trimmed : `https://${trimmed}`)
+        : `https://github.com/${trimmed.replace(/^@/, "")}`;
+    case "Twitter":
+      return trimmed.startsWith("http") || hasDomain("x.com") || hasDomain("twitter.com")
+        ? (trimmed.startsWith("http") ? trimmed : `https://${trimmed}`)
+        : `https://x.com/${trimmed.replace(/^@/, "")}`;
+    case "Instagram":
+      return trimmed.startsWith("http") || hasDomain("instagram.com")
+        ? (trimmed.startsWith("http") ? trimmed : `https://${trimmed}`)
+        : `https://instagram.com/${trimmed.replace(/^@/, "")}`;
+    case "Telegram":
+      return trimmed.startsWith("http") || hasDomain("t.me")
+        ? (trimmed.startsWith("http") ? trimmed : `https://${trimmed}`)
+        : `https://t.me/${trimmed.replace(/^@/, "")}`;
     case "Website": return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
     default: return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
   }
+}
+
+function buildExternalUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "#";
+  }
+  if (/^(mailto:|tel:)/i.test(trimmed)) {
+    return trimmed;
+  }
+  return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
 }
 
 export default function MinimalistTemplate(props: TemplateRendererProps) {
@@ -38,8 +86,8 @@ export default function MinimalistTemplate(props: TemplateRendererProps) {
   } = props;
 
   const t = useTranslations("publicCard");
-  const locale = useLocale();
   const initials = getInitials(fullName);
+  const accentColor = backgroundColor ?? "#64748b";
   const [toast, setToast] = useState<string | null>(null);
 
   const shareUrl = useMemo(() => {
@@ -47,8 +95,8 @@ export default function MinimalistTemplate(props: TemplateRendererProps) {
     return base ? `${base.replace(/\/$/, "")}/c/${slug}` : typeof window !== "undefined" ? `${window.location.origin}/c/${slug}` : "";
   }, [slug]);
 
-  const visibleFields = cardFields.filter((f) => f.visibility === "public").sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
-  const sortedLinks = cardLinks.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+  const visibleFields = [...cardFields].filter((f) => f.visibility === "public").sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+  const sortedLinks = [...cardLinks].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 
   const pushToast = (msg: string) => {
     setToast(msg);
@@ -66,88 +114,126 @@ export default function MinimalistTemplate(props: TemplateRendererProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-16">
-      <div className="mx-auto w-full max-w-2xl px-6 py-12">
-        {/* Centered Avatar */}
-        <div className="flex justify-center">
-          <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-slate-100 bg-slate-50 shadow-sm">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={fullName} className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xl font-light text-slate-400" style={{ backgroundColor: backgroundColor ?? "#64748b" }}>
-                {initials}
-              </div>
-            )}
+    <div className="min-h-screen bg-slate-100 pb-16 pt-6">
+      <div className="mx-auto w-full max-w-xl px-4">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="h-20 w-20 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={fullName} className="h-full w-full object-cover" />
+              ) : (
+                <div
+                  className="flex h-full w-full items-center justify-center text-xl font-semibold text-white"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  {initials}
+                </div>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-2xl font-semibold tracking-tight text-slate-900">{fullName}</h1>
+              {(title || company) ? (
+                <p className="mt-1 truncate text-sm text-slate-500">
+                  {[title, company].filter(Boolean).join(" · ")}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          {bio ? <p className="mt-5 text-sm leading-relaxed text-slate-600">{bio}</p> : null}
+
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <a
+              href={vcardHref}
+              download={`${slug || "card"}.vcf`}
+              className="rounded-xl border border-slate-200 px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              {t("actions.saveContact")}
+            </a>
+            <button
+              onClick={handleShare}
+              className="rounded-xl px-4 py-2.5 text-sm font-medium text-white transition brightness-100 hover:brightness-95"
+              style={{ backgroundColor: accentColor }}
+            >
+              {t("actions.share")}
+            </button>
           </div>
         </div>
 
-        {/* Centered Info */}
-        <div className="mt-8 text-center">
-          <h1 className="text-3xl font-light tracking-tight text-slate-900">{fullName}</h1>
-          {(title || company) && (
-            <p className="mt-2 text-sm font-light text-slate-500">
-              {[title, company].filter(Boolean).join(" · ")}
-            </p>
-          )}
-          {bio && <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-600">{bio}</p>}
+        <div className="mt-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <PublicCardConnectionSection
+            ownerId={ownerId}
+            slug={slug}
+            viewerId={viewerId}
+            viewerPlan={viewerPlan}
+            cardFields={cardFields}
+            vcardHref={vcardHref}
+            showFields={false}
+            showSaveContact={false}
+          />
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-8 flex justify-center gap-3">
-          <a href={vcardHref} download={`${slug || "card"}.vcf`} className="rounded-full border border-slate-200 px-6 py-2 text-sm font-light text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
-            {t("actions.saveContact")}
-          </a>
-          <button onClick={handleShare} className="rounded-full bg-slate-900 px-6 py-2 text-sm font-light text-white transition hover:bg-slate-800">
-            {t("actions.share")}
-          </button>
-        </div>
-
-        {/* Connection Section */}
-        <div className="mt-8">
-          <PublicCardConnectionSection ownerId={ownerId} slug={slug} viewerId={viewerId} viewerPlan={viewerPlan} cardFields={cardFields} vcardHref={vcardHref} showFields={false} showSaveContact={false} />
-        </div>
-
-        {/* Contact Fields - Minimalist Cards */}
-        {visibleFields.length > 0 && (
-          <div className="mt-12">
-            <div className="grid gap-3 sm:grid-cols-2">
+        {visibleFields.length > 0 ? (
+          <div className="mt-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="space-y-2.5">
               {visibleFields.map((field) => {
                 const Icon = iconByType[field.field_type] || Link2;
+                const targetUrl = buildContactUrl(field.field_type, field.field_value);
+                if (!targetUrl) {
+                  return null;
+                }
                 return (
-                  <a key={field.id} href={buildContactUrl(field.field_type, field.field_value)} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-4 py-3 transition hover:border-slate-200 hover:shadow-sm">
-                    <Icon className="h-4 w-4 text-slate-400" />
-                    <div className="flex-1 text-left">
-                      <p className="text-xs font-light text-slate-400">{field.field_label || field.field_type}</p>
-                      <p className="text-sm text-slate-700">{field.field_value}</p>
-                    </div>
+                  <a
+                    key={field.id}
+                    href={targetUrl}
+                    className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-3 transition hover:border-slate-300"
+                  >
+                    <span
+                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm"
+                      style={{ color: accentColor }}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs text-slate-400">{field.field_label || field.field_type}</span>
+                      <span className="block truncate text-sm font-medium text-slate-700">{field.field_value}</span>
+                    </span>
                   </a>
                 );
               })}
             </div>
           </div>
-        )}
+        ) : null}
 
-        {/* Links */}
-        {sortedLinks.length > 0 && (
-          <div className="mt-8">
-            <div className="space-y-2">
+        {sortedLinks.length > 0 ? (
+          <div className="mt-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="space-y-2.5">
               {sortedLinks.map((link) => (
-                <a key={link.id} href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3 text-sm text-slate-700 transition hover:border-slate-200 hover:bg-slate-50">
-                  <span>{link.label}</span>
+                <a
+                  key={link.id}
+                  href={buildExternalUrl(link.url)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-50"
+                >
+                  <span className="truncate">{link.label}</span>
                   <span className="text-slate-400">→</span>
                 </a>
               ))}
             </div>
           </div>
-        )}
+        ) : null}
 
-        <footer className="mt-12 text-center text-xs font-light text-slate-300">
-          <a href="/" className="hover:text-slate-400">{t("footer.madeWith")}</a>
+        <footer className="mt-6 text-center text-xs text-slate-400">
+          <a href="/" className="hover:text-slate-500">{t("footer.madeWith")}</a>
         </footer>
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-light text-white shadow-lg">
+        <div
+          className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full px-4 py-2 text-xs font-light text-white shadow-lg"
+          style={{ backgroundColor: accentColor }}
+        >
           {toast}
         </div>
       )}

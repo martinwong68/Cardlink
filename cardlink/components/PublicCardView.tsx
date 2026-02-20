@@ -34,7 +34,7 @@ const patternClassMap: Record<string, string> = {
 
 const brandStyles: Record<string, string> = {
   Phone: "bg-emerald-500 text-white",
-  Email: "bg-rose-500 text-white",
+  Email: "bg-red-500 text-white",
   WhatsApp: "bg-emerald-600 text-white",
   LinkedIn: "bg-sky-600 text-white",
   WeChat: "bg-green-600 text-white",

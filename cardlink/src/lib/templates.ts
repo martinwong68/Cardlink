@@ -24,7 +24,6 @@ export type CardTemplate = {
 };
 
 export const CARD_TEMPLATES: CardTemplate[] = [
-  // Free Templates
   {
     id: "classic-business",
     name: "Classic Business",
@@ -51,71 +50,6 @@ export const CARD_TEMPLATES: CardTemplate[] = [
     isPremium: false,
     defaultPattern: "pattern-grid",
     defaultColor: "#6366f1", // Indigo
-  },
-  
-  // Premium Templates
-  {
-    id: "creative-agency",
-    name: "Creative Agency",
-    description: "Bold and vibrant for creative professionals",
-    category: "Creative",
-    isPremium: true,
-    defaultPattern: "gradient-5",
-    defaultColor: "#a855f7", // Purple
-  },
-  {
-    id: "medical-professional",
-    name: "Medical Professional",
-    description: "Clean and trustworthy for healthcare providers",
-    category: "Healthcare",
-    isPremium: true,
-    defaultPattern: "pattern-waves",
-    defaultColor: "#0ea5e9", // Sky blue
-  },
-  {
-    id: "real-estate",
-    name: "Real Estate",
-    description: "Professional design for property professionals",
-    category: "Real Estate",
-    isPremium: true,
-    defaultPattern: "pattern-topography",
-    defaultColor: "#f97316", // Orange
-  },
-  {
-    id: "fashion-beauty",
-    name: "Fashion & Beauty",
-    description: "Stylish and elegant for fashion industry",
-    category: "Fashion",
-    isPremium: true,
-    defaultPattern: "gradient-3",
-    defaultColor: "#ec4899", // Pink
-  },
-  {
-    id: "financial-services",
-    name: "Financial Services",
-    description: "Professional and corporate for finance sector",
-    category: "Finance",
-    isPremium: true,
-    defaultPattern: "pattern-dots",
-    defaultColor: "#111827", // Dark gray
-  },
-  {
-    id: "restaurant-food",
-    name: "Restaurant & Food",
-    description: "Warm and inviting for food industry",
-    category: "Food & Beverage",
-    isPremium: true,
-    defaultPattern: "gradient-4",
-    defaultColor: "#f59e0b", // Amber
-  },
-  {
-    id: "artist-portfolio",
-    name: "Artist & Portfolio",
-    description: "Creative showcase for artists and designers",
-    category: "Arts",
-    isPremium: true,
-    defaultPattern: "pattern-circles",
-    defaultColor: "#14b8a6", // Teal
   },
 ];
 

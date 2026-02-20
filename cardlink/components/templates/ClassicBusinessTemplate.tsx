@@ -35,7 +35,7 @@ const patternClassMap: Record<string, string> = {
 
 const brandStyles: Record<string, string> = {
   Phone: "bg-emerald-500 text-white",
-  Email: "bg-rose-500 text-white",
+  Email: "bg-red-500 text-white",
   WhatsApp: "bg-emerald-600 text-white",
   LinkedIn: "bg-sky-600 text-white",
   WeChat: "bg-green-600 text-white",
@@ -77,6 +77,14 @@ function normalizeHandle(value: string) {
   return value.trim().replace(/^@/, "");
 }
 
+function isSpecialScheme(value: string) {
+  return /^(mailto:|tel:)/i.test(value);
+}
+
+function looksLikeDomain(value: string, domain: string) {
+  return value.toLowerCase().includes(domain);
+}
+
 function ensureUrl(value: string, fallbackPrefix = "https://") {
   if (/^https?:\/\//i.test(value)) {
     return value;
@@ -96,22 +104,59 @@ function buildContactUrl(fieldType: string, value: string) {
     case "Phone":
       return `tel:${trimmed}`;
     case "WhatsApp": {
+      if (isSpecialScheme(trimmed) || looksLikeDomain(trimmed, "wa.me") || looksLikeDomain(trimmed, "whatsapp.com")) {
+        return ensureUrl(trimmed);
+      }
       const digits = trimmed.replace(/[^0-9]/g, "");
       return digits ? `https://wa.me/${digits}` : null;
     }
-    case "LinkedIn":
-      return ensureUrl(trimmed, "https://linkedin.com/in/");
+    case "LinkedIn": {
+      if (/^https?:\/\//i.test(trimmed) || looksLikeDomain(trimmed, "linkedin.com")) {
+        return ensureUrl(trimmed);
+      }
+      const handle = normalizeHandle(trimmed).replace(/^in\//i, "");
+      return `https://linkedin.com/in/${handle}`;
+    }
     case "Telegram":
-      return `https://t.me/${normalizeHandle(trimmed)}`;
+      return /^https?:\/\//i.test(trimmed) || looksLikeDomain(trimmed, "t.me")
+        ? ensureUrl(trimmed)
+        : `https://t.me/${normalizeHandle(trimmed)}`;
     case "Instagram":
-      return `https://instagram.com/${normalizeHandle(trimmed)}`;
+      return /^https?:\/\//i.test(trimmed) || looksLikeDomain(trimmed, "instagram.com")
+        ? ensureUrl(trimmed)
+        : `https://instagram.com/${normalizeHandle(trimmed)}`;
     case "Twitter":
-      return `https://x.com/${normalizeHandle(trimmed)}`;
+      return /^https?:\/\//i.test(trimmed) || looksLikeDomain(trimmed, "x.com") || looksLikeDomain(trimmed, "twitter.com")
+        ? ensureUrl(trimmed)
+        : `https://x.com/${normalizeHandle(trimmed)}`;
     case "Website":
       return ensureUrl(trimmed);
     default:
       return ensureUrl(trimmed);
   }
+}
+
+function buildExternalUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "#";
+  }
+  if (isSpecialScheme(trimmed) || /^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return ensureUrl(trimmed);
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const normalized = hex.replace("#", "");
+  const fullHex = normalized.length === 3
+    ? normalized.split("").map((c) => c + c).join("")
+    : normalized;
+  const parsed = Number.parseInt(fullHex, 16);
+  const red = (parsed >> 16) & 255;
+  const green = (parsed >> 8) & 255;
+  const blue = parsed & 255;
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }
 
 function formatDate(value: string | null, locale: string) {
@@ -181,8 +226,9 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
   const patternClass =
     patternClassMap[backgroundPattern ?? "gradient-1"] ??
     patternClassMap["gradient-1"];
+  const accentColor = backgroundColor ?? "#1e40af";
   const coverStyle = {
-    "--cardlink-base": backgroundColor ?? "#1e40af",
+    "--cardlink-base": accentColor,
   } as React.CSSProperties;
 
   const visibleFields = [...cardFields]
@@ -243,20 +289,19 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen bg-slate-100 pb-16">
       <div className="mx-auto w-full max-w-lg px-4 pb-10">
         <section
-          className="cardlink-section cardlink-delay-1 relative mt-6 rounded-3xl shadow-md"
+          className="cardlink-section cardlink-delay-1 relative mt-6 overflow-visible rounded-3xl shadow-lg"
           style={coverStyle}
         >
           <div className="overflow-hidden rounded-3xl">
-            <div
-              className={`cardlink-cover ${patternClass} h-52 w-full md:h-64`}
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/10" />
+            <div className={`cardlink-cover ${patternClass} h-52 w-full`} />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/20" />
+            <div className="absolute bottom-0 left-0 h-9 w-full rounded-t-[2rem] bg-slate-100/95" />
           </div>
-          <div className="absolute -bottom-12 left-1/2 z-10 flex -translate-x-1/2 items-center justify-center">
-            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white shadow-lg">
+          <div className="absolute -bottom-12 left-1/2 z-20 flex -translate-x-1/2 items-center justify-center">
+            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white shadow-xl">
               {avatarUrl ? (
                 <img
                   src={avatarUrl}
@@ -266,49 +311,53 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
               ) : (
                 <div
                   className="flex h-full w-full items-center justify-center text-lg font-semibold text-white"
-                  style={{ backgroundColor: backgroundColor ?? "#1e40af" }}
+                  style={{ backgroundColor: accentColor }}
                 >
                   {initials}
                 </div>
               )}
             </div>
           </div>
-          <div className="h-14" />
+          <div className="h-10" />
         </section>
 
-        <section className="cardlink-section cardlink-delay-2 mt-12 rounded-3xl bg-white p-6 shadow-sm">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-slate-900">
-              {fullName}
-            </h1>
+        <section className="cardlink-section cardlink-delay-2 mt-14 rounded-3xl bg-white p-6 shadow-md">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">{fullName}</h1>
             {(title || company) && (
-              <p className="text-sm text-slate-500">
+              <p className="mt-2 text-sm font-medium text-slate-500">
                 {[title, company].filter(Boolean).join(" • ")}
               </p>
             )}
+            {bio ? (
+              <p className="mt-4 text-sm leading-relaxed text-slate-600">{bio}</p>
+            ) : null}
           </div>
-          {bio ? (
-            <p className="mt-4 text-sm text-slate-600">{bio}</p>
-          ) : null}
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <a
               href={vcardHref}
               download={`${slug || "card"}.vcf`}
-              className="flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-violet-200 hover:text-violet-600"
+              className="flex items-center justify-center rounded-xl border bg-white px-4 py-3 text-sm font-semibold transition"
+              style={{
+                borderColor: hexToRgba(accentColor, 0.3),
+                color: accentColor,
+              }}
             >
               {t("actions.saveContact")}
             </a>
             <button
               type="button"
               onClick={handleShare}
-              className="flex items-center justify-center rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+              className="flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-sm transition brightness-100 hover:brightness-95"
+              style={{ backgroundColor: accentColor }}
             >
               {t("actions.share")}
             </button>
           </div>
         </section>
 
-        <section className="cardlink-section cardlink-delay-3 mt-6 rounded-3xl bg-white p-6 shadow-sm">
+        <section className="cardlink-section cardlink-delay-3 mt-6 rounded-3xl bg-white p-5 shadow-sm">
           <PublicCardConnectionSection
             ownerId={ownerId}
             slug={slug}
@@ -325,9 +374,9 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
           <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
             {t("sections.contact")}
           </h2>
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="mt-4 space-y-3">
             {visibleFields.length === 0 ? (
-              <p className="col-span-full text-sm text-slate-500">
+              <p className="text-sm text-slate-500">
                 {t("empty.contact")}
               </p>
             ) : null}
@@ -344,10 +393,22 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
                   onClick={() =>
                     handleContactClick(field.field_type, field.field_value)
                   }
-                  className={`flex flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-xs font-semibold shadow-sm transition hover:opacity-90 ${brandClass}`}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-slate-300"
                 >
-                  <Icon className="h-4 w-4" />
-                  <span className="text-center leading-tight">{label}</span>
+                  <span
+                    className={`flex h-9 w-9 items-center justify-center rounded-xl ${brandClass}`}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="flex-1">
+                    <span className="block text-xs font-medium text-slate-400">
+                      {label}
+                    </span>
+                    <span className="block truncate text-sm font-semibold text-slate-700">
+                      {field.field_value}
+                    </span>
+                  </span>
+                  <span className="text-slate-300">›</span>
                 </button>
               );
             })}
@@ -363,10 +424,10 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
               {sortedLinks.map((link) => (
                 <a
                   key={link.id}
-                  href={ensureUrl(link.url)}
+                  href={buildExternalUrl(link.url)}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
+                  className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                 >
                   <span className="flex items-center gap-3">
                     <span className="text-lg">
@@ -390,7 +451,7 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
               {sortedExperiences.map((experience) => (
                 <div key={experience.id} className="relative pl-6">
                   <span className="absolute left-0 top-1.5 h-full w-px bg-slate-200" />
-                  <span className="absolute left-[-5px] top-1.5 h-3 w-3 rounded-full bg-indigo-600" />
+                  <span className="absolute left-[-5px] top-1.5 h-3 w-3 rounded-full" style={{ backgroundColor: accentColor }} />
                   <div>
                     <p className="text-sm font-semibold text-slate-900">
                       {t("experience.roleAt", {
@@ -419,14 +480,14 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
         ) : null}
 
         <footer className="mt-8 text-center text-xs text-slate-400">
-          <a href="/" className="hover:text-indigo-600">
+          <a href="/" style={{ color: hexToRgba(accentColor, 0.85) }}>
             {t("footer.madeWith")}
           </a>
         </footer>
       </div>
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full px-4 py-2 text-xs font-semibold text-white shadow-lg" style={{ backgroundColor: accentColor }}>
           {toast}
         </div>
       ) : null}

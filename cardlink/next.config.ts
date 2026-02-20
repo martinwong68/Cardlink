@@ -6,6 +6,15 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    return [
+      {
+        source: "/dashboard/cards/:cardId/edit",
+        destination: "/dashboard/cards/:cardId",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();

@@ -13,6 +13,7 @@ import {
 
 import { createClient } from "@/src/lib/supabase/client";
 import TemplateSelector from "@/components/TemplateSelector";
+import TemplateRenderer from "@/components/templates/TemplateRenderer";
 import type { TemplateId } from "@/src/lib/templates";
 
 const fieldTypes = [
@@ -68,6 +69,14 @@ type CardState = {
   template: TemplateId | null;
 };
 
+const coreTemplateIds: TemplateId[] = [
+  "classic-business",
+  "minimalist",
+  "modern-tech",
+];
+
+const coreTemplateSet = new Set<TemplateId>(coreTemplateIds);
+
 const patternOptions = [
   "gradient-1",
   "gradient-2",
@@ -120,7 +129,7 @@ const colorOptions = [
 
 const contactPreviewClasses: Record<string, string> = {
   Phone: "bg-emerald-500",
-  Email: "bg-rose-500",
+  Email: "bg-red-500",
   WhatsApp: "bg-emerald-600",
   LinkedIn: "bg-sky-600",
   WeChat: "bg-green-600",
@@ -207,6 +216,8 @@ export default function CardEditorPage() {
       return;
     }
 
+    const savedTemplate = (cardData.template as TemplateId | null) ?? "classic-business";
+
     setCard({
       id: cardData.id,
       card_name: cardData.card_name ?? "My Card",
@@ -217,7 +228,9 @@ export default function CardEditorPage() {
       slug: cardData.slug ?? "",
       background_pattern: cardData.background_pattern ?? "gradient-1",
       background_color: cardData.background_color ?? "#6366f1",
-      template: (cardData.template as TemplateId) ?? null,
+      template: coreTemplateSet.has(savedTemplate)
+        ? savedTemplate
+        : "classic-business",
     });
 
     setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
@@ -560,6 +573,31 @@ export default function CardEditorPage() {
 
   const patternClass =
     patternClassMap[card.background_pattern] ?? patternClassMap["gradient-1"];
+  const previewTemplate = (card.template ?? "classic-business") as TemplateId;
+  const previewFields = fields.map((field, index) => ({
+    id: field.id ?? `preview-field-${index}`,
+    field_type: field.field_type,
+    field_label: field.field_label || field.field_type,
+    field_value: field.field_value,
+    visibility: field.visibility,
+    sort_order: index,
+  }));
+  const previewLinks = links.map((link, index) => ({
+    id: link.id ?? `preview-link-${index}`,
+    label: link.label,
+    url: link.url,
+    icon: link.icon || null,
+    sort_order: index,
+  }));
+  const previewExperiences = experiences.map((experience, index) => ({
+    id: experience.id ?? `preview-experience-${index}`,
+    role: experience.role,
+    company: experience.company,
+    start_date: experience.start_date || null,
+    end_date: experience.end_date || null,
+    description: experience.description || null,
+    sort_order: index,
+  }));
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -1180,63 +1218,26 @@ export default function CardEditorPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             Live Preview
           </p>
-          <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50">
-            <div
-              className={`cardlink-cover ${patternClass} h-24 rounded-t-3xl`}
-              style={{
-                "--cardlink-base": card.background_color,
-              } as React.CSSProperties}
-            />
-            <div className="-mt-8 flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white text-sm font-semibold text-slate-700 shadow-md">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="Avatar preview"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span>
-                    {card.full_name.trim()
-                      ? card.full_name.trim().slice(0, 2).toUpperCase()
-                      : "CL"}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="px-4 pb-4 pt-2">
-              <p className="text-base font-semibold text-slate-900">
-                {card.full_name || "Your Name"}
-              </p>
-              <p className="text-xs text-slate-500">
-                {[card.title, card.company].filter(Boolean).join(" • ")}
-              </p>
-              {card.bio ? (
-                <p className="mt-2 text-xs text-slate-600">{card.bio}</p>
-              ) : null}
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {fields
-                  .filter((field) => field.visibility === "public")
-                  .slice(0, 4)
-                  .map((field) => (
-                    <div
-                      key={`${field.field_type}-${field.id ?? "new"}`}
-                      className={`rounded-full px-2 py-1 text-[10px] font-semibold text-white ${
-                        contactPreviewClasses[field.field_type] ?? "bg-slate-600"
-                      }`}
-                    >
-                      {field.field_label || field.field_type}
-                    </div>
-                  ))}
-              </div>
-              {links.length > 0 ? (
-                <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
-                  <p className="text-xs font-semibold text-slate-500">Links</p>
-                  <p className="text-xs text-slate-600">
-                    {links[0]?.label || "Link"}
-                  </p>
-                </div>
-              ) : null}
+          <div className="mt-4 max-h-[74vh] overflow-y-auto rounded-3xl border border-slate-200 bg-slate-100">
+            <div className="pointer-events-none">
+              <TemplateRenderer
+                template={previewTemplate}
+                fullName={card.full_name || "Your Name"}
+                title={card.title || null}
+                company={card.company || null}
+                bio={card.bio || null}
+                slug={card.slug || card.id}
+                avatarUrl={avatarUrl || null}
+                backgroundPattern={card.background_pattern}
+                backgroundColor={card.background_color}
+                vcardHref="#"
+                cardFields={previewFields}
+                cardLinks={previewLinks}
+                cardExperiences={previewExperiences}
+                ownerId={card.id}
+                viewerId={null}
+                viewerPlan={"free"}
+              />
             </div>
           </div>
         </div>
