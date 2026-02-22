@@ -130,6 +130,14 @@ export default function SettingsPage() {
           <ChevronRight className="h-4 w-4 text-slate-400" />
         </Link>
 
+        <Link
+          href="/dashboard/settings/password"
+          className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-violet-200"
+        >
+          {t("links.password")}
+          <ChevronRight className="h-4 w-4 text-slate-400" />
+        </Link>
+
         {viewerPlan === "premium" ? (
           <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-700 shadow-sm">
             {t("links.subscriptionActive")}

@@ -16,10 +16,16 @@
     "actions": {
       "signIn": "Sign in",
       "signingIn": "Signing in...",
-      "createAccount": "Create an account"
+      "createAccount": "Create an account",
+      "forgotPassword": "Forgot password?",
+      "sendingReset": "Sending reset email..."
     },
     "footer": {
       "newHere": "New to CardLink?"
+    },
+    "messages": {
+      "enterEmailForReset": "Enter your email first, then click forgot password again.",
+      "resetEmailSent": "Password reset email sent. Please check your inbox."
     }
   },
   "signup": {
@@ -60,6 +66,8 @@
   "dashboardNav": {
     "community": "Community",
     "cards": "Cards",
+    "membership": "Membership",
+    "discount": "Explore",
     "settings": "Settings"
   },
   "getCard": {
@@ -532,6 +540,7 @@
     "links": {
       "profile": "Edit Profile",
       "privacy": "Privacy Settings",
+      "password": "Reset Password",
       "subscription": "Subscription Plan",
       "subscriptionActive": "Subscription",
       "premiumBadge": "Premium",
@@ -541,6 +550,48 @@
     },
     "actions": {
       "logout": "Log Out"
+    }
+  },
+  "passwordSettings": {
+    "brand": "CardLink",
+    "title": "Reset Password",
+    "subtitle": "Set a new password for your account.",
+    "fields": {
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password"
+    },
+    "errors": {
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordNotMatch": "Passwords do not match."
+    },
+    "messages": {
+      "updated": "Password updated successfully."
+    },
+    "actions": {
+      "save": "Save password",
+      "saving": "Saving..."
+    }
+  },
+  "resetPassword": {
+    "brand": "CardLink",
+    "title": "Set a new password",
+    "subtitle": "After opening the reset link from email, enter your new password here.",
+    "fields": {
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password"
+    },
+    "errors": {
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordNotMatch": "Passwords do not match."
+    },
+    "messages": {
+      "updated": "Password reset completed. You can now sign in.",
+      "redirecting": "Redirecting to login in {seconds}s..."
+    },
+    "actions": {
+      "save": "Reset password",
+      "saving": "Updating...",
+      "backToLogin": "Back to login"
     }
   },
   "profile": {
@@ -619,6 +670,144 @@
     "title": "Welcome to Premium! 🎉",
     "subtitle": "Your account is now upgraded.",
     "action": "Back to dashboard"
+  },
+  "discountHistory": {
+    "brand": "CardLink",
+    "title": "Redemption History",
+    "subtitle": "Company admins can review confirmed and rejected redemptions here."
+  },
+  "explorePage": {
+    "brand": "CardLink",
+    "title": "Explore",
+    "subtitle": "Discover partner companies, promotions, and redeemable discounts.",
+    "loading": "Loading explore content...",
+    "sections": {
+      "promotion": "Promotion Carousel",
+      "partners": "Partner Company",
+      "discounts": "Discount List"
+    },
+    "labels": {
+      "specialOffer": "Special Offer",
+      "membershipPartner": "Membership partner company.",
+      "company": "Company",
+      "balance": "Balance",
+      "offPercent": "{value}% off",
+      "offFixed": "${value} off",
+      "offGeneric": "{value} off"
+    },
+    "actions": {
+      "view": "View",
+      "join": "Join",
+      "joined": "Joined",
+      "addToMembership": "Add to Membership",
+      "all": "All",
+      "submitting": "Submitting...",
+      "redeem": "Redeem"
+    },
+    "empty": {
+      "promotions": "No active promotions right now.",
+      "partners": "No partner companies available.",
+      "discounts": "No discounts available for this company."
+    },
+    "messages": {
+      "signInToRedeem": "Please sign in to redeem discounts.",
+      "applyMembershipFirst": "Apply for membership first before redeeming this discount.",
+      "redeemSubmitted": "Redemption request submitted. Waiting for company approval."
+    },
+    "errors": {
+      "loadCompanies": "Failed to load companies: {message}",
+      "loadDiscounts": "Failed to load discounts: {message}",
+      "loadPartners": "Failed to load partner companies: {message}",
+      "loadMemberships": "Failed to load memberships: {message}"
+    }
+  },
+  "discountPanel": {
+    "loading": "Loading discounts...",
+    "quickAccess": "Quick Access",
+    "labels": {
+      "specialOffer": "Special Offer",
+      "offPercent": "{value}% off",
+      "offFixed": "${value} off",
+      "offGeneric": "{value} off",
+      "serviceCompany": "Service Company",
+      "yourBalance": "Your balance",
+      "offer": "Offer",
+      "company": "Company"
+    },
+    "actions": {
+      "reviewPending": "Review Pending",
+      "reviewHistory": "Review History",
+      "allCompanies": "All Companies",
+      "submitting": "Submitting...",
+      "redeem": "Redeem",
+      "confirm": "Confirm",
+      "reject": "Reject"
+    },
+    "admin": {
+      "title": "Company Admin Panel",
+      "subtitle": "Login as a company owner/admin to confirm redemption requests.",
+      "pending": "Pending",
+      "history": "History",
+      "accountPoints": "Account points",
+      "required": "Required",
+      "requested": "Requested",
+      "processed": "Processed"
+    },
+    "status": {
+      "confirmed": "CONFIRMED",
+      "rejected": "REJECTED"
+    },
+    "empty": {
+      "noActiveDiscounts": "No active discounts right now.",
+      "noPending": "No pending redemption requests.",
+      "noHistory": "No processed redemption history."
+    },
+    "messages": {
+      "signInToUse": "Please sign in to use discounts.",
+      "needMembership": "You need an active membership account for this company.",
+      "requestSubmitted": "Redemption request submitted. Waiting for company confirmation.",
+      "rejectedByAdmin": "Rejected by company admin",
+      "fallbackAdmin": "Loaded with fallback admin detection ({reason}).",
+      "confirmed": "Redemption confirmed.",
+      "rejected": "Redemption rejected."
+    },
+    "errors": {
+      "loadCompanies": "Failed to load companies: {message}",
+      "loadOffers": "Failed to load offers: {message}",
+      "loadAccounts": "Failed to load membership accounts: {message}",
+      "loadRedemptions": "Failed to load redemptions: {message}"
+    }
+  },
+  "membershipOverview": {
+    "brand": "CardLink",
+    "title": "Membership Overview",
+    "subtitle": "All your memberships and account points across every company.",
+    "cards": {
+      "pointSystemTitle": "Point System",
+      "pointSystemBody": "Shared by all partner companies.",
+      "totalBalanceTitle": "Total Balance",
+      "totalBalanceBody": "BOBO-POINT across all memberships.",
+      "totalSpendTitle": "Total Spend",
+      "totalSpendBody": "Total amount spent across all memberships."
+    },
+    "labels": {
+      "unknownCompany": "Unknown Company",
+      "membershipAccount": "Membership Account",
+      "tier": "Tier",
+      "noTier": "No tier",
+      "totalSpend": "Total Spend",
+      "current": "Current",
+      "lifetime": "Lifetime",
+      "joined": "Joined",
+      "expires": "Expires",
+      "noExpiry": "No expiry"
+    },
+    "errors": {
+      "tablesNotReady": "Membership tables are not ready yet. Run phase migrations to enable this view."
+    },
+    "empty": {
+      "noMemberships": "No memberships found yet."
+    }
   },
   "discover": {
     "brand": "CardLink",

@@ -188,7 +188,7 @@ export default function ContactDetailPage({
 
     const { data: userData, error } = await supabase.auth.getUser();
     if (error || !userData.user) {
-      setMessage("Please sign in to view this contact.");
+      setMessage("請先登入以查看此聯絡人。");
       setIsLoading(false);
       return;
     }
@@ -431,7 +431,7 @@ export default function ContactDetailPage({
     connectionStatus
   );
 
-  const fullName = card.full_name ?? "CardLink User";
+  const fullName = card.full_name ?? "CardLink 使用者";
   const initials = getInitials(fullName);
 
   return (
@@ -527,27 +527,27 @@ export default function ContactDetailPage({
         <div className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
           <Bell className="h-4 w-4 text-violet-600" />
-          CRM
+          客戶管理
         </div>
 
         <div className="border-t border-slate-100 pt-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Tag className="h-4 w-4 text-violet-600" />
-              Tags
+              標籤
             </div>
             <button
               onClick={() => setIsAddingTag((prev) => !prev)}
               className="flex items-center gap-1 text-xs font-semibold text-violet-600"
             >
               <Plus className="h-3.5 w-3.5" />
-              Add Tag
+              新增標籤
             </button>
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
             {tags.length === 0 ? (
-              <span className="text-xs text-slate-400">No tags yet.</span>
+              <span className="text-xs text-slate-400">尚未有標籤。</span>
             ) : (
               tags.map((tag) => (
                 <button
@@ -566,14 +566,14 @@ export default function ContactDetailPage({
               <input
                 value={tagInput}
                 onChange={(event) => setTagInput(event.target.value)}
-                placeholder="Type a tag"
+                placeholder="輸入標籤"
                 className="flex-1 rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-700"
               />
               <button
                 onClick={() => handleAddTag(tagInput)}
                 className="rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white"
               >
-                Add
+                新增
               </button>
             </div>
           ) : null}
@@ -595,14 +595,14 @@ export default function ContactDetailPage({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Pencil className="h-4 w-4 text-violet-600" />
-              Notes
+              備註
             </div>
             <button
               onClick={() => setIsAddingNote((prev) => !prev)}
               className="flex items-center gap-1 text-xs font-semibold text-violet-600"
             >
               <Plus className="h-3.5 w-3.5" />
-              Add Note
+              新增備註
             </button>
           </div>
 
@@ -612,7 +612,7 @@ export default function ContactDetailPage({
                 value={noteDraft}
                 onChange={(event) => setNoteDraft(event.target.value)}
                 rows={3}
-                placeholder="Write a private note..."
+                placeholder="輸入私人備註..."
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
               />
               <div className="flex gap-2">
@@ -620,13 +620,13 @@ export default function ContactDetailPage({
                   onClick={handleAddNote}
                   className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
                 >
-                  Save Note
+                  儲存備註
                 </button>
                 <button
                   onClick={() => setIsAddingNote(false)}
                   className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600"
                 >
-                  Cancel
+                  取消
                 </button>
               </div>
             </div>
@@ -634,7 +634,7 @@ export default function ContactDetailPage({
 
           <div className="mt-4 space-y-3">
             {crmNotes.filter((note) => note.note_text).length === 0 ? (
-              <p className="text-xs text-slate-400">No notes yet.</p>
+              <p className="text-xs text-slate-400">尚未有備註。</p>
             ) : null}
 
             {crmNotes
@@ -657,13 +657,13 @@ export default function ContactDetailPage({
                           onClick={() => handleSaveNote(note.id)}
                           className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
                         >
-                          Save
+                          儲存
                         </button>
                         <button
                           onClick={() => setEditingNoteId(null)}
                           className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
                         >
-                          Cancel
+                          取消
                         </button>
                       </div>
                     </div>
@@ -684,13 +684,13 @@ export default function ContactDetailPage({
                           onClick={() => handleEditNote(note)}
                           className="text-xs font-semibold text-violet-600"
                         >
-                          Edit
+                          編輯
                         </button>
                         <button
                           onClick={() => handleDeleteNote(note.id)}
                           className="text-xs font-semibold text-rose-500"
                         >
-                          Delete
+                          刪除
                         </button>
                       </div>
                     </div>
@@ -704,7 +704,7 @@ export default function ContactDetailPage({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Calendar className="h-4 w-4 text-violet-600" />
-              Reminders
+              提醒
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -717,14 +717,14 @@ export default function ContactDetailPage({
                 onClick={handleAddReminder}
                 className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
               >
-                Set Reminder
+                設定提醒
               </button>
             </div>
           </div>
 
           <div className="mt-4 space-y-2">
             {crmNotes.filter((note) => note.reminder_date).length === 0 ? (
-              <p className="text-xs text-slate-400">No reminders set.</p>
+              <p className="text-xs text-slate-400">尚未設定提醒。</p>
             ) : null}
             {crmNotes
               .filter((note) => note.reminder_date)
@@ -743,7 +743,7 @@ export default function ContactDetailPage({
                         : "border-amber-200 bg-amber-50 text-amber-700"
                     }`}
                   >
-                    Follow up on {formatDateValue(reminder)}
+                    追蹤提醒：{formatDateValue(reminder)}
                   </div>
                 );
               })}
@@ -753,16 +753,16 @@ export default function ContactDetailPage({
         <div className="border-t border-slate-100 pt-5">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
             <Bell className="h-4 w-4 text-violet-600" />
-            Interaction history
+            互動紀錄
           </div>
           <div className="mt-3 space-y-2 text-xs text-slate-500">
             {shareHistory.length === 0 ? (
-              <p>No card exchanges recorded.</p>
+              <p>尚未有名片交換紀錄。</p>
             ) : (
               shareHistory.map((share) => (
                 <div key={share.id} className="flex items-center justify-between">
                   <span>
-                    Connected via {share.share_method ?? "link"}
+                    連結方式：{share.share_method ?? "連結"}
                   </span>
                   <span>
                     {share.shared_at
@@ -777,7 +777,7 @@ export default function ContactDetailPage({
       </div>
       ) : (
         <div className="rounded-3xl border border-violet-100 bg-violet-50 p-6 text-sm text-violet-700">
-          Upgrade to Premium to unlock CRM notes, tags, and reminders.
+          升級至 Premium 以解鎖 CRM 備註、標籤與提醒功能。
         </div>
       )}
 
@@ -787,7 +787,7 @@ export default function ContactDetailPage({
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <ShieldAlert className="h-4 w-4" />
-        Remove Connection
+        移除連結
       </button>
 
       {message ? (
@@ -800,7 +800,7 @@ export default function ContactDetailPage({
         onClick={() => router.push("/dashboard/cards?tab=contacts")}
         className="text-sm font-semibold text-violet-600 hover:text-violet-700"
       >
-        Back to contacts
+        返回聯絡人
       </button>
     </div>
   );

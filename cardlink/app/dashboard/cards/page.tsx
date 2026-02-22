@@ -17,6 +17,7 @@ import { createClient } from "@/src/lib/supabase/client";
 import QRCodeModal from "@/components/QRCodeModal";
 import ContactsPanel from "@/components/ContactsPanel";
 import NfcCardsPanel from "@/components/NfcCardsPanel";
+import CompanyCardsManagementPanel from "@/components/CompanyCardsManagementPanel";
 
 const patternClassMap: Record<string, string> = {
   "gradient-1": "cardlink-pattern-gradient-1",
@@ -61,7 +62,13 @@ function formatDate(value: string, locale: string) {
   }
 }
 
-function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
+function CardsTabs({
+  activeTab,
+  isOwner,
+}: {
+  activeTab: "cards" | "contacts" | "nfc" | "company";
+  isOwner: boolean;
+}) {
   const t = useTranslations("cards.tabs");
   return (
     <div className="flex flex-wrap gap-2">
@@ -95,6 +102,18 @@ function CardsTabs({ activeTab }: { activeTab: "cards" | "contacts" | "nfc" }) {
       >
         {t("nfc")}
       </Link>
+      {isOwner ? (
+        <Link
+          href="/dashboard/cards?tab=company"
+          className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+            activeTab === "company"
+              ? "bg-violet-600 text-white"
+              : "border border-slate-200 bg-white text-slate-500"
+          }`}
+        >
+          Company Cards
+        </Link>
+      ) : null}
     </div>
   );
 }
@@ -106,13 +125,20 @@ export default function CardsDashboardPage() {
   const locale = useLocale();
   const tabParam = searchParams.get("tab");
   const activeTab =
-    tabParam === "contacts" ? "contacts" : tabParam === "nfc" ? "nfc" : "cards";
+    tabParam === "contacts"
+      ? "contacts"
+      : tabParam === "nfc"
+      ? "nfc"
+      : tabParam === "company"
+      ? "company"
+      : "cards";
   const [cards, setCards] = useState<CardRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [qrCard, setQrCard] = useState<CardRow | null>(null);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
+  const [isOwner, setIsOwner] = useState(false);
 
   const pushToast = (text: string) => {
     setToast(text);
@@ -130,22 +156,48 @@ export default function CardsDashboardPage() {
       return;
     }
 
-    const [{ data, error }, { data: profileData }] = await Promise.all([
+    const [
+      { data, error },
+      { data: profileData },
+      { data: companyRoleData },
+      { data: createdCompanyData },
+      { data: adminCompanyIdsData },
+    ] = await Promise.all([
       supabase
         .from("business_cards")
         .select(
           "id, card_name, slug, full_name, title, background_pattern, background_color, created_at, card_shares(count)"
         )
         .eq("user_id", userData.user.id)
+        .or("is_company_profile.is.false,is_company_profile.is.null")
         .order("created_at", { ascending: false }),
       supabase
         .from("profiles")
         .select("plan")
         .eq("id", userData.user.id)
         .maybeSingle(),
+      supabase
+        .from("company_members")
+        .select("company_id, role, status")
+        .eq("user_id", userData.user.id)
+        .eq("status", "active"),
+      supabase
+        .from("companies")
+        .select("id")
+        .eq("created_by", userData.user.id),
+      supabase.rpc("get_my_admin_company_ids"),
     ]);
 
     setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
+    const ownerByRole = ((companyRoleData ?? []) as { role: string }[]).some(
+      (item) =>
+        ["owner", "admin", "manager", "company_owner", "company_admin"].includes(
+          (item.role ?? "").toLowerCase()
+        )
+    );
+    const ownerByCreator = ((createdCompanyData ?? []) as { id: string }[]).length > 0;
+    const ownerByRpc = ((adminCompanyIdsData ?? []) as { company_id: string }[]).length > 0;
+    setIsOwner(ownerByRole || ownerByCreator || ownerByRpc);
 
     if (error) {
       setMessage(error.message);
@@ -259,7 +311,7 @@ export default function CardsDashboardPage() {
   if (activeTab === "contacts") {
     return (
       <div className="space-y-6">
-        <CardsTabs activeTab="contacts" />
+        <CardsTabs activeTab="contacts" isOwner={isOwner} />
         <ContactsPanel />
       </div>
     );
@@ -268,8 +320,17 @@ export default function CardsDashboardPage() {
   if (activeTab === "nfc") {
     return (
       <div className="space-y-6">
-        <CardsTabs activeTab="nfc" />
+        <CardsTabs activeTab="nfc" isOwner={isOwner} />
         <NfcCardsPanel />
+      </div>
+    );
+  }
+
+  if (activeTab === "company" && isOwner) {
+    return (
+      <div className="space-y-6">
+        <CardsTabs activeTab="company" isOwner={isOwner} />
+        <CompanyCardsManagementPanel />
       </div>
     );
   }
@@ -299,7 +360,7 @@ export default function CardsDashboardPage() {
         </button>
       </div>
 
-      <CardsTabs activeTab="cards" />
+      <CardsTabs activeTab="cards" isOwner={isOwner} />
 
       {message ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">

@@ -19,11 +19,14 @@ export default function LoginClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
+    setInfoMessage(null);
     setIsLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -39,6 +42,32 @@ export default function LoginClient() {
     }
 
     router.push(returnTo ?? "/dashboard/community");
+  };
+
+  const handleForgotPassword = async () => {
+    setErrorMessage(null);
+    setInfoMessage(null);
+
+    if (!email.trim()) {
+      setErrorMessage(t("messages.enterEmailForReset"));
+      return;
+    }
+
+    setIsSendingReset(true);
+
+    const redirectTo = `${window.location.origin}/reset-password`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo,
+    });
+
+    setIsSendingReset(false);
+
+    if (error) {
+      setErrorMessage(error.message);
+      return;
+    }
+
+    setInfoMessage(t("messages.resetEmailSent"));
   };
 
   return (
@@ -93,11 +122,25 @@ export default function LoginClient() {
               onChange={(event) => setPassword(event.target.value)}
               className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
             />
+            <button
+              type="button"
+              onClick={() => void handleForgotPassword()}
+              disabled={isSendingReset}
+              className="mt-2 text-xs font-semibold text-violet-600 hover:text-violet-700 disabled:opacity-60"
+            >
+              {isSendingReset ? t("actions.sendingReset") : t("actions.forgotPassword")}
+            </button>
           </div>
 
           {errorMessage ? (
             <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
               {errorMessage}
+            </p>
+          ) : null}
+
+          {infoMessage ? (
+            <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+              {infoMessage}
             </p>
           ) : null}
 

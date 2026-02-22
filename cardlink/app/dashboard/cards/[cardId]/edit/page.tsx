@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDown,
@@ -28,7 +28,25 @@ const fieldTypes = [
   "Website",
 ] as const;
 
+const fieldTypeLabelMap: Record<(typeof fieldTypes)[number], string> = {
+  Phone: "電話",
+  Email: "電子郵件",
+  WhatsApp: "WhatsApp",
+  LinkedIn: "LinkedIn",
+  WeChat: "微信",
+  Telegram: "Telegram",
+  Instagram: "Instagram",
+  Twitter: "Twitter",
+  Website: "網站",
+};
+
 const visibilityOptions = ["public", "friends", "hidden"] as const;
+
+const visibilityLabelMap: Record<(typeof visibilityOptions)[number], string> = {
+  public: "公開",
+  friends: "好友",
+  hidden: "隱藏",
+};
 
 type Visibility = (typeof visibilityOptions)[number];
 
@@ -148,7 +166,7 @@ function moveItem<T>(items: T[], from: number, to: number) {
 
 function formatDateRange(start: string, end: string) {
   const startLabel = start.trim();
-  const endLabel = end.trim() || "Present";
+  const endLabel = end.trim() || "至今";
   if (!startLabel && !endLabel) {
     return "";
   }
@@ -158,8 +176,10 @@ function formatDateRange(start: string, end: string) {
 export default function CardEditorPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = useMemo(() => createClient(), []);
   const cardId = typeof params.cardId === "string" ? params.cardId : "";
+  const isCompanyCardMode = searchParams.get("mode") === "company";
 
   const [card, setCard] = useState<CardState | null>(null);
   const [fields, setFields] = useState<FieldState[]>([]);
@@ -182,38 +202,109 @@ export default function CardEditorPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("Please sign in to edit your card.");
+      setMessage("請先登入以編輯你的名片。");
       setIsLoading(false);
       return;
     }
 
-    const [{ data: cardData, error: cardError }, { data: profileData }] =
+    const [{ data: cardData, error: cardError }, { data: profileData }, { data: adminCompanyData }, { data: adminRoleData }] =
       await Promise.all([
-        supabase
-          .from("business_cards")
-          .select(
-            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
-          )
-          .eq("id", cardId)
-          .eq("user_id", userData.user.id)
-          .order("sort_order", { foreignTable: "card_fields", ascending: true })
-          .order("sort_order", { foreignTable: "card_links", ascending: true })
-          .order("sort_order", {
-            foreignTable: "card_experiences",
-            ascending: true,
-          })
-          .maybeSingle(),
+        (isCompanyCardMode
+          ? supabase
+              .from("business_cards")
+              .select(
+                "id, user_id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
+              )
+              .eq("id", cardId)
+              .order("sort_order", { foreignTable: "card_fields", ascending: true })
+              .order("sort_order", { foreignTable: "card_links", ascending: true })
+              .order("sort_order", {
+                foreignTable: "card_experiences",
+                ascending: true,
+              })
+              .maybeSingle()
+          : supabase
+              .from("business_cards")
+              .select(
+                "id, user_id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
+              )
+              .eq("id", cardId)
+              .eq("user_id", userData.user.id)
+              .order("sort_order", { foreignTable: "card_fields", ascending: true })
+              .order("sort_order", { foreignTable: "card_links", ascending: true })
+              .order("sort_order", {
+                foreignTable: "card_experiences",
+                ascending: true,
+              })
+              .maybeSingle()),
         supabase
           .from("profiles")
           .select("avatar_url, plan")
           .eq("id", userData.user.id)
           .maybeSingle(),
+        supabase.rpc("get_my_admin_company_ids"),
+        supabase
+          .from("company_members")
+          .select("company_id, role, status")
+          .eq("user_id", userData.user.id)
+          .eq("status", "active"),
       ]);
 
     if (cardError || !cardData) {
-      setMessage(cardError?.message ?? "Card not found.");
+      setMessage(cardError?.message ?? "找不到名片。");
       setIsLoading(false);
       return;
+    }
+
+    if (isCompanyCardMode) {
+      const ownerUserId = (cardData as { user_id?: string | null }).user_id ?? null;
+      if (!ownerUserId) {
+        setMessage("找不到公司名片擁有者。");
+        setIsLoading(false);
+        return;
+      }
+
+      const rpcAdminIds = ((adminCompanyData ?? []) as { company_id: string }[]).map(
+        (item) => item.company_id
+      );
+      const roleAdminIds = ((adminRoleData ?? []) as { company_id: string; role: string }[])
+        .filter((item) =>
+          ["owner", "admin", "manager", "company_owner", "company_admin"].includes(
+            (item.role ?? "").toLowerCase()
+          )
+        )
+        .map((item) => item.company_id);
+
+      const adminCompanyIds = Array.from(new Set([...rpcAdminIds, ...roleAdminIds]));
+
+      if (!adminCompanyIds.length) {
+        setMessage("你沒有公司管理權限。");
+        setIsLoading(false);
+        return;
+      }
+
+      const { data: ownerMembershipRows, error: ownerMembershipError } = await supabase
+        .from("company_members")
+        .select("company_id")
+        .eq("user_id", ownerUserId)
+        .eq("status", "active");
+
+      if (ownerMembershipError) {
+        setMessage(ownerMembershipError.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const ownerCompanyIds = new Set(
+        ((ownerMembershipRows ?? []) as { company_id: string }[]).map((item) => item.company_id)
+      );
+
+      const hasAccess = adminCompanyIds.some((companyId) => ownerCompanyIds.has(companyId));
+      if (!hasAccess) {
+        setMessage("你沒有權限編輯這張公司名片。");
+        setIsLoading(false);
+        return;
+      }
     }
 
     const savedTemplate = (cardData.template as TemplateId | null) ?? "classic-business";
@@ -221,7 +312,7 @@ export default function CardEditorPage() {
     setCard({
       id: cardData.id,
       card_name: cardData.card_name ?? "My Card",
-      full_name: cardData.full_name ?? "",
+      full_name: isCompanyCardMode ? "" : cardData.full_name ?? "",
       title: cardData.title ?? "",
       company: cardData.company ?? "",
       bio: cardData.bio ?? "",
@@ -271,7 +362,7 @@ export default function CardEditorPage() {
 
   useEffect(() => {
     void loadCard();
-  }, [cardId]);
+  }, [cardId, isCompanyCardMode]);
 
   const updateField = (index: number, updates: Partial<FieldState>) => {
     setFields((prev) =>
@@ -357,7 +448,7 @@ export default function CardEditorPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("Please sign in to upload an avatar.");
+      setMessage("請先登入以上傳頭像。");
       setIsUploading(false);
       return;
     }
@@ -406,16 +497,16 @@ export default function CardEditorPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("Please sign in to save your card.");
+      setMessage("請先登入以儲存名片。");
       setIsSaving(false);
       return;
     }
 
-    const { error: cardError } = await supabase
+    let cardUpdateQuery = supabase
       .from("business_cards")
       .update({
         card_name: card.card_name.trim(),
-        full_name: card.full_name.trim(),
+        full_name: isCompanyCardMode ? null : card.full_name.trim(),
         title: card.title.trim(),
         company: card.company.trim(),
         bio: card.bio.trim(),
@@ -424,8 +515,13 @@ export default function CardEditorPage() {
         template: card.template,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", card.id)
-      .eq("user_id", userData.user.id);
+      .eq("id", card.id);
+
+    if (!isCompanyCardMode) {
+      cardUpdateQuery = cardUpdateQuery.eq("user_id", userData.user.id);
+    }
+
+    const { error: cardError } = await cardUpdateQuery;
 
     if (cardError) {
       setMessage(cardError.message);
@@ -551,7 +647,7 @@ export default function CardEditorPage() {
       setRemovedExperienceIds([]);
     }
 
-    setMessage("Card saved successfully.");
+    setMessage("名片已成功儲存。");
     setIsSaving(false);
   };
 
@@ -711,7 +807,7 @@ export default function CardEditorPage() {
               </div>
               <div className="rounded-2xl border border-slate-200 p-3">
                 <p className="text-xs font-semibold uppercase text-slate-500">
-                  Preview
+                  預覽
                 </p>
                 <div
                   className={`cardlink-cover ${patternClass} mt-2 h-20 rounded-xl`}
@@ -735,7 +831,7 @@ export default function CardEditorPage() {
         </section>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Profile Photo</h2>
+          <h2 className="text-lg font-semibold text-slate-900">個人頭像</h2>
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50">
               {avatarUrl ? (
@@ -756,20 +852,20 @@ export default function CardEditorPage() {
                   }
                 }}
               />
-              {isUploading ? "Uploading..." : "Upload Photo"}
+              {isUploading ? "上傳中..." : "上傳照片"}
             </label>
             <p className="text-xs text-slate-500">
-              Stored in Supabase Storage (avatars bucket).
+              儲存在 Supabase Storage（avatars bucket）。
             </p>
           </div>
         </section>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Bio & Info</h2>
+          <h2 className="text-lg font-semibold text-slate-900">自我介紹與資訊</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
               <label className="text-sm font-medium text-slate-700" htmlFor="cardName">
-                Card name
+                名片名稱
               </label>
               <input
                 id="cardName"
@@ -782,24 +878,26 @@ export default function CardEditorPage() {
                 className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
-                Full name
-              </label>
-              <input
-                id="fullName"
-                value={card.full_name}
-                onChange={(event) =>
-                  setCard((prev) =>
-                    prev ? { ...prev, full_name: event.target.value } : prev
-                  )
-                }
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
-              />
-            </div>
+            {!isCompanyCardMode ? (
+              <div>
+                <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
+                  全名
+                </label>
+                <input
+                  id="fullName"
+                  value={card.full_name}
+                  onChange={(event) =>
+                    setCard((prev) =>
+                      prev ? { ...prev, full_name: event.target.value } : prev
+                    )
+                  }
+                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+                />
+              </div>
+            ) : null}
             <div>
               <label className="text-sm font-medium text-slate-700" htmlFor="title">
-                Title
+                職稱
               </label>
               <input
                 id="title"
@@ -814,7 +912,7 @@ export default function CardEditorPage() {
             </div>
             <div>
               <label className="text-sm font-medium text-slate-700" htmlFor="company">
-                Company
+                公司
               </label>
               <input
                 id="company"
@@ -829,7 +927,7 @@ export default function CardEditorPage() {
             </div>
             <div className="sm:col-span-2">
               <label className="text-sm font-medium text-slate-700" htmlFor="bio">
-                Bio
+                簡介
               </label>
               <textarea
                 id="bio"
@@ -849,20 +947,20 @@ export default function CardEditorPage() {
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-900">
-              Contact Fields
+              聯絡欄位
             </h2>
             <button
               type="button"
               onClick={addField}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
-              <Plus className="h-3.5 w-3.5" /> Add
+              <Plus className="h-3.5 w-3.5" /> 新增
             </button>
           </div>
 
           <div className="mt-4 space-y-4">
             {fields.length === 0 ? (
-              <p className="text-sm text-slate-500">No fields yet.</p>
+              <p className="text-sm text-slate-500">尚未有欄位。</p>
             ) : null}
             {fields.map((field, index) => (
               <div
@@ -872,7 +970,7 @@ export default function CardEditorPage() {
                 <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Type
+                      類型
                     </label>
                     <select
                       value={field.field_type}
@@ -883,14 +981,14 @@ export default function CardEditorPage() {
                     >
                       {fieldTypes.map((type) => (
                         <option key={type} value={type}>
-                          {type}
+                          {fieldTypeLabelMap[type]}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Value
+                      值
                     </label>
                     <input
                       value={field.field_value}
@@ -902,7 +1000,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Label
+                      標籤
                     </label>
                     <input
                       value={field.field_label}
@@ -914,7 +1012,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Visibility
+                      可見性
                     </label>
                     <select
                       value={field.visibility}
@@ -927,7 +1025,7 @@ export default function CardEditorPage() {
                     >
                       {visibilityOptions.map((option) => (
                         <option key={option} value={option}>
-                          {option}
+                          {visibilityLabelMap[option]}
                         </option>
                       ))}
                     </select>
@@ -978,18 +1076,18 @@ export default function CardEditorPage() {
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">Links</h2>
+            <h2 className="text-lg font-semibold text-slate-900">連結</h2>
             <button
               type="button"
               onClick={addLink}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
-              <Plus className="h-3.5 w-3.5" /> Add
+              <Plus className="h-3.5 w-3.5" /> 新增
             </button>
           </div>
           <div className="mt-4 space-y-4">
             {links.length === 0 ? (
-              <p className="text-sm text-slate-500">No links yet.</p>
+              <p className="text-sm text-slate-500">尚未有連結。</p>
             ) : null}
             {links.map((link, index) => (
               <div
@@ -999,7 +1097,7 @@ export default function CardEditorPage() {
                 <div className="grid gap-4 sm:grid-cols-[1fr_1fr_120px]">
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Label
+                      標籤
                     </label>
                     <input
                       value={link.label}
@@ -1011,7 +1109,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      URL
+                      網址
                     </label>
                     <input
                       value={link.url}
@@ -1023,7 +1121,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Icon
+                      圖示
                     </label>
                     <input
                       value={link.icon}
@@ -1035,9 +1133,9 @@ export default function CardEditorPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex justify-between">
-                  <span className="text-sm text-slate-500">Preview:</span>
+                  <span className="text-sm text-slate-500">預覽：</span>
                   <span className="text-sm font-semibold text-slate-700">
-                    {link.icon || "🔗"} {link.label || "Link"}
+                    {link.icon || "🔗"} {link.label || "連結"}
                   </span>
                   <div className="flex gap-2">
                     <button
@@ -1076,18 +1174,18 @@ export default function CardEditorPage() {
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">Experience</h2>
+            <h2 className="text-lg font-semibold text-slate-900">經歷</h2>
             <button
               type="button"
               onClick={addExperience}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
-              <Plus className="h-3.5 w-3.5" /> Add
+              <Plus className="h-3.5 w-3.5" /> 新增
             </button>
           </div>
           <div className="mt-4 space-y-4">
             {experiences.length === 0 ? (
-              <p className="text-sm text-slate-500">No experience yet.</p>
+              <p className="text-sm text-slate-500">尚未有經歷。</p>
             ) : null}
             {experiences.map((experience, index) => (
               <div
@@ -1097,7 +1195,7 @@ export default function CardEditorPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Role
+                      職位
                     </label>
                     <input
                       value={experience.role}
@@ -1109,7 +1207,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Company
+                      公司
                     </label>
                     <input
                       value={experience.company}
@@ -1121,7 +1219,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Start Date
+                      開始日期
                     </label>
                     <input
                       value={experience.start_date}
@@ -1134,20 +1232,20 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      End Date
+                      結束日期
                     </label>
                     <input
                       value={experience.end_date}
                       onChange={(event) =>
                         updateExperience(index, { end_date: event.target.value })
                       }
-                      placeholder="Present"
+                      placeholder="至今"
                       className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                     />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      Description
+                      描述
                     </label>
                     <textarea
                       rows={3}
@@ -1222,7 +1320,7 @@ export default function CardEditorPage() {
             <div className="pointer-events-none">
               <TemplateRenderer
                 template={previewTemplate}
-                fullName={card.full_name || "Your Name"}
+                fullName={isCompanyCardMode ? card.card_name || "Company Card" : card.full_name || "Your Name"}
                 title={card.title || null}
                 company={card.company || null}
                 bio={card.bio || null}

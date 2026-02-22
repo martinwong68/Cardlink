@@ -16,10 +16,16 @@
     "actions": {
       "signIn": "登入",
       "signingIn": "正在登入...",
-      "createAccount": "建立帳戶"
+      "createAccount": "建立帳戶",
+      "forgotPassword": "忘記密碼？",
+      "sendingReset": "正在寄送重設信..."
     },
     "footer": {
       "newHere": "初次使用 CardLink？"
+    },
+    "messages": {
+      "enterEmailForReset": "請先輸入電子郵件，再點選忘記密碼。",
+      "resetEmailSent": "密碼重設信已寄出，請查看信箱。"
     }
   },
   "signup": {
@@ -60,6 +66,8 @@
   "dashboardNav": {
     "community": "社群",
     "cards": "名片",
+    "membership": "會員",
+    "discount": "探索",
     "settings": "設定"
   },
   "getCard": {
@@ -532,6 +540,7 @@
     "links": {
       "profile": "編輯個人資料",
       "privacy": "隱私設定",
+      "password": "重設密碼",
       "subscription": "訂閱方案",
       "subscriptionActive": "訂閱狀態",
       "premiumBadge": "高級版",
@@ -541,6 +550,48 @@
     },
     "actions": {
       "logout": "登出"
+    }
+  },
+  "passwordSettings": {
+    "brand": "CardLink",
+    "title": "重設密碼",
+    "subtitle": "為你的帳戶設定新的密碼。",
+    "fields": {
+      "newPassword": "新密碼",
+      "confirmPassword": "確認新密碼"
+    },
+    "errors": {
+      "passwordLength": "密碼至少需 8 個字元。",
+      "passwordNotMatch": "兩次輸入的密碼不一致。"
+    },
+    "messages": {
+      "updated": "密碼已成功更新。"
+    },
+    "actions": {
+      "save": "儲存密碼",
+      "saving": "儲存中..."
+    }
+  },
+  "resetPassword": {
+    "brand": "CardLink",
+    "title": "設定新密碼",
+    "subtitle": "請從電子郵件打開重設連結後，在此輸入新密碼。",
+    "fields": {
+      "newPassword": "新密碼",
+      "confirmPassword": "確認新密碼"
+    },
+    "errors": {
+      "passwordLength": "密碼至少需 8 個字元。",
+      "passwordNotMatch": "兩次輸入的密碼不一致。"
+    },
+    "messages": {
+      "updated": "密碼已重設完成，現在可重新登入。",
+      "redirecting": "將在 {seconds} 秒後跳轉至登入頁..."
+    },
+    "actions": {
+      "save": "重設密碼",
+      "saving": "更新中...",
+      "backToLogin": "返回登入"
     }
   },
   "profile": {
@@ -619,6 +670,144 @@
     "title": "歡迎升級到高級版！🎉",
     "subtitle": "你的帳戶已升級。",
     "action": "返回儀表板"
+  },
+  "discountHistory": {
+    "brand": "CardLink",
+    "title": "兌換紀錄",
+    "subtitle": "公司管理員可在此查看已確認與已拒絕的兌換請求。"
+  },
+  "explorePage": {
+    "brand": "CardLink",
+    "title": "探索",
+    "subtitle": "探索合作品牌、活動宣傳與可兌換優惠。",
+    "loading": "正在載入探索內容...",
+    "sections": {
+      "promotion": "活動輪播",
+      "partners": "合作公司",
+      "discounts": "優惠列表"
+    },
+    "labels": {
+      "specialOffer": "特別優惠",
+      "membershipPartner": "會員合作公司。",
+      "company": "公司",
+      "balance": "點數餘額",
+      "offPercent": "{value} 折",
+      "offFixed": "折抵 ${value}",
+      "offGeneric": "優惠 ${value}"
+    },
+    "actions": {
+      "view": "查看",
+      "join": "加入",
+      "joined": "已加入",
+      "addToMembership": "加入會員",
+      "all": "全部",
+      "submitting": "送出中...",
+      "redeem": "兌換"
+    },
+    "empty": {
+      "promotions": "目前沒有進行中的活動。",
+      "partners": "目前沒有合作公司。",
+      "discounts": "此公司目前沒有可用優惠。"
+    },
+    "messages": {
+      "signInToRedeem": "請先登入以兌換優惠。",
+      "applyMembershipFirst": "請先加入該公司會員，再進行兌換。",
+      "redeemSubmitted": "兌換申請已送出，等待公司審核。"
+    },
+    "errors": {
+      "loadCompanies": "載入公司失敗：{message}",
+      "loadDiscounts": "載入優惠失敗：{message}",
+      "loadPartners": "載入合作公司失敗：{message}",
+      "loadMemberships": "載入會員資料失敗：{message}"
+    }
+  },
+  "discountPanel": {
+    "loading": "正在載入優惠...",
+    "quickAccess": "快速操作",
+    "labels": {
+      "specialOffer": "特別優惠",
+      "offPercent": "{value} 折",
+      "offFixed": "折抵 ${value}",
+      "offGeneric": "優惠 ${value}",
+      "serviceCompany": "服務公司",
+      "yourBalance": "你的餘額",
+      "offer": "優惠",
+      "company": "公司"
+    },
+    "actions": {
+      "reviewPending": "審核待處理",
+      "reviewHistory": "審核歷史",
+      "allCompanies": "所有公司",
+      "submitting": "送出中...",
+      "redeem": "兌換",
+      "confirm": "確認",
+      "reject": "拒絕"
+    },
+    "admin": {
+      "title": "公司管理面板",
+      "subtitle": "請以公司管理者身份登入，以審核兌換請求。",
+      "pending": "待處理",
+      "history": "歷史",
+      "accountPoints": "帳戶點數",
+      "required": "所需點數",
+      "requested": "申請時間",
+      "processed": "處理時間"
+    },
+    "status": {
+      "confirmed": "已確認",
+      "rejected": "已拒絕"
+    },
+    "empty": {
+      "noActiveDiscounts": "目前沒有可用優惠。",
+      "noPending": "目前沒有待處理的兌換請求。",
+      "noHistory": "目前沒有已處理的兌換紀錄。"
+    },
+    "messages": {
+      "signInToUse": "請先登入以使用優惠功能。",
+      "needMembership": "你需要此公司的有效會員帳戶。",
+      "requestSubmitted": "兌換申請已送出，等待公司確認。",
+      "rejectedByAdmin": "由公司管理員拒絕",
+      "fallbackAdmin": "已使用後備管理員判斷（{reason}）。",
+      "confirmed": "兌換已確認。",
+      "rejected": "兌換已拒絕。"
+    },
+    "errors": {
+      "loadCompanies": "載入公司失敗：{message}",
+      "loadOffers": "載入優惠失敗：{message}",
+      "loadAccounts": "載入會員帳戶失敗：{message}",
+      "loadRedemptions": "載入兌換資料失敗：{message}"
+    }
+  },
+  "membershipOverview": {
+    "brand": "CardLink",
+    "title": "會員總覽",
+    "subtitle": "查看你在各公司中的會員與點數狀態。",
+    "cards": {
+      "pointSystemTitle": "點數系統",
+      "pointSystemBody": "所有合作公司共用同一套點數制度。",
+      "totalBalanceTitle": "總點數",
+      "totalBalanceBody": "你在所有會員帳戶中的 BOBO-POINT 總和。",
+      "totalSpendTitle": "總消費",
+      "totalSpendBody": "你在所有會員帳戶中的累積消費金額。"
+    },
+    "labels": {
+      "unknownCompany": "未知公司",
+      "membershipAccount": "會員帳戶",
+      "tier": "會員等級",
+      "noTier": "尚未分級",
+      "totalSpend": "累積消費",
+      "current": "目前",
+      "lifetime": "累積",
+      "joined": "加入日期",
+      "expires": "到期日",
+      "noExpiry": "無期限"
+    },
+    "errors": {
+      "tablesNotReady": "會員資料表尚未就緒，請先執行階段遷移。"
+    },
+    "empty": {
+      "noMemberships": "目前尚無任何會員資料。"
+    }
   },
   "discover": {
     "brand": "CardLink",

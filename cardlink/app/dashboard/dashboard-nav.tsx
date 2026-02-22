@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CreditCard, MessageSquare, Settings } from "lucide-react";
+import {
+  CreditCard,
+  MessageSquare,
+  Settings,
+  TicketPercent,
+  UserRound,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function DashboardNav() {
@@ -16,8 +22,10 @@ export default function DashboardNav() {
   }, []);
 
   const navItems = [
+    { href: "/dashboard/explore", label: t("discount"), icon: TicketPercent },
     { href: "/dashboard/community", label: t("community"), icon: MessageSquare },
     { href: "/dashboard/cards", label: t("cards"), icon: CreditCard, primary: true },
+    { href: "/dashboard/membership", label: t("membership"), icon: UserRound },
     { href: "/dashboard/settings", label: t("settings"), icon: Settings },
   ];
 

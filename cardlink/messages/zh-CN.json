@@ -16,10 +16,16 @@
     "actions": {
       "signIn": "登录",
       "signingIn": "正在登录...",
-      "createAccount": "创建账号"
+      "createAccount": "创建账号",
+      "forgotPassword": "忘记密码？",
+      "sendingReset": "正在发送重置邮件..."
     },
     "footer": {
       "newHere": "初次使用 CardLink？"
+    },
+    "messages": {
+      "enterEmailForReset": "请先输入邮箱，再点击忘记密码。",
+      "resetEmailSent": "密码重置邮件已发送，请查看邮箱。"
     }
   },
   "signup": {
@@ -60,6 +66,8 @@
   "dashboardNav": {
     "community": "社区",
     "cards": "名片",
+    "membership": "会员",
+    "discount": "探索",
     "settings": "设置"
   },
   "getCard": {
@@ -532,6 +540,7 @@
     "links": {
       "profile": "编辑资料",
       "privacy": "隐私设置",
+      "password": "重置密码",
       "subscription": "订阅方案",
       "subscriptionActive": "订阅状态",
       "premiumBadge": "高级版",
@@ -541,6 +550,48 @@
     },
     "actions": {
       "logout": "退出登录"
+    }
+  },
+  "passwordSettings": {
+    "brand": "CardLink",
+    "title": "重置密码",
+    "subtitle": "为你的账户设置新密码。",
+    "fields": {
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码"
+    },
+    "errors": {
+      "passwordLength": "密码至少需要 8 个字符。",
+      "passwordNotMatch": "两次输入的密码不一致。"
+    },
+    "messages": {
+      "updated": "密码已成功更新。"
+    },
+    "actions": {
+      "save": "保存密码",
+      "saving": "保存中..."
+    }
+  },
+  "resetPassword": {
+    "brand": "CardLink",
+    "title": "设置新密码",
+    "subtitle": "请从邮件打开重置链接后，在此输入新密码。",
+    "fields": {
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码"
+    },
+    "errors": {
+      "passwordLength": "密码至少需要 8 个字符。",
+      "passwordNotMatch": "两次输入的密码不一致。"
+    },
+    "messages": {
+      "updated": "密码重置完成，现在可以重新登录。",
+      "redirecting": "将在 {seconds} 秒后跳转到登录页..."
+    },
+    "actions": {
+      "save": "重置密码",
+      "saving": "更新中...",
+      "backToLogin": "返回登录"
     }
   },
   "profile": {
@@ -619,6 +670,144 @@
     "title": "欢迎升级到高级版！🎉",
     "subtitle": "你的账号已升级。",
     "action": "返回仪表板"
+  },
+  "discountHistory": {
+    "brand": "CardLink",
+    "title": "兑换记录",
+    "subtitle": "公司管理员可在此查看已确认与已拒绝的兑换请求。"
+  },
+  "explorePage": {
+    "brand": "CardLink",
+    "title": "探索",
+    "subtitle": "探索合作品牌、活动宣传与可兑换优惠。",
+    "loading": "正在加载探索内容...",
+    "sections": {
+      "promotion": "活动轮播",
+      "partners": "合作公司",
+      "discounts": "优惠列表"
+    },
+    "labels": {
+      "specialOffer": "特别优惠",
+      "membershipPartner": "会员合作公司。",
+      "company": "公司",
+      "balance": "积分余额",
+      "offPercent": "{value} 折",
+      "offFixed": "减 ${value}",
+      "offGeneric": "优惠 ${value}"
+    },
+    "actions": {
+      "view": "查看",
+      "join": "加入",
+      "joined": "已加入",
+      "addToMembership": "加入会员",
+      "all": "全部",
+      "submitting": "提交中...",
+      "redeem": "兑换"
+    },
+    "empty": {
+      "promotions": "目前没有进行中的活动。",
+      "partners": "目前没有合作公司。",
+      "discounts": "该公司目前没有可用优惠。"
+    },
+    "messages": {
+      "signInToRedeem": "请先登录以兑换优惠。",
+      "applyMembershipFirst": "请先加入该公司会员，再进行兑换。",
+      "redeemSubmitted": "兑换申请已提交，等待公司审核。"
+    },
+    "errors": {
+      "loadCompanies": "加载公司失败：{message}",
+      "loadDiscounts": "加载优惠失败：{message}",
+      "loadPartners": "加载合作公司失败：{message}",
+      "loadMemberships": "加载会员资料失败：{message}"
+    }
+  },
+  "discountPanel": {
+    "loading": "正在加载优惠...",
+    "quickAccess": "快捷操作",
+    "labels": {
+      "specialOffer": "特别优惠",
+      "offPercent": "{value} 折",
+      "offFixed": "减 ${value}",
+      "offGeneric": "优惠 ${value}",
+      "serviceCompany": "服务公司",
+      "yourBalance": "你的余额",
+      "offer": "优惠",
+      "company": "公司"
+    },
+    "actions": {
+      "reviewPending": "审核待处理",
+      "reviewHistory": "审核历史",
+      "allCompanies": "所有公司",
+      "submitting": "提交中...",
+      "redeem": "兑换",
+      "confirm": "确认",
+      "reject": "拒绝"
+    },
+    "admin": {
+      "title": "公司管理面板",
+      "subtitle": "请以公司管理员身份登录以审核兑换请求。",
+      "pending": "待处理",
+      "history": "历史",
+      "accountPoints": "账户积分",
+      "required": "所需积分",
+      "requested": "申请时间",
+      "processed": "处理时间"
+    },
+    "status": {
+      "confirmed": "已确认",
+      "rejected": "已拒绝"
+    },
+    "empty": {
+      "noActiveDiscounts": "目前没有可用优惠。",
+      "noPending": "目前没有待处理的兑换请求。",
+      "noHistory": "目前没有已处理的兑换记录。"
+    },
+    "messages": {
+      "signInToUse": "请先登录以使用优惠功能。",
+      "needMembership": "你需要该公司的有效会员账户。",
+      "requestSubmitted": "兑换申请已提交，等待公司确认。",
+      "rejectedByAdmin": "由公司管理员拒绝",
+      "fallbackAdmin": "已使用后备管理员判定（{reason}）。",
+      "confirmed": "兑换已确认。",
+      "rejected": "兑换已拒绝。"
+    },
+    "errors": {
+      "loadCompanies": "加载公司失败：{message}",
+      "loadOffers": "加载优惠失败：{message}",
+      "loadAccounts": "加载会员账户失败：{message}",
+      "loadRedemptions": "加载兑换数据失败：{message}"
+    }
+  },
+  "membershipOverview": {
+    "brand": "CardLink",
+    "title": "会员总览",
+    "subtitle": "查看你在各公司中的会员与积分状态。",
+    "cards": {
+      "pointSystemTitle": "积分系统",
+      "pointSystemBody": "所有合作公司共用同一套积分制度。",
+      "totalBalanceTitle": "总积分",
+      "totalBalanceBody": "你在所有会员账户中的 BOBO-POINT 总和。",
+      "totalSpendTitle": "总消费",
+      "totalSpendBody": "你在所有会员账户中的累计消费金额。"
+    },
+    "labels": {
+      "unknownCompany": "未知公司",
+      "membershipAccount": "会员账户",
+      "tier": "会员等级",
+      "noTier": "尚未分级",
+      "totalSpend": "累计消费",
+      "current": "当前",
+      "lifetime": "累计",
+      "joined": "加入日期",
+      "expires": "到期日",
+      "noExpiry": "无到期"
+    },
+    "errors": {
+      "tablesNotReady": "会员数据表尚未就绪，请先运行阶段迁移。"
+    },
+    "empty": {
+      "noMemberships": "目前还没有会员记录。"
+    }
   },
   "discover": {
     "brand": "CardLink",
