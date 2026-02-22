@@ -145,6 +145,80 @@ const colorOptions = [
   "#f59e0b",
 ];
 
+const AVATAR_BUCKET = "avatars";
+const AVATAR_FILE_NAME = "avatar.jpg";
+const AVATAR_MAX_DIMENSION = 1024;
+const AVATAR_JPEG_QUALITY = 0.8;
+
+const extractAvatarStoragePath = (avatarPublicUrl: string | null | undefined) => {
+  if (!avatarPublicUrl) {
+    return null;
+  }
+
+  const marker = `/storage/v1/object/public/${AVATAR_BUCKET}/`;
+  const markerIndex = avatarPublicUrl.indexOf(marker);
+  if (markerIndex === -1) {
+    return null;
+  }
+
+  const rawPath = avatarPublicUrl.slice(markerIndex + marker.length);
+  const [pathWithoutQuery] = rawPath.split("?");
+  const decodedPath = decodeURIComponent(pathWithoutQuery || "");
+
+  return decodedPath || null;
+};
+
+const compressAvatarImage = async (file: File) => {
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("圖片讀取失敗"));
+      img.src = objectUrl;
+    });
+
+    const longestSide = Math.max(image.width, image.height);
+    const scale =
+      longestSide > AVATAR_MAX_DIMENSION
+        ? AVATAR_MAX_DIMENSION / longestSide
+        : 1;
+
+    const width = Math.max(1, Math.round(image.width * scale));
+    const height = Math.max(1, Math.round(image.height * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("無法處理圖片壓縮");
+    }
+
+    context.drawImage(image, 0, 0, width, height);
+
+    const compressedBlob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("圖片壓縮失敗"));
+            return;
+          }
+          resolve(blob);
+        },
+        "image/jpeg",
+        AVATAR_JPEG_QUALITY
+      );
+    });
+
+    return new File([compressedBlob], AVATAR_FILE_NAME, { type: "image/jpeg" });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
+
 const contactPreviewClasses: Record<string, string> = {
   Phone: "bg-emerald-500",
   Email: "bg-red-500",
@@ -453,12 +527,28 @@ export default function CardEditorPage() {
       return;
     }
 
-    const fileExt = file.name.split(".").pop() || "png";
-    const filePath = `${userData.user.id}/${Date.now()}.${fileExt}`;
+    let compressedFile: File;
+    try {
+      compressedFile = await compressAvatarImage(file);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "圖片壓縮失敗");
+      setIsUploading(false);
+      return;
+    }
+
+    const filePath = `${userData.user.id}/${AVATAR_FILE_NAME}`;
+    const previousStoragePath = extractAvatarStoragePath(avatarUrl);
+
+    if (previousStoragePath && previousStoragePath !== filePath) {
+      await supabase.storage.from(AVATAR_BUCKET).remove([previousStoragePath]);
+    }
 
     const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
+      .from(AVATAR_BUCKET)
+      .upload(filePath, compressedFile, {
+        upsert: true,
+        contentType: "image/jpeg",
+      });
 
     if (uploadError) {
       setMessage(uploadError.message);
@@ -467,7 +557,7 @@ export default function CardEditorPage() {
     }
 
     const { data: urlData } = supabase.storage
-      .from("avatars")
+      .from(AVATAR_BUCKET)
       .getPublicUrl(filePath);
 
     const publicUrl = urlData.publicUrl;
@@ -483,7 +573,7 @@ export default function CardEditorPage() {
       return;
     }
 
-    setAvatarUrl(publicUrl);
+    setAvatarUrl(`${publicUrl}?v=${Date.now()}`);
     setIsUploading(false);
   };
 
@@ -855,7 +945,7 @@ export default function CardEditorPage() {
               {isUploading ? "上傳中..." : "上傳照片"}
             </label>
             <p className="text-xs text-slate-500">
-              儲存在 Supabase Storage（avatars bucket）。
+              上傳前會自動壓縮，且每位使用者只保留一張頭像（新圖會覆蓋並清理舊圖）。
             </p>
           </div>
         </section>
