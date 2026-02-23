@@ -190,6 +190,172 @@
       "body": "与他人交换名片，建立你的网络。"
     }
   },
+  "cardEditor": {
+    "brand": "CardLink",
+    "title": "编辑名片",
+    "defaults": {
+      "cardName": "我的名片"
+    },
+    "messages": {
+      "saved": "名片已保存。",
+      "loading": "正在加载编辑器..."
+    },
+    "errors": {
+      "signInEdit": "请登录后编辑名片。",
+      "signInUpload": "请登录后上传头像。",
+      "signInSave": "请登录后保存名片。",
+      "notFound": "未找到名片。"
+    },
+    "actions": {
+      "showPreview": "显示预览",
+      "hidePreview": "隐藏预览",
+      "save": "保存",
+      "saving": "正在保存...",
+      "back": "返回",
+      "add": "新增",
+      "uploadPhoto": "上传照片",
+      "uploading": "正在上传..."
+    },
+    "sections": {
+      "background": "背景设置",
+      "profilePhoto": "头像",
+      "bioInfo": "简介与信息",
+      "contactFields": "联系方式",
+      "links": "链接",
+      "experience": "经历",
+      "livePreview": "实时预览"
+    },
+    "labels": {
+      "color": "颜色",
+      "preview": "预览",
+      "cardName": "名片名称",
+      "fullName": "姓名",
+      "title": "职位",
+      "company": "公司",
+      "bio": "简介",
+      "type": "类型",
+      "value": "内容",
+      "label": "标签",
+      "visibility": "可见性",
+      "url": "链接",
+      "icon": "图标",
+      "role": "职位",
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "description": "描述"
+    },
+    "empty": {
+      "fields": "暂无字段。",
+      "links": "暂无链接。",
+      "experience": "暂无经历。"
+    },
+    "placeholders": {
+      "present": "至今",
+      "startDate": "2020-01",
+      "endDate": "至今",
+      "linkLabel": "链接",
+      "yourName": "你的姓名"
+    },
+    "misc": {
+      "storageNote": "存储于 Supabase Storage（avatars bucket）。"
+    },
+    "fieldTypes": {
+      "phone": "电话",
+      "email": "邮箱",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "wechat": "微信",
+      "telegram": "Telegram",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "website": "网站"
+    },
+    "visibility": {
+      "public": "公开",
+      "friends": "好友",
+      "hidden": "隐藏"
+    }
+  },
+  "contactDetail": {
+    "states": {
+      "loading": "正在加载联系人...",
+      "notFound": "未找到联系人。"
+    },
+    "defaults": {
+      "userName": "CardLink 用户"
+    },
+    "errors": {
+      "signIn": "请登录以查看此联系人。",
+      "loadCard": "无法加载联系人名片。"
+    },
+    "actions": {
+      "viewCard": "查看名片",
+      "removeConnection": "移除连接",
+      "backToContacts": "返回联系人",
+      "save": "保存",
+      "cancel": "取消",
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "labels": {
+      "contactFields": "联系方式"
+    },
+    "connection": {
+      "connected": "已连接 {date}",
+      "requested": "已请求 {date}"
+    },
+    "fieldTypes": {
+      "phone": "电话",
+      "email": "邮箱",
+      "wechat": "微信",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter/X",
+      "xhs": "小红书",
+      "website": "网站",
+      "other": "其他"
+    },
+    "crm": {
+      "title": "客户管理",
+      "tags": {
+        "title": "标签",
+        "add": "新增标签",
+        "empty": "暂无标签。",
+        "placeholder": "输入标签",
+        "submit": "新增"
+      },
+      "notes": {
+        "title": "备注",
+        "add": "新增备注",
+        "placeholder": "输入私人备注...",
+        "save": "保存备注",
+        "empty": "暂无备注。"
+      },
+      "reminders": {
+        "title": "提醒",
+        "set": "设置提醒",
+        "empty": "尚未设置提醒。",
+        "label": "跟进提醒：{date}"
+      },
+      "activity": {
+        "title": "互动记录",
+        "empty": "暂无名片交换记录。",
+        "method": "连接方式：{method}",
+        "methodFallback": "链接"
+      },
+      "suggestedTags": [
+        "客户",
+        "投资人",
+        "合作伙伴",
+        "活动中认识",
+        "跟进",
+        "VIP"
+      ]
+    },
+    "upgrade": {
+      "cta": "升级至 Premium 以解锁 CRM 备注、标签与提醒功能。"
+    }
+  },
   "nfc": {
     "brand": "CardLink",
     "title": "NFC 名片",
@@ -550,6 +716,113 @@
     },
     "actions": {
       "logout": "退出登录"
+    }
+  },
+  "support": {
+    "brand": "CardLink",
+    "title": "帮助与支持",
+    "subtitle": "在这里找到答案、管理订阅并查看隐私政策。",
+    "contact": {
+      "title": "联系支持",
+      "subtitle": "账号或名片需要帮助？我们随时协助。",
+      "emailLabel": "邮箱：",
+      "emailValue": "support@cardlink.app",
+      "hoursLabel": "工作时间：",
+      "hoursValue": "周一至周五 09:00-18:00 (UTC)",
+      "responseLabel": "回复时间：",
+      "responseValue": "1 个工作日内"
+    },
+    "subscription": {
+      "title": "管理订阅",
+      "subtitle": "在安全的账单门户中取消或更新方案。",
+      "button": "打开账单门户",
+      "loading": "正在打开...",
+      "note": "你可随时取消。变更将在当前计费周期结束后生效。"
+    },
+    "faq": {
+      "title": "快速解答",
+      "items": [
+        {
+          "question": "如何更新名片信息？",
+          "answer": "进入仪表板 > 名片，选择名片并点击编辑。"
+        },
+        {
+          "question": "忘记密码怎么办？",
+          "answer": "在设置中选择重置密码，按提示完成。"
+        },
+        {
+          "question": "如何导出联系人？",
+          "answer": "在设置页点击导出联系人，高级版可用。"
+        },
+        {
+          "question": "可以删除账号吗？",
+          "answer": "发送邮件至 support@cardlink.app，我们会协助处理。"
+        }
+      ]
+    },
+    "privacy": {
+      "title": "隐私政策",
+      "subtitle": "我们尊重你的隐私，仅在提供 CardLink 服务时使用数据。",
+      "lastUpdated": "更新日期：2026-02-23",
+      "sections": [
+        {
+          "title": "我们收集的信息",
+          "body": [
+            "我们收集你提供的资料，例如姓名、邮箱、个人资料与名片内容。",
+            "我们还会收集基础使用数据，例如访问次数、设备类型和错误日志。"
+          ]
+        },
+        {
+          "title": "我们如何使用信息",
+          "body": [
+            "用于提供、维护和改进服务，包括同步名片与处理订单。",
+            "用于安全、反欺诈、账号支持与沟通。"
+          ]
+        },
+        {
+          "title": "我们如何共享信息",
+          "body": [
+            "仅在提供服务所需时与供应商共享，例如支付与邮件服务商。",
+            "除法律要求或你授权外，我们不会出售你的个人信息。"
+          ]
+        },
+        {
+          "title": "数据保留",
+          "body": [
+            "我们只在必要时保留数据以提供服务与履行合规义务。",
+            "你可以请求删除账号以移除个人数据。"
+          ]
+        },
+        {
+          "title": "你的选择",
+          "body": [
+            "你可在设置中更新资料或修改隐私选项。",
+            "你也可以通过支持邮箱联系我们以访问或删除数据。"
+          ]
+        },
+        {
+          "title": "安全",
+          "body": [
+            "我们采取合理的技术与组织措施保护你的数据。",
+            "任何传输或存储方式都无法保证绝对安全。"
+          ]
+        },
+        {
+          "title": "变更",
+          "body": [
+            "我们可能会更新本政策，并在此页面发布最新版本。"
+          ]
+        },
+        {
+          "title": "联系我们",
+          "body": [
+            "如有隐私问题，请发邮件至 support@cardlink.app。"
+          ]
+        }
+      ]
+    },
+    "errors": {
+      "portal": "无法打开账单门户，请稍后再试。"
     }
   },
   "passwordSettings": {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDown,
@@ -10,11 +10,9 @@ import {
   Save,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
-import TemplateSelector from "@/components/TemplateSelector";
-import TemplateRenderer from "@/components/templates/TemplateRenderer";
-import type { TemplateId } from "@/src/lib/templates";
 
 const fieldTypes = [
   "Phone",
@@ -28,25 +26,7 @@ const fieldTypes = [
   "Website",
 ] as const;
 
-const fieldTypeLabelMap: Record<(typeof fieldTypes)[number], string> = {
-  Phone: "電話",
-  Email: "電子郵件",
-  WhatsApp: "WhatsApp",
-  LinkedIn: "LinkedIn",
-  WeChat: "微信",
-  Telegram: "Telegram",
-  Instagram: "Instagram",
-  Twitter: "Twitter",
-  Website: "網站",
-};
-
 const visibilityOptions = ["public", "friends", "hidden"] as const;
-
-const visibilityLabelMap: Record<(typeof visibilityOptions)[number], string> = {
-  public: "公開",
-  friends: "好友",
-  hidden: "隱藏",
-};
 
 type Visibility = (typeof visibilityOptions)[number];
 
@@ -84,16 +64,7 @@ type CardState = {
   slug: string;
   background_pattern: string;
   background_color: string;
-  template: TemplateId | null;
 };
-
-const coreTemplateIds: TemplateId[] = [
-  "classic-business",
-  "minimalist",
-  "modern-tech",
-];
-
-const coreTemplateSet = new Set<TemplateId>(coreTemplateIds);
 
 const patternOptions = [
   "gradient-1",
@@ -145,83 +116,9 @@ const colorOptions = [
   "#f59e0b",
 ];
 
-const AVATAR_BUCKET = "avatars";
-const AVATAR_FILE_NAME = "avatar.jpg";
-const AVATAR_MAX_DIMENSION = 1024;
-const AVATAR_JPEG_QUALITY = 0.8;
-
-const extractAvatarStoragePath = (avatarPublicUrl: string | null | undefined) => {
-  if (!avatarPublicUrl) {
-    return null;
-  }
-
-  const marker = `/storage/v1/object/public/${AVATAR_BUCKET}/`;
-  const markerIndex = avatarPublicUrl.indexOf(marker);
-  if (markerIndex === -1) {
-    return null;
-  }
-
-  const rawPath = avatarPublicUrl.slice(markerIndex + marker.length);
-  const [pathWithoutQuery] = rawPath.split("?");
-  const decodedPath = decodeURIComponent(pathWithoutQuery || "");
-
-  return decodedPath || null;
-};
-
-const compressAvatarImage = async (file: File) => {
-  const objectUrl = URL.createObjectURL(file);
-
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error("圖片讀取失敗"));
-      img.src = objectUrl;
-    });
-
-    const longestSide = Math.max(image.width, image.height);
-    const scale =
-      longestSide > AVATAR_MAX_DIMENSION
-        ? AVATAR_MAX_DIMENSION / longestSide
-        : 1;
-
-    const width = Math.max(1, Math.round(image.width * scale));
-    const height = Math.max(1, Math.round(image.height * scale));
-
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-
-    const context = canvas.getContext("2d");
-    if (!context) {
-      throw new Error("無法處理圖片壓縮");
-    }
-
-    context.drawImage(image, 0, 0, width, height);
-
-    const compressedBlob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            reject(new Error("圖片壓縮失敗"));
-            return;
-          }
-          resolve(blob);
-        },
-        "image/jpeg",
-        AVATAR_JPEG_QUALITY
-      );
-    });
-
-    return new File([compressedBlob], AVATAR_FILE_NAME, { type: "image/jpeg" });
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
-};
-
 const contactPreviewClasses: Record<string, string> = {
   Phone: "bg-emerald-500",
-  Email: "bg-red-500",
+  Email: "bg-rose-500",
   WhatsApp: "bg-emerald-600",
   LinkedIn: "bg-sky-600",
   WeChat: "bg-green-600",
@@ -238,9 +135,9 @@ function moveItem<T>(items: T[], from: number, to: number) {
   return copy;
 }
 
-function formatDateRange(start: string, end: string) {
+function formatDateRange(start: string, end: string, presentLabel: string) {
   const startLabel = start.trim();
-  const endLabel = end.trim() || "至今";
+  const endLabel = end.trim() || presentLabel;
   if (!startLabel && !endLabel) {
     return "";
   }
@@ -250,10 +147,27 @@ function formatDateRange(start: string, end: string) {
 export default function CardEditorPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("cardEditor");
   const cardId = typeof params.cardId === "string" ? params.cardId : "";
-  const isCompanyCardMode = searchParams.get("mode") === "company";
+
+  const fieldTypeLabels: Record<string, string> = {
+    Phone: t("fieldTypes.phone"),
+    Email: t("fieldTypes.email"),
+    WhatsApp: t("fieldTypes.whatsapp"),
+    LinkedIn: t("fieldTypes.linkedin"),
+    WeChat: t("fieldTypes.wechat"),
+    Telegram: t("fieldTypes.telegram"),
+    Instagram: t("fieldTypes.instagram"),
+    Twitter: t("fieldTypes.twitter"),
+    Website: t("fieldTypes.website"),
+  };
+
+  const visibilityLabels: Record<Visibility, string> = {
+    public: t("visibility.public"),
+    friends: t("visibility.friends"),
+    hidden: t("visibility.hidden"),
+  };
 
   const [card, setCard] = useState<CardState | null>(null);
   const [fields, setFields] = useState<FieldState[]>([]);
@@ -268,7 +182,6 @@ export default function CardEditorPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
 
   const loadCard = async () => {
     setIsLoading(true);
@@ -276,135 +189,60 @@ export default function CardEditorPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("請先登入以編輯你的名片。");
+      setMessage(t("errors.signInEdit"));
       setIsLoading(false);
       return;
     }
 
-    const [{ data: cardData, error: cardError }, { data: profileData }, { data: adminCompanyData }, { data: adminRoleData }] =
+    const [{ data: cardData, error: cardError }, { data: profileData }] =
       await Promise.all([
-        (isCompanyCardMode
-          ? supabase
-              .from("business_cards")
-              .select(
-                "id, user_id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
-              )
-              .eq("id", cardId)
-              .order("sort_order", { foreignTable: "card_fields", ascending: true })
-              .order("sort_order", { foreignTable: "card_links", ascending: true })
-              .order("sort_order", {
-                foreignTable: "card_experiences",
-                ascending: true,
-              })
-              .maybeSingle()
-          : supabase
-              .from("business_cards")
-              .select(
-                "id, user_id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
-              )
-              .eq("id", cardId)
-              .eq("user_id", userData.user.id)
-              .order("sort_order", { foreignTable: "card_fields", ascending: true })
-              .order("sort_order", { foreignTable: "card_links", ascending: true })
-              .order("sort_order", {
-                foreignTable: "card_experiences",
-                ascending: true,
-              })
-              .maybeSingle()),
+        supabase
+          .from("business_cards")
+          .select(
+            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
+          )
+          .eq("id", cardId)
+          .eq("user_id", userData.user.id)
+          .order("sort_order", { foreignTable: "card_fields", ascending: true })
+          .order("sort_order", { foreignTable: "card_links", ascending: true })
+          .order("sort_order", {
+            foreignTable: "card_experiences",
+            ascending: true,
+          })
+          .maybeSingle(),
         supabase
           .from("profiles")
-          .select("avatar_url, plan")
+          .select("avatar_url")
           .eq("id", userData.user.id)
           .maybeSingle(),
-        supabase.rpc("get_my_admin_company_ids"),
-        supabase
-          .from("company_members")
-          .select("company_id, role, status")
-          .eq("user_id", userData.user.id)
-          .eq("status", "active"),
       ]);
 
     if (cardError || !cardData) {
-      setMessage(cardError?.message ?? "找不到名片。");
+      setMessage(cardError?.message ?? t("errors.notFound"));
       setIsLoading(false);
       return;
     }
 
-    if (isCompanyCardMode) {
-      const ownerUserId = (cardData as { user_id?: string | null }).user_id ?? null;
-      if (!ownerUserId) {
-        setMessage("找不到公司名片擁有者。");
-        setIsLoading(false);
-        return;
-      }
-
-      const rpcAdminIds = ((adminCompanyData ?? []) as { company_id: string }[]).map(
-        (item) => item.company_id
-      );
-      const roleAdminIds = ((adminRoleData ?? []) as { company_id: string; role: string }[])
-        .filter((item) =>
-          ["owner", "admin", "manager", "company_owner", "company_admin"].includes(
-            (item.role ?? "").toLowerCase()
-          )
-        )
-        .map((item) => item.company_id);
-
-      const adminCompanyIds = Array.from(new Set([...rpcAdminIds, ...roleAdminIds]));
-
-      if (!adminCompanyIds.length) {
-        setMessage("你沒有公司管理權限。");
-        setIsLoading(false);
-        return;
-      }
-
-      const { data: ownerMembershipRows, error: ownerMembershipError } = await supabase
-        .from("company_members")
-        .select("company_id")
-        .eq("user_id", ownerUserId)
-        .eq("status", "active");
-
-      if (ownerMembershipError) {
-        setMessage(ownerMembershipError.message);
-        setIsLoading(false);
-        return;
-      }
-
-      const ownerCompanyIds = new Set(
-        ((ownerMembershipRows ?? []) as { company_id: string }[]).map((item) => item.company_id)
-      );
-
-      const hasAccess = adminCompanyIds.some((companyId) => ownerCompanyIds.has(companyId));
-      if (!hasAccess) {
-        setMessage("你沒有權限編輯這張公司名片。");
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    const savedTemplate = (cardData.template as TemplateId | null) ?? "classic-business";
-
     setCard({
       id: cardData.id,
-      card_name: cardData.card_name ?? "My Card",
-      full_name: isCompanyCardMode ? "" : cardData.full_name ?? "",
+      card_name: cardData.card_name ?? t("defaults.cardName"),
+      full_name: cardData.full_name ?? "",
       title: cardData.title ?? "",
       company: cardData.company ?? "",
       bio: cardData.bio ?? "",
       slug: cardData.slug ?? "",
       background_pattern: cardData.background_pattern ?? "gradient-1",
       background_color: cardData.background_color ?? "#6366f1",
-      template: coreTemplateSet.has(savedTemplate)
-        ? savedTemplate
-        : "classic-business",
     });
-
-    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
 
     setFields(
       (cardData.card_fields ?? []).map((field) => ({
         id: field.id,
         field_type: field.field_type,
-        field_label: field.field_label ?? field.field_type,
+        field_label:
+          field.field_label ??
+          fieldTypeLabels[field.field_type] ??
+          field.field_type,
         field_value: field.field_value,
         visibility: field.visibility,
       }))
@@ -436,7 +274,7 @@ export default function CardEditorPage() {
 
   useEffect(() => {
     void loadCard();
-  }, [cardId, isCompanyCardMode]);
+  }, [cardId]);
 
   const updateField = (index: number, updates: Partial<FieldState>) => {
     setFields((prev) =>
@@ -468,7 +306,7 @@ export default function CardEditorPage() {
       {
         id: createClientId(),
         field_type: "Phone",
-        field_label: "Phone",
+        field_label: fieldTypeLabels.Phone ?? "Phone",
         field_value: "",
         visibility: "public",
       },
@@ -522,33 +360,17 @@ export default function CardEditorPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("請先登入以上傳頭像。");
+      setMessage(t("errors.signInUpload"));
       setIsUploading(false);
       return;
     }
 
-    let compressedFile: File;
-    try {
-      compressedFile = await compressAvatarImage(file);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "圖片壓縮失敗");
-      setIsUploading(false);
-      return;
-    }
-
-    const filePath = `${userData.user.id}/${AVATAR_FILE_NAME}`;
-    const previousStoragePath = extractAvatarStoragePath(avatarUrl);
-
-    if (previousStoragePath && previousStoragePath !== filePath) {
-      await supabase.storage.from(AVATAR_BUCKET).remove([previousStoragePath]);
-    }
+    const fileExt = file.name.split(".").pop() || "png";
+    const filePath = `${userData.user.id}/${Date.now()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
-      .from(AVATAR_BUCKET)
-      .upload(filePath, compressedFile, {
-        upsert: true,
-        contentType: "image/jpeg",
-      });
+      .from("avatars")
+      .upload(filePath, file, { upsert: true });
 
     if (uploadError) {
       setMessage(uploadError.message);
@@ -557,7 +379,7 @@ export default function CardEditorPage() {
     }
 
     const { data: urlData } = supabase.storage
-      .from(AVATAR_BUCKET)
+      .from("avatars")
       .getPublicUrl(filePath);
 
     const publicUrl = urlData.publicUrl;
@@ -573,7 +395,7 @@ export default function CardEditorPage() {
       return;
     }
 
-    setAvatarUrl(`${publicUrl}?v=${Date.now()}`);
+    setAvatarUrl(publicUrl);
     setIsUploading(false);
   };
 
@@ -587,31 +409,25 @@ export default function CardEditorPage() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setMessage("請先登入以儲存名片。");
+      setMessage(t("errors.signInSave"));
       setIsSaving(false);
       return;
     }
 
-    let cardUpdateQuery = supabase
+    const { error: cardError } = await supabase
       .from("business_cards")
       .update({
         card_name: card.card_name.trim(),
-        full_name: isCompanyCardMode ? null : card.full_name.trim(),
+        full_name: card.full_name.trim(),
         title: card.title.trim(),
         company: card.company.trim(),
         bio: card.bio.trim(),
         background_pattern: card.background_pattern,
         background_color: card.background_color,
-        template: card.template,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", card.id);
-
-    if (!isCompanyCardMode) {
-      cardUpdateQuery = cardUpdateQuery.eq("user_id", userData.user.id);
-    }
-
-    const { error: cardError } = await cardUpdateQuery;
+      .eq("id", card.id)
+      .eq("user_id", userData.user.id);
 
     if (cardError) {
       setMessage(cardError.message);
@@ -737,14 +553,14 @@ export default function CardEditorPage() {
       setRemovedExperienceIds([]);
     }
 
-    setMessage("名片已成功儲存。");
+    setMessage(t("messages.saved"));
     setIsSaving(false);
   };
 
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center text-sm text-slate-500">
-        Loading editor...
+        {t("messages.loading")}
       </div>
     );
   }
@@ -752,38 +568,13 @@ export default function CardEditorPage() {
   if (!card) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm">
-        {message ?? "Card not found."}
+        {message ?? t("errors.notFound")}
       </div>
     );
   }
 
   const patternClass =
     patternClassMap[card.background_pattern] ?? patternClassMap["gradient-1"];
-  const previewTemplate = (card.template ?? "classic-business") as TemplateId;
-  const previewFields = fields.map((field, index) => ({
-    id: field.id ?? `preview-field-${index}`,
-    field_type: field.field_type,
-    field_label: field.field_label || field.field_type,
-    field_value: field.field_value,
-    visibility: field.visibility,
-    sort_order: index,
-  }));
-  const previewLinks = links.map((link, index) => ({
-    id: link.id ?? `preview-link-${index}`,
-    label: link.label,
-    url: link.url,
-    icon: link.icon || null,
-    sort_order: index,
-  }));
-  const previewExperiences = experiences.map((experience, index) => ({
-    id: experience.id ?? `preview-experience-${index}`,
-    role: experience.role,
-    company: experience.company,
-    start_date: experience.start_date || null,
-    end_date: experience.end_date || null,
-    description: experience.description || null,
-    sort_order: index,
-  }));
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -791,10 +582,10 @@ export default function CardEditorPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-              CardLink
+              {t("brand")}
             </p>
             <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-              Edit Card
+              {t("title")}
             </h1>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -803,7 +594,7 @@ export default function CardEditorPage() {
               onClick={() => setShowPreview((prev) => !prev)}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600 lg:hidden"
             >
-              {showPreview ? "Hide Preview" : "Show Preview"}
+              {showPreview ? t("actions.hidePreview") : t("actions.showPreview")}
             </button>
             <button
               type="button"
@@ -812,21 +603,21 @@ export default function CardEditorPage() {
               className="flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
               <Save className="h-4 w-4" />
-              {isSaving ? "Saving..." : "Save"}
+              {isSaving ? t("actions.saving") : t("actions.save")}
             </button>
             <button
               type="button"
               onClick={() => router.push("/dashboard/cards")}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
             >
-              Back
+              {t("actions.back")}
             </button>
           </div>
         </div>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">
-            Background Settings
+            {t("sections.background")}
           </h2>
           <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_200px]">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -861,7 +652,7 @@ export default function CardEditorPage() {
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-semibold uppercase text-slate-500">
-                  Color
+                  {t("labels.color")}
                 </label>
                 <input
                   type="color"
@@ -897,7 +688,7 @@ export default function CardEditorPage() {
               </div>
               <div className="rounded-2xl border border-slate-200 p-3">
                 <p className="text-xs font-semibold uppercase text-slate-500">
-                  預覽
+                  {t("labels.preview")}
                 </p>
                 <div
                   className={`cardlink-cover ${patternClass} mt-2 h-20 rounded-xl`}
@@ -911,17 +702,9 @@ export default function CardEditorPage() {
         </section>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <TemplateSelector
-            currentTemplate={card.template}
-            isPremiumUser={viewerPlan === "premium"}
-            onChange={(template) =>
-              setCard((prev) => (prev ? { ...prev, template } : prev))
-            }
-          />
-        </section>
-
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">個人頭像</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            {t("sections.profilePhoto")}
+          </h2>
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50">
               {avatarUrl ? (
@@ -942,20 +725,22 @@ export default function CardEditorPage() {
                   }
                 }}
               />
-              {isUploading ? "上傳中..." : "上傳照片"}
+              {isUploading ? t("actions.uploading") : t("actions.uploadPhoto")}
             </label>
             <p className="text-xs text-slate-500">
-              上傳前會自動壓縮，且每位使用者只保留一張頭像（新圖會覆蓋並清理舊圖）。
+              {t("misc.storageNote")}
             </p>
           </div>
         </section>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">自我介紹與資訊</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            {t("sections.bioInfo")}
+          </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
               <label className="text-sm font-medium text-slate-700" htmlFor="cardName">
-                名片名稱
+                {t("labels.cardName")}
               </label>
               <input
                 id="cardName"
@@ -968,26 +753,24 @@ export default function CardEditorPage() {
                 className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
               />
             </div>
-            {!isCompanyCardMode ? (
-              <div>
-                <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
-                  全名
-                </label>
-                <input
-                  id="fullName"
-                  value={card.full_name}
-                  onChange={(event) =>
-                    setCard((prev) =>
-                      prev ? { ...prev, full_name: event.target.value } : prev
-                    )
-                  }
-                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
-                />
-              </div>
-            ) : null}
+            <div>
+              <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
+                {t("labels.fullName")}
+              </label>
+              <input
+                id="fullName"
+                value={card.full_name}
+                onChange={(event) =>
+                  setCard((prev) =>
+                    prev ? { ...prev, full_name: event.target.value } : prev
+                  )
+                }
+                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+              />
+            </div>
             <div>
               <label className="text-sm font-medium text-slate-700" htmlFor="title">
-                職稱
+                {t("labels.title")}
               </label>
               <input
                 id="title"
@@ -1002,7 +785,7 @@ export default function CardEditorPage() {
             </div>
             <div>
               <label className="text-sm font-medium text-slate-700" htmlFor="company">
-                公司
+                {t("labels.company")}
               </label>
               <input
                 id="company"
@@ -1017,7 +800,7 @@ export default function CardEditorPage() {
             </div>
             <div className="sm:col-span-2">
               <label className="text-sm font-medium text-slate-700" htmlFor="bio">
-                簡介
+                {t("labels.bio")}
               </label>
               <textarea
                 id="bio"
@@ -1037,20 +820,20 @@ export default function CardEditorPage() {
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-900">
-              聯絡欄位
+              {t("sections.contactFields")}
             </h2>
             <button
               type="button"
               onClick={addField}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
-              <Plus className="h-3.5 w-3.5" /> 新增
+              <Plus className="h-3.5 w-3.5" /> {t("actions.add")}
             </button>
           </div>
 
           <div className="mt-4 space-y-4">
             {fields.length === 0 ? (
-              <p className="text-sm text-slate-500">尚未有欄位。</p>
+              <p className="text-sm text-slate-500">{t("empty.fields")}</p>
             ) : null}
             {fields.map((field, index) => (
               <div
@@ -1060,7 +843,7 @@ export default function CardEditorPage() {
                 <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      類型
+                      {t("labels.type")}
                     </label>
                     <select
                       value={field.field_type}
@@ -1071,14 +854,14 @@ export default function CardEditorPage() {
                     >
                       {fieldTypes.map((type) => (
                         <option key={type} value={type}>
-                          {fieldTypeLabelMap[type]}
+                          {fieldTypeLabels[type] ?? type}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      值
+                      {t("labels.value")}
                     </label>
                     <input
                       value={field.field_value}
@@ -1090,19 +873,20 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      標籤
+                      {t("labels.label")}
                     </label>
                     <input
                       value={field.field_label}
                       onChange={(event) =>
                         updateField(index, { field_label: event.target.value })
                       }
+                      placeholder={fieldTypeLabels[field.field_type] ?? field.field_type}
                       className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      可見性
+                      {t("labels.visibility")}
                     </label>
                     <select
                       value={field.visibility}
@@ -1115,7 +899,7 @@ export default function CardEditorPage() {
                     >
                       {visibilityOptions.map((option) => (
                         <option key={option} value={option}>
-                          {visibilityLabelMap[option]}
+                          {visibilityLabels[option]}
                         </option>
                       ))}
                     </select>
@@ -1166,18 +950,20 @@ export default function CardEditorPage() {
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">連結</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {t("sections.links")}
+            </h2>
             <button
               type="button"
               onClick={addLink}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
-              <Plus className="h-3.5 w-3.5" /> 新增
+              <Plus className="h-3.5 w-3.5" /> {t("actions.add")}
             </button>
           </div>
           <div className="mt-4 space-y-4">
             {links.length === 0 ? (
-              <p className="text-sm text-slate-500">尚未有連結。</p>
+              <p className="text-sm text-slate-500">{t("empty.links")}</p>
             ) : null}
             {links.map((link, index) => (
               <div
@@ -1187,7 +973,7 @@ export default function CardEditorPage() {
                 <div className="grid gap-4 sm:grid-cols-[1fr_1fr_120px]">
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      標籤
+                      {t("labels.label")}
                     </label>
                     <input
                       value={link.label}
@@ -1199,7 +985,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      網址
+                      {t("labels.url")}
                     </label>
                     <input
                       value={link.url}
@@ -1211,7 +997,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      圖示
+                      {t("labels.icon")}
                     </label>
                     <input
                       value={link.icon}
@@ -1223,9 +1009,9 @@ export default function CardEditorPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex justify-between">
-                  <span className="text-sm text-slate-500">預覽：</span>
+                  <span className="text-sm text-slate-500">{t("labels.preview")}:</span>
                   <span className="text-sm font-semibold text-slate-700">
-                    {link.icon || "🔗"} {link.label || "連結"}
+                    {link.icon || "🔗"} {link.label || t("placeholders.linkLabel")}
                   </span>
                   <div className="flex gap-2">
                     <button
@@ -1264,18 +1050,20 @@ export default function CardEditorPage() {
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">經歷</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {t("sections.experience")}
+            </h2>
             <button
               type="button"
               onClick={addExperience}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
-              <Plus className="h-3.5 w-3.5" /> 新增
+              <Plus className="h-3.5 w-3.5" /> {t("actions.add")}
             </button>
           </div>
           <div className="mt-4 space-y-4">
             {experiences.length === 0 ? (
-              <p className="text-sm text-slate-500">尚未有經歷。</p>
+              <p className="text-sm text-slate-500">{t("empty.experience")}</p>
             ) : null}
             {experiences.map((experience, index) => (
               <div
@@ -1285,7 +1073,7 @@ export default function CardEditorPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      職位
+                      {t("labels.role")}
                     </label>
                     <input
                       value={experience.role}
@@ -1297,7 +1085,7 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      公司
+                      {t("labels.company")}
                     </label>
                     <input
                       value={experience.company}
@@ -1309,33 +1097,33 @@ export default function CardEditorPage() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      開始日期
+                      {t("labels.startDate")}
                     </label>
                     <input
                       value={experience.start_date}
                       onChange={(event) =>
                         updateExperience(index, { start_date: event.target.value })
                       }
-                      placeholder="2020-01"
+                      placeholder={t("placeholders.startDate")}
                       className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      結束日期
+                      {t("labels.endDate")}
                     </label>
                     <input
                       value={experience.end_date}
                       onChange={(event) =>
                         updateExperience(index, { end_date: event.target.value })
                       }
-                      placeholder="至今"
+                      placeholder={t("placeholders.endDate")}
                       className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                     />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="text-xs font-semibold uppercase text-slate-500">
-                      描述
+                      {t("labels.description")}
                     </label>
                     <textarea
                       rows={3}
@@ -1349,7 +1137,11 @@ export default function CardEditorPage() {
                 </div>
                 <div className="mt-4 flex items-center justify-between">
                   <span className="text-xs text-slate-500">
-                    {formatDateRange(experience.start_date, experience.end_date)}
+                    {formatDateRange(
+                      experience.start_date,
+                      experience.end_date,
+                      t("placeholders.present")
+                    )}
                   </span>
                   <div className="flex gap-2">
                     <button
@@ -1404,28 +1196,57 @@ export default function CardEditorPage() {
       >
         <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Live Preview
+            {t("sections.livePreview")}
           </p>
-          <div className="mt-4 max-h-[74vh] overflow-y-auto rounded-3xl border border-slate-200 bg-slate-100">
-            <div className="pointer-events-none">
-              <TemplateRenderer
-                template={previewTemplate}
-                fullName={isCompanyCardMode ? card.card_name || "Company Card" : card.full_name || "Your Name"}
-                title={card.title || null}
-                company={card.company || null}
-                bio={card.bio || null}
-                slug={card.slug || card.id}
-                avatarUrl={avatarUrl || null}
-                backgroundPattern={card.background_pattern}
-                backgroundColor={card.background_color}
-                vcardHref="#"
-                cardFields={previewFields}
-                cardLinks={previewLinks}
-                cardExperiences={previewExperiences}
-                ownerId={card.id}
-                viewerId={null}
-                viewerPlan={"free"}
-              />
+          <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50">
+            <div
+              className={`cardlink-cover ${patternClass} h-24 rounded-t-3xl`}
+              style={{
+                "--cardlink-base": card.background_color,
+              } as React.CSSProperties}
+            />
+            <div className="-mt-8 flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white text-sm font-semibold text-slate-700 shadow-md">
+                {card.full_name.trim()
+                  ? card.full_name.trim().slice(0, 2).toUpperCase()
+                  : "CL"}
+              </div>
+            </div>
+            <div className="px-4 pb-4 pt-2">
+              <p className="text-base font-semibold text-slate-900">
+                {card.full_name || t("placeholders.yourName")}
+              </p>
+              <p className="text-xs text-slate-500">
+                {[card.title, card.company].filter(Boolean).join(" • ")}
+              </p>
+              {card.bio ? (
+                <p className="mt-2 text-xs text-slate-600">{card.bio}</p>
+              ) : null}
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {fields
+                  .filter((field) => field.visibility === "public")
+                  .slice(0, 4)
+                  .map((field) => (
+                    <div
+                      key={`${field.field_type}-${field.id ?? "new"}`}
+                      className={`rounded-full px-2 py-1 text-[10px] font-semibold text-white ${
+                        contactPreviewClasses[field.field_type] ?? "bg-slate-600"
+                      }`}
+                    >
+                      {field.field_label || field.field_type}
+                    </div>
+                  ))}
+              </div>
+              {links.length > 0 ? (
+                <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
+                  <p className="text-xs font-semibold text-slate-500">
+                    {t("sections.links")}
+                  </p>
+                  <p className="text-xs text-slate-600">
+                    {links[0]?.label || t("placeholders.linkLabel")}
+                  </p>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

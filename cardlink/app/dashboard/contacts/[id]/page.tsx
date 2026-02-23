@@ -28,6 +28,7 @@ import {
   getVisibleFields,
   type ViewerPlan,
 } from "@/src/lib/visibility";
+import { useLocale, useTranslations } from "next-intl";
 
 type CardField = {
   id: string;
@@ -77,15 +78,6 @@ type CardShare = {
   shared_at: string | null;
 };
 
-const suggestedTags = [
-  "client",
-  "investor",
-  "partner",
-  "met at event",
-  "follow up",
-  "VIP",
-];
-
 const iconByType: Record<string, typeof Phone> = {
   Phone,
   Email: Mail,
@@ -112,9 +104,9 @@ function getInitials(name: string) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
-function formatDateValue(value: string | Date) {
+function formatDateValue(value: string | Date, locale: string) {
   try {
-    return new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
+    return new Intl.DateTimeFormat(locale, { timeZone: "UTC" }).format(
       new Date(value)
     );
   } catch {
@@ -129,6 +121,8 @@ export default function ContactDetailPage({
 }) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("contactDetail");
   const [card, setCard] = useState<CardRecord | null>(null);
   const [connection, setConnection] = useState<ConnectionRecord | null>(null);
   const [viewerId, setViewerId] = useState<string | null>(null);
@@ -148,6 +142,18 @@ export default function ContactDetailPage({
   const [editingText, setEditingText] = useState("");
   const [reminderDate, setReminderDate] = useState("");
   const [shareHistory, setShareHistory] = useState<CardShare[]>([]);
+  const suggestedTags = t.raw("crm.suggestedTags") as string[];
+  const fieldTypeLabels: Record<string, string> = {
+    Phone: t("fieldTypes.phone"),
+    Email: t("fieldTypes.email"),
+    WeChat: t("fieldTypes.wechat"),
+    WhatsApp: t("fieldTypes.whatsapp"),
+    LinkedIn: t("fieldTypes.linkedin"),
+    "Twitter/X": t("fieldTypes.twitter"),
+    XHS: t("fieldTypes.xhs"),
+    Website: t("fieldTypes.website"),
+    Other: t("fieldTypes.other"),
+  };
 
   const loadCrm = async (ownerId: string, cardId: string) => {
     const [{ data: notes, error: notesError }, { data: shares }] =
@@ -188,7 +194,7 @@ export default function ContactDetailPage({
 
     const { data: userData, error } = await supabase.auth.getUser();
     if (error || !userData.user) {
-      setMessage("請先登入以查看此聯絡人。");
+      setMessage(t("errors.signIn"));
       setIsLoading(false);
       return;
     }
@@ -226,7 +232,7 @@ export default function ContactDetailPage({
     ]);
 
     if (cardError || !cardData) {
-      setMessage(cardError?.message ?? "Unable to load contact card.");
+      setMessage(cardError?.message ?? t("errors.loadCard"));
       setIsLoading(false);
       return;
     }
@@ -403,7 +409,7 @@ export default function ContactDetailPage({
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center text-sm text-slate-500">
-        Loading contact...
+        {t("states.loading")}
       </div>
     );
   }
@@ -411,7 +417,7 @@ export default function ContactDetailPage({
   if (!card) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
-        Contact not found.
+        {t("states.notFound")}
       </div>
     );
   }
@@ -431,7 +437,7 @@ export default function ContactDetailPage({
     connectionStatus
   );
 
-  const fullName = card.full_name ?? "CardLink 使用者";
+  const fullName = card.full_name ?? t("defaults.userName");
   const initials = getInitials(fullName);
 
   return (
@@ -462,7 +468,7 @@ export default function ContactDetailPage({
             >
               <ExternalLink className="h-3 w-3" />
             </span>
-            View Card
+            {t("actions.viewCard")}
           </Link>
         </div>
         {card.bio ? (
@@ -471,16 +477,20 @@ export default function ContactDetailPage({
 
         <div className="mt-4 text-xs text-slate-400">
           {connection?.connected_at
-            ? `Connected ${formatDateValue(connection.connected_at)}`
+            ? t("connection.connected", {
+                date: formatDateValue(connection.connected_at, locale),
+              })
             : connection?.created_at
-            ? `Requested ${formatDateValue(connection.created_at)}`
+            ? t("connection.requested", {
+                date: formatDateValue(connection.created_at, locale),
+              })
             : ""}
         </div>
       </div>
 
       <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-          Contact fields
+          {t("labels.contactFields")}
         </h2>
         <div className="space-y-3">
           {visibleFields.map((field) => {
@@ -503,7 +513,9 @@ export default function ContactDetailPage({
                   </span>
                   <div>
                     <p className="text-sm font-medium text-slate-800">
-                      {field.field_label || field.field_type}
+                      {field.field_label ||
+                        fieldTypeLabels[field.field_type] ||
+                        field.field_type}
                     </p>
                     <p
                       className={`text-xs text-slate-500 ${
@@ -527,27 +539,27 @@ export default function ContactDetailPage({
         <div className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
           <Bell className="h-4 w-4 text-violet-600" />
-          客戶管理
+          {t("crm.title")}
         </div>
 
         <div className="border-t border-slate-100 pt-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Tag className="h-4 w-4 text-violet-600" />
-              標籤
+              {t("crm.tags.title")}
             </div>
             <button
               onClick={() => setIsAddingTag((prev) => !prev)}
               className="flex items-center gap-1 text-xs font-semibold text-violet-600"
             >
               <Plus className="h-3.5 w-3.5" />
-              新增標籤
+              {t("crm.tags.add")}
             </button>
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
             {tags.length === 0 ? (
-              <span className="text-xs text-slate-400">尚未有標籤。</span>
+              <span className="text-xs text-slate-400">{t("crm.tags.empty")}</span>
             ) : (
               tags.map((tag) => (
                 <button
@@ -566,14 +578,14 @@ export default function ContactDetailPage({
               <input
                 value={tagInput}
                 onChange={(event) => setTagInput(event.target.value)}
-                placeholder="輸入標籤"
+                placeholder={t("crm.tags.placeholder")}
                 className="flex-1 rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-700"
               />
               <button
                 onClick={() => handleAddTag(tagInput)}
                 className="rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white"
               >
-                新增
+                {t("crm.tags.submit")}
               </button>
             </div>
           ) : null}
@@ -595,14 +607,14 @@ export default function ContactDetailPage({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Pencil className="h-4 w-4 text-violet-600" />
-              備註
+              {t("crm.notes.title")}
             </div>
             <button
               onClick={() => setIsAddingNote((prev) => !prev)}
               className="flex items-center gap-1 text-xs font-semibold text-violet-600"
             >
               <Plus className="h-3.5 w-3.5" />
-              新增備註
+              {t("crm.notes.add")}
             </button>
           </div>
 
@@ -612,7 +624,7 @@ export default function ContactDetailPage({
                 value={noteDraft}
                 onChange={(event) => setNoteDraft(event.target.value)}
                 rows={3}
-                placeholder="輸入私人備註..."
+                placeholder={t("crm.notes.placeholder")}
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
               />
               <div className="flex gap-2">
@@ -620,13 +632,13 @@ export default function ContactDetailPage({
                   onClick={handleAddNote}
                   className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
                 >
-                  儲存備註
+                  {t("crm.notes.save")}
                 </button>
                 <button
                   onClick={() => setIsAddingNote(false)}
                   className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600"
                 >
-                  取消
+                  {t("actions.cancel")}
                 </button>
               </div>
             </div>
@@ -634,7 +646,7 @@ export default function ContactDetailPage({
 
           <div className="mt-4 space-y-3">
             {crmNotes.filter((note) => note.note_text).length === 0 ? (
-              <p className="text-xs text-slate-400">尚未有備註。</p>
+              <p className="text-xs text-slate-400">{t("crm.notes.empty")}</p>
             ) : null}
 
             {crmNotes
@@ -657,13 +669,13 @@ export default function ContactDetailPage({
                           onClick={() => handleSaveNote(note.id)}
                           className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
                         >
-                          儲存
+                          {t("actions.save")}
                         </button>
                         <button
                           onClick={() => setEditingNoteId(null)}
                           className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
                         >
-                          取消
+                          {t("actions.cancel")}
                         </button>
                       </div>
                     </div>
@@ -675,7 +687,7 @@ export default function ContactDetailPage({
                         </p>
                         <p className="mt-2 text-xs text-slate-400">
                           {note.created_at
-                            ? formatDateValue(note.created_at)
+                            ? formatDateValue(note.created_at, locale)
                             : ""}
                         </p>
                       </div>
@@ -684,13 +696,13 @@ export default function ContactDetailPage({
                           onClick={() => handleEditNote(note)}
                           className="text-xs font-semibold text-violet-600"
                         >
-                          編輯
+                          {t("actions.edit")}
                         </button>
                         <button
                           onClick={() => handleDeleteNote(note.id)}
                           className="text-xs font-semibold text-rose-500"
                         >
-                          刪除
+                          {t("actions.delete")}
                         </button>
                       </div>
                     </div>
@@ -704,7 +716,7 @@ export default function ContactDetailPage({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Calendar className="h-4 w-4 text-violet-600" />
-              提醒
+              {t("crm.reminders.title")}
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -717,14 +729,14 @@ export default function ContactDetailPage({
                 onClick={handleAddReminder}
                 className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
               >
-                設定提醒
+                {t("crm.reminders.set")}
               </button>
             </div>
           </div>
 
           <div className="mt-4 space-y-2">
             {crmNotes.filter((note) => note.reminder_date).length === 0 ? (
-              <p className="text-xs text-slate-400">尚未設定提醒。</p>
+              <p className="text-xs text-slate-400">{t("crm.reminders.empty")}</p>
             ) : null}
             {crmNotes
               .filter((note) => note.reminder_date)
@@ -743,7 +755,9 @@ export default function ContactDetailPage({
                         : "border-amber-200 bg-amber-50 text-amber-700"
                     }`}
                   >
-                    追蹤提醒：{formatDateValue(reminder)}
+                    {t("crm.reminders.label", {
+                      date: formatDateValue(reminder, locale),
+                    })}
                   </div>
                 );
               })}
@@ -753,20 +767,23 @@ export default function ContactDetailPage({
         <div className="border-t border-slate-100 pt-5">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
             <Bell className="h-4 w-4 text-violet-600" />
-            互動紀錄
+            {t("crm.activity.title")}
           </div>
           <div className="mt-3 space-y-2 text-xs text-slate-500">
             {shareHistory.length === 0 ? (
-              <p>尚未有名片交換紀錄。</p>
+              <p>{t("crm.activity.empty")}</p>
             ) : (
               shareHistory.map((share) => (
                 <div key={share.id} className="flex items-center justify-between">
                   <span>
-                    連結方式：{share.share_method ?? "連結"}
+                    {t("crm.activity.method", {
+                      method:
+                        share.share_method ?? t("crm.activity.methodFallback"),
+                    })}
                   </span>
                   <span>
                     {share.shared_at
-                      ? formatDateValue(share.shared_at)
+                      ? formatDateValue(share.shared_at, locale)
                       : ""}
                   </span>
                 </div>
@@ -777,7 +794,7 @@ export default function ContactDetailPage({
       </div>
       ) : (
         <div className="rounded-3xl border border-violet-100 bg-violet-50 p-6 text-sm text-violet-700">
-          升級至 Premium 以解鎖 CRM 備註、標籤與提醒功能。
+          {t("upgrade.cta")}
         </div>
       )}
 
@@ -787,7 +804,7 @@ export default function ContactDetailPage({
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <ShieldAlert className="h-4 w-4" />
-        移除連結
+        {t("actions.removeConnection")}
       </button>
 
       {message ? (
@@ -800,7 +817,7 @@ export default function ContactDetailPage({
         onClick={() => router.push("/dashboard/cards?tab=contacts")}
         className="text-sm font-semibold text-violet-600 hover:text-violet-700"
       >
-        返回聯絡人
+        {t("actions.backToContacts")}
       </button>
     </div>
   );

@@ -190,6 +190,172 @@
       "body": "與他人交換名片以建立你的網絡。"
     }
   },
+  "cardEditor": {
+    "brand": "CardLink",
+    "title": "編輯名片",
+    "defaults": {
+      "cardName": "我的名片"
+    },
+    "messages": {
+      "saved": "名片已儲存。",
+      "loading": "正在載入編輯器..."
+    },
+    "errors": {
+      "signInEdit": "請登入後編輯名片。",
+      "signInUpload": "請登入後上傳頭像。",
+      "signInSave": "請登入後儲存名片。",
+      "notFound": "找不到名片。"
+    },
+    "actions": {
+      "showPreview": "顯示預覽",
+      "hidePreview": "隱藏預覽",
+      "save": "儲存",
+      "saving": "正在儲存...",
+      "back": "返回",
+      "add": "新增",
+      "uploadPhoto": "上傳照片",
+      "uploading": "正在上傳..."
+    },
+    "sections": {
+      "background": "背景設定",
+      "profilePhoto": "頭像",
+      "bioInfo": "簡介與資訊",
+      "contactFields": "聯絡方式",
+      "links": "連結",
+      "experience": "經歷",
+      "livePreview": "即時預覽"
+    },
+    "labels": {
+      "color": "顏色",
+      "preview": "預覽",
+      "cardName": "名片名稱",
+      "fullName": "姓名",
+      "title": "職稱",
+      "company": "公司",
+      "bio": "簡介",
+      "type": "類型",
+      "value": "內容",
+      "label": "標籤",
+      "visibility": "可見性",
+      "url": "網址",
+      "icon": "圖示",
+      "role": "職位",
+      "startDate": "開始日期",
+      "endDate": "結束日期",
+      "description": "描述"
+    },
+    "empty": {
+      "fields": "尚未有欄位。",
+      "links": "尚未有連結。",
+      "experience": "尚未有經歷。"
+    },
+    "placeholders": {
+      "present": "至今",
+      "startDate": "2020-01",
+      "endDate": "至今",
+      "linkLabel": "連結",
+      "yourName": "你的姓名"
+    },
+    "misc": {
+      "storageNote": "儲存在 Supabase Storage（avatars bucket）。"
+    },
+    "fieldTypes": {
+      "phone": "電話",
+      "email": "電子郵件",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "wechat": "WeChat",
+      "telegram": "Telegram",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "website": "網站"
+    },
+    "visibility": {
+      "public": "公開",
+      "friends": "好友",
+      "hidden": "隱藏"
+    }
+  },
+  "contactDetail": {
+    "states": {
+      "loading": "正在載入聯絡人...",
+      "notFound": "找不到聯絡人。"
+    },
+    "defaults": {
+      "userName": "CardLink 用戶"
+    },
+    "errors": {
+      "signIn": "請登入以查看此聯絡人。",
+      "loadCard": "無法載入聯絡人名片。"
+    },
+    "actions": {
+      "viewCard": "查看名片",
+      "removeConnection": "移除連結",
+      "backToContacts": "返回聯絡人",
+      "save": "儲存",
+      "cancel": "取消",
+      "edit": "編輯",
+      "delete": "刪除"
+    },
+    "labels": {
+      "contactFields": "聯絡方式"
+    },
+    "connection": {
+      "connected": "已連結 {date}",
+      "requested": "已請求 {date}"
+    },
+    "fieldTypes": {
+      "phone": "電話",
+      "email": "電子郵件",
+      "wechat": "WeChat",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter/X",
+      "xhs": "小紅書",
+      "website": "網站",
+      "other": "其他"
+    },
+    "crm": {
+      "title": "客戶管理",
+      "tags": {
+        "title": "標籤",
+        "add": "新增標籤",
+        "empty": "尚未有標籤。",
+        "placeholder": "輸入標籤",
+        "submit": "新增"
+      },
+      "notes": {
+        "title": "備註",
+        "add": "新增備註",
+        "placeholder": "輸入私人備註...",
+        "save": "儲存備註",
+        "empty": "尚未有備註。"
+      },
+      "reminders": {
+        "title": "提醒",
+        "set": "設定提醒",
+        "empty": "尚未設定提醒。",
+        "label": "跟進提醒：{date}"
+      },
+      "activity": {
+        "title": "互動紀錄",
+        "empty": "尚未有名片交換紀錄。",
+        "method": "連結方式：{method}",
+        "methodFallback": "連結"
+      },
+      "suggestedTags": [
+        "客戶",
+        "投資人",
+        "合作夥伴",
+        "活動中認識",
+        "跟進",
+        "VIP"
+      ]
+    },
+    "upgrade": {
+      "cta": "升級至 Premium 以解鎖 CRM 備註、標籤與提醒功能。"
+    }
+  },
   "nfc": {
     "brand": "CardLink",
     "title": "NFC 名片",
@@ -550,6 +716,113 @@
     },
     "actions": {
       "logout": "登出"
+    }
+  },
+  "support": {
+    "brand": "CardLink",
+    "title": "協助與支援",
+    "subtitle": "在這裡找到答案、管理訂閱並查看隱私政策。",
+    "contact": {
+      "title": "聯絡支援",
+      "subtitle": "帳戶或名片需要幫助？我們樂意協助。",
+      "emailLabel": "電子郵件：",
+      "emailValue": "support@cardlink.app",
+      "hoursLabel": "服務時間：",
+      "hoursValue": "週一至週五 09:00-18:00 (UTC)",
+      "responseLabel": "回覆時間：",
+      "responseValue": "1 個工作日內"
+    },
+    "subscription": {
+      "title": "管理訂閱",
+      "subtitle": "在安全的帳單入口取消或更新方案。",
+      "button": "開啟帳單入口",
+      "loading": "正在開啟...",
+      "note": "你可隨時取消。變更會在現有計費週期結束後生效。"
+    },
+    "faq": {
+      "title": "快速解答",
+      "items": [
+        {
+          "question": "如何更新名片資訊？",
+          "answer": "到儀表板 > 名片，選擇名片並按編輯。"
+        },
+        {
+          "question": "忘記密碼怎麼辦？",
+          "answer": "在設定中選擇重設密碼，按步驟完成。"
+        },
+        {
+          "question": "如何匯出聯絡人？",
+          "answer": "在設定頁按匯出聯絡人，高級版可用。"
+        },
+        {
+          "question": "可以刪除帳戶嗎？",
+          "answer": "寄信至 support@cardlink.app，我們會協助處理。"
+        }
+      ]
+    },
+    "privacy": {
+      "title": "隱私政策",
+      "subtitle": "我們重視你的隱私，只會在提供 CardLink 服務時使用資料。",
+      "lastUpdated": "更新日期：2026-02-23",
+      "sections": [
+        {
+          "title": "我們收集的資料",
+          "body": [
+            "我們會收集你提供的資料，例如姓名、電子郵件、個人資料與名片內容。",
+            "我們也會收集基本使用數據，例如瀏覽次數、裝置類型及錯誤記錄。"
+          ]
+        },
+        {
+          "title": "我們如何使用資料",
+          "body": [
+            "用於提供、維護與改進服務，包括同步名片與處理訂單。",
+            "用於安全、防詐騙、帳戶支援與服務通知。"
+          ]
+        },
+        {
+          "title": "我們如何分享資料",
+          "body": [
+            "僅在提供服務所需時與供應商分享，例如付款及電子郵件服務商。",
+            "除法律要求或你同意外，我們不會出售你的個人資料。"
+          ]
+        },
+        {
+          "title": "資料保留",
+          "body": [
+            "我們只在必要時保留資料以提供服務並履行法規義務。",
+            "你可要求刪除帳戶以移除個人資料。"
+          ]
+        },
+        {
+          "title": "你的選擇",
+          "body": [
+            "你可在設定中更新資料或調整隱私選項。",
+            "你也可透過支援信箱要求存取或刪除資料。"
+          ]
+        },
+        {
+          "title": "安全",
+          "body": [
+            "我們採取合理的技術與管理措施保護你的資料。",
+            "任何傳輸或儲存方式都無法保證絕對安全。"
+          ]
+        },
+        {
+          "title": "變更",
+          "body": [
+            "我們可能更新本政策，並於此頁發布最新版本。"
+          ]
+        },
+        {
+          "title": "聯絡我們",
+          "body": [
+            "如有隱私問題，請寄信至 support@cardlink.app。"
+          ]
+        }
+      ]
+    },
+    "errors": {
+      "portal": "無法開啟帳單入口，請稍後再試。"
     }
   },
   "passwordSettings": {

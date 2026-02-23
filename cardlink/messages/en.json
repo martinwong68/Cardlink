@@ -190,6 +190,172 @@
       "body": "Exchange cards with people to build your network."
     }
   },
+  "cardEditor": {
+    "brand": "CardLink",
+    "title": "Edit Card",
+    "defaults": {
+      "cardName": "My Card"
+    },
+    "messages": {
+      "saved": "Card saved successfully.",
+      "loading": "Loading editor..."
+    },
+    "errors": {
+      "signInEdit": "Please sign in to edit your card.",
+      "signInUpload": "Please sign in to upload an avatar.",
+      "signInSave": "Please sign in to save your card.",
+      "notFound": "Card not found."
+    },
+    "actions": {
+      "showPreview": "Show Preview",
+      "hidePreview": "Hide Preview",
+      "save": "Save",
+      "saving": "Saving...",
+      "back": "Back",
+      "add": "Add",
+      "uploadPhoto": "Upload Photo",
+      "uploading": "Uploading..."
+    },
+    "sections": {
+      "background": "Background Settings",
+      "profilePhoto": "Profile Photo",
+      "bioInfo": "Bio & Info",
+      "contactFields": "Contact Fields",
+      "links": "Links",
+      "experience": "Experience",
+      "livePreview": "Live Preview"
+    },
+    "labels": {
+      "color": "Color",
+      "preview": "Preview",
+      "cardName": "Card name",
+      "fullName": "Full name",
+      "title": "Title",
+      "company": "Company",
+      "bio": "Bio",
+      "type": "Type",
+      "value": "Value",
+      "label": "Label",
+      "visibility": "Visibility",
+      "url": "URL",
+      "icon": "Icon",
+      "role": "Role",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "description": "Description"
+    },
+    "empty": {
+      "fields": "No fields yet.",
+      "links": "No links yet.",
+      "experience": "No experience yet."
+    },
+    "placeholders": {
+      "present": "Present",
+      "startDate": "2020-01",
+      "endDate": "Present",
+      "linkLabel": "Link",
+      "yourName": "Your Name"
+    },
+    "misc": {
+      "storageNote": "Stored in Supabase Storage (avatars bucket)."
+    },
+    "fieldTypes": {
+      "phone": "Phone",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "wechat": "WeChat",
+      "telegram": "Telegram",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "website": "Website"
+    },
+    "visibility": {
+      "public": "Public",
+      "friends": "Friends",
+      "hidden": "Hidden"
+    }
+  },
+  "contactDetail": {
+    "states": {
+      "loading": "Loading contact...",
+      "notFound": "Contact not found."
+    },
+    "defaults": {
+      "userName": "CardLink User"
+    },
+    "errors": {
+      "signIn": "Please sign in to view this contact.",
+      "loadCard": "Unable to load contact card."
+    },
+    "actions": {
+      "viewCard": "View Card",
+      "removeConnection": "Remove connection",
+      "backToContacts": "Back to contacts",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "labels": {
+      "contactFields": "Contact fields"
+    },
+    "connection": {
+      "connected": "Connected {date}",
+      "requested": "Requested {date}"
+    },
+    "fieldTypes": {
+      "phone": "Phone",
+      "email": "Email",
+      "wechat": "WeChat",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter/X",
+      "xhs": "XHS",
+      "website": "Website",
+      "other": "Other"
+    },
+    "crm": {
+      "title": "Customer Management",
+      "tags": {
+        "title": "Tags",
+        "add": "Add tag",
+        "empty": "No tags yet.",
+        "placeholder": "Enter tag",
+        "submit": "Add"
+      },
+      "notes": {
+        "title": "Notes",
+        "add": "Add note",
+        "placeholder": "Enter private note...",
+        "save": "Save note",
+        "empty": "No notes yet."
+      },
+      "reminders": {
+        "title": "Reminders",
+        "set": "Set reminder",
+        "empty": "No reminders set.",
+        "label": "Follow-up reminder: {date}"
+      },
+      "activity": {
+        "title": "Activity",
+        "empty": "No card exchange history yet.",
+        "method": "Share method: {method}",
+        "methodFallback": "Link"
+      },
+      "suggestedTags": [
+        "client",
+        "investor",
+        "partner",
+        "met at event",
+        "follow up",
+        "VIP"
+      ]
+    },
+    "upgrade": {
+      "cta": "Upgrade to Premium to unlock CRM notes, tags, and reminders."
+    }
+  },
   "nfc": {
     "brand": "CardLink",
     "title": "NFC Cards",
@@ -550,6 +716,113 @@
     },
     "actions": {
       "logout": "Log Out"
+    }
+  },
+  "support": {
+    "brand": "CardLink",
+    "title": "Help & Support",
+    "subtitle": "Find answers, manage your subscription, and review our privacy policy.",
+    "contact": {
+      "title": "Contact Support",
+      "subtitle": "Need help with your account or card? We're here to help.",
+      "emailLabel": "Email:",
+      "emailValue": "support@cardlink.app",
+      "hoursLabel": "Hours:",
+      "hoursValue": "Mon-Fri, 9:00 AM-6:00 PM (UTC)",
+      "responseLabel": "Typical response:",
+      "responseValue": "Within 1 business day"
+    },
+    "subscription": {
+      "title": "Manage Subscription",
+      "subtitle": "Cancel or update your plan in the secure billing portal.",
+      "button": "Open Billing Portal",
+      "loading": "Opening portal...",
+      "note": "You can cancel at any time. Changes take effect at the end of the current billing period."
+    },
+    "faq": {
+      "title": "Quick Answers",
+      "items": [
+        {
+          "question": "How do I update my card details?",
+          "answer": "Go to Dashboard > Cards, pick a card, and tap Edit to update your info."
+        },
+        {
+          "question": "I forgot my password. What should I do?",
+          "answer": "Open Settings and choose Reset Password to follow the steps."
+        },
+        {
+          "question": "How do I export contacts?",
+          "answer": "Use Export Contacts from the Settings page. Premium is required."
+        },
+        {
+          "question": "Can I delete my account?",
+          "answer": "Email support@cardlink.app and we will help you with account removal."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "subtitle": "We respect your privacy and only use your data to deliver CardLink.",
+      "lastUpdated": "Last updated: Feb 23, 2026",
+      "sections": [
+        {
+          "title": "Information we collect",
+          "body": [
+            "We collect information you provide, such as your name, email, profile details, and card content.",
+            "We also collect basic usage data like visits, device type, and error logs."
+          ]
+        },
+        {
+          "title": "How we use information",
+          "body": [
+            "We use your information to provide, maintain, and improve CardLink, including syncing cards and processing orders.",
+            "We also use it for security, fraud prevention, account support, and service communications."
+          ]
+        },
+        {
+          "title": "How we share information",
+          "body": [
+            "We only share data with service providers when needed to operate CardLink, such as payment and email providers.",
+            "We do not sell your personal information unless required by law or with your consent."
+          ]
+        },
+        {
+          "title": "Data retention",
+          "body": [
+            "We keep data only as long as needed to provide the service and meet legal obligations.",
+            "You can request account deletion to remove your personal data."
+          ]
+        },
+        {
+          "title": "Your choices",
+          "body": [
+            "You can update your profile or adjust privacy controls in Settings.",
+            "You can also contact support to access or delete your data."
+          ]
+        },
+        {
+          "title": "Security",
+          "body": [
+            "We use reasonable technical and organizational measures to protect your data.",
+            "No method of transmission or storage is 100% secure."
+          ]
+        },
+        {
+          "title": "Changes",
+          "body": [
+            "We may update this policy and will post the latest version on this page."
+          ]
+        },
+        {
+          "title": "Contact us",
+          "body": [
+            "If you have privacy questions, email support@cardlink.app."
+          ]
+        }
+      ]
+    },
+    "errors": {
+      "portal": "Unable to open the billing portal. Please try again."
     }
   },
   "passwordSettings": {
