@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -743,8 +744,18 @@ export default function CompanyManagementPanel() {
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-base font-semibold text-slate-900">Coupon / Discount Redemption</h2>
-        <p className="mt-1 text-sm text-slate-500">Approve or reject pending redemption requests.</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">Coupon / Discount Redemption</h2>
+            <p className="mt-1 text-sm text-slate-500">Approve or reject pending redemption requests.</p>
+          </div>
+          <Link
+            href="/dashboard/scan"
+            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Scan redemption
+          </Link>
+        </div>
 
         <div className="mt-4 space-y-2">
           {pendingRedemptions.length ? (

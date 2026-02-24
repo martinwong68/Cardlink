@@ -68,6 +68,7 @@
     "cards": "Cards",
     "membership": "Membership",
     "discount": "Explore",
+    "scan": "Scan",
     "settings": "Settings"
   },
   "getCard": {
@@ -683,8 +684,45 @@
   "scan": {
     "brand": "CardLink",
     "title": "Scan",
-    "subtitle": "Scan QR codes to add new connections.",
-    "comingSoon": "Camera access will be enabled here soon."
+    "subtitle": "Scan redemption QR codes to verify discount usage.",
+    "actions": {
+      "startScan": "Start Scan",
+      "scanning": "Scanning...",
+      "stopScan": "Stop Scan",
+      "verify": "Verify",
+      "confirmUse": "Confirm Used",
+      "alreadyUsed": "Already Processed",
+      "backToDiscount": "Back to Discount"
+    },
+    "placeholders": {
+      "code": "Paste scanned content, QR URL, or redemption UUID"
+    },
+    "messages": {
+      "signInFirst": "Please sign in first.",
+      "cameraNotSupported": "This device or browser does not support camera QR scanning. You can paste the code instead.",
+      "cameraDenied": "Cannot access camera. Please check browser camera permissions.",
+      "invalidCode": "Invalid redemption code. Please rescan or paste a valid value.",
+      "offerNotFound": "Offer not found for this redemption code.",
+      "noPermission": "You do not have permission to process this company's redemptions.",
+      "alreadyProcessed": "This redemption has already been processed.",
+      "markedUsed": "Redemption confirmed and marked as used.",
+      "requireAdmin": "You must be a company owner/admin to process discount redemptions."
+    },
+    "labels": {
+      "unknownCompany": "Unknown company",
+      "points": "Points",
+      "requestedAt": "Requested",
+      "processedAt": "Processed",
+      "reason": "Reason"
+    },
+    "status": {
+      "redeemed": "Redeemed",
+      "used": "Used",
+      "rejected": "Rejected"
+    },
+    "empty": {
+      "noCode": "After scanning or entering a code, redemption details appear here."
+    }
   },
   "settings": {
     "brand": "CardLink",
@@ -1010,6 +1048,7 @@
     "actions": {
       "reviewPending": "Review Pending",
       "reviewHistory": "Review History",
+      "openScanner": "Open Scanner",
       "allCompanies": "All Companies",
       "submitting": "Submitting...",
       "redeem": "Redeem",
@@ -1080,6 +1119,39 @@
     },
     "empty": {
       "noMemberships": "No memberships found yet."
+    },
+    "redeemHistory": {
+      "title": "My Discount Redemptions",
+      "loading": "Loading redemption history...",
+      "empty": "No discount redemption records yet.",
+      "signInToView": "Please sign in to view redemption history.",
+      "labels": {
+        "unknownOffer": "Unknown offer",
+        "points": "Points",
+        "requestedAt": "Redeemed At",
+        "processedAt": "Processed At",
+        "reason": "Reason"
+      },
+      "status": {
+        "redeemed": "Redeemed",
+        "used": "Used",
+        "rejected": "Rejected"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "showQr": "Show Redeem QR",
+        "used": "This offer is used",
+        "unavailable": "QR unavailable for this offer"
+      },
+      "errors": {
+        "load": "Failed to load redemption history: {message}"
+      }
+    },
+    "redeemQr": {
+      "close": "Close",
+      "download": "Download QR",
+      "copy": "Copy Link",
+      "copied": "Copied"
     }
   },
   "discover": {

@@ -68,6 +68,7 @@
     "cards": "名片",
     "membership": "会员",
     "discount": "探索",
+    "scan": "扫码",
     "settings": "设置"
   },
   "getCard": {
@@ -683,8 +684,45 @@
   "scan": {
     "brand": "CardLink",
     "title": "扫码",
-    "subtitle": "扫描二维码以添加新连接。",
-    "comingSoon": "相机功能即将上线。"
+    "subtitle": "扫描会员兑换二维码，核销折扣。",
+    "actions": {
+      "startScan": "开始扫描",
+      "scanning": "扫描中...",
+      "stopScan": "停止扫描",
+      "verify": "验证",
+      "confirmUse": "确认已使用",
+      "alreadyUsed": "已处理",
+      "backToDiscount": "返回折扣管理"
+    },
+    "placeholders": {
+      "code": "粘贴扫描内容、二维码 URL 或 redemption UUID"
+    },
+    "messages": {
+      "signInFirst": "请先登录。",
+      "cameraNotSupported": "当前设备或浏览器不支持相机扫码，可改用粘贴代码验证。",
+      "cameraDenied": "无法启用相机，请检查浏览器相机权限。",
+      "invalidCode": "无法识别兑换码，请重新扫描或粘贴正确内容。",
+      "offerNotFound": "找不到对应优惠，请确认二维码有效。",
+      "noPermission": "你没有该公司的核销权限。",
+      "alreadyProcessed": "该兑换已处理。",
+      "markedUsed": "核销完成，该优惠已标记为使用。",
+      "requireAdmin": "你当前不是公司 owner/admin，无法核销折扣。"
+    },
+    "labels": {
+      "unknownCompany": "未知公司",
+      "points": "使用积分",
+      "requestedAt": "申请时间",
+      "processedAt": "处理时间",
+      "reason": "原因"
+    },
+    "status": {
+      "redeemed": "已兑换",
+      "used": "已使用",
+      "rejected": "已拒绝"
+    },
+    "empty": {
+      "noCode": "扫描或粘贴兑换码后，会在这里显示可核销的优惠。"
+    }
   },
   "settings": {
     "brand": "CardLink",
@@ -1010,6 +1048,7 @@
     "actions": {
       "reviewPending": "审核待处理",
       "reviewHistory": "审核历史",
+      "openScanner": "打开扫码核销",
       "allCompanies": "所有公司",
       "submitting": "提交中...",
       "redeem": "兑换",
@@ -1080,6 +1119,39 @@
     },
     "empty": {
       "noMemberships": "目前还没有会员记录。"
+    },
+    "redeemHistory": {
+      "title": "我的折扣兑换",
+      "loading": "正在加载兑换记录...",
+      "empty": "你目前还没有折扣兑换记录。",
+      "signInToView": "请先登录以查看兑换记录。",
+      "labels": {
+        "unknownOffer": "未知优惠",
+        "points": "使用积分",
+        "requestedAt": "兑换时间",
+        "processedAt": "处理时间",
+        "reason": "原因"
+      },
+      "status": {
+        "redeemed": "已兑换",
+        "used": "已使用",
+        "rejected": "已拒绝"
+      },
+      "actions": {
+        "refresh": "刷新",
+        "showQr": "出示兑换 QR",
+        "used": "该优惠已使用",
+        "unavailable": "该优惠不可出示 QR"
+      },
+      "errors": {
+        "load": "加载兑换记录失败：{message}"
+      }
+    },
+    "redeemQr": {
+      "close": "关闭",
+      "download": "下载 QR",
+      "copy": "复制链接",
+      "copied": "已复制"
     }
   },
   "discover": {

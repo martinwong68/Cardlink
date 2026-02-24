@@ -68,6 +68,7 @@
     "cards": "名片",
     "membership": "會員",
     "discount": "探索",
+    "scan": "掃描",
     "settings": "設定"
   },
   "getCard": {
@@ -683,8 +684,45 @@
   "scan": {
     "brand": "CardLink",
     "title": "掃描",
-    "subtitle": "掃描 QR Code 以新增連結。",
-    "comingSoon": "相機功能即將推出。"
+    "subtitle": "掃描會員兌換 QR Code，核銷折扣。",
+    "actions": {
+      "startScan": "開始掃描",
+      "scanning": "掃描中...",
+      "stopScan": "停止掃描",
+      "verify": "驗證",
+      "confirmUse": "確認已使用",
+      "alreadyUsed": "已處理",
+      "backToDiscount": "返回折扣管理"
+    },
+    "placeholders": {
+      "code": "貼上掃描內容、QR URL 或 redemption UUID"
+    },
+    "messages": {
+      "signInFirst": "請先登入。",
+      "cameraNotSupported": "此裝置或瀏覽器不支援相機 QR 掃描，可改用貼上代碼驗證。",
+      "cameraDenied": "無法啟用相機，請檢查瀏覽器相機權限。",
+      "invalidCode": "無法識別兌換碼，請重新掃描或貼上正確內容。",
+      "offerNotFound": "找不到對應優惠，請確認 QR 是否有效。",
+      "noPermission": "你沒有此公司的核銷權限。",
+      "alreadyProcessed": "此兌換已處理。",
+      "markedUsed": "已完成核銷，該優惠已標記為使用。",
+      "requireAdmin": "你目前不是公司 owner/admin，無法核銷折扣。"
+    },
+    "labels": {
+      "unknownCompany": "未知公司",
+      "points": "使用點數",
+      "requestedAt": "申請時間",
+      "processedAt": "處理時間",
+      "reason": "原因"
+    },
+    "status": {
+      "redeemed": "已兌換",
+      "used": "已使用",
+      "rejected": "已拒絕"
+    },
+    "empty": {
+      "noCode": "掃描或貼上兌換碼後，會在這裡顯示可核銷的優惠。"
+    }
   },
   "settings": {
     "brand": "CardLink",
@@ -1010,6 +1048,7 @@
     "actions": {
       "reviewPending": "審核待處理",
       "reviewHistory": "審核歷史",
+      "openScanner": "開啟掃碼核銷",
       "allCompanies": "所有公司",
       "submitting": "送出中...",
       "redeem": "兌換",
@@ -1080,6 +1119,39 @@
     },
     "empty": {
       "noMemberships": "目前尚無任何會員資料。"
+    },
+    "redeemHistory": {
+      "title": "我的折扣兌換",
+      "loading": "正在載入兌換紀錄...",
+      "empty": "你目前還沒有折扣兌換紀錄。",
+      "signInToView": "請先登入以查看兌換紀錄。",
+      "labels": {
+        "unknownOffer": "未知優惠",
+        "points": "使用點數",
+        "requestedAt": "兌換時間",
+        "processedAt": "處理時間",
+        "reason": "原因"
+      },
+      "status": {
+        "redeemed": "已兌換",
+        "used": "已使用",
+        "rejected": "已拒絕"
+      },
+      "actions": {
+        "refresh": "重新整理",
+        "showQr": "出示兌換 QR",
+        "used": "此優惠已使用",
+        "unavailable": "此優惠不可出示 QR"
+      },
+      "errors": {
+        "load": "載入兌換紀錄失敗：{message}"
+      }
+    },
+    "redeemQr": {
+      "close": "關閉",
+      "download": "下載 QR",
+      "copy": "複製連結",
+      "copied": "已複製"
     }
   },
   "discover": {

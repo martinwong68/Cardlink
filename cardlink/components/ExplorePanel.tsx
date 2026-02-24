@@ -258,7 +258,13 @@ export default function ExplorePanel() {
   };
 
   useEffect(() => {
-    void loadData();
+    const timer = window.setTimeout(() => {
+      void loadData();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -266,7 +272,14 @@ export default function ExplorePanel() {
     if (!queryCompanyId) {
       return;
     }
-    setSelectedCompanyId(queryCompanyId);
+
+    const timer = window.setTimeout(() => {
+      setSelectedCompanyId(queryCompanyId);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [searchParams]);
 
   const companyMap = useMemo(
@@ -356,7 +369,7 @@ export default function ExplorePanel() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
@@ -383,178 +396,182 @@ export default function ExplorePanel() {
         </div>
       ) : null}
 
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-900">{t("sections.promotion")}</h2>
-        </div>
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
-          {promoSlides.length ? (
-            promoSlides.map(({ offer, company }) => (
-              <Link
-                key={offer.id}
-                href={`/dashboard/explore?companyId=${company.id}`}
-                className="min-w-[320px] snap-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-              >
-                <div
-                  className="h-40 w-full bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(${company.cover_url || "/promo-template.svg"})`,
-                  }}
-                />
-                <div className="space-y-1 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
-                    {company.name}
-                  </p>
-                  <p className="text-sm font-semibold text-slate-900">{offer.title}</p>
-                  <p className="text-xs text-slate-500">{formatOffer(offer)}</p>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500 shadow-sm">
-              {t("empty.promotions")}
-            </article>
-          )}
-        </div>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-base font-semibold text-slate-900">{t("sections.partners")}</h2>
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
-          {partnerCompanies.length ? (
-            partnerCompanies.map((company) => {
-              const hasMembership = accounts.some(
-                (account) => account.company_id === company.id
-              );
-
-              return (
-                <article
-                  key={company.id}
-                  className="min-w-[260px] snap-start rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="h-16 w-16 shrink-0 rounded-xl bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url(${company.logo_url || "/promo-template.svg"})`,
-                      }}
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-900">
-                        {company.name}
-                      </p>
-                      <p className="mt-1 line-clamp-2 text-xs text-slate-500">
-                        {company.description || t("labels.membershipPartner")}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    <Link
-                      href={companyProfileSlugMap[company.id] ? `/c/${companyProfileSlugMap[company.id]}` : `/dashboard/explore?companyId=${company.id}`}
-                      className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                    >
-                      {t("actions.view")}
-                    </Link>
-                    {hasMembership ? (
-                      <Link
-                        href="/dashboard/membership"
-                        className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white hover:bg-violet-700"
-                      >
-                        {t("actions.joined")}
-                      </Link>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => void joinMembership(company.id)}
-                        disabled={busyJoinCompanyId === company.id}
-                        className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
-                      >
-                        {busyJoinCompanyId === company.id ? t("actions.submitting") : t("actions.join")}
-                      </button>
-                    )}
-                  </div>
-                </article>
-              );
-            })
-          ) : (
-            <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500 shadow-sm">
-              {t("empty.partners")}
-            </article>
-          )}
-        </div>
-      </section>
-
-      <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-slate-900">{t("sections.discounts")}</h2>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setSelectedCompanyId("all")}
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                selectedCompanyId === "all"
-                  ? "bg-violet-600 text-white"
-                  : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-              }`}
-            >
-              {t("actions.all")}
-            </button>
-            {partnerCompanies.map((company) => (
-              <button
-                key={company.id}
-                type="button"
-                onClick={() => setSelectedCompanyId(company.id)}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                  selectedCompanyId === company.id
-                    ? "bg-violet-600 text-white"
-                    : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-                }`}
-              >
-                {company.name}
-              </button>
-            ))}
+      <div className="grid min-w-0 gap-4 xl:grid-cols-3 xl:items-start">
+        <section className="flex min-h-0 flex-col space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold text-slate-900">{t("sections.promotion")}</h2>
           </div>
-        </div>
-
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
-          {visibleOffers.length ? (
-            visibleOffers.map((offer) => {
-              const company = companyMap.get(offer.company_id);
-              const account = accounts.find((item) => item.company_id === offer.company_id);
-
-              return (
-                <article
+          <div className="min-h-[18rem] space-y-3 overflow-y-auto pr-1 xl:max-h-[calc(100vh-20rem)]">
+            {promoSlides.length ? (
+              promoSlides.map(({ offer, company }) => (
+                <Link
                   key={offer.id}
-                  className="min-w-[280px] snap-start rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                  href={`/dashboard/explore?companyId=${company.id}`}
+                  className="block overflow-hidden rounded-2xl border border-slate-200 bg-white"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
-                    {company?.name ?? t("labels.company")}
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">{offer.title}</p>
-                  <p className="mt-1 text-xs text-slate-500">{formatOffer(offer)}</p>
-                  <p className="mt-2 text-xs text-slate-500">
-                    {t("labels.balance")}: <span className="font-semibold text-violet-700">{account?.points_balance ?? 0} BOBO-POINT</span>
-                  </p>
+                  <div
+                    className="h-36 w-full bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${company.cover_url || "/promo-template.svg"})`,
+                    }}
+                  />
+                  <div className="space-y-1 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
+                      {company.name}
+                    </p>
+                    <p className="text-sm font-semibold text-slate-900">{offer.title}</p>
+                    <p className="text-xs text-slate-500">{formatOffer(offer)}</p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+                {t("empty.promotions")}
+              </article>
+            )}
+          </div>
+        </section>
 
-                  <button
-                    type="button"
-                    onClick={() => void redeemOffer(offer)}
-                    disabled={busyOfferId === offer.id}
-                    className="mt-3 rounded-full bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-violet-700 disabled:opacity-60"
+        <section className="flex min-h-0 flex-col space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">{t("sections.partners")}</h2>
+          <div className="min-h-[18rem] space-y-3 overflow-y-auto pr-1 xl:max-h-[calc(100vh-20rem)]">
+            {partnerCompanies.length ? (
+              partnerCompanies.map((company) => {
+                const hasMembership = accounts.some(
+                  (account) => account.company_id === company.id
+                );
+
+                return (
+                  <article
+                    key={company.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-4"
                   >
-                    {busyOfferId === offer.id ? t("actions.submitting") : t("actions.redeem")}
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="h-16 w-16 shrink-0 rounded-xl bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url(${company.logo_url || "/promo-template.svg"})`,
+                        }}
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-900">
+                          {company.name}
+                        </p>
+                        <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+                          {company.description || t("labels.membershipPartner")}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                      <Link
+                        href={companyProfileSlugMap[company.id] ? `/c/${companyProfileSlugMap[company.id]}` : `/dashboard/explore?companyId=${company.id}`}
+                        className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                      >
+                        {t("actions.view")}
+                      </Link>
+                      {hasMembership ? (
+                        <Link
+                          href="/dashboard/membership"
+                          className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white hover:bg-violet-700"
+                        >
+                          {t("actions.joined")}
+                        </Link>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => void joinMembership(company.id)}
+                          disabled={busyJoinCompanyId === company.id}
+                          className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
+                        >
+                          {busyJoinCompanyId === company.id ? t("actions.submitting") : t("actions.join")}
+                        </button>
+                      )}
+                    </div>
+                  </article>
+                );
+              })
+            ) : (
+              <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+                {t("empty.partners")}
+              </article>
+            )}
+          </div>
+        </section>
+
+        <section className="flex min-h-0 flex-col space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-3">
+            <h2 className="text-base font-semibold text-slate-900">{t("sections.discounts")}</h2>
+            <div className="overflow-x-auto pb-1">
+              <div className="flex w-max gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedCompanyId("all")}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    selectedCompanyId === "all"
+                      ? "bg-violet-600 text-white"
+                      : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+                  }`}
+                >
+                  {t("actions.all")}
+                </button>
+                {partnerCompanies.map((company) => (
+                  <button
+                    key={company.id}
+                    type="button"
+                    onClick={() => setSelectedCompanyId(company.id)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                      selectedCompanyId === company.id
+                        ? "bg-violet-600 text-white"
+                        : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    {company.name}
                   </button>
-                </article>
-              );
-            })
-          ) : (
-            <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500 shadow-sm">
-              {t("empty.discounts")}
-            </article>
-          )}
-        </div>
-      </section>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="min-h-[18rem] space-y-3 overflow-y-auto pr-1 xl:max-h-[calc(100vh-23rem)]">
+            {visibleOffers.length ? (
+              visibleOffers.map((offer) => {
+                const company = companyMap.get(offer.company_id);
+                const account = accounts.find((item) => item.company_id === offer.company_id);
+
+                return (
+                  <article
+                    key={offer.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-4"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
+                      {company?.name ?? t("labels.company")}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-900">{offer.title}</p>
+                    <p className="mt-1 text-xs text-slate-500">{formatOffer(offer)}</p>
+                    <p className="mt-2 text-xs text-slate-500">
+                      {t("labels.balance")}: <span className="font-semibold text-violet-700">{account?.points_balance ?? 0} BOBO-POINT</span>
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={() => void redeemOffer(offer)}
+                      disabled={busyOfferId === offer.id}
+                      className="mt-3 rounded-full bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-violet-700 disabled:opacity-60"
+                    >
+                      {busyOfferId === offer.id ? t("actions.submitting") : t("actions.redeem")}
+                    </button>
+                  </article>
+                );
+              })
+            ) : (
+              <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+                {t("empty.discounts")}
+              </article>
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

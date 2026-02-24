@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
+import MembershipRedemptionsPanel from "@/components/MembershipRedemptionsPanel";
 
 type MembershipAccountRow = {
   id: string;
@@ -182,6 +183,8 @@ export default async function MembershipPage() {
           </article>
         )}
       </section>
+
+      <MembershipRedemptionsPanel />
     </div>
   );
 }

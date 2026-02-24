@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   CreditCard,
   MessageSquare,
@@ -14,12 +13,8 @@ import { useTranslations } from "next-intl";
 
 export default function DashboardNav() {
   const pathname = usePathname();
-  const [isReady, setIsReady] = useState(false);
   const t = useTranslations("dashboardNav");
 
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
 
   const navItems = [
     { href: "/dashboard/explore", label: t("discount"), icon: TicketPercent },
@@ -37,7 +32,7 @@ export default function DashboardNav() {
         </p>
         <div className="mt-4 flex flex-col gap-1">
           {navItems.map((item) => {
-            const currentPath = isReady ? pathname : "";
+            const currentPath = pathname ?? "";
             const isActive =
               currentPath === item.href || currentPath.startsWith(`${item.href}/`);
             const Icon = item.icon;
@@ -66,7 +61,7 @@ export default function DashboardNav() {
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 backdrop-blur md:hidden">
         <div className="mx-auto flex w-full max-w-5xl items-end justify-between px-6">
           {navItems.map((item) => {
-            const currentPath = isReady ? pathname : "";
+            const currentPath = pathname ?? "";
             const isActive =
               currentPath === item.href || currentPath.startsWith(`${item.href}/`);
             const Icon = item.icon;
