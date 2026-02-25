@@ -59,6 +59,22 @@
       "browseCommunity": "先瀏覽社群"
     }
   },
+  "ban": {
+    "brand": "CardLink",
+    "title": "帳戶已受限制",
+    "description": "你的存取權限目前已被限制。若你認為這是誤判，請聯絡客服支援。",
+    "scope": {
+      "user": "你的使用者帳戶已被限制。",
+      "company": "你的公司存取權限已被限制。"
+    },
+    "company": "公司：{company}",
+    "reason": "原因：{reason}",
+    "until": "限制至：{date}",
+    "actions": {
+      "back": "返回",
+      "signOut": "登出"
+    }
+  },
   "dashboard": {
     "brand": "CardLink",
     "title": "儀表板"
@@ -903,7 +919,8 @@
     },
     "errors": {
       "passwordLength": "密碼至少需 8 個字元。",
-      "passwordNotMatch": "兩次輸入的密碼不一致。"
+      "passwordNotMatch": "兩次輸入的密碼不一致。",
+      "invalidOrExpiredLink": "此重設連結無效或已過期，請重新申請。"
     },
     "messages": {
       "updated": "密碼已重設完成，現在可重新登入。",
@@ -912,6 +929,7 @@
     "actions": {
       "save": "重設密碼",
       "saving": "更新中...",
+      "verifying": "正在驗證重設連結...",
       "backToLogin": "返回登入"
     }
   },
@@ -1215,11 +1233,14 @@
     "errors": {
       "signIn": "請先登入以使用公司管理。",
       "discountTitleRequired": "請填寫優惠標題。",
-      "requiredAmountInvalid": "門檻金額必須是有效且不小於 0 的數字。"
+      "requiredAmountInvalid": "門檻金額必須是有效且不小於 0 的數字。",
+      "usageLimitInvalid": "使用上限必須是有效且不小於 0 的數字。"
     },
     "messages": {
       "companyProfileUpdated": "公司資料已更新。",
       "discountUploaded": "優惠已上架。",
+      "discountDeleted": "優惠已刪除。",
+      "discountUpdated": "優惠已更新。",
       "rejectedByOwner": "已由公司管理員拒絕",
       "couponRedeemed": "優惠已核銷。",
       "couponRejected": "優惠已拒絕。",
@@ -1260,7 +1281,9 @@
       "discountTitle": "優惠標題",
       "discountDescription": "優惠描述",
       "discountValue": "優惠數值",
-      "pointsCostOptional": "點數成本（可選）"
+      "pointsCostOptional": "點數成本（可選）",
+      "usageLimitOptional": "總使用上限（可選）",
+      "perMemberLimitOptional": "每位用戶上限（可選）"
     },
     "discountType": {
       "percentage": "百分比",
@@ -1272,7 +1295,12 @@
       "save": "儲存",
       "saveCompanyProfile": "儲存公司資料",
       "submitting": "提交中...",
+      "deleting": "刪除中...",
       "uploadDiscount": "上架優惠",
+      "editDiscount": "編輯優惠",
+      "saveDiscount": "儲存優惠",
+      "deleteDiscount": "刪除優惠",
+      "cancel": "取消",
       "scanRedemption": "掃描兌換",
       "approve": "核准",
       "reject": "拒絕"
@@ -1294,7 +1322,10 @@
       "amount": "金額",
       "account": "帳戶",
       "user": "用戶",
-      "points": "點數"
+      "points": "點數",
+      "totalLimit": "總上限",
+      "perUserLimit": "每人上限",
+      "active": "啟用"
     },
     "common": {
       "active": "啟用",
@@ -1302,7 +1333,11 @@
       "na": "N/A",
       "program": "方案",
       "offer": "優惠",
-      "unknown": "未知"
+      "unknown": "未知",
+      "unlimited": "不限"
+    },
+    "confirm": {
+      "deleteDiscount": "確定要刪除此優惠嗎？此操作無法復原。"
     },
     "empty": {
       "noDiscount": "目前沒有優惠。",

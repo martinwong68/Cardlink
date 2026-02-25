@@ -11,6 +11,9 @@ type Company = {
   name: string;
   slug: string | null;
   created_by: string | null;
+  is_active: boolean;
+  is_banned: boolean;
+  deleted_at: string | null;
 };
 
 type Offer = {
@@ -107,7 +110,10 @@ export default function DiscountRedeemPanel({
       await Promise.all([
       supabase
         .from("companies")
-        .select("id, name, slug, created_by")
+        .select("id, name, slug, created_by, is_active, is_banned, deleted_at")
+        .eq("is_active", true)
+        .eq("is_banned", false)
+        .is("deleted_at", null)
         .order("name", { ascending: true }),
       supabase
         .from("company_offers")
@@ -171,10 +177,13 @@ export default function DiscountRedeemPanel({
       setMessage(t("messages.fallbackAdmin", { reason: parts.join("; ") }));
     }
 
-    setCompanies((companiesRes.data ?? []) as Company[]);
-    setOffers((offersRes.data ?? []) as Offer[]);
+    const visibleCompanies = (companiesRes.data ?? []) as Company[];
+    const visibleCompanyIdSet = new Set(visibleCompanies.map((company) => company.id));
+
+    setCompanies(visibleCompanies);
+    setOffers(((offersRes.data ?? []) as Offer[]).filter((offer) => visibleCompanyIdSet.has(offer.company_id)));
     setAccounts((accountRes.data ?? []) as MembershipAccount[]);
-    setAdminCompanyIds(adminIds);
+    setAdminCompanyIds(adminIds.filter((companyId) => visibleCompanyIdSet.has(companyId)));
 
     if (adminIds.length > 0) {
       const { data: redemptionRes, error: redemptionError } = await supabase

@@ -18,6 +18,52 @@ export default function ResetPasswordPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const bootstrapRecoverySession = async () => {
+      const hash = window.location.hash.startsWith("#")
+        ? window.location.hash.slice(1)
+        : "";
+      const hashParams = new URLSearchParams(hash);
+
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      const flowType = hashParams.get("type");
+      const hashErrorDescription = hashParams.get("error_description");
+
+      if (hashErrorDescription) {
+        setErrorMessage(hashErrorDescription);
+        setIsReady(true);
+        return;
+      }
+
+      if (flowType === "recovery" && accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (error) {
+          setErrorMessage(error.message);
+        }
+
+        window.history.replaceState(null, "", "/reset-password");
+      }
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        setErrorMessage((prev) => prev ?? t("errors.invalidOrExpiredLink"));
+      }
+
+      setIsReady(true);
+    };
+
+    void bootstrapRecoverySession();
+  }, [supabase, t]);
 
   useEffect(() => {
     if (redirectCountdown === null) {
@@ -40,6 +86,10 @@ export default function ResetPasswordPage() {
     event.preventDefault();
     setErrorMessage(null);
     setInfoMessage(null);
+
+    if (!isReady) {
+      return;
+    }
 
     if (newPassword.length < 8) {
       setErrorMessage(t("errors.passwordLength"));
@@ -84,6 +134,7 @@ export default function ResetPasswordPage() {
               id="newPassword"
               type="password"
               autoComplete="new-password"
+              disabled={!isReady}
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
               className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
@@ -98,6 +149,7 @@ export default function ResetPasswordPage() {
               id="confirmPassword"
               type="password"
               autoComplete="new-password"
+              disabled={!isReady}
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
@@ -119,10 +171,10 @@ export default function ResetPasswordPage() {
 
           <button
             type="submit"
-            disabled={isSaving}
+            disabled={isSaving || !isReady}
             className="flex w-full items-center justify-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSaving ? t("actions.saving") : t("actions.save")}
+            {!isReady ? t("actions.verifying") : isSaving ? t("actions.saving") : t("actions.save")}
           </button>
         </form>
 

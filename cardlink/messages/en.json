@@ -59,6 +59,22 @@
       "browseCommunity": "Browse community instead"
     }
   },
+  "ban": {
+    "brand": "CardLink",
+    "title": "Account restricted",
+    "description": "Your access is currently restricted. If you believe this is a mistake, please contact support.",
+    "scope": {
+      "user": "Your user account is restricted.",
+      "company": "Your company access is restricted."
+    },
+    "company": "Company: {company}",
+    "reason": "Reason: {reason}",
+    "until": "Restricted until: {date}",
+    "actions": {
+      "back": "Back",
+      "signOut": "Sign out"
+    }
+  },
   "dashboard": {
     "brand": "CardLink",
     "title": "Dashboard"
@@ -903,7 +919,8 @@
     },
     "errors": {
       "passwordLength": "Password must be at least 8 characters.",
-      "passwordNotMatch": "Passwords do not match."
+      "passwordNotMatch": "Passwords do not match.",
+      "invalidOrExpiredLink": "This reset link is invalid or expired. Please request a new one."
     },
     "messages": {
       "updated": "Password reset completed. You can now sign in.",
@@ -912,6 +929,7 @@
     "actions": {
       "save": "Reset password",
       "saving": "Updating...",
+      "verifying": "Verifying reset link...",
       "backToLogin": "Back to login"
     }
   },
@@ -1215,11 +1233,14 @@
     "errors": {
       "signIn": "Please sign in to use company management.",
       "discountTitleRequired": "Discount title is required.",
-      "requiredAmountInvalid": "Required amount must be a valid non-negative number."
+      "requiredAmountInvalid": "Required amount must be a valid non-negative number.",
+      "usageLimitInvalid": "Usage limits must be valid non-negative numbers."
     },
     "messages": {
       "companyProfileUpdated": "Company profile updated.",
       "discountUploaded": "Discount uploaded.",
+      "discountDeleted": "Discount deleted.",
+      "discountUpdated": "Discount updated.",
       "rejectedByOwner": "Rejected by company owner",
       "couponRedeemed": "Coupon redeemed.",
       "couponRejected": "Coupon rejected.",
@@ -1260,7 +1281,9 @@
       "discountTitle": "Discount title",
       "discountDescription": "Discount description",
       "discountValue": "Discount value",
-      "pointsCostOptional": "Points cost (optional)"
+      "pointsCostOptional": "Points cost (optional)",
+      "usageLimitOptional": "Total usage limit (optional)",
+      "perMemberLimitOptional": "Per-user usage limit (optional)"
     },
     "discountType": {
       "percentage": "Percentage",
@@ -1272,7 +1295,12 @@
       "save": "Save",
       "saveCompanyProfile": "Save company profile",
       "submitting": "Submitting...",
+      "deleting": "Deleting...",
       "uploadDiscount": "Upload discount",
+      "editDiscount": "Edit discount",
+      "saveDiscount": "Save discount",
+      "deleteDiscount": "Delete discount",
+      "cancel": "Cancel",
       "scanRedemption": "Scan redemption",
       "approve": "Approve",
       "reject": "Reject"
@@ -1294,7 +1322,10 @@
       "amount": "Amount",
       "account": "Account",
       "user": "User",
-      "points": "Points"
+      "points": "Points",
+      "totalLimit": "Total limit",
+      "perUserLimit": "Per-user limit",
+      "active": "Active"
     },
     "common": {
       "active": "Active",
@@ -1302,7 +1333,11 @@
       "na": "N/A",
       "program": "Program",
       "offer": "Offer",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "unlimited": "Unlimited"
+    },
+    "confirm": {
+      "deleteDiscount": "Delete this discount? This cannot be undone."
     },
     "empty": {
       "noDiscount": "No discount yet.",

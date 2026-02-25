@@ -272,10 +272,25 @@ export default function CompanyCardsManagementPanel() {
     [adminCompanies, selectedCompanyId]
   );
 
-  const companyNameCards = useMemo(
-    () => cards.filter((card) => !(card.is_company_profile && card.company_id === selectedCompanyId)),
-    [cards, selectedCompanyId]
-  );
+  const companyNameCards = useMemo(() => {
+    const selectedCompanyName = (selectedCompany?.name ?? "").trim();
+
+    return cards.filter((card) => {
+      const isCurrentCompanyProfileCard =
+        card.is_company_profile && card.company_id === selectedCompanyId;
+      if (isCurrentCompanyProfileCard) {
+        return false;
+      }
+
+      const belongsByCompanyId = card.company_id === selectedCompanyId;
+      const belongsByLegacyCompanyText =
+        card.company_id === null &&
+        selectedCompanyName.length > 0 &&
+        (card.company ?? "").trim().toLowerCase() === selectedCompanyName.toLowerCase();
+
+      return belongsByCompanyId || belongsByLegacyCompanyText;
+    });
+  }, [cards, selectedCompanyId, selectedCompany]);
 
   const createCardForMember = async () => {
     if (draft.mode === "existing-member" && !draft.targetUserId) {
@@ -350,6 +365,7 @@ export default function CompanyCardsManagementPanel() {
 
     const { error } = await supabase.from("business_cards").insert({
       user_id: draft.targetUserId,
+      company_id: selectedCompanyId,
       card_name: draft.cardName.trim() || t("defaults.companyCard"),
       full_name: draft.fullName.trim() || null,
       title: draft.title.trim() || null,

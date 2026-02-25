@@ -17,6 +17,8 @@ type Company = {
   cover_url: string | null;
   created_by: string | null;
   is_active: boolean;
+  is_banned: boolean;
+  deleted_at: string | null;
 };
 
 type Offer = {
@@ -27,6 +29,8 @@ type Offer = {
   discount_value: number | null;
   points_cost: number | null;
   is_active: boolean;
+  usage_limit: number | null;
+  per_member_limit: number | null;
 };
 
 type MembershipAccount = {
@@ -61,6 +65,12 @@ type LegacyProfileCard = {
   slug: string | null;
 };
 
+type OfferRedemptionUsage = {
+  offer_id: string;
+  user_id: string | null;
+  status: string;
+};
+
 export default function ExplorePanel() {
   const supabase = useMemo(() => createClient(), []);
   const searchParams = useSearchParams();
@@ -73,6 +83,8 @@ export default function ExplorePanel() {
   const [partnerCompanyIds, setPartnerCompanyIds] = useState<string[]>([]);
   const [ownerCompanyIds, setOwnerCompanyIds] = useState<string[]>([]);
   const [companyProfileSlugMap, setCompanyProfileSlugMap] = useState<Record<string, string>>({});
+  const [offerTotalUsageMap, setOfferTotalUsageMap] = useState<Record<string, number>>({});
+  const [offerUserUsageMap, setOfferUserUsageMap] = useState<Record<string, number>>({});
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
   const [busyOfferId, setBusyOfferId] = useState<string | null>(null);
   const [busyJoinCompanyId, setBusyJoinCompanyId] = useState<string | null>(null);
@@ -112,12 +124,14 @@ export default function ExplorePanel() {
     const [companiesRes, offersRes, programsRes, accountsRes, ownerRolesRes, adminCompanyIdsRes] = await Promise.all([
       supabase
         .from("companies")
-        .select("id, name, slug, profile_card_slug, description, logo_url, cover_url, created_by, is_active")
+        .select("id, name, slug, profile_card_slug, description, logo_url, cover_url, created_by, is_active, is_banned, deleted_at")
         .eq("is_active", true)
+        .eq("is_banned", false)
+        .is("deleted_at", null)
         .order("name", { ascending: true }),
       supabase
         .from("company_offers")
-        .select("id, company_id, title, discount_type, discount_value, points_cost, is_active")
+        .select("id, company_id, title, discount_type, discount_value, points_cost, is_active, usage_limit, per_member_limit")
         .eq("is_active", true)
         .order("created_at", { ascending: false }),
       supabase
@@ -162,6 +176,10 @@ export default function ExplorePanel() {
     }
 
     const companyRows = (companiesRes.data ?? []) as Company[];
+    const visibleCompanyIdSet = new Set(companyRows.map((company) => company.id));
+    const offerRows = ((offersRes.data ?? []) as Offer[]).filter((offer) =>
+      visibleCompanyIdSet.has(offer.company_id)
+    );
     const activePrograms = (programsRes.data ?? []) as MembershipProgram[];
     const ownerRoleRows = (ownerRolesRes.data ?? []) as CompanyOwnerRole[];
     const adminCompanyRows = (adminCompanyIdsRes.data ?? []) as AdminCompanyIdRow[];
@@ -178,11 +196,37 @@ export default function ExplorePanel() {
     const rpcAdminIds = adminCompanyRows.map((row) => row.company_id);
 
     setCompanies(companyRows);
-    setOffers((offersRes.data ?? []) as Offer[]);
+    setOffers(offerRows);
     setAccounts((accountsRes.data ?? []) as MembershipAccount[]);
     const programCompanyIds = Array.from(new Set(activePrograms.map((item) => item.company_id)));
     setPartnerCompanyIds(programCompanyIds.length ? programCompanyIds : companyRows.map((company) => company.id));
     setOwnerCompanyIds(Array.from(new Set([...createdByOwnerIds, ...roleOwnerIds, ...rpcAdminIds])));
+
+    const offerIds = offerRows.map((offer) => offer.id);
+    if (offerIds.length > 0) {
+      const { data: usageRows } = await supabase
+        .from("offer_redemptions")
+        .select("offer_id, user_id, status")
+        .in("offer_id", offerIds)
+        .neq("status", "rejected")
+        .limit(5000);
+
+      const totalCounts: Record<string, number> = {};
+      const userCounts: Record<string, number> = {};
+
+      ((usageRows ?? []) as OfferRedemptionUsage[]).forEach((row) => {
+        totalCounts[row.offer_id] = (totalCounts[row.offer_id] ?? 0) + 1;
+        if (user && row.user_id === user.id) {
+          userCounts[row.offer_id] = (userCounts[row.offer_id] ?? 0) + 1;
+        }
+      });
+
+      setOfferTotalUsageMap(totalCounts);
+      setOfferUserUsageMap(userCounts);
+    } else {
+      setOfferTotalUsageMap({});
+      setOfferUserUsageMap({});
+    }
 
     const slugMap: Record<string, string> = {};
     companyRows.forEach((company) => {
@@ -294,6 +338,18 @@ export default function ExplorePanel() {
 
   const promoSlides = useMemo(() => {
     return offers
+      .filter((offer) => {
+        const totalUsage = offerTotalUsageMap[offer.id] ?? 0;
+        const userUsage = offerUserUsageMap[offer.id] ?? 0;
+        const overTotalLimit =
+          offer.usage_limit !== null && offer.usage_limit >= 0 && totalUsage >= offer.usage_limit;
+        const overUserLimit =
+          userId !== null &&
+          offer.per_member_limit !== null &&
+          offer.per_member_limit >= 0 &&
+          userUsage >= offer.per_member_limit;
+        return !overTotalLimit && !overUserLimit;
+      })
       .map((offer) => {
         const company = companyMap.get(offer.company_id);
         if (!company) {
@@ -302,12 +358,27 @@ export default function ExplorePanel() {
         return { offer, company };
       })
       .filter((item): item is { offer: Offer; company: Company } => Boolean(item));
-  }, [offers, companyMap]);
+  }, [offers, companyMap, offerTotalUsageMap, offerUserUsageMap, userId]);
+
+  const availableOffers = useMemo(() => {
+    return offers.filter((offer) => {
+      const totalUsage = offerTotalUsageMap[offer.id] ?? 0;
+      const userUsage = offerUserUsageMap[offer.id] ?? 0;
+      const overTotalLimit =
+        offer.usage_limit !== null && offer.usage_limit >= 0 && totalUsage >= offer.usage_limit;
+      const overUserLimit =
+        userId !== null &&
+        offer.per_member_limit !== null &&
+        offer.per_member_limit >= 0 &&
+        userUsage >= offer.per_member_limit;
+      return !overTotalLimit && !overUserLimit;
+    });
+  }, [offers, offerTotalUsageMap, offerUserUsageMap, userId]);
 
   const visibleOffers =
     selectedCompanyId === "all"
-      ? offers
-      : offers.filter((offer) => offer.company_id === selectedCompanyId);
+      ? availableOffers
+      : availableOffers.filter((offer) => offer.company_id === selectedCompanyId);
 
   const redeemOffer = async (offer: Offer) => {
     if (!userId) {

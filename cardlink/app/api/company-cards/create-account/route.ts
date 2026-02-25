@@ -146,6 +146,7 @@ export async function POST(request: Request) {
       .from("business_cards")
       .insert({
         user_id: createdUserId,
+        company_id: companyId,
         card_name: cardName || "Company Card",
         full_name: fullName || null,
         title: title || null,

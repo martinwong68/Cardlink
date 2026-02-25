@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
+import { getUserAccessState } from "@/src/lib/access-state";
 
 import DashboardNav from "./dashboard-nav";
 import NotificationBell from "@/components/NotificationBell";
@@ -37,11 +38,13 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, avatar_url")
-    .eq("id", user.id)
-    .maybeSingle();
+  const accessState = await getUserAccessState(supabase, user);
+
+  if (accessState.isBanned) {
+    redirect("/banned");
+  }
+
+  const profile = accessState.profile;
 
   const profileName = profile?.full_name ?? user.email ?? "CardLink";
   const initials = getInitials(profileName);

@@ -14,6 +14,9 @@ type Company = {
   logo_url: string | null;
   cover_url: string | null;
   created_by: string | null;
+  is_active: boolean;
+  is_banned: boolean;
+  deleted_at: string | null;
 };
 
 type CompanyMemberRole = {
@@ -76,6 +79,8 @@ type CompanyOffer = {
   discount_value: number | null;
   points_cost: number | null;
   is_active: boolean;
+  usage_limit: number | null;
+  per_member_limit: number | null;
 };
 
 type OfferRedemption = {
@@ -101,6 +106,19 @@ type OfferDraft = {
   discountType: "percentage" | "fixed" | "special";
   discountValue: string;
   pointsCost: string;
+  usageLimit: string;
+  perMemberLimit: string;
+};
+
+type OfferEditDraft = {
+  title: string;
+  description: string;
+  discountType: "percentage" | "fixed" | "special";
+  discountValue: string;
+  pointsCost: string;
+  usageLimit: string;
+  perMemberLimit: string;
+  isActive: boolean;
 };
 
 const emptyOfferDraft: OfferDraft = {
@@ -109,6 +127,8 @@ const emptyOfferDraft: OfferDraft = {
   discountType: "percentage",
   discountValue: "",
   pointsCost: "",
+  usageLimit: "",
+  perMemberLimit: "",
 };
 
 function formatDate(value: string) {
@@ -143,6 +163,8 @@ export default function CompanyManagementPanel() {
   const [offers, setOffers] = useState<CompanyOffer[]>([]);
   const [pendingRedemptions, setPendingRedemptions] = useState<OfferRedemption[]>([]);
   const [offerDraft, setOfferDraft] = useState<OfferDraft>(emptyOfferDraft);
+  const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
+  const [offerEditDraft, setOfferEditDraft] = useState<OfferEditDraft | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
@@ -165,7 +187,10 @@ export default function CompanyManagementPanel() {
     const [companiesRes, ownerRoleRes] = await Promise.all([
       supabase
         .from("companies")
-        .select("id, name, slug, description, logo_url, cover_url, created_by")
+        .select("id, name, slug, description, logo_url, cover_url, created_by, is_active, is_banned, deleted_at")
+        .eq("is_active", true)
+        .eq("is_banned", false)
+        .is("deleted_at", null)
         .order("name", { ascending: true }),
       supabase
         .from("company_members")
@@ -221,7 +246,7 @@ export default function CompanyManagementPanel() {
         .order("joined_at", { ascending: false }),
       supabase
         .from("company_offers")
-        .select("id, company_id, title, description, discount_type, discount_value, points_cost, is_active")
+        .select("id, company_id, title, description, discount_type, discount_value, points_cost, is_active, usage_limit, per_member_limit")
         .eq("company_id", activeCompanyId)
         .order("created_at", { ascending: false }),
       supabase
@@ -388,6 +413,18 @@ export default function CompanyManagementPanel() {
 
     const discountValue = offerDraft.discountValue.trim() === "" ? null : Number(offerDraft.discountValue);
     const pointsCost = offerDraft.pointsCost.trim() === "" ? null : Number(offerDraft.pointsCost);
+    const usageLimit = offerDraft.usageLimit.trim() === "" ? null : Number(offerDraft.usageLimit);
+    const perMemberLimit =
+      offerDraft.perMemberLimit.trim() === "" ? null : Number(offerDraft.perMemberLimit);
+
+    if (
+      (usageLimit !== null && (!Number.isFinite(usageLimit) || usageLimit < 0)) ||
+      (perMemberLimit !== null && (!Number.isFinite(perMemberLimit) || perMemberLimit < 0))
+    ) {
+      setMessage(t("errors.usageLimitInvalid"));
+      setBusyId(null);
+      return;
+    }
 
     const { error } = await supabase.from("company_offers").insert({
       company_id: selectedCompanyId,
@@ -397,6 +434,8 @@ export default function CompanyManagementPanel() {
       discount_type: offerDraft.discountType === "special" ? null : offerDraft.discountType,
       discount_value: Number.isFinite(discountValue) ? discountValue : null,
       points_cost: Number.isFinite(pointsCost) ? pointsCost : null,
+      usage_limit: Number.isFinite(usageLimit) ? usageLimit : null,
+      per_member_limit: Number.isFinite(perMemberLimit) ? perMemberLimit : null,
       is_active: true,
       created_by: userId,
     });
@@ -410,6 +449,118 @@ export default function CompanyManagementPanel() {
     setOfferDraft(emptyOfferDraft);
     setMessage(t("messages.discountUploaded"));
     setBusyId(null);
+    await loadData();
+  };
+
+  const deleteOffer = async (offerId: string) => {
+    if (!selectedCompanyId) {
+      return;
+    }
+
+    const confirmed = window.confirm(t("confirm.deleteDiscount"));
+    if (!confirmed) {
+      return;
+    }
+
+    setBusyId(`delete-offer-${offerId}`);
+    setMessage(null);
+
+    const { error } = await supabase
+      .from("company_offers")
+      .delete()
+      .eq("id", offerId)
+      .eq("company_id", selectedCompanyId);
+
+    if (error) {
+      setMessage(error.message);
+      setBusyId(null);
+      return;
+    }
+
+    setMessage(t("messages.discountDeleted"));
+    setBusyId(null);
+    await loadData();
+  };
+
+  const startEditOffer = (offer: CompanyOffer) => {
+    const nextType: OfferEditDraft["discountType"] =
+      offer.discount_type === "percentage" || offer.discount_type === "fixed"
+        ? offer.discount_type
+        : "special";
+
+    setEditingOfferId(offer.id);
+    setOfferEditDraft({
+      title: offer.title,
+      description: offer.description ?? "",
+      discountType: nextType,
+      discountValue: offer.discount_value === null ? "" : String(offer.discount_value),
+      pointsCost: offer.points_cost === null ? "" : String(offer.points_cost),
+      usageLimit: offer.usage_limit === null ? "" : String(offer.usage_limit),
+      perMemberLimit: offer.per_member_limit === null ? "" : String(offer.per_member_limit),
+      isActive: offer.is_active,
+    });
+  };
+
+  const cancelEditOffer = () => {
+    setEditingOfferId(null);
+    setOfferEditDraft(null);
+  };
+
+  const saveEditedOffer = async () => {
+    if (!editingOfferId || !offerEditDraft || !selectedCompanyId) {
+      return;
+    }
+
+    if (!offerEditDraft.title.trim()) {
+      setMessage(t("errors.discountTitleRequired"));
+      return;
+    }
+
+    const discountValue =
+      offerEditDraft.discountValue.trim() === "" ? null : Number(offerEditDraft.discountValue);
+    const pointsCost =
+      offerEditDraft.pointsCost.trim() === "" ? null : Number(offerEditDraft.pointsCost);
+    const usageLimit =
+      offerEditDraft.usageLimit.trim() === "" ? null : Number(offerEditDraft.usageLimit);
+    const perMemberLimit =
+      offerEditDraft.perMemberLimit.trim() === "" ? null : Number(offerEditDraft.perMemberLimit);
+
+    if (
+      (usageLimit !== null && (!Number.isFinite(usageLimit) || usageLimit < 0)) ||
+      (perMemberLimit !== null && (!Number.isFinite(perMemberLimit) || perMemberLimit < 0))
+    ) {
+      setMessage(t("errors.usageLimitInvalid"));
+      return;
+    }
+
+    setBusyId(`save-offer-${editingOfferId}`);
+    setMessage(null);
+
+    const { error } = await supabase
+      .from("company_offers")
+      .update({
+        title: offerEditDraft.title.trim(),
+        description: offerEditDraft.description.trim() || null,
+        discount_type:
+          offerEditDraft.discountType === "special" ? null : offerEditDraft.discountType,
+        discount_value: Number.isFinite(discountValue) ? discountValue : null,
+        points_cost: Number.isFinite(pointsCost) ? pointsCost : null,
+        usage_limit: Number.isFinite(usageLimit) ? usageLimit : null,
+        per_member_limit: Number.isFinite(perMemberLimit) ? perMemberLimit : null,
+        is_active: offerEditDraft.isActive,
+      })
+      .eq("id", editingOfferId)
+      .eq("company_id", selectedCompanyId);
+
+    if (error) {
+      setMessage(error.message);
+      setBusyId(null);
+      return;
+    }
+
+    setMessage(t("messages.discountUpdated"));
+    setBusyId(null);
+    cancelEditOffer();
     await loadData();
   };
 
@@ -561,19 +712,156 @@ export default function CompanyManagementPanel() {
               {offers.length ? (
                 offers.slice(0, 8).map((offer) => (
                   <div key={offer.id} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                    <p className="text-sm font-semibold text-slate-900">{offer.title}</p>
-                    <p className="text-xs text-slate-600">
-                      {offer.discount_type === "percentage" && offer.discount_value !== null
-                        ? t("offer.percentageOff", { value: offer.discount_value })
-                        : offer.discount_type === "fixed" && offer.discount_value !== null
-                        ? t("offer.fixedOff", { value: offer.discount_value })
-                        : offer.points_cost
-                        ? t("offer.points", { value: offer.points_cost })
-                        : t("offer.special")}
-                    </p>
-                    <p className="text-[11px] text-slate-500">
-                      {offer.is_active ? t("common.active") : t("common.inactive")}
-                    </p>
+                    {editingOfferId === offer.id && offerEditDraft ? (
+                      <div className="space-y-2">
+                        <input
+                          value={offerEditDraft.title}
+                          onChange={(event) =>
+                            setOfferEditDraft((prev) =>
+                              prev ? { ...prev, title: event.target.value } : prev
+                            )
+                          }
+                          placeholder={t("placeholders.discountTitle")}
+                          className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                        />
+                        <textarea
+                          value={offerEditDraft.description}
+                          onChange={(event) =>
+                            setOfferEditDraft((prev) =>
+                              prev ? { ...prev, description: event.target.value } : prev
+                            )
+                          }
+                          placeholder={t("placeholders.discountDescription")}
+                          rows={2}
+                          className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                        />
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          <select
+                            value={offerEditDraft.discountType}
+                            onChange={(event) =>
+                              setOfferEditDraft((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      discountType: event.target.value as OfferEditDraft["discountType"],
+                                    }
+                                  : prev
+                              )
+                            }
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                          >
+                            <option value="percentage">{t("discountType.percentage")}</option>
+                            <option value="fixed">{t("discountType.fixed")}</option>
+                            <option value="special">{t("discountType.special")}</option>
+                          </select>
+                          <input
+                            value={offerEditDraft.discountValue}
+                            onChange={(event) =>
+                              setOfferEditDraft((prev) =>
+                                prev ? { ...prev, discountValue: event.target.value } : prev
+                              )
+                            }
+                            placeholder={t("placeholders.discountValue")}
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                          />
+                          <input
+                            value={offerEditDraft.pointsCost}
+                            onChange={(event) =>
+                              setOfferEditDraft((prev) =>
+                                prev ? { ...prev, pointsCost: event.target.value } : prev
+                              )
+                            }
+                            placeholder={t("placeholders.pointsCostOptional")}
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                          />
+                          <input
+                            value={offerEditDraft.usageLimit}
+                            onChange={(event) =>
+                              setOfferEditDraft((prev) =>
+                                prev ? { ...prev, usageLimit: event.target.value } : prev
+                              )
+                            }
+                            placeholder={t("placeholders.usageLimitOptional")}
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                          />
+                          <input
+                            value={offerEditDraft.perMemberLimit}
+                            onChange={(event) =>
+                              setOfferEditDraft((prev) =>
+                                prev ? { ...prev, perMemberLimit: event.target.value } : prev
+                              )
+                            }
+                            placeholder={t("placeholders.perMemberLimitOptional")}
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                          />
+                          <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-700">
+                            <input
+                              type="checkbox"
+                              checked={offerEditDraft.isActive}
+                              onChange={(event) =>
+                                setOfferEditDraft((prev) =>
+                                  prev ? { ...prev, isActive: event.target.checked } : prev
+                                )
+                              }
+                            />
+                            {t("labels.active")}
+                          </label>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void saveEditedOffer()}
+                            disabled={busyId === `save-offer-${offer.id}`}
+                            className="rounded-full bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+                          >
+                            {busyId === `save-offer-${offer.id}` ? t("actions.saving") : t("actions.saveDiscount")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelEditOffer}
+                            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700"
+                          >
+                            {t("actions.cancel")}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm font-semibold text-slate-900">{offer.title}</p>
+                        <p className="text-xs text-slate-600">
+                          {offer.discount_type === "percentage" && offer.discount_value !== null
+                            ? t("offer.percentageOff", { value: offer.discount_value })
+                            : offer.discount_type === "fixed" && offer.discount_value !== null
+                            ? t("offer.fixedOff", { value: offer.discount_value })
+                            : offer.points_cost
+                            ? t("offer.points", { value: offer.points_cost })
+                            : t("offer.special")}
+                        </p>
+                        <p className="text-[11px] text-slate-500">
+                          {offer.is_active ? t("common.active") : t("common.inactive")}
+                        </p>
+                        <p className="text-[11px] text-slate-500">
+                          {t("labels.totalLimit")}: {offer.usage_limit ?? t("common.unlimited")} · {t("labels.perUserLimit")}: {offer.per_member_limit ?? t("common.unlimited")}
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => startEditOffer(offer)}
+                            className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700"
+                          >
+                            {t("actions.editDiscount")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void deleteOffer(offer.id)}
+                            disabled={busyId === `delete-offer-${offer.id}`}
+                            className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 disabled:opacity-60"
+                          >
+                            {busyId === `delete-offer-${offer.id}` ? t("actions.deleting") : t("actions.deleteDiscount")}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))
               ) : (
@@ -627,6 +915,20 @@ export default function CompanyManagementPanel() {
               value={offerDraft.pointsCost}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, pointsCost: event.target.value }))}
               placeholder={t("placeholders.pointsCostOptional")}
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+            />
+            <input
+              value={offerDraft.usageLimit}
+              onChange={(event) => setOfferDraft((prev) => ({ ...prev, usageLimit: event.target.value }))}
+              placeholder={t("placeholders.usageLimitOptional")}
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+            />
+            <input
+              value={offerDraft.perMemberLimit}
+              onChange={(event) =>
+                setOfferDraft((prev) => ({ ...prev, perMemberLimit: event.target.value }))
+              }
+              placeholder={t("placeholders.perMemberLimitOptional")}
               className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
             />
           </div>

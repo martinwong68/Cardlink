@@ -59,6 +59,22 @@
       "browseCommunity": "先浏览社区"
     }
   },
+  "ban": {
+    "brand": "CardLink",
+    "title": "账户已受限制",
+    "description": "你的访问权限目前已被限制。如果你认为这是误判，请联系客服支持。",
+    "scope": {
+      "user": "你的用户账户已被限制。",
+      "company": "你的公司访问权限已被限制。"
+    },
+    "company": "公司：{company}",
+    "reason": "原因：{reason}",
+    "until": "限制至：{date}",
+    "actions": {
+      "back": "返回",
+      "signOut": "登出"
+    }
+  },
   "dashboard": {
     "brand": "CardLink",
     "title": "仪表板"
@@ -903,7 +919,8 @@
     },
     "errors": {
       "passwordLength": "密码至少需要 8 个字符。",
-      "passwordNotMatch": "两次输入的密码不一致。"
+      "passwordNotMatch": "两次输入的密码不一致。",
+      "invalidOrExpiredLink": "此重置链接无效或已过期，请重新申请。"
     },
     "messages": {
       "updated": "密码重置完成，现在可以重新登录。",
@@ -912,6 +929,7 @@
     "actions": {
       "save": "重置密码",
       "saving": "更新中...",
+      "verifying": "正在验证重置链接...",
       "backToLogin": "返回登录"
     }
   },
@@ -1215,11 +1233,14 @@
     "errors": {
       "signIn": "请先登录以使用公司管理。",
       "discountTitleRequired": "请填写优惠标题。",
-      "requiredAmountInvalid": "门槛金额必须是有效且不小于 0 的数字。"
+      "requiredAmountInvalid": "门槛金额必须是有效且不小于 0 的数字。",
+      "usageLimitInvalid": "使用上限必须是有效且不小于 0 的数字。"
     },
     "messages": {
       "companyProfileUpdated": "公司资料已更新。",
       "discountUploaded": "优惠已上架。",
+      "discountDeleted": "优惠已删除。",
+      "discountUpdated": "优惠已更新。",
       "rejectedByOwner": "已由公司管理员拒绝",
       "couponRedeemed": "优惠已核销。",
       "couponRejected": "优惠已拒绝。",
@@ -1260,7 +1281,9 @@
       "discountTitle": "优惠标题",
       "discountDescription": "优惠描述",
       "discountValue": "优惠数值",
-      "pointsCostOptional": "积分成本（可选）"
+      "pointsCostOptional": "积分成本（可选）",
+      "usageLimitOptional": "总使用上限（可选）",
+      "perMemberLimitOptional": "每位用户上限（可选）"
     },
     "discountType": {
       "percentage": "百分比",
@@ -1272,7 +1295,12 @@
       "save": "保存",
       "saveCompanyProfile": "保存公司资料",
       "submitting": "提交中...",
+      "deleting": "删除中...",
       "uploadDiscount": "上架优惠",
+      "editDiscount": "编辑优惠",
+      "saveDiscount": "保存优惠",
+      "deleteDiscount": "删除优惠",
+      "cancel": "取消",
       "scanRedemption": "扫描兑换",
       "approve": "批准",
       "reject": "拒绝"
@@ -1294,7 +1322,10 @@
       "amount": "金额",
       "account": "账户",
       "user": "用户",
-      "points": "积分"
+      "points": "积分",
+      "totalLimit": "总上限",
+      "perUserLimit": "每人上限",
+      "active": "启用"
     },
     "common": {
       "active": "启用",
@@ -1302,7 +1333,11 @@
       "na": "N/A",
       "program": "方案",
       "offer": "优惠",
-      "unknown": "未知"
+      "unknown": "未知",
+      "unlimited": "不限"
+    },
+    "confirm": {
+      "deleteDiscount": "确定要删除此优惠吗？此操作不可恢复。"
     },
     "empty": {
       "noDiscount": "当前没有优惠。",
