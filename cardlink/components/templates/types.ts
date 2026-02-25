@@ -10,6 +10,7 @@ export type TemplateRendererProps = {
   avatarUrl: string | null;
   backgroundPattern: string | null;
   backgroundColor: string | null;
+  backgroundImageUrl: string | null;
   vcardHref: string;
   cardFields: any[];
   cardLinks: any[];

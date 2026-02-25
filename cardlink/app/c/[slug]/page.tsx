@@ -42,6 +42,7 @@ type CardRecord = {
   slug: string | null;
   background_pattern: string | null;
   background_color: string | null;
+  background_image_url: string | null;
   template: string | null;
   card_fields: CardField[] | null;
   card_links: CardLink[] | null;
@@ -214,7 +215,7 @@ export default async function PublicCardPage({
   const { data: cardBySlug, error: slugError } = await supabase
     .from("business_cards")
     .select(
-      "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
+      "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, background_image_url, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
     )
     .eq("slug", slug)
     .order("sort_order", { foreignTable: "card_fields", ascending: true })
@@ -229,7 +230,7 @@ export default async function PublicCardPage({
     const { data: cardById, error: idError } = await supabase
       .from("business_cards")
       .select(
-        "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
+        "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, background_image_url, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
       )
       .eq("id", slug)
       .order("sort_order", { foreignTable: "card_fields", ascending: true })
@@ -271,6 +272,7 @@ export default async function PublicCardPage({
       avatarUrl={card.profiles?.avatar_url ?? null}
       backgroundPattern={card.background_pattern}
       backgroundColor={card.background_color}
+      backgroundImageUrl={card.background_image_url}
       vcardHref={vcardHref}
       cardFields={card.card_fields ?? []}
       cardLinks={card.card_links ?? []}
@@ -278,7 +280,7 @@ export default async function PublicCardPage({
       ownerId={card.user_id}
       viewerId={user?.id ?? null}
       viewerPlan={viewerPlan}
-      template={(card.template as any) ?? null}
+      template="classic-business"
     />
   );
 }

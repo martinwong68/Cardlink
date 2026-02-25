@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import RelativeTime from "@/components/RelativeTime";
@@ -74,6 +75,7 @@ function getInitials(name: string) {
 export default function PostDetailPage() {
   const params = useParams();
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("communityDashboardPost");
   const postId = Array.isArray(params.postId) ? params.postId[0] : params.postId;
   const [post, setPost] = useState<PostRow | null>(null);
   const [board, setBoard] = useState<BoardRow | null>(null);
@@ -102,7 +104,7 @@ export default function PostDetailPage() {
       .maybeSingle();
 
     if (postError || !postData) {
-      setMessage("Post not found.");
+      setMessage(t("errors.postNotFound"));
       setIsLoading(false);
       return;
     }
@@ -131,7 +133,7 @@ export default function PostDetailPage() {
 
   const handleReply = async () => {
     if (!replyBody.trim() || !viewerId) {
-      setMessage("Please sign in to reply.");
+      setMessage(t("errors.signInToReply"));
       return;
     }
 
@@ -163,7 +165,7 @@ export default function PostDetailPage() {
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-        Loading post...
+        {t("states.loading")}
       </div>
     );
   }
@@ -171,13 +173,13 @@ export default function PostDetailPage() {
   if (!post || !subBoard || !board) {
     return (
       <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-600 shadow-sm">
-        {message ?? "Post not found."}
+        {message ?? t("errors.postNotFound")}
       </div>
     );
   }
 
   const author = normalizeSingle(post.profiles);
-  const authorName = author?.full_name ?? "CardLink Member";
+  const authorName = author?.full_name ?? t("defaults.member");
   const initials = getInitials(authorName);
   return (
     <div className="space-y-6">
@@ -209,7 +211,7 @@ export default function PostDetailPage() {
             </div>
           </div>
           <span className="text-xs text-slate-400">
-            {post.reply_count ?? 0} replies
+            {t("labels.replies", { count: post.reply_count ?? 0 })}
           </span>
         </div>
 
@@ -225,17 +227,17 @@ export default function PostDetailPage() {
       ) : null}
 
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold text-slate-900">Replies</h2>
+        <h2 className="text-lg font-semibold text-slate-900">{t("sections.replies")}</h2>
 
         {replies.length === 0 ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-            No replies yet.
+            {t("empty.noReplies")}
           </div>
         ) : null}
 
         {replies.map((reply) => {
           const replyAuthor = normalizeSingle(reply.profiles);
-          const replyName = replyAuthor?.full_name ?? "CardLink Member";
+          const replyName = replyAuthor?.full_name ?? t("defaults.member");
           const replyInitials = getInitials(replyName);
           return (
             <div
@@ -267,24 +269,24 @@ export default function PostDetailPage() {
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">Add a reply</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("sections.addReply")}</h2>
         <textarea
           value={replyBody}
           onChange={(event) => setReplyBody(event.target.value)}
           rows={4}
-          placeholder="Write your reply..."
+          placeholder={t("placeholders.replyBody")}
           className="mt-3 w-full resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
         />
         <div className="mt-3 flex items-center justify-between">
           <span className="text-xs text-slate-400">
-            Replies are visible to everyone in this sub-board.
+            {t("hints.replyVisibility")}
           </span>
           <button
             onClick={handleReply}
             disabled={isPosting}
             className="rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isPosting ? "Posting..." : "Reply"}
+            {isPosting ? t("actions.posting") : t("actions.reply")}
           </button>
         </div>
       </div>

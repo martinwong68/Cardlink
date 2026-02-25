@@ -68,7 +68,7 @@ export default function DiscountRedeemPanel({
 
   const formatOffer = (offer: Offer) => {
     if (offer.points_cost && offer.points_cost > 0) {
-      return `${offer.points_cost} BOBO-POINT`;
+      return `${offer.points_cost} ${t("admin.pointUnit")}`;
     }
 
     if (offer.discount_type === "percentage" && offer.discount_value !== null) {
@@ -361,7 +361,7 @@ export default function DiscountRedeemPanel({
               </p>
 
               <p className="mt-3 text-xs text-slate-500">
-                {t("labels.yourBalance")}: <span className="font-semibold text-violet-700">{userAccount?.points_balance ?? 0} BOBO-POINT</span>
+                {t("labels.yourBalance")}: <span className="font-semibold text-violet-700">{userAccount?.points_balance ?? 0} {t("admin.pointUnit")}</span>
               </p>
 
               <div className="mt-4 space-y-2">
@@ -454,7 +454,7 @@ export default function DiscountRedeemPanel({
                           {offer?.title ?? t("labels.offer")} · {company?.name ?? t("labels.company")}
                         </p>
                         <p className="mt-1 text-xs text-slate-600">
-                          {t("admin.accountPoints")}: {account?.points_balance ?? 0} · {t("admin.required")}: {item.points_spent} BOBO-POINT
+                          {t("admin.accountPoints")}: {account?.points_balance ?? 0} · {t("admin.required")}: {item.points_spent} {t("admin.pointUnit")}
                         </p>
                         <p className="mt-1 text-xs text-slate-500">
                           {t("admin.requested")}: {new Date(item.redeemed_at).toLocaleString()}
@@ -509,7 +509,7 @@ export default function DiscountRedeemPanel({
                       <p className="text-sm font-semibold text-slate-900">
                         {offer?.title ?? t("labels.offer")} · {company?.name ?? t("labels.company")}
                       </p>
-                      <p className="mt-1 text-xs text-slate-600">{t("admin.required")}: {item.points_spent} BOBO-POINT</p>
+                      <p className="mt-1 text-xs text-slate-600">{t("admin.required")}: {item.points_spent} {t("admin.pointUnit")}</p>
                       <p className="mt-1 text-xs text-slate-500">
                         {t("admin.requested")}: {new Date(item.redeemed_at).toLocaleString()} · {t("admin.processed")}: {item.confirmed_at ? new Date(item.confirmed_at).toLocaleString() : "-"}
                       </p>

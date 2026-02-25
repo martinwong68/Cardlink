@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import RelativeTime from "@/components/RelativeTime";
@@ -67,6 +68,7 @@ export default function BoardPage() {
     ? params.boardSlug[0]
     : params.boardSlug;
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("communityDashboardBoard");
   const [board, setBoard] = useState<BoardRow | null>(null);
   const [subBoards, setSubBoards] = useState<SubBoardRow[]>([]);
   const [postsBySubBoard, setPostsBySubBoard] = useState<
@@ -86,7 +88,7 @@ export default function BoardPage() {
       .maybeSingle();
 
     if (boardError || !boardData) {
-      setMessage("Board not found.");
+      setMessage(t("errors.boardNotFound"));
       setIsLoading(false);
       return;
     }
@@ -133,7 +135,7 @@ export default function BoardPage() {
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-        Loading board...
+        {t("states.loading")}
       </div>
     );
   }
@@ -141,7 +143,7 @@ export default function BoardPage() {
   if (!board) {
     return (
       <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-600 shadow-sm">
-        {message ?? "Board not found."}
+        {message ?? t("errors.boardNotFound")}
       </div>
     );
   }
@@ -153,7 +155,7 @@ export default function BoardPage() {
           href="/dashboard/community"
           className="text-xs font-semibold text-violet-600"
         >
-          Community
+          {t("labels.community")}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">
           <span className="mr-2">{board.icon}</span>
@@ -184,20 +186,20 @@ export default function BoardPage() {
                   href={`/dashboard/community/${board.slug}/${subBoard.slug}`}
                   className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:text-violet-600"
                 >
-                  View
+                  {t("actions.view")}
                 </Link>
               </div>
 
               <div className="mt-4 space-y-3">
                 {posts.length === 0 ? (
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-                    No posts yet. Start the first conversation.
+                    {t("empty.noPosts")}
                   </div>
                 ) : null}
 
                 {posts.slice(0, 3).map((post) => {
                   const author = normalizeSingle(post.profiles);
-                  const authorName = author?.full_name ?? "CardLink Member";
+                  const authorName = author?.full_name ?? t("defaults.member");
                   const initials = getInitials(authorName);
                   const lastActivity = post.last_activity_at ?? post.created_at;
 
@@ -231,7 +233,7 @@ export default function BoardPage() {
                         {post.body && post.body.length > 140 ? "..." : ""}
                       </p>
                       <div className="mt-3 text-xs text-slate-400">
-                        {post.reply_count ?? 0} replies
+                        {t("labels.replies", { count: post.reply_count ?? 0 })}
                       </div>
                     </Link>
                   );

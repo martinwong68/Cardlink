@@ -94,6 +94,7 @@ type PublicCardViewProps = {
   avatarUrl: string | null;
   backgroundPattern: string | null;
   backgroundColor: string | null;
+  backgroundImageUrl: string | null;
   vcardHref: string;
   cardFields: CardField[];
   cardLinks: CardLink[];
@@ -197,6 +198,7 @@ export default function PublicCardView({
   avatarUrl,
   backgroundPattern,
   backgroundColor,
+  backgroundImageUrl,
   vcardHref,
   cardFields,
   cardLinks,
@@ -219,6 +221,7 @@ export default function PublicCardView({
         avatarUrl={avatarUrl}
         backgroundPattern={backgroundPattern}
         backgroundColor={backgroundColor}
+        backgroundImageUrl={backgroundImageUrl}
         vcardHref={vcardHref}
         cardFields={cardFields}
         cardLinks={cardLinks}
@@ -318,10 +321,17 @@ export default function PublicCardView({
           className="cardlink-section cardlink-delay-1 relative mt-6 rounded-3xl shadow-md"
           style={coverStyle}
         >
-          <div className="overflow-hidden rounded-3xl">
+          <div className="relative overflow-hidden rounded-3xl">
             <div
               className={`cardlink-cover ${patternClass} h-52 w-full md:h-64`}
             />
+            {backgroundImageUrl ? (
+              <img
+                src={backgroundImageUrl}
+                alt="Background"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : null}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/10" />
           </div>
           <div className="absolute -bottom-12 left-1/2 z-10 flex -translate-x-1/2 items-center justify-center">

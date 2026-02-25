@@ -245,6 +245,7 @@ export default function CardsDashboardPage() {
         slug,
         background_pattern: "gradient-1",
         background_color: "#6366f1",
+        template: "classic-business",
       })
       .select(
         "id, card_name, slug, full_name, title, background_pattern, background_color, created_at, card_shares(count)"

@@ -1,16 +1,7 @@
 // Card Template definitions
 
 export type TemplateId = 
-  | "classic-business"
-  | "minimalist"
-  | "modern-tech"
-  | "creative-agency"
-  | "medical-professional"
-  | "real-estate"
-  | "fashion-beauty"
-  | "financial-services"
-  | "restaurant-food"
-  | "artist-portfolio";
+  | "classic-business";
 
 export type CardTemplate = {
   id: TemplateId;
@@ -32,24 +23,6 @@ export const CARD_TEMPLATES: CardTemplate[] = [
     isPremium: false,
     defaultPattern: "gradient-1",
     defaultColor: "#1e40af", // Blue
-  },
-  {
-    id: "minimalist",
-    name: "Minimalist",
-    description: "Clean and simple design with modern aesthetics",
-    category: "General",
-    isPremium: false,
-    defaultPattern: "gradient-2",
-    defaultColor: "#64748b", // Slate
-  },
-  {
-    id: "modern-tech",
-    name: "Modern Tech",
-    description: "Contemporary design for tech professionals",
-    category: "Technology",
-    isPremium: false,
-    defaultPattern: "pattern-grid",
-    defaultColor: "#6366f1", // Indigo
   },
 ];
 

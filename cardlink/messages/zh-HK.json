@@ -21,7 +21,7 @@
       "sendingReset": "正在發送重設郵件..."
     },
     "footer": {
-      "newHere": "初次使用 CardLink？"
+      "newHere": "第一次使用 CardLink？"
     },
     "messages": {
       "enterEmailForReset": "請先輸入電郵，再按忘記密碼。",
@@ -199,13 +199,19 @@
     },
     "messages": {
       "saved": "名片已儲存。",
-      "loading": "正在載入編輯器..."
+      "loading": "正在載入編輯器...",
+      "backgroundUploaded": "背景圖片已上傳。",
+      "backgroundRemoved": "背景圖片已移除。"
     },
     "errors": {
       "signInEdit": "請登入後編輯名片。",
       "signInUpload": "請登入後上傳頭像。",
       "signInSave": "請登入後儲存名片。",
-      "notFound": "找不到名片。"
+      "notFound": "找不到名片。",
+      "invalidImageFile": "請上載圖片檔案。",
+      "backgroundTooLargeBeforeCompression": "圖片過大，請上載 10MB 以下圖片。",
+      "backgroundTooLargeAfterCompression": "壓縮後圖片仍過大，請使用較簡單圖片以壓到 500KB 以下。",
+      "backgroundProcessFailed": "圖片處理失敗。"
     },
     "actions": {
       "showPreview": "顯示預覽",
@@ -215,7 +221,9 @@
       "back": "返回",
       "add": "新增",
       "uploadPhoto": "上傳照片",
-      "uploading": "正在上傳..."
+      "uploading": "正在上傳...",
+      "uploadBackground": "上傳背景圖片",
+      "removeBackground": "移除背景圖片"
     },
     "sections": {
       "background": "背景設定",
@@ -258,7 +266,8 @@
       "yourName": "你的姓名"
     },
     "misc": {
-      "storageNote": "儲存在 Supabase Storage（avatars bucket）。"
+      "storageNote": "儲存在 Supabase Storage（avatars bucket）。",
+      "backgroundUploadNote": "自動壓縮最長邊至 1920px，並控制在 500KB 以下。"
     },
     "fieldTypes": {
       "phone": "電話",
@@ -711,6 +720,7 @@
     "labels": {
       "unknownCompany": "未知公司",
       "points": "使用點數",
+      "pointUnit": "BOBO-POINT",
       "requestedAt": "申請時間",
       "processedAt": "處理時間",
       "reason": "原因"
@@ -1002,6 +1012,7 @@
       "membershipPartner": "會員合作公司。",
       "company": "公司",
       "balance": "點數餘額",
+      "pointUnit": "BOBO-POINT",
       "offPercent": "{value} 折",
       "offFixed": "折抵 ${value}",
       "offGeneric": "優惠 ${value}"
@@ -1061,6 +1072,7 @@
       "pending": "待處理",
       "history": "歷史",
       "accountPoints": "帳戶點數",
+      "pointUnit": "BOBO-POINT",
       "required": "所需點數",
       "requested": "申請時間",
       "processed": "處理時間"
@@ -1096,6 +1108,7 @@
     "subtitle": "查看你在各公司中的會員與點數狀態。",
     "cards": {
       "pointSystemTitle": "點數系統",
+      "pointSystemName": "BOBO-POINT",
       "pointSystemBody": "所有合作公司共用同一套點數制度。",
       "totalBalanceTitle": "總點數",
       "totalBalanceBody": "你在所有會員帳戶中的 BOBO-POINT 總和。",
@@ -1110,6 +1123,7 @@
       "totalSpend": "累積消費",
       "current": "目前",
       "lifetime": "累積",
+      "pointUnit": "BOBO-POINT",
       "joined": "加入日期",
       "expires": "到期日",
       "noExpiry": "無期限"
@@ -1186,6 +1200,312 @@
     "actions": {
       "connect": "連結",
       "loadMore": "載入更多"
+    }
+  },
+  "companyManagementPanel": {
+    "header": {
+      "brand": "CardLink",
+      "title": "公司管理",
+      "subtitle": "管理公司資料、優惠、會員與兌換審核。"
+    },
+    "states": {
+      "loading": "正在載入公司管理...",
+      "noAdmin": "你目前還不是公司擁有者或管理員。"
+    },
+    "errors": {
+      "signIn": "請先登入以使用公司管理。",
+      "discountTitleRequired": "請填寫優惠標題。",
+      "requiredAmountInvalid": "門檻金額必須是有效且不小於 0 的數字。"
+    },
+    "messages": {
+      "companyProfileUpdated": "公司資料已更新。",
+      "discountUploaded": "優惠已上架。",
+      "rejectedByOwner": "已由公司管理員拒絕",
+      "couponRedeemed": "優惠已核銷。",
+      "couponRejected": "優惠已拒絕。",
+      "tierRequirementUpdated": "升級門檻金額已更新。"
+    },
+    "sections": {
+      "companyProfile": {
+        "title": "公司資料",
+        "subtitle": "更新公司圖片與宣傳橫幅網址。"
+      },
+      "currentDiscounts": {
+        "title": "目前優惠"
+      },
+      "uploadDiscount": {
+        "title": "新增優惠"
+      },
+      "members": {
+        "title": "會員名單"
+      },
+      "tierRules": {
+        "title": "會員升級規則",
+        "subtitle": "設定每個等級升級所需消費金額。"
+      },
+      "transactions": {
+        "title": "會員消費紀錄",
+        "subtitle": "擁有者/管理員可檢視每筆消費交易。"
+      },
+      "redemption": {
+        "title": "優惠兌換審核",
+        "subtitle": "審核待處理的兌換申請。"
+      }
+    },
+    "placeholders": {
+      "companyName": "公司名稱",
+      "companyDescription": "公司描述",
+      "companyLogoUrl": "公司圖片網址（logo_url）",
+      "companyCoverUrl": "宣傳橫幅網址（cover_url）",
+      "discountTitle": "優惠標題",
+      "discountDescription": "優惠描述",
+      "discountValue": "優惠數值",
+      "pointsCostOptional": "點數成本（可選）"
+    },
+    "discountType": {
+      "percentage": "百分比",
+      "fixed": "固定金額",
+      "special": "特別優惠"
+    },
+    "actions": {
+      "saving": "儲存中...",
+      "save": "儲存",
+      "saveCompanyProfile": "儲存公司資料",
+      "submitting": "提交中...",
+      "uploadDiscount": "上架優惠",
+      "scanRedemption": "掃描兌換",
+      "approve": "核准",
+      "reject": "拒絕"
+    },
+    "offer": {
+      "percentageOff": "{value}% 折扣",
+      "fixedOff": "折抵 ${value}",
+      "points": "{value} BOBO-POINT",
+      "special": "特別優惠"
+    },
+    "labels": {
+      "status": "狀態",
+      "tier": "等級",
+      "spend": "消費",
+      "current": "目前",
+      "lifetime": "累積",
+      "joined": "加入",
+      "rank": "級別",
+      "amount": "金額",
+      "account": "帳戶",
+      "user": "用戶",
+      "points": "點數"
+    },
+    "common": {
+      "active": "啟用",
+      "inactive": "停用",
+      "na": "N/A",
+      "program": "方案",
+      "offer": "優惠",
+      "unknown": "未知"
+    },
+    "empty": {
+      "noDiscount": "目前沒有優惠。",
+      "noMembershipAccount": "目前沒有會員帳戶。",
+      "noMembershipTiers": "找不到會員等級。",
+      "noMembershipTransactions": "目前沒有會員交易紀錄。",
+      "noPendingRedemption": "目前沒有待審核兌換申請。"
+    }
+  },
+  "companyCardsManagementPanel": {
+    "states": {
+      "loading": "正在載入公司名片...",
+      "noAdmin": "此分頁僅提供公司擁有者/管理員使用。"
+    },
+    "errors": {
+      "signIn": "請先登入以使用公司名片管理。",
+      "chooseMember": "請先選擇團隊成員。",
+      "selectCompany": "請先選擇公司。",
+      "emailRequired": "建立新帳號需填寫 Email。",
+      "passwordMinLength": "密碼至少需要 8 個字元。",
+      "createAccountCardFailed": "建立帳號與名片失敗。",
+      "selectCompanyFirst": "請先選擇公司。",
+      "signInFirst": "請先登入。",
+      "createCompanyProfileCardFailed": "建立公司資料名片失敗。"
+    },
+    "messages": {
+      "accountCardCreated": "已建立帳號與公司名片。",
+      "companyCardCreated": "公司名片已建立。",
+      "cardDeleted": "名片已刪除。"
+    },
+    "defaults": {
+      "companyCard": "公司名片",
+      "companyProfile": "公司資料"
+    },
+    "confirm": {
+      "deleteCard": "要刪除此公司名片嗎？"
+    },
+    "sections": {
+      "companyProfile": {
+        "title": "公司資料",
+        "subtitle": "在完整名片編輯器中編輯（與個人名片相同），並隱藏個人姓名。"
+      },
+      "addCard": {
+        "title": "新增公司名片"
+      },
+      "performance": {
+        "title": "公司名片成效"
+      }
+    },
+    "modes": {
+      "newAccount": "新帳號 + 名片",
+      "existingMember": "現有成員"
+    },
+    "actions": {
+      "preparing": "準備中...",
+      "openCompanyProfileEdit": "開啟公司資料編輯頁",
+      "generate": "產生",
+      "creating": "建立中...",
+      "createAccountAndCard": "建立帳號 + 公司名片",
+      "addCompanyCard": "新增公司名片",
+      "openPublicCard": "開啟公開名片",
+      "editPage": "編輯頁",
+      "delete": "刪除"
+    },
+    "placeholders": {
+      "loginEmail": "登入 Email",
+      "password": "密碼",
+      "cardName": "名片名稱",
+      "fullName": "姓名",
+      "title": "職稱",
+      "company": "公司"
+    },
+    "labels": {
+      "company": "公司",
+      "description": "描述",
+      "member": "成員",
+      "untitledCard": "未命名名片",
+      "views": "瀏覽",
+      "connections": "連結"
+    },
+    "hints": {
+      "newAccount": "系統會建立一個新的一般使用者帳號，並寄送驗證信。"
+    },
+    "empty": {
+      "noCards": "目前成員尚未有公司名片。"
+    }
+  },
+  "communityDashboardBoard": {
+    "states": {
+      "loading": "正在載入看板..."
+    },
+    "errors": {
+      "boardNotFound": "找不到看板。"
+    },
+    "labels": {
+      "community": "社群",
+      "replies": "{count} 則回覆"
+    },
+    "actions": {
+      "view": "查看"
+    },
+    "defaults": {
+      "member": "CardLink 會員"
+    },
+    "empty": {
+      "noPosts": "尚無貼文，開始第一個話題吧。"
+    }
+  },
+  "communityDashboardSubBoard": {
+    "states": {
+      "loading": "正在載入貼文..."
+    },
+    "errors": {
+      "boardNotFound": "找不到看板。",
+      "subBoardNotFound": "找不到子看板。",
+      "signInToPost": "請先登入後發文。"
+    },
+    "sections": {
+      "newPost": "新增貼文"
+    },
+    "placeholders": {
+      "postTitle": "貼文標題",
+      "postBody": "寫下你的想法..."
+    },
+    "actions": {
+      "posting": "發佈中...",
+      "publish": "發佈"
+    },
+    "labels": {
+      "replies": "{count} 則回覆"
+    },
+    "defaults": {
+      "member": "CardLink 會員"
+    },
+    "empty": {
+      "noPosts": "目前尚無貼文。"
+    }
+  },
+  "communityDashboardPost": {
+    "states": {
+      "loading": "正在載入貼文..."
+    },
+    "errors": {
+      "postNotFound": "找不到貼文。",
+      "signInToReply": "請先登入後回覆。"
+    },
+    "sections": {
+      "replies": "回覆",
+      "addReply": "新增回覆"
+    },
+    "placeholders": {
+      "replyBody": "寫下你的回覆..."
+    },
+    "hints": {
+      "replyVisibility": "回覆會顯示給此子看板的所有人。"
+    },
+    "actions": {
+      "posting": "發佈中...",
+      "reply": "回覆"
+    },
+    "labels": {
+      "replies": "{count} 則回覆"
+    },
+    "defaults": {
+      "member": "CardLink 會員"
+    },
+    "empty": {
+      "noReplies": "目前尚無回覆。"
+    }
+  },
+  "templateSelector": {
+    "title": "選擇模板",
+    "subtitle": "選擇你的名片模板。",
+    "templates": {
+      "classic-business": {
+        "name": "經典商務",
+        "category": "商務"
+      }
+    }
+  },
+  "communityDashboardList": {
+    "header": {
+      "brand": "CardLink",
+      "title": "社群",
+      "subtitle": "瀏覽看板並加入討論。"
+    },
+    "states": {
+      "loading": "正在載入看板..."
+    },
+    "labels": {
+      "posts": "{count} 則貼文"
+    },
+    "sections": {
+      "latest": "社群最新動態"
+    },
+    "actions": {
+      "viewPublicFeed": "查看公開動態"
+    },
+    "defaults": {
+      "member": "CardLink 會員"
+    },
+    "empty": {
+      "noPosts": "目前尚無貼文。"
     }
   }
 }

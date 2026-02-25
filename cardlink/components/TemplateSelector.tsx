@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CARD_TEMPLATES, type TemplateId } from "@/src/lib/templates";
 
 type TemplateSelectoro = {
@@ -13,11 +14,13 @@ export default function TemplateSelector({
   isPremiumUser: _isPremiumUser,
   onChange,
 }: TemplateSelectoro) {
+  const t = useTranslations("templateSelector");
+
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">Choose Template</h3>
-        <p className="mt-1 text-xs text-slate-500">Choose from 3 core themes.</p>
+        <h3 className="text-sm font-semibold text-slate-900">{t("title")}</h3>
+        <p className="mt-1 text-xs text-slate-500">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -44,9 +47,9 @@ export default function TemplateSelector({
               
               <div className="mt-3">
                 <h4 className="text-sm font-semibold text-slate-900">
-                  {template.name}
+                  {t(`templates.${template.id}.name`)}
                 </h4>
-                <p className="mt-1 text-xs text-slate-500">{template.category}</p>
+                <p className="mt-1 text-xs text-slate-500">{t(`templates.${template.id}.category`)}</p>
               </div>
 
               {isSelected && (

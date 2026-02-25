@@ -87,7 +87,7 @@ export default async function MembershipPage() {
       <section className="grid gap-4 md:grid-cols-3">
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-semibold text-slate-800">{t("cards.pointSystemTitle")}</p>
-          <p className="mt-2 text-2xl font-bold text-violet-700">BOBO-POINT</p>
+          <p className="mt-2 text-2xl font-bold text-violet-700">{t("cards.pointSystemName")}</p>
           <p className="mt-1 text-sm text-slate-600">{t("cards.pointSystemBody")}</p>
         </article>
 
@@ -150,13 +150,13 @@ export default async function MembershipPage() {
                   <div>
                     <p className="text-xs text-slate-500">{t("labels.current")}</p>
                     <p className="text-sm font-semibold text-slate-900">
-                      {account.points_balance} BOBO-POINT
+                      {account.points_balance} {t("labels.pointUnit")}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">{t("labels.lifetime")}</p>
                     <p className="text-sm font-semibold text-slate-900">
-                      {account.lifetime_points} BOBO-POINT
+                      {account.lifetime_points} {t("labels.pointUnit")}
                     </p>
                   </div>
                   <div>

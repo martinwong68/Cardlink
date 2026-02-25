@@ -199,13 +199,19 @@
     },
     "messages": {
       "saved": "Card saved successfully.",
-      "loading": "Loading editor..."
+      "loading": "Loading editor...",
+      "backgroundUploaded": "Background image uploaded.",
+      "backgroundRemoved": "Background image removed."
     },
     "errors": {
       "signInEdit": "Please sign in to edit your card.",
       "signInUpload": "Please sign in to upload an avatar.",
       "signInSave": "Please sign in to save your card.",
-      "notFound": "Card not found."
+      "notFound": "Card not found.",
+      "invalidImageFile": "Please upload an image file.",
+      "backgroundTooLargeBeforeCompression": "Image is too large. Please upload an image under 10MB.",
+      "backgroundTooLargeAfterCompression": "Image is too large after compression. Please use a simpler image so it can be under 500KB.",
+      "backgroundProcessFailed": "Failed to process image."
     },
     "actions": {
       "showPreview": "Show Preview",
@@ -215,7 +221,9 @@
       "back": "Back",
       "add": "Add",
       "uploadPhoto": "Upload Photo",
-      "uploading": "Uploading..."
+      "uploading": "Uploading...",
+      "uploadBackground": "Upload Background Image",
+      "removeBackground": "Remove Background Image"
     },
     "sections": {
       "background": "Background Settings",
@@ -258,7 +266,8 @@
       "yourName": "Your Name"
     },
     "misc": {
-      "storageNote": "Stored in Supabase Storage (avatars bucket)."
+      "storageNote": "Stored in Supabase Storage (avatars bucket).",
+      "backgroundUploadNote": "Auto-compress to max 1920px and keep under 500KB."
     },
     "fieldTypes": {
       "phone": "Phone",
@@ -711,6 +720,7 @@
     "labels": {
       "unknownCompany": "Unknown company",
       "points": "Points",
+      "pointUnit": "BOBO-POINT",
       "requestedAt": "Requested",
       "processedAt": "Processed",
       "reason": "Reason"
@@ -1002,6 +1012,7 @@
       "membershipPartner": "Membership partner company.",
       "company": "Company",
       "balance": "Balance",
+      "pointUnit": "BOBO-POINT",
       "offPercent": "{value}% off",
       "offFixed": "${value} off",
       "offGeneric": "{value} off"
@@ -1061,6 +1072,7 @@
       "pending": "Pending",
       "history": "History",
       "accountPoints": "Account points",
+      "pointUnit": "BOBO-POINT",
       "required": "Required",
       "requested": "Requested",
       "processed": "Processed"
@@ -1096,6 +1108,7 @@
     "subtitle": "All your memberships and account points across every company.",
     "cards": {
       "pointSystemTitle": "Point System",
+      "pointSystemName": "BOBO-POINT",
       "pointSystemBody": "Shared by all partner companies.",
       "totalBalanceTitle": "Total Balance",
       "totalBalanceBody": "BOBO-POINT across all memberships.",
@@ -1110,6 +1123,7 @@
       "totalSpend": "Total Spend",
       "current": "Current",
       "lifetime": "Lifetime",
+      "pointUnit": "BOBO-POINT",
       "joined": "Joined",
       "expires": "Expires",
       "noExpiry": "No expiry"
@@ -1186,6 +1200,312 @@
     "actions": {
       "connect": "Connect",
       "loadMore": "Load more"
+    }
+  },
+  "companyManagementPanel": {
+    "header": {
+      "brand": "CardLink",
+      "title": "Company Management",
+      "subtitle": "Manage company profile, discounts, members, and coupon redemption approvals."
+    },
+    "states": {
+      "loading": "Loading company management...",
+      "noAdmin": "You are not a company owner/admin yet."
+    },
+    "errors": {
+      "signIn": "Please sign in to use company management.",
+      "discountTitleRequired": "Discount title is required.",
+      "requiredAmountInvalid": "Required amount must be a valid non-negative number."
+    },
+    "messages": {
+      "companyProfileUpdated": "Company profile updated.",
+      "discountUploaded": "Discount uploaded.",
+      "rejectedByOwner": "Rejected by company owner",
+      "couponRedeemed": "Coupon redeemed.",
+      "couponRejected": "Coupon rejected.",
+      "tierRequirementUpdated": "Tier upgrade required amount updated."
+    },
+    "sections": {
+      "companyProfile": {
+        "title": "Company Profile",
+        "subtitle": "Update company image and promotion banner URLs."
+      },
+      "currentDiscounts": {
+        "title": "Current Discounts"
+      },
+      "uploadDiscount": {
+        "title": "Upload New Discount"
+      },
+      "members": {
+        "title": "Membership Members"
+      },
+      "tierRules": {
+        "title": "Membership Tier Upgrade Rules",
+        "subtitle": "Set required spend amount for each tier upgrade."
+      },
+      "transactions": {
+        "title": "Membership Account Transactions",
+        "subtitle": "Owner/admin can review each account spending transaction."
+      },
+      "redemption": {
+        "title": "Coupon / Discount Redemption",
+        "subtitle": "Approve or reject pending redemption requests."
+      }
+    },
+    "placeholders": {
+      "companyName": "Company name",
+      "companyDescription": "Company description",
+      "companyLogoUrl": "Company image URL (logo_url)",
+      "companyCoverUrl": "Promotion banner URL (cover_url)",
+      "discountTitle": "Discount title",
+      "discountDescription": "Discount description",
+      "discountValue": "Discount value",
+      "pointsCostOptional": "Points cost (optional)"
+    },
+    "discountType": {
+      "percentage": "Percentage",
+      "fixed": "Fixed amount",
+      "special": "Special"
+    },
+    "actions": {
+      "saving": "Saving...",
+      "save": "Save",
+      "saveCompanyProfile": "Save company profile",
+      "submitting": "Submitting...",
+      "uploadDiscount": "Upload discount",
+      "scanRedemption": "Scan redemption",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "offer": {
+      "percentageOff": "{value}% off",
+      "fixedOff": "${value} off",
+      "points": "{value} BOBO-POINT",
+      "special": "Special offer"
+    },
+    "labels": {
+      "status": "Status",
+      "tier": "Tier",
+      "spend": "Spend",
+      "current": "Current",
+      "lifetime": "Lifetime",
+      "joined": "Joined",
+      "rank": "Rank",
+      "amount": "Amount",
+      "account": "Account",
+      "user": "User",
+      "points": "Points"
+    },
+    "common": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "na": "N/A",
+      "program": "Program",
+      "offer": "Offer",
+      "unknown": "Unknown"
+    },
+    "empty": {
+      "noDiscount": "No discount yet.",
+      "noMembershipAccount": "No membership account yet.",
+      "noMembershipTiers": "No membership tiers found.",
+      "noMembershipTransactions": "No membership transaction record yet.",
+      "noPendingRedemption": "No pending redemption request."
+    }
+  },
+  "companyCardsManagementPanel": {
+    "states": {
+      "loading": "Loading company cards...",
+      "noAdmin": "This tab is available for company owner/admin only."
+    },
+    "errors": {
+      "signIn": "Please sign in to use company card management.",
+      "chooseMember": "Choose a team member first.",
+      "selectCompany": "Please select a company.",
+      "emailRequired": "Email is required for new account.",
+      "passwordMinLength": "Password must be at least 8 characters.",
+      "createAccountCardFailed": "Failed to create account and card.",
+      "selectCompanyFirst": "Please select a company first.",
+      "signInFirst": "Please sign in first.",
+      "createCompanyProfileCardFailed": "Failed to create company profile card."
+    },
+    "messages": {
+      "accountCardCreated": "Account and company name card created.",
+      "companyCardCreated": "Company name card created.",
+      "cardDeleted": "Name card deleted."
+    },
+    "defaults": {
+      "companyCard": "Company Card",
+      "companyProfile": "Company Profile"
+    },
+    "confirm": {
+      "deleteCard": "Delete this company name card?"
+    },
+    "sections": {
+      "companyProfile": {
+        "title": "Company Profile",
+        "subtitle": "Edit in full card editor (same as personal card), with personal name hidden."
+      },
+      "addCard": {
+        "title": "Add Company Name Card"
+      },
+      "performance": {
+        "title": "Company Name Cards Performance"
+      }
+    },
+    "modes": {
+      "newAccount": "New account + card",
+      "existingMember": "Existing member only"
+    },
+    "actions": {
+      "preparing": "Preparing...",
+      "openCompanyProfileEdit": "Open company profile edit page",
+      "generate": "Generate",
+      "creating": "Creating...",
+      "createAccountAndCard": "Create account + company card",
+      "addCompanyCard": "Add company card",
+      "openPublicCard": "Open public card",
+      "editPage": "Edit page",
+      "delete": "Delete"
+    },
+    "placeholders": {
+      "loginEmail": "Login email",
+      "password": "Password",
+      "cardName": "Card name",
+      "fullName": "Full name",
+      "title": "Title",
+      "company": "Company"
+    },
+    "labels": {
+      "company": "Company",
+      "description": "Description",
+      "member": "member",
+      "untitledCard": "Untitled card",
+      "views": "Views",
+      "connections": "Connections"
+    },
+    "hints": {
+      "newAccount": "A separate normal user account will be created and a verification email will be sent."
+    },
+    "empty": {
+      "noCards": "No company name cards found for current members."
+    }
+  },
+  "communityDashboardBoard": {
+    "states": {
+      "loading": "Loading board..."
+    },
+    "errors": {
+      "boardNotFound": "Board not found."
+    },
+    "labels": {
+      "community": "Community",
+      "replies": "{count} replies"
+    },
+    "actions": {
+      "view": "View"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noPosts": "No posts yet. Start the first conversation."
+    }
+  },
+  "communityDashboardSubBoard": {
+    "states": {
+      "loading": "Loading posts..."
+    },
+    "errors": {
+      "boardNotFound": "Board not found.",
+      "subBoardNotFound": "Sub-board not found.",
+      "signInToPost": "Please sign in to post."
+    },
+    "sections": {
+      "newPost": "New Post"
+    },
+    "placeholders": {
+      "postTitle": "Post title",
+      "postBody": "Write something thoughtful..."
+    },
+    "actions": {
+      "posting": "Posting...",
+      "publish": "Publish"
+    },
+    "labels": {
+      "replies": "{count} replies"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noPosts": "No posts yet."
+    }
+  },
+  "communityDashboardPost": {
+    "states": {
+      "loading": "Loading post..."
+    },
+    "errors": {
+      "postNotFound": "Post not found.",
+      "signInToReply": "Please sign in to reply."
+    },
+    "sections": {
+      "replies": "Replies",
+      "addReply": "Add a reply"
+    },
+    "placeholders": {
+      "replyBody": "Write your reply..."
+    },
+    "hints": {
+      "replyVisibility": "Replies are visible to everyone in this sub-board."
+    },
+    "actions": {
+      "posting": "Posting...",
+      "reply": "Reply"
+    },
+    "labels": {
+      "replies": "{count} replies"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noReplies": "No replies yet."
+    }
+  },
+  "templateSelector": {
+    "title": "Choose Template",
+    "subtitle": "Choose your card template.",
+    "templates": {
+      "classic-business": {
+        "name": "Classic Business",
+        "category": "Business"
+      }
+    }
+  },
+  "communityDashboardList": {
+    "header": {
+      "brand": "CardLink",
+      "title": "Community",
+      "subtitle": "Browse boards and join the conversation."
+    },
+    "states": {
+      "loading": "Loading boards..."
+    },
+    "labels": {
+      "posts": "{count} posts"
+    },
+    "sections": {
+      "latest": "Latest from the community"
+    },
+    "actions": {
+      "viewPublicFeed": "View public feed"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noPosts": "No posts yet."
     }
   }
 }

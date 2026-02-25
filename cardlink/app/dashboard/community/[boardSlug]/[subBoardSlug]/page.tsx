@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import RelativeTime from "@/components/RelativeTime";
@@ -68,6 +69,7 @@ export default function SubBoardPage() {
     ? params.subBoardSlug[0]
     : params.subBoardSlug;
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("communityDashboardSubBoard");
   const [board, setBoard] = useState<BoardRow | null>(null);
   const [subBoard, setSubBoard] = useState<SubBoardRow | null>(null);
   const [posts, setPosts] = useState<PostRow[]>([]);
@@ -88,7 +90,7 @@ export default function SubBoardPage() {
       .maybeSingle();
 
     if (!boardData) {
-      setMessage("Board not found.");
+      setMessage(t("errors.boardNotFound"));
       setIsLoading(false);
       return;
     }
@@ -101,7 +103,7 @@ export default function SubBoardPage() {
       .maybeSingle();
 
     if (!subBoardData) {
-      setMessage("Sub-board not found.");
+      setMessage(t("errors.subBoardNotFound"));
       setIsLoading(false);
       return;
     }
@@ -137,7 +139,7 @@ export default function SubBoardPage() {
 
     const { data: userData } = await supabase.auth.getUser();
     if (!userData?.user) {
-      setMessage("Please sign in to post.");
+      setMessage(t("errors.signInToPost"));
       setIsPosting(false);
       return;
     }
@@ -165,7 +167,7 @@ export default function SubBoardPage() {
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-        Loading posts...
+        {t("states.loading")}
       </div>
     );
   }
@@ -173,7 +175,7 @@ export default function SubBoardPage() {
   if (!board || !subBoard) {
     return (
       <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-600 shadow-sm">
-        {message ?? "Sub-board not found."}
+        {message ?? t("errors.subBoardNotFound")}
       </div>
     );
   }
@@ -196,19 +198,19 @@ export default function SubBoardPage() {
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">New Post</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("sections.newPost")}</h2>
         <div className="mt-4 space-y-3">
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="Post title"
+            placeholder={t("placeholders.postTitle")}
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
           />
           <textarea
             value={body}
             onChange={(event) => setBody(event.target.value)}
             rows={4}
-            placeholder="Write something thoughtful..."
+            placeholder={t("placeholders.postBody")}
             className="w-full resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
           />
           {message ? (
@@ -219,7 +221,7 @@ export default function SubBoardPage() {
             disabled={isPosting}
             className="rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isPosting ? "Posting..." : "Publish"}
+            {isPosting ? t("actions.posting") : t("actions.publish")}
           </button>
         </div>
       </div>
@@ -227,13 +229,13 @@ export default function SubBoardPage() {
       <div className="space-y-3">
         {posts.length === 0 ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-            No posts yet.
+            {t("empty.noPosts")}
           </div>
         ) : null}
 
         {posts.map((post) => {
           const author = normalizeSingle(post.profiles);
-          const authorName = author?.full_name ?? "CardLink Member";
+          const authorName = author?.full_name ?? t("defaults.member");
           const initials = getInitials(authorName);
           const lastActivity = post.last_activity_at ?? post.created_at;
 
@@ -267,7 +269,7 @@ export default function SubBoardPage() {
                 {post.body && post.body.length > 160 ? "..." : ""}
               </p>
               <div className="mt-3 text-xs text-slate-400">
-                {post.reply_count ?? 0} replies
+                {t("labels.replies", { count: post.reply_count ?? 0 })}
               </div>
             </Link>
           );

@@ -81,7 +81,7 @@ export default function ExplorePanel() {
 
   const formatOffer = (offer: Offer) => {
     if (offer.points_cost && offer.points_cost > 0) {
-      return `${offer.points_cost} BOBO-POINT`;
+      return `${offer.points_cost} ${t("labels.pointUnit")}`;
     }
 
     if (offer.discount_type === "percentage" && offer.discount_value !== null) {
@@ -550,7 +550,7 @@ export default function ExplorePanel() {
                     <p className="mt-1 text-sm font-semibold text-slate-900">{offer.title}</p>
                     <p className="mt-1 text-xs text-slate-500">{formatOffer(offer)}</p>
                     <p className="mt-2 text-xs text-slate-500">
-                      {t("labels.balance")}: <span className="font-semibold text-violet-700">{account?.points_balance ?? 0} BOBO-POINT</span>
+                      {t("labels.balance")}: <span className="font-semibold text-violet-700">{account?.points_balance ?? 0} {t("labels.pointUnit")}</span>
                     </p>
 
                     <button

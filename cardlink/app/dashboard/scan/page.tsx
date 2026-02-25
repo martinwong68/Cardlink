@@ -489,7 +489,7 @@ export default function ScanPage() {
           </div>
 
           <div className="mt-3 grid gap-2 text-xs text-slate-600 sm:grid-cols-3">
-            <p>{t("labels.points")}: <span className="font-semibold">{target.redemption.points_spent} BOBO-POINT</span></p>
+            <p>{t("labels.points")}: <span className="font-semibold">{target.redemption.points_spent} {t("labels.pointUnit")}</span></p>
             <p>{t("labels.requestedAt")}: <span className="font-semibold">{new Date(target.redemption.redeemed_at).toLocaleString()}</span></p>
             <p>{t("labels.processedAt")}: <span className="font-semibold">{target.redemption.confirmed_at ? new Date(target.redemption.confirmed_at).toLocaleString() : "-"}</span></p>
           </div>

@@ -179,7 +179,7 @@ export default function MembershipRedemptionsPanel() {
 
               <div className="mt-3 grid gap-2 text-xs text-slate-600 sm:grid-cols-3">
                 <p>
-                  {t("redeemHistory.labels.points")}: <span className="font-semibold">{item.points_spent} BOBO-POINT</span>
+                  {t("redeemHistory.labels.points")}: <span className="font-semibold">{item.points_spent} {t("labels.pointUnit")}</span>
                 </p>
                 <p>
                   {t("redeemHistory.labels.requestedAt")}: <span className="font-semibold">{new Date(item.redeemed_at).toLocaleString()}</span>

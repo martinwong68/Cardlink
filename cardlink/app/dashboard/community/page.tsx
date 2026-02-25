@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import RelativeTime from "@/components/RelativeTime";
@@ -65,6 +66,7 @@ function getInitials(name: string) {
 
 export default function CommunityPage() {
   const supabase = useMemo(() => createClient(), []);
+  const t = useTranslations("communityDashboardList");
   const [boards, setBoards] = useState<BoardRow[]>([]);
   const [posts, setPosts] = useState<PostRow[]>([]);
   const [postCounts, setPostCounts] = useState<Record<string, number>>({});
@@ -230,13 +232,13 @@ export default function CommunityPage() {
     <div className="space-y-8">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-          CardLink
+          {t("header.brand")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">
-          Community
+          {t("header.title")}
         </h1>
         <p className="mt-2 text-sm text-slate-500">
-          Browse boards and join the conversation.
+          {t("header.subtitle")}
         </p>
       </div>
 
@@ -249,7 +251,7 @@ export default function CommunityPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         {isLoading ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm">
-            Loading boards...
+            {t("states.loading")}
           </div>
         ) : null}
 
@@ -270,7 +272,7 @@ export default function CommunityPage() {
                 </p>
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
-                {postCounts[board.id] ?? 0} posts
+                {t("labels.posts", { count: postCounts[board.id] ?? 0 })}
               </span>
             </div>
           </Link>
@@ -280,25 +282,25 @@ export default function CommunityPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">
-            Latest from the community
+            {t("sections.latest")}
           </h2>
           <Link
             href="/community"
             className="text-xs font-semibold text-violet-600"
           >
-            View public feed
+            {t("actions.viewPublicFeed")}
           </Link>
         </div>
 
         <div className="space-y-3">
           {posts.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
-              No posts yet.
+              {t("empty.noPosts")}
             </div>
           ) : null}
 
           {posts.map((post) => {
-            const authorName = post.author?.full_name ?? "CardLink Member";
+            const authorName = post.author?.full_name ?? t("defaults.member");
             const initials = getInitials(authorName);
             const lastActivity = post.last_activity_at ?? post.created_at;
 

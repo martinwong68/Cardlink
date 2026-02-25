@@ -198,6 +198,7 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
     avatarUrl,
     backgroundPattern,
     backgroundColor,
+    backgroundImageUrl,
     vcardHref,
     cardFields,
     cardLinks,
@@ -295,8 +296,15 @@ export default function ClassicBusinessTemplate(props: TemplateRendererProps) {
           className="cardlink-section cardlink-delay-1 relative mt-6 overflow-visible rounded-3xl shadow-lg"
           style={coverStyle}
         >
-          <div className="overflow-hidden rounded-3xl">
+          <div className="relative overflow-hidden rounded-3xl">
             <div className={`cardlink-cover ${patternClass} h-52 w-full`} />
+            {backgroundImageUrl ? (
+              <img
+                src={backgroundImageUrl}
+                alt="Background"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : null}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/20" />
             <div className="absolute bottom-0 left-0 h-9 w-full rounded-t-[2rem] bg-slate-100/95" />
           </div>

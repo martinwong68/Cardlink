@@ -64,7 +64,15 @@ type CardState = {
   slug: string;
   background_pattern: string;
   background_color: string;
+  background_image_url: string | null;
+  template: "classic-business";
 };
+
+const BACKGROUND_BUCKET = "avatars";
+const BACKGROUND_FILE_NAME = "background.jpg";
+const BACKGROUND_MAX_DIMENSION = 1920;
+const BACKGROUND_JPEG_QUALITY = 0.85;
+const BACKGROUND_MAX_SIZE_BYTES = 500 * 1024;
 
 const patternOptions = [
   "gradient-1",
@@ -144,6 +152,81 @@ function formatDateRange(start: string, end: string, presentLabel: string) {
   return `${startLabel} — ${endLabel}`.trim();
 }
 
+const extractStoragePath = (publicUrl: string | null | undefined, bucket: string) => {
+  if (!publicUrl) {
+    return null;
+  }
+
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const markerIndex = publicUrl.indexOf(marker);
+  if (markerIndex === -1) {
+    return null;
+  }
+
+  const rawPath = publicUrl.slice(markerIndex + marker.length);
+  const [pathWithoutQuery] = rawPath.split("?");
+  const decodedPath = decodeURIComponent(pathWithoutQuery || "");
+
+  return decodedPath || null;
+};
+
+const compressBackgroundImage = async (file: File) => {
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Failed to load image."));
+      img.src = objectUrl;
+    });
+
+    const longestSide = Math.max(image.width, image.height);
+    const scale =
+      longestSide > BACKGROUND_MAX_DIMENSION
+        ? BACKGROUND_MAX_DIMENSION / longestSide
+        : 1;
+
+    const width = Math.max(1, Math.round(image.width * scale));
+    const height = Math.max(1, Math.round(image.height * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Failed to process image.");
+    }
+
+    context.drawImage(image, 0, 0, width, height);
+
+    const compressedBlob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Failed to compress image."));
+            return;
+          }
+          resolve(blob);
+        },
+        "image/jpeg",
+        BACKGROUND_JPEG_QUALITY
+      );
+    });
+
+    if (compressedBlob.size > BACKGROUND_MAX_SIZE_BYTES) {
+      throw new Error("BACKGROUND_IMAGE_TOO_LARGE_AFTER_COMPRESSION");
+    }
+
+    return new File([compressedBlob], BACKGROUND_FILE_NAME, {
+      type: "image/jpeg",
+    });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
+
 export default function CardEditorPage() {
   const params = useParams();
   const router = useRouter();
@@ -199,7 +282,7 @@ export default function CardEditorPage() {
         supabase
           .from("business_cards")
           .select(
-            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
+            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, background_image_url, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
           )
           .eq("id", cardId)
           .eq("user_id", userData.user.id)
@@ -233,6 +316,8 @@ export default function CardEditorPage() {
       slug: cardData.slug ?? "",
       background_pattern: cardData.background_pattern ?? "gradient-1",
       background_color: cardData.background_color ?? "#6366f1",
+      background_image_url: cardData.background_image_url ?? null,
+      template: "classic-business",
     });
 
     setFields(
@@ -399,6 +484,165 @@ export default function CardEditorPage() {
     setIsUploading(false);
   };
 
+  const handleUploadBackgroundImage = async (file: File) => {
+    if (!card) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setMessage(t("errors.invalidImageFile"));
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setMessage(t("errors.backgroundTooLargeBeforeCompression"));
+      return;
+    }
+
+    setIsUploading(true);
+    setMessage(null);
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData.user) {
+      setMessage(t("errors.signInUpload"));
+      setIsUploading(false);
+      return;
+    }
+
+    let compressedFile: File;
+    try {
+      compressedFile = await compressBackgroundImage(file);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === "BACKGROUND_IMAGE_TOO_LARGE_AFTER_COMPRESSION"
+      ) {
+        setMessage(t("errors.backgroundTooLargeAfterCompression"));
+      } else {
+        setMessage(t("errors.backgroundProcessFailed"));
+      }
+      setIsUploading(false);
+      return;
+    }
+
+    const folderPath = `${userData.user.id}/cards/${card.id}`;
+    const filePath = `${folderPath}/${BACKGROUND_FILE_NAME}`;
+    const previousStoragePath = extractStoragePath(card.background_image_url, BACKGROUND_BUCKET);
+
+    if (previousStoragePath && previousStoragePath !== filePath) {
+      await supabase.storage.from(BACKGROUND_BUCKET).remove([previousStoragePath]);
+    }
+
+    const { data: existingFiles } = await supabase.storage
+      .from(BACKGROUND_BUCKET)
+      .list(folderPath, { limit: 100 });
+
+    const duplicatePaths = (existingFiles ?? [])
+      .map((item) => item.name)
+      .filter((name) => name !== BACKGROUND_FILE_NAME)
+      .map((name) => `${folderPath}/${name}`);
+
+    if (duplicatePaths.length > 0) {
+      await supabase.storage.from(BACKGROUND_BUCKET).remove(duplicatePaths);
+    }
+
+    const { error: uploadError } = await supabase.storage
+      .from(BACKGROUND_BUCKET)
+      .upload(filePath, compressedFile, {
+        upsert: true,
+        contentType: "image/jpeg",
+      });
+
+    if (uploadError) {
+      setMessage(uploadError.message);
+      setIsUploading(false);
+      return;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from(BACKGROUND_BUCKET)
+      .getPublicUrl(filePath);
+
+    const nextBackgroundImageUrl = publicUrlData.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from("business_cards")
+      .update({
+        background_image_url: nextBackgroundImageUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", card.id)
+      .eq("user_id", userData.user.id);
+
+    if (updateError) {
+      setMessage(updateError.message);
+      setIsUploading(false);
+      return;
+    }
+
+    setCard((prev) =>
+      prev
+        ? {
+            ...prev,
+            background_image_url: nextBackgroundImageUrl,
+          }
+        : prev
+    );
+    setMessage(t("messages.backgroundUploaded"));
+    setIsUploading(false);
+  };
+
+  const handleRemoveBackgroundImage = async () => {
+    if (!card) {
+      return;
+    }
+
+    setIsUploading(true);
+    setMessage(null);
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData.user) {
+      setMessage(t("errors.signInUpload"));
+      setIsUploading(false);
+      return;
+    }
+
+    const previousStoragePath = extractStoragePath(
+      card.background_image_url,
+      BACKGROUND_BUCKET
+    );
+
+    if (previousStoragePath) {
+      await supabase.storage.from(BACKGROUND_BUCKET).remove([previousStoragePath]);
+    }
+
+    const { error: updateError } = await supabase
+      .from("business_cards")
+      .update({
+        background_image_url: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", card.id)
+      .eq("user_id", userData.user.id);
+
+    if (updateError) {
+      setMessage(updateError.message);
+      setIsUploading(false);
+      return;
+    }
+
+    setCard((prev) =>
+      prev
+        ? {
+            ...prev,
+            background_image_url: null,
+          }
+        : prev
+    );
+    setMessage(t("messages.backgroundRemoved"));
+    setIsUploading(false);
+  };
+
   const handleSave = async () => {
     if (!card) {
       return;
@@ -424,6 +668,8 @@ export default function CardEditorPage() {
         bio: card.bio.trim(),
         background_pattern: card.background_pattern,
         background_color: card.background_color,
+        background_image_url: card.background_image_url,
+        template: "classic-business",
         updated_at: new Date().toISOString(),
       })
       .eq("id", card.id)
@@ -619,6 +865,35 @@ export default function CardEditorPage() {
           <h2 className="text-lg font-semibold text-slate-900">
             {t("sections.background")}
           </h2>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <label className="flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) {
+                    void handleUploadBackgroundImage(file);
+                  }
+                }}
+              />
+              {isUploading
+                ? t("actions.uploading")
+                : t("actions.uploadBackground")}
+            </label>
+            <button
+              type="button"
+              onClick={() => void handleRemoveBackgroundImage()}
+              disabled={!card.background_image_url || isUploading}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-rose-200 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {t("actions.removeBackground")}
+            </button>
+            <p className="text-xs text-slate-500">
+              {t("misc.backgroundUploadNote")}
+            </p>
+          </div>
           <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_200px]">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {patternOptions.map((pattern) => (
@@ -695,7 +970,15 @@ export default function CardEditorPage() {
                   style={{
                     "--cardlink-base": card.background_color,
                   } as React.CSSProperties}
-                />
+                >
+                  {card.background_image_url ? (
+                    <img
+                      src={card.background_image_url}
+                      alt="Background"
+                      className="h-full w-full rounded-xl object-cover"
+                    />
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
@@ -1204,7 +1487,15 @@ export default function CardEditorPage() {
               style={{
                 "--cardlink-base": card.background_color,
               } as React.CSSProperties}
-            />
+            >
+              {card.background_image_url ? (
+                <img
+                  src={card.background_image_url}
+                  alt="Background preview"
+                  className="h-full w-full rounded-t-3xl object-cover"
+                />
+              ) : null}
+            </div>
             <div className="-mt-8 flex justify-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white text-sm font-semibold text-slate-700 shadow-md">
                 {card.full_name.trim()
