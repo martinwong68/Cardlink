@@ -195,20 +195,18 @@ export default function CompanyCardsManagementPanel() {
     const memberUserIds = Array.from(new Set(members.map((row) => row.user_id))).filter(Boolean);
     setCompanyMembers(members);
 
-    if (!memberUserIds.length) {
-      setProfiles([]);
-      setCards([]);
-      setConnections([]);
-      setIsLoading(false);
-      return;
-    }
+    const cardsFilter = selectedCompany?.profile_card_id
+      ? `company_id.eq.${activeCompanyId},id.eq.${selectedCompany.profile_card_id}`
+      : `company_id.eq.${activeCompanyId}`;
 
     const [profilesRes, cardsRes] = await Promise.all([
-      supabase.from("profiles").select("id, full_name, email").in("id", memberUserIds),
+      memberUserIds.length
+        ? supabase.from("profiles").select("id, full_name, email").in("id", memberUserIds)
+        : Promise.resolve({ data: [], error: null }),
       supabase
         .from("business_cards")
         .select("id, user_id, company_id, is_company_profile, card_name, full_name, title, company, slug, created_at, card_shares(count)")
-        .in("user_id", memberUserIds)
+        .or(cardsFilter)
         .order("created_at", { ascending: false }),
     ]);
 
@@ -221,18 +219,22 @@ export default function CompanyCardsManagementPanel() {
     setProfiles((profilesRes.data ?? []) as Profile[]);
     setCards((cardsRes.data ?? []) as CardRow[]);
 
-    const idList = memberUserIds.join(",");
-    const { data: connectionRows, error: connectionError } = await supabase
-      .from("connections")
-      .select("requester_id, receiver_id")
-      .eq("status", "accepted")
-      .or(`requester_id.in.(${idList}),receiver_id.in.(${idList})`);
+    if (memberUserIds.length > 0) {
+      const idList = memberUserIds.join(",");
+      const { data: connectionRows, error: connectionError } = await supabase
+        .from("connections")
+        .select("requester_id, receiver_id")
+        .eq("status", "accepted")
+        .or(`requester_id.in.(${idList}),receiver_id.in.(${idList})`);
 
-    if (connectionError) {
-      setMessage(connectionError.message);
-      setConnections([]);
+      if (connectionError) {
+        setMessage(connectionError.message);
+        setConnections([]);
+      } else {
+        setConnections((connectionRows ?? []) as ConnectionRow[]);
+      }
     } else {
-      setConnections((connectionRows ?? []) as ConnectionRow[]);
+      setConnections([]);
     }
 
     const firstMember = members[0]?.user_id ?? "";
@@ -273,22 +275,17 @@ export default function CompanyCardsManagementPanel() {
   );
 
   const companyNameCards = useMemo(() => {
-    const selectedCompanyName = (selectedCompany?.name ?? "").trim();
+    const profileCardId = selectedCompany?.profile_card_id ?? null;
 
     return cards.filter((card) => {
-      const isCurrentCompanyProfileCard =
-        card.is_company_profile && card.company_id === selectedCompanyId;
+      const isCurrentCompanyProfileCard = card.is_company_profile && (
+        card.company_id === selectedCompanyId || (profileCardId ? card.id === profileCardId : false)
+      );
       if (isCurrentCompanyProfileCard) {
-        return false;
+        return true;
       }
 
-      const belongsByCompanyId = card.company_id === selectedCompanyId;
-      const belongsByLegacyCompanyText =
-        card.company_id === null &&
-        selectedCompanyName.length > 0 &&
-        (card.company ?? "").trim().toLowerCase() === selectedCompanyName.toLowerCase();
-
-      return belongsByCompanyId || belongsByLegacyCompanyText;
+      return card.company_id === selectedCompanyId;
     });
   }, [cards, selectedCompanyId, selectedCompany]);
 

@@ -155,8 +155,13 @@
       "signInCreate": "Please sign in to create a card.",
       "createFailed": "Unable to create a new card.",
       "upgradeToCreate": "Upgrade to Premium to create more than one card.",
+      "companyCardLimit": "Company accounts can create up to 2 cards.",
       "missingLink": "Missing card link.",
       "copyFailed": "Unable to copy link."
+    },
+    "badges": {
+      "premium": "Premium",
+      "company": "Company"
     },
     "toast": {
       "created": "Card created.",

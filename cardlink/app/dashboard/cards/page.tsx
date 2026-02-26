@@ -34,6 +34,7 @@ const patternClassMap: Record<string, string> = {
 
 type CardRow = {
   id: string;
+  company_id: string | null;
   card_name: string | null;
   slug: string | null;
   full_name: string | null;
@@ -139,6 +140,7 @@ export default function CardsDashboardPage() {
   const [qrCard, setQrCard] = useState<CardRow | null>(null);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
   const [isOwner, setIsOwner] = useState(false);
+  const [companyAccountCompanyId, setCompanyAccountCompanyId] = useState<string | null>(null);
 
   const pushToast = (text: string) => {
     setToast(text);
@@ -166,7 +168,7 @@ export default function CardsDashboardPage() {
       supabase
         .from("business_cards")
         .select(
-          "id, card_name, slug, full_name, title, background_pattern, background_color, created_at, card_shares(count)"
+          "id, company_id, card_name, slug, full_name, title, background_pattern, background_color, created_at, card_shares(count)"
         )
         .eq("user_id", userData.user.id)
         .or("is_company_profile.is.false,is_company_profile.is.null")
@@ -199,6 +201,12 @@ export default function CardsDashboardPage() {
     const ownerByRpc = ((adminCompanyIdsData ?? []) as { company_id: string }[]).length > 0;
     setIsOwner(ownerByRole || ownerByCreator || ownerByRpc);
 
+    const memberCompanyIds = Array.from(
+      new Set(((companyRoleData ?? []) as { company_id: string }[]).map((item) => item.company_id))
+    );
+    const isCompanyManagedAccount = memberCompanyIds.length > 0 && !ownerByRole && !ownerByCreator && !ownerByRpc;
+    setCompanyAccountCompanyId(isCompanyManagedAccount && memberCompanyIds.length === 1 ? memberCompanyIds[0] : null);
+
     if (error) {
       setMessage(error.message);
       setIsLoading(false);
@@ -222,8 +230,14 @@ export default function CardsDashboardPage() {
       return;
     }
 
-    if (viewerPlan === "free" && cards.length >= 1) {
-      setMessage(t("errors.upgradeToCreate"));
+    const maxCardsForCurrentUser = viewerPlan === "premium" ? Number.POSITIVE_INFINITY : companyAccountCompanyId ? 2 : 1;
+
+    if (cards.length >= maxCardsForCurrentUser) {
+      setMessage(
+        companyAccountCompanyId
+          ? t("errors.companyCardLimit")
+          : t("errors.upgradeToCreate")
+      );
       return;
     }
 
@@ -241,6 +255,7 @@ export default function CardsDashboardPage() {
         user_id: userData.user.id,
         card_name: "My Card",
         is_default: false,
+        company_id: companyAccountCompanyId,
         full_name: displayName,
         slug,
         background_pattern: "gradient-1",
@@ -353,7 +368,7 @@ export default function CardsDashboardPage() {
         <button
           type="button"
           onClick={createCard}
-          disabled={viewerPlan === "free" && cards.length >= 1}
+          disabled={cards.length >= (viewerPlan === "premium" ? Number.POSITIVE_INFINITY : companyAccountCompanyId ? 2 : 1)}
           className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           <Plus className="h-4 w-4" />
@@ -395,8 +410,20 @@ export default function CardsDashboardPage() {
             >
               {viewerPlan === "premium" ? (
                 <div className="absolute -right-2 top-4 z-10">
+                  {card.company_id ? (
+                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow">
+                      {t("badges.company")}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow">
+                      {t("badges.premium")}
+                    </span>
+                  )}
+                </div>
+              ) : card.company_id ? (
+                <div className="absolute -right-2 top-4 z-10">
                   <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow">
-                    Premium
+                    {t("badges.company")}
                   </span>
                 </div>
               ) : null}

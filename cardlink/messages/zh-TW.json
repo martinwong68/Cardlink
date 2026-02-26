@@ -155,8 +155,13 @@
       "signInCreate": "請登入以建立名片。",
       "createFailed": "無法建立新名片。",
       "upgradeToCreate": "升級至高級版以建立多於 1 張名片。",
+      "companyCardLimit": "公司帳號最多可建立 2 張名片。",
       "missingLink": "缺少名片連結。",
       "copyFailed": "無法複製連結。"
+    },
+    "badges": {
+      "premium": "高級版",
+      "company": "公司"
     },
     "toast": {
       "created": "名片已建立。",
