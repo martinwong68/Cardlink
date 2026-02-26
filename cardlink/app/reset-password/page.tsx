@@ -22,23 +22,34 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const bootstrapRecoverySession = async () => {
+      const url = new URL(window.location.href);
+      const searchParams = url.searchParams;
       const hash = window.location.hash.startsWith("#")
         ? window.location.hash.slice(1)
         : "";
       const hashParams = new URLSearchParams(hash);
 
+      const code = searchParams.get("code");
       const accessToken = hashParams.get("access_token");
       const refreshToken = hashParams.get("refresh_token");
       const flowType = hashParams.get("type");
       const hashErrorDescription = hashParams.get("error_description");
+      const queryErrorDescription = searchParams.get("error_description");
+      const errorDescription = queryErrorDescription ?? hashErrorDescription;
 
-      if (hashErrorDescription) {
-        setErrorMessage(hashErrorDescription);
+      if (errorDescription) {
+        setErrorMessage(errorDescription);
         setIsReady(true);
         return;
       }
 
-      if (flowType === "recovery" && accessToken && refreshToken) {
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          setErrorMessage(error.message);
+        }
+      } else if (flowType === "recovery" && accessToken && refreshToken) {
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken,
@@ -47,7 +58,9 @@ export default function ResetPasswordPage() {
         if (error) {
           setErrorMessage(error.message);
         }
+      }
 
+      if (code || hash) {
         window.history.replaceState(null, "", "/reset-password");
       }
 
@@ -106,7 +119,12 @@ export default function ResetPasswordPage() {
     setIsSaving(false);
 
     if (error) {
-      setErrorMessage(error.message);
+      const normalizedMessage = error.message.toLowerCase();
+      if (normalizedMessage.includes("auth session missing") || normalizedMessage.includes("missing auth")) {
+        setErrorMessage(t("errors.invalidOrExpiredLink"));
+      } else {
+        setErrorMessage(error.message);
+      }
       return;
     }
 

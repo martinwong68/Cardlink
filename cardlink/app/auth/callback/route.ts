@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const nextPathParam = searchParams.get("next");
+  const nextPath = nextPathParam && nextPathParam.startsWith("/") ? nextPathParam : "/dashboard/community";
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login", origin));
+    return NextResponse.redirect(new URL("/login?error=auth", origin));
   }
 
-  const response = NextResponse.redirect(
-    new URL("/dashboard/community", origin)
-  );
+  const response = NextResponse.redirect(new URL(nextPath, origin));
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
