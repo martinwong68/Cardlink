@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import LoggedInTopHeader from "@/components/LoggedInTopHeader";
 import { defaultLocale, locales } from "@/next-intl.config";
 
 const inter = Inter({
@@ -44,6 +45,7 @@ export default async function RootLayout({
         className={`${inter.className} ${inter.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}
       >
         <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
+          <LoggedInTopHeader />
           {children}
         </NextIntlClientProvider>
         <ServiceWorkerRegister />

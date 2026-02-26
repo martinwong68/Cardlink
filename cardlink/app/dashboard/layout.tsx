@@ -8,6 +8,7 @@ import { getUserAccessState } from "@/src/lib/access-state";
 import DashboardNav from "./dashboard-nav";
 import NotificationBell from "@/components/NotificationBell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import HeaderBackButton from "@/components/HeaderBackButton";
 
 function getInitials(name: string) {
   const parts = name
@@ -53,11 +54,14 @@ export default async function DashboardLayout({
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-10">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
-          <div>
+          <div className="flex items-center gap-3">
+            <HeaderBackButton ariaLabel="Back" />
+            <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
               {t("brand")}
             </p>
             <p className="text-sm text-slate-500">{t("title")}</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
