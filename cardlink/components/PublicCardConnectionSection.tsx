@@ -227,7 +227,7 @@ export default function PublicCardConnectionSection({
 
         {viewerIsOwner ? (
           <Link
-            href="/dashboard/card/edit"
+            href="/dashboard/cards"
             className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
           >
             {t("actions.editCard")}
