@@ -15,6 +15,36 @@ const toIsoFromUnix = (value?: number | null) => {
   return new Date(value * 1000).toISOString();
 };
 
+const getSubscriptionPeriodEndUnix = (subscription: Stripe.Subscription) => {
+  const latestInvoice = subscription.latest_invoice;
+
+  if (
+    latestInvoice &&
+    typeof latestInvoice !== "string" &&
+    typeof latestInvoice.period_end === "number"
+  ) {
+    return latestInvoice.period_end;
+  }
+
+  if (typeof subscription.trial_end === "number") {
+    return subscription.trial_end;
+  }
+
+  if (typeof subscription.cancel_at === "number") {
+    return subscription.cancel_at;
+  }
+
+  return null;
+};
+
+const getInvoiceSubscriptionId = (invoice: Stripe.Invoice) => {
+  const value = invoice.parent?.subscription_details?.subscription;
+  if (!value) {
+    return null;
+  }
+  return typeof value === "string" ? value : value.id;
+};
+
 export async function POST(request: Request) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -180,7 +210,8 @@ export async function POST(request: Request) {
             customerId,
             subscriptionId,
             subscriptionStatus: subscription.status,
-            subscriptionCurrentPeriodEnd: subscription.current_period_end,
+            subscriptionCurrentPeriodEnd:
+              getSubscriptionPeriodEndUnix(subscription),
             touchLastPaymentAt: true,
           });
         } else {
@@ -195,7 +226,7 @@ export async function POST(request: Request) {
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string | null;
-      const subscriptionId = invoice.subscription as string | null;
+      const subscriptionId = getInvoiceSubscriptionId(invoice);
       const resolvedUserId =
         customerId ? await getUserIdByCustomer(customerId) : null;
 
@@ -222,7 +253,7 @@ export async function POST(request: Request) {
           customerId,
           subscriptionId,
           subscriptionStatus: subscription.status,
-          subscriptionCurrentPeriodEnd: subscription.current_period_end,
+          subscriptionCurrentPeriodEnd: getSubscriptionPeriodEndUnix(subscription),
           touchLastPaymentAt: true,
         });
       }
@@ -238,7 +269,7 @@ export async function POST(request: Request) {
           customerId,
           subscriptionId: subscription.id,
           subscriptionStatus: subscription.status,
-          subscriptionCurrentPeriodEnd: subscription.current_period_end,
+          subscriptionCurrentPeriodEnd: getSubscriptionPeriodEndUnix(subscription),
         });
       }
       break;
