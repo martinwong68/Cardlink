@@ -45,6 +45,14 @@ const getInvoiceSubscriptionId = (invoice: Stripe.Invoice) => {
   return typeof value === "string" ? value : value.id;
 };
 
+const getInvoicePaymentIntentId = (invoice: Stripe.Invoice) => {
+  const value = invoice.payments?.data?.[0]?.payment.payment_intent;
+  if (!value) {
+    return null;
+  }
+  return typeof value === "string" ? value : value.id;
+};
+
 export async function POST(request: Request) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -232,10 +240,7 @@ export async function POST(request: Request) {
 
       await saveBillingEvent({
         stripeEventId: event.id,
-        stripePaymentIntentId:
-          typeof invoice.payment_intent === "string"
-            ? invoice.payment_intent
-            : null,
+        stripePaymentIntentId: getInvoicePaymentIntentId(invoice),
         stripeSubscriptionId: subscriptionId,
         stripeCustomerId: customerId,
         userId: resolvedUserId,
