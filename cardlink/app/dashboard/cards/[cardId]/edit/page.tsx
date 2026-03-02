@@ -13,6 +13,8 @@ import {
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
+import TemplateSelector from "@/components/TemplateSelector";
+import type { TemplateId } from "@/src/lib/templates";
 
 const fieldTypes = [
   "Phone",
@@ -65,8 +67,21 @@ type CardState = {
   background_pattern: string;
   background_color: string;
   background_image_url: string | null;
-  template: "classic-business";
+  template: TemplateId;
 };
+
+function normalizeTemplateId(template: string | null | undefined): TemplateId {
+  if (template === "fullscreen-hero-tabs") {
+    return "fullscreen-hero-tabs";
+  }
+  if (template === "minimal-editorial") {
+    return "minimal-editorial";
+  }
+  if (template === "profile-community") {
+    return "profile-community";
+  }
+  return "classic-business";
+}
 
 const BACKGROUND_BUCKET = "avatars";
 const BACKGROUND_FILE_NAME = "background.jpg";
@@ -123,6 +138,9 @@ const colorOptions = [
   "#a855f7",
   "#f59e0b",
 ];
+
+const FREE_CONTACT_FIELDS_LIMIT = 2;
+const FREE_LINKS_LIMIT = 2;
 
 const contactPreviewClasses: Record<string, string> = {
   Phone: "bg-emerald-500",
@@ -265,6 +283,9 @@ export default function CardEditorPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
+
+  const isFreePlan = viewerPlan === "free";
 
   const loadCard = async () => {
     setIsLoading(true);
@@ -295,7 +316,7 @@ export default function CardEditorPage() {
           .maybeSingle(),
         supabase
           .from("profiles")
-          .select("avatar_url")
+          .select("avatar_url, plan")
           .eq("id", userData.user.id)
           .maybeSingle(),
       ]);
@@ -317,7 +338,7 @@ export default function CardEditorPage() {
       background_pattern: cardData.background_pattern ?? "gradient-1",
       background_color: cardData.background_color ?? "#6366f1",
       background_image_url: cardData.background_image_url ?? null,
-      template: "classic-business",
+      template: normalizeTemplateId(cardData.template),
     });
 
     setFields(
@@ -354,6 +375,7 @@ export default function CardEditorPage() {
     );
 
     setAvatarUrl(profileData?.avatar_url ?? "");
+    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
     setIsLoading(false);
   };
 
@@ -386,6 +408,15 @@ export default function CardEditorPage() {
   };
 
   const addField = () => {
+    if (isFreePlan && fields.length >= FREE_CONTACT_FIELDS_LIMIT) {
+      setMessage(
+        t("errors.freePlanContactLimit", {
+          count: FREE_CONTACT_FIELDS_LIMIT,
+        })
+      );
+      return;
+    }
+
     setFields((prev) => [
       ...prev,
       {
@@ -399,6 +430,15 @@ export default function CardEditorPage() {
   };
 
   const addLink = () => {
+    if (isFreePlan && links.length >= FREE_LINKS_LIMIT) {
+      setMessage(
+        t("errors.freePlanLinkLimit", {
+          count: FREE_LINKS_LIMIT,
+        })
+      );
+      return;
+    }
+
     setLinks((prev) => [...prev, { label: "", url: "", icon: "" }]);
   };
 
@@ -669,7 +709,7 @@ export default function CardEditorPage() {
         background_pattern: card.background_pattern,
         background_color: card.background_color,
         background_image_url: card.background_image_url,
-        template: "classic-business",
+        template: card.template,
         updated_at: new Date().toISOString(),
       })
       .eq("id", card.id)
@@ -697,6 +737,10 @@ export default function CardEditorPage() {
       })
       .filter((field) => field.field_value !== "");
 
+    const freeLimitedFields = isFreePlan
+      ? cleanedFields.slice(0, FREE_CONTACT_FIELDS_LIMIT)
+      : cleanedFields;
+
     const cleanedLinks = links
       .map((link, index) => {
         const payload = {
@@ -710,6 +754,10 @@ export default function CardEditorPage() {
         return link.id ? { id: link.id, ...payload } : payload;
       })
       .filter((link) => link.label !== "" && link.url !== "");
+
+    const freeLimitedLinks = isFreePlan
+      ? cleanedLinks.slice(0, FREE_LINKS_LIMIT)
+      : cleanedLinks;
 
     const cleanedExperiences = experiences
       .map((experience, index) => {
@@ -727,8 +775,28 @@ export default function CardEditorPage() {
       })
       .filter((experience) => experience.role !== "" && experience.company !== "");
 
-    if (cleanedFields.length > 0) {
-      const { error } = await supabase.from("card_fields").upsert(cleanedFields, {
+    const freeLimitedExperiences = isFreePlan ? [] : cleanedExperiences;
+
+    const freeTrimmedFieldIds = isFreePlan
+      ? cleanedFields
+          .slice(FREE_CONTACT_FIELDS_LIMIT)
+          .map((field) => field.id)
+          .filter((id): id is string => typeof id === "string" && id.length > 0)
+      : [];
+    const freeTrimmedLinkIds = isFreePlan
+      ? cleanedLinks
+          .slice(FREE_LINKS_LIMIT)
+          .map((link) => ("id" in link ? (link.id as string | undefined) : undefined))
+          .filter((id): id is string => typeof id === "string" && id.length > 0)
+      : [];
+    const freeRemovedExperienceIds = isFreePlan
+      ? experiences
+          .map((experience) => experience.id)
+          .filter((id): id is string => typeof id === "string" && id.length > 0)
+      : [];
+
+    if (freeLimitedFields.length > 0) {
+      const { error } = await supabase.from("card_fields").upsert(freeLimitedFields, {
         onConflict: "id",
       });
       if (error) {
@@ -738,8 +806,8 @@ export default function CardEditorPage() {
       }
     }
 
-    if (cleanedLinks.length > 0) {
-      const { error } = await supabase.from("card_links").upsert(cleanedLinks, {
+    if (freeLimitedLinks.length > 0) {
+      const { error } = await supabase.from("card_links").upsert(freeLimitedLinks, {
         onConflict: "id",
       });
       if (error) {
@@ -749,10 +817,10 @@ export default function CardEditorPage() {
       }
     }
 
-    if (cleanedExperiences.length > 0) {
+    if (freeLimitedExperiences.length > 0) {
       const { error } = await supabase
         .from("card_experiences")
-        .upsert(cleanedExperiences, { onConflict: "id" });
+        .upsert(freeLimitedExperiences, { onConflict: "id" });
       if (error) {
         setMessage(error.message);
         setIsSaving(false);
@@ -760,11 +828,14 @@ export default function CardEditorPage() {
       }
     }
 
-    if (removedFieldIds.length > 0) {
+    const allRemovedFieldIds = Array.from(
+      new Set([...removedFieldIds, ...freeTrimmedFieldIds])
+    );
+    if (allRemovedFieldIds.length > 0) {
       const { error } = await supabase
         .from("card_fields")
         .delete()
-        .in("id", removedFieldIds);
+        .in("id", allRemovedFieldIds);
       if (error) {
         setMessage(error.message);
         setIsSaving(false);
@@ -773,11 +844,14 @@ export default function CardEditorPage() {
       setRemovedFieldIds([]);
     }
 
-    if (removedLinkIds.length > 0) {
+    const allRemovedLinkIds = Array.from(
+      new Set([...removedLinkIds, ...freeTrimmedLinkIds])
+    );
+    if (allRemovedLinkIds.length > 0) {
       const { error } = await supabase
         .from("card_links")
         .delete()
-        .in("id", removedLinkIds);
+        .in("id", allRemovedLinkIds);
       if (error) {
         setMessage(error.message);
         setIsSaving(false);
@@ -786,11 +860,14 @@ export default function CardEditorPage() {
       setRemovedLinkIds([]);
     }
 
-    if (removedExperienceIds.length > 0) {
+    const allRemovedExperienceIds = Array.from(
+      new Set([...removedExperienceIds, ...freeRemovedExperienceIds])
+    );
+    if (allRemovedExperienceIds.length > 0) {
       const { error } = await supabase
         .from("card_experiences")
         .delete()
-        .in("id", removedExperienceIds);
+        .in("id", allRemovedExperienceIds);
       if (error) {
         setMessage(error.message);
         setIsSaving(false);
@@ -860,6 +937,16 @@ export default function CardEditorPage() {
             </button>
           </div>
         </div>
+
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <TemplateSelector
+            currentTemplate={card.template}
+            isPremiumUser={viewerPlan === "premium"}
+            onChange={(template) =>
+              setCard((prev) => (prev ? { ...prev, template } : prev))
+            }
+          />
+        </section>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">
@@ -1108,11 +1195,19 @@ export default function CardEditorPage() {
             <button
               type="button"
               onClick={addField}
+              disabled={isFreePlan && fields.length >= FREE_CONTACT_FIELDS_LIMIT}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
               <Plus className="h-3.5 w-3.5" /> {t("actions.add")}
             </button>
           </div>
+          {isFreePlan ? (
+            <p className="mt-3 text-xs text-slate-500">
+              {t("messages.freePlanContactLimit", {
+                count: FREE_CONTACT_FIELDS_LIMIT,
+              })}
+            </p>
+          ) : null}
 
           <div className="mt-4 space-y-4">
             {fields.length === 0 ? (
@@ -1239,11 +1334,19 @@ export default function CardEditorPage() {
             <button
               type="button"
               onClick={addLink}
+              disabled={isFreePlan && links.length >= FREE_LINKS_LIMIT}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
               <Plus className="h-3.5 w-3.5" /> {t("actions.add")}
             </button>
           </div>
+          {isFreePlan ? (
+            <p className="mt-3 text-xs text-slate-500">
+              {t("messages.freePlanLinkLimit", {
+                count: FREE_LINKS_LIMIT,
+              })}
+            </p>
+          ) : null}
           <div className="mt-4 space-y-4">
             {links.length === 0 ? (
               <p className="text-sm text-slate-500">{t("empty.links")}</p>
@@ -1339,16 +1442,22 @@ export default function CardEditorPage() {
             <button
               type="button"
               onClick={addExperience}
+              disabled={isFreePlan}
               className="flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-semibold text-indigo-600 transition hover:border-indigo-300"
             >
               <Plus className="h-3.5 w-3.5" /> {t("actions.add")}
             </button>
           </div>
+          {isFreePlan ? (
+            <p className="mt-3 text-xs text-slate-500">
+              {t("messages.freePlanNoExperience")}
+            </p>
+          ) : null}
           <div className="mt-4 space-y-4">
             {experiences.length === 0 ? (
               <p className="text-sm text-slate-500">{t("empty.experience")}</p>
             ) : null}
-            {experiences.map((experience, index) => (
+            {(isFreePlan ? [] : experiences).map((experience, index) => (
               <div
                 key={experience.id ?? `experience-${index}`}
                 className="rounded-2xl border border-slate-200 p-4"

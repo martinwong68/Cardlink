@@ -222,7 +222,10 @@
       "saved": "名片已儲存。",
       "loading": "正在載入編輯器...",
       "backgroundUploaded": "背景圖片已上傳。",
-      "backgroundRemoved": "背景圖片已移除。"
+      "backgroundRemoved": "背景圖片已移除。",
+      "freePlanContactLimit": "免費方案最多可設定 {count} 個聯絡方式。",
+      "freePlanLinkLimit": "免費方案最多可設定 {count} 個連結。",
+      "freePlanNoExperience": "經歷區塊僅限 Premium 方案。"
     },
     "errors": {
       "signInEdit": "請登入後編輯名片。",
@@ -232,7 +235,9 @@
       "invalidImageFile": "請上載圖片檔案。",
       "backgroundTooLargeBeforeCompression": "圖片過大，請上載 10MB 以下圖片。",
       "backgroundTooLargeAfterCompression": "壓縮後圖片仍過大，請使用較簡單圖片以壓到 500KB 以下。",
-      "backgroundProcessFailed": "圖片處理失敗。"
+      "backgroundProcessFailed": "圖片處理失敗。",
+      "freePlanContactLimit": "免費方案最多只支援 {count} 個聯絡方式。",
+      "freePlanLinkLimit": "免費方案最多只支援 {count} 個連結。"
     },
     "actions": {
       "showPreview": "顯示預覽",
@@ -981,7 +986,7 @@
       "badge": "永久免費",
       "features": {
         "cards": "1 張名片",
-        "fields": "5 個聯絡欄位",
+        "fields": "2 個聯絡方式 + 2 個連結",
         "public": "只可查看公開資訊",
         "connect": "與他人連結",
         "feed": "基本動態"
@@ -990,8 +995,8 @@
     "premium": {
       "badge": "熱門",
       "title": "高級版",
-      "monthlyLabel": "$9.99/月",
-      "yearlyLabel": "或 $99/年",
+      "monthlyLabel": "每月",
+      "yearlyLabel": "每年",
       "status": "你已是高級版用戶。",
       "features": {
         "unlimitedCards": "無限名片",
@@ -1520,6 +1525,18 @@
       "classic-business": {
         "name": "經典商務",
         "category": "商務"
+      },
+      "profile-community": {
+        "name": "社群個人",
+        "category": "個人"
+      },
+      "minimal-editorial": {
+        "name": "極簡編輯",
+        "category": "個人"
+      },
+      "fullscreen-hero-tabs": {
+        "name": "極光主視覺分頁",
+        "category": "個人"
       }
     }
   },

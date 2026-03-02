@@ -1,7 +1,10 @@
 // Card Template definitions
 
 export type TemplateId = 
-  | "classic-business";
+  | "classic-business"
+  | "profile-community"
+  | "minimal-editorial"
+  | "fullscreen-hero-tabs";
 
 export type CardTemplate = {
   id: TemplateId;
@@ -23,6 +26,33 @@ export const CARD_TEMPLATES: CardTemplate[] = [
     isPremium: false,
     defaultPattern: "gradient-1",
     defaultColor: "#1e40af", // Blue
+  },
+  {
+    id: "profile-community",
+    name: "Profile Community",
+    description: "Modern profile card layout optimized for social/community style",
+    category: "Profile",
+    isPremium: false,
+    defaultPattern: "gradient-2",
+    defaultColor: "#7c3aed", // Purple
+  },
+  {
+    id: "minimal-editorial",
+    name: "Minimal Editorial",
+    description: "Editorial-style profile layout with icon-first sections",
+    category: "Profile",
+    isPremium: false,
+    defaultPattern: "gradient-3",
+    defaultColor: "#0ea5e9", // Sky
+  },
+  {
+    id: "fullscreen-hero-tabs",
+    name: "Aurora Hero Tabs",
+    description: "Aurora-style hero with tabbed info, contacts, links, and experience",
+    category: "Profile",
+    isPremium: false,
+    defaultPattern: "gradient-4",
+    defaultColor: "#2563eb", // Blue
   },
 ];
 

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/src/lib/supabase/server";
 import type { ViewerPlan } from "@/src/lib/visibility";
 import PublicCardView from "@/components/PublicCardView";
+import type { TemplateId } from "@/src/lib/templates";
 
 type CardField = {
   id: string;
@@ -190,6 +191,19 @@ function isUuid(value: string) {
   );
 }
 
+function normalizeTemplateId(template: string | null): TemplateId {
+  if (template === "fullscreen-hero-tabs") {
+    return "fullscreen-hero-tabs";
+  }
+  if (template === "minimal-editorial") {
+    return "minimal-editorial";
+  }
+  if (template === "profile-community") {
+    return "profile-community";
+  }
+  return "classic-business";
+}
+
 export default async function PublicCardPage({
   params,
 }: {
@@ -280,7 +294,7 @@ export default async function PublicCardPage({
       ownerId={card.user_id}
       viewerId={user?.id ?? null}
       viewerPlan={viewerPlan}
-      template="classic-business"
+      template={normalizeTemplateId(card.template)}
     />
   );
 }

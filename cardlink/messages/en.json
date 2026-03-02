@@ -222,7 +222,10 @@
       "saved": "Card saved successfully.",
       "loading": "Loading editor...",
       "backgroundUploaded": "Background image uploaded.",
-      "backgroundRemoved": "Background image removed."
+      "backgroundRemoved": "Background image removed.",
+      "freePlanContactLimit": "Free plan allows up to {count} contact items.",
+      "freePlanLinkLimit": "Free plan allows up to {count} links.",
+      "freePlanNoExperience": "Experience section is available on Premium only."
     },
     "errors": {
       "signInEdit": "Please sign in to edit your card.",
@@ -232,7 +235,9 @@
       "invalidImageFile": "Please upload an image file.",
       "backgroundTooLargeBeforeCompression": "Image is too large. Please upload an image under 10MB.",
       "backgroundTooLargeAfterCompression": "Image is too large after compression. Please use a simpler image so it can be under 500KB.",
-      "backgroundProcessFailed": "Failed to process image."
+      "backgroundProcessFailed": "Failed to process image.",
+      "freePlanContactLimit": "Free plan supports only {count} contact items.",
+      "freePlanLinkLimit": "Free plan supports only {count} links."
     },
     "actions": {
       "showPreview": "Show Preview",
@@ -981,7 +986,7 @@
       "badge": "Free forever",
       "features": {
         "cards": "1 business card",
-        "fields": "5 contact fields",
+        "fields": "2 contact items + 2 links",
         "public": "View public info only",
         "connect": "Connect with others",
         "feed": "Basic feed access"
@@ -990,8 +995,8 @@
     "premium": {
       "badge": "Popular",
       "title": "Premium",
-      "monthlyLabel": "$9.99/month",
-      "yearlyLabel": "Or $99/year",
+      "monthlyLabel": "Per month",
+      "yearlyLabel": "per year",
       "status": "You are in Premium now.",
       "features": {
         "unlimitedCards": "Unlimited business cards",
@@ -1520,6 +1525,18 @@
       "classic-business": {
         "name": "Classic Business",
         "category": "Business"
+      },
+      "profile-community": {
+        "name": "Profile Community",
+        "category": "Profile"
+      },
+      "minimal-editorial": {
+        "name": "Minimal Editorial",
+        "category": "Profile"
+      },
+      "fullscreen-hero-tabs": {
+        "name": "Aurora Hero Tabs",
+        "category": "Profile"
       }
     }
   },
