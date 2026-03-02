@@ -164,7 +164,7 @@ export default function PostDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+      <div className="app-card p-6 text-center text-sm text-slate-500">
         {t("states.loading")}
       </div>
     );
@@ -186,16 +186,16 @@ export default function PostDetailPage() {
       <div>
         <Link
           href={`/dashboard/community/${board.slug}/${subBoard.slug}`}
-          className="text-xs font-semibold text-violet-600"
+          className="app-kicker"
         >
           {subBoard.name}
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {post.title}
         </h1>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-card p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
@@ -221,7 +221,7 @@ export default function PostDetailPage() {
       </div>
 
       {message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+        <p className="app-error px-3 py-2 text-sm">
           {message}
         </p>
       ) : null}
@@ -242,7 +242,7 @@ export default function PostDetailPage() {
           return (
             <div
               key={reply.id}
-              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+              className="app-card p-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -268,14 +268,14 @@ export default function PostDetailPage() {
         })}
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="app-card p-5">
         <h2 className="text-sm font-semibold text-slate-900">{t("sections.addReply")}</h2>
         <textarea
           value={replyBody}
           onChange={(event) => setReplyBody(event.target.value)}
           rows={4}
           placeholder={t("placeholders.replyBody")}
-          className="mt-3 w-full resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+          className="app-input mt-3 w-full resize-none px-3 py-2 text-sm"
         />
         <div className="mt-3 flex items-center justify-between">
           <span className="text-xs text-slate-400">
@@ -284,7 +284,7 @@ export default function PostDetailPage() {
           <button
             onClick={handleReply}
             disabled={isPosting}
-            className="rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="app-primary-btn px-5 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isPosting ? t("actions.posting") : t("actions.reply")}
           </button>

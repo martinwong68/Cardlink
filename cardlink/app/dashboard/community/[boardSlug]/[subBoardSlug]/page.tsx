@@ -166,7 +166,7 @@ export default function SubBoardPage() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+      <div className="app-card p-6 text-center text-sm text-slate-500">
         {t("states.loading")}
       </div>
     );
@@ -185,33 +185,33 @@ export default function SubBoardPage() {
       <div>
         <Link
           href={`/dashboard/community/${board.slug}`}
-          className="text-xs font-semibold text-violet-600"
+          className="app-kicker"
         >
           {board.name}
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {subBoard.name}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="app-subtitle mt-2 text-sm">
           {subBoard.description}
         </p>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="app-card p-5">
         <h2 className="text-sm font-semibold text-slate-900">{t("sections.newPost")}</h2>
         <div className="mt-4 space-y-3">
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder={t("placeholders.postTitle")}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+            className="app-input px-3 py-2 text-sm"
           />
           <textarea
             value={body}
             onChange={(event) => setBody(event.target.value)}
             rows={4}
             placeholder={t("placeholders.postBody")}
-            className="w-full resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+            className="app-input w-full resize-none px-3 py-2 text-sm"
           />
           {message ? (
             <p className="text-xs text-rose-500">{message}</p>
@@ -219,7 +219,7 @@ export default function SubBoardPage() {
           <button
             onClick={handleCreatePost}
             disabled={isPosting}
-            className="rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="app-primary-btn px-5 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isPosting ? t("actions.posting") : t("actions.publish")}
           </button>
@@ -243,7 +243,7 @@ export default function SubBoardPage() {
             <Link
               key={post.id}
               href={`/dashboard/community/${board.slug}/${subBoard.slug}/${post.id}`}
-              className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-200"
+              className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-violet-200"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">

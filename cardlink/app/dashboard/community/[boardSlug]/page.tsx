@@ -134,7 +134,7 @@ export default function BoardPage() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+      <div className="app-card p-6 text-center text-sm text-slate-500">
         {t("states.loading")}
       </div>
     );
@@ -153,15 +153,15 @@ export default function BoardPage() {
       <div>
         <Link
           href="/dashboard/community"
-          className="text-xs font-semibold text-violet-600"
+          className="app-kicker"
         >
           {t("labels.community")}
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           <span className="mr-2">{board.icon}</span>
           {board.name}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">{board.description}</p>
+        <p className="app-subtitle mt-2 text-sm">{board.description}</p>
       </div>
 
       <div className="space-y-6">
@@ -171,7 +171,7 @@ export default function BoardPage() {
           return (
             <section
               key={subBoard.id}
-              className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="app-card p-5"
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -184,7 +184,7 @@ export default function BoardPage() {
                 </div>
                 <Link
                   href={`/dashboard/community/${board.slug}/${subBoard.slug}`}
-                  className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:text-violet-600"
+                  className="app-secondary-btn px-4 py-2 text-xs font-semibold"
                 >
                   {t("actions.view")}
                 </Link>
@@ -207,7 +207,7 @@ export default function BoardPage() {
                     <Link
                       key={post.id}
                       href={`/dashboard/community/${board.slug}/${subBoard.slug}/${post.id}`}
-                      className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-200"
+                      className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-violet-200"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">

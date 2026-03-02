@@ -91,12 +91,12 @@ export default function LoggedInTopHeader() {
   const initials = getInitials(profileName);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3">
+    <header className="sticky top-0 z-20 border-b border-white/60 bg-white/80 backdrop-blur-xl">
+      <div className="app-page flex items-center justify-between py-3">
         <HeaderBackButton ariaLabel="Back" />
         <Link
           href="/dashboard/settings/profile"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-gradient-to-br from-violet-600 to-indigo-600 text-xs font-semibold text-white shadow-lg shadow-violet-300/30"
           aria-label="Profile"
         >
           {profile?.avatar_url ? (

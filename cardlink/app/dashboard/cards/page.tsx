@@ -77,8 +77,8 @@ function CardsTabs({
         href="/dashboard/cards"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "cards"
-            ? "bg-violet-600 text-white"
-            : "border border-slate-200 bg-white text-slate-500"
+            ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
+            : "app-secondary-btn text-slate-500"
         }`}
       >
         {t("cards")}
@@ -87,8 +87,8 @@ function CardsTabs({
         href="/dashboard/cards?tab=contacts"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "contacts"
-            ? "bg-violet-600 text-white"
-            : "border border-slate-200 bg-white text-slate-500"
+            ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
+            : "app-secondary-btn text-slate-500"
         }`}
       >
         {t("contacts")}
@@ -97,8 +97,8 @@ function CardsTabs({
         href="/dashboard/cards?tab=nfc"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "nfc"
-            ? "bg-violet-600 text-white"
-            : "border border-slate-200 bg-white text-slate-500"
+            ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
+            : "app-secondary-btn text-slate-500"
         }`}
       >
         {t("nfc")}
@@ -108,8 +108,8 @@ function CardsTabs({
           href="/dashboard/cards?tab=company"
           className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
             activeTab === "company"
-              ? "bg-violet-600 text-white"
-              : "border border-slate-200 bg-white text-slate-500"
+              ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
+              : "app-secondary-btn text-slate-500"
           }`}
         >
           Company Cards
@@ -355,13 +355,13 @@ export default function CardsDashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+          <p className="app-kicker">
             {t("brand")}
           </p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+          <h1 className="app-title mt-2 text-2xl font-semibold">
             {t("title")}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="app-subtitle mt-1 text-sm">
             {t("subtitle")}
           </p>
         </div>
@@ -369,7 +369,7 @@ export default function CardsDashboardPage() {
           type="button"
           onClick={createCard}
           disabled={cards.length >= (viewerPlan === "premium" ? Number.POSITIVE_INFINITY : companyAccountCompanyId ? 2 : 1)}
-          className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="app-primary-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
           {t("actions.create")}
@@ -379,7 +379,7 @@ export default function CardsDashboardPage() {
       <CardsTabs activeTab="cards" isOwner={isOwner} />
 
       {message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+        <p className="app-error px-3 py-2 text-sm">
           {message}
         </p>
       ) : null}
@@ -391,7 +391,7 @@ export default function CardsDashboardPage() {
       ) : null}
 
       {!isLoading && cards.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
+        <div className="app-card p-8 text-center text-sm text-slate-500">
           {t("empty")}
         </div>
       ) : null}
@@ -406,7 +406,7 @@ export default function CardsDashboardPage() {
           return (
             <div
               key={card.id}
-              className="relative rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="app-card relative p-5"
             >
               {viewerPlan === "premium" ? (
                 <div className="absolute -right-2 top-4 z-10">

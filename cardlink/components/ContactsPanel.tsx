@@ -184,10 +184,10 @@ export default function ContactsPanel() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+          <p className="app-kicker">
             {t("brand")}
           </p>
-          <h2 className="text-2xl font-semibold text-slate-900">
+          <h2 className="app-title text-2xl font-semibold">
             {t("title")}
           </h2>
         </div>
@@ -197,19 +197,19 @@ export default function ContactsPanel() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-full rounded-full border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-700 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+            className="app-input rounded-full py-2 pl-10 pr-4 text-sm text-slate-700"
           />
         </div>
       </div>
 
       {message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+        <p className="app-error px-3 py-2 text-sm">
           {message}
         </p>
       ) : null}
 
       {pendingRequests.length > 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="app-card p-4">
           <button
             type="button"
             onClick={() => setPendingOpen((prev) => !prev)}
@@ -274,7 +274,7 @@ export default function ContactsPanel() {
 
       <div className="space-y-3">
         {filteredContacts.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+          <div className="app-card p-6 text-center text-sm text-slate-500">
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
               <Handshake className="h-5 w-5" />
             </div>
@@ -292,7 +292,7 @@ export default function ContactsPanel() {
           return (
             <div
               key={`friend-${contact.connectionId}`}
-              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+              className="app-card p-4"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <button

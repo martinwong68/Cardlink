@@ -1,7 +1,9 @@
 // Shared types for card templates
 
+import type { TemplateId } from "@/src/lib/templates";
+
 export type TemplateRendererProps = {
-  template: string;
+  template: TemplateId;
   fullName: string;
   title: string | null;
   company: string | null;

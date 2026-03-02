@@ -256,14 +256,14 @@ export default function NfcCardsPanel() {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-slate-500">{t("loading")}</p>
+        <p className="app-subtitle text-sm">{t("loading")}</p>
       </div>
     );
   }
 
   if (nfcCards.length === 0) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-16 text-center">
+      <div className="app-card flex min-h-[70vh] flex-col items-center justify-center gap-4 border-dashed px-6 py-16 text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50">
           <Nfc className="h-7 w-7 text-indigo-500" />
         </div>
@@ -275,7 +275,7 @@ export default function NfcCardsPanel() {
         </p>
         <Link
           href="/dashboard/nfc"
-          className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white"
+          className="app-primary-btn px-5 py-2 text-sm font-semibold"
         >
           {t("empty.cta")}
         </Link>
@@ -286,19 +286,19 @@ export default function NfcCardsPanel() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="app-kicker">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="app-subtitle mt-2 text-sm">
           {t("subtitle")}
         </p>
       </div>
 
       {message ? (
-        <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+        <p className="app-error px-4 py-3 text-sm">
           {message}
         </p>
       ) : null}

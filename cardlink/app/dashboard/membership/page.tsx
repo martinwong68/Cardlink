@@ -73,31 +73,31 @@ export default async function MembershipPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="app-kicker">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="app-subtitle mt-2 text-sm">
           {t("subtitle")}
         </p>
       </div>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="app-card p-5">
           <p className="text-sm font-semibold text-slate-800">{t("cards.pointSystemTitle")}</p>
           <p className="mt-2 text-2xl font-bold text-violet-700">{t("cards.pointSystemName")}</p>
           <p className="mt-1 text-sm text-slate-600">{t("cards.pointSystemBody")}</p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="app-card p-5">
           <p className="text-sm font-semibold text-slate-800">{t("cards.totalBalanceTitle")}</p>
           <p className="mt-2 text-2xl font-bold text-slate-900">{totalPoints}</p>
           <p className="mt-1 text-sm text-slate-600">{t("cards.totalBalanceBody")}</p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="app-card p-5">
           <p className="text-sm font-semibold text-slate-800">{t("cards.totalSpendTitle")}</p>
           <p className="mt-2 text-2xl font-bold text-slate-900">${totalSpendAmount.toFixed(2)}</p>
           <p className="mt-1 text-sm text-slate-600">{t("cards.totalSpendBody")}</p>
@@ -105,7 +105,7 @@ export default async function MembershipPage() {
       </section>
 
       {accountsError ? (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-700">
+        <section className="app-card p-5 text-sm text-amber-700">
           {t("errors.tablesNotReady")}
         </section>
       ) : null}
@@ -118,7 +118,7 @@ export default async function MembershipPage() {
             return (
               <article
                 key={account.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                className="app-card p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
@@ -178,7 +178,7 @@ export default async function MembershipPage() {
             );
           })
         ) : (
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-sm">
+          <article className="app-card p-5 text-sm text-slate-600">
             {t("empty.noMemberships")}
           </article>
         )}

@@ -160,43 +160,43 @@ export default function PublicCommunityPage() {
   });
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-slate-100">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6">
+    <div className="app-shell min-h-screen">
+      <header className="border-b border-white/60 bg-white/75 backdrop-blur-xl">
+        <div className="app-page flex items-center justify-between py-6">
           <Link
             href="/"
-            className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600"
+            className="app-kicker"
           >
             {t("brand")}
           </Link>
           <Link
             href="/auth"
-            className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:text-violet-600"
+            className="app-secondary-btn px-4 py-2 text-xs font-semibold"
           >
             {t("actions.loginToPost")}
           </Link>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl space-y-8 px-4 py-10">
+      <main className="app-page space-y-8 py-10">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">
+          <h1 className="app-title text-3xl font-semibold">
             {t("title")}
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="app-subtitle mt-2 text-sm">
             {t("subtitle")}
           </p>
         </div>
 
         {message ? (
-          <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+          <p className="app-error px-3 py-2 text-sm">
             {message}
           </p>
         ) : null}
 
         <div className="grid gap-4 sm:grid-cols-2">
           {isLoading ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm">
+            <div className="app-card p-6 text-sm text-slate-500">
               {t("loadingBoards")}
             </div>
           ) : null}
@@ -205,7 +205,7 @@ export default function PublicCommunityPage() {
             <Link
               key={board.id}
               href={`/community/${board.slug}`}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-violet-200"
+              className="app-card p-5 transition hover:-translate-y-0.5 hover:border-violet-200"
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -217,7 +217,7 @@ export default function PublicCommunityPage() {
                     {board.description}
                   </p>
                 </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
+                <span className="app-pill px-3 py-1 text-xs">
                   {t("stats.posts", { count: postCounts[board.id] ?? 0 })}
                 </span>
               </div>
@@ -232,7 +232,7 @@ export default function PublicCommunityPage() {
 
           <div className="space-y-3">
             {normalizedPosts.length === 0 ? (
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+              <div className="app-card p-6 text-center text-sm text-slate-500">
                 {t("latest.empty")}
               </div>
             ) : null}
@@ -246,7 +246,7 @@ export default function PublicCommunityPage() {
                 <Link
                   key={post.id}
                   href={`/community/${post.board?.slug}/${post.subBoard?.slug}/${post.id}`}
-                  className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-200"
+                  className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-violet-200"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">

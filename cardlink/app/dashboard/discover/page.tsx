@@ -256,7 +256,7 @@ export default function DiscoverPage() {
     return (
       <div
         key={profile.id}
-        className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+        className="app-card flex flex-col gap-3 p-4"
       >
         <Link href={`/c/${slug}`} className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-600 text-sm font-semibold text-white">
@@ -286,7 +286,7 @@ export default function DiscoverPage() {
           {status === "none" ? (
             <button
               onClick={() => handleConnect(profile.id)}
-              className="flex items-center gap-1 rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
+              className="app-primary-btn flex items-center gap-1 px-3 py-1 text-xs font-semibold"
             >
               <UserPlus className="h-3.5 w-3.5" />
               {t("actions.connect")}
@@ -300,29 +300,29 @@ export default function DiscoverPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="app-kicker">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="app-subtitle mt-2 text-sm">
           {t("subtitle")}
         </p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="app-card p-4">
         <div className="flex items-center gap-2">
           <Search className="h-4 w-4 text-slate-400" />
           <input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder={t("search.placeholder")}
-            className="w-full text-sm text-slate-700 outline-none"
+            className="app-input border-0 bg-transparent px-0 py-0 text-sm text-slate-700 shadow-none"
           />
           <button
             onClick={handleSearch}
-            className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
+            className="app-primary-btn px-4 py-2 text-xs font-semibold"
           >
             {t("search.action")}
           </button>
@@ -330,17 +330,17 @@ export default function DiscoverPage() {
       </div>
 
       {message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+        <p className="app-error px-3 py-2 text-sm">
           {message}
         </p>
       ) : null}
 
       {isLoading ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+        <div className="app-card p-6 text-center text-sm text-slate-500">
           {t("loading")}
         </div>
       ) : results.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+        <div className="app-card p-6 text-center text-sm text-slate-500">
           {t("empty.results")}
         </div>
       ) : (
@@ -352,7 +352,7 @@ export default function DiscoverPage() {
       {hasMore && results.length > 0 ? (
         <button
           onClick={() => fetchResults(false)}
-          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+          className="app-card w-full px-4 py-3 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-600"
         >
           {t("actions.loadMore")}
         </button>
@@ -365,7 +365,7 @@ export default function DiscoverPage() {
           </h2>
         </div>
         {suggested.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+          <div className="app-card p-6 text-center text-sm text-slate-500">
             {t("suggested.empty")}
           </div>
         ) : (

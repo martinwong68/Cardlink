@@ -249,15 +249,15 @@ export default function ProfileSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="app-kicker">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {t("title")}
         </h1>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-card p-6">
         <div className="flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-violet-600 text-lg font-semibold text-white">
             {avatarUrl ? (
@@ -281,7 +281,7 @@ export default function ProfileSettingsPage() {
               id="fullName"
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              className="app-input mt-2 px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -293,7 +293,7 @@ export default function ProfileSettingsPage() {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              className="app-input mt-2 px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -304,7 +304,7 @@ export default function ProfileSettingsPage() {
               id="title"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              className="app-input mt-2 px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -315,7 +315,7 @@ export default function ProfileSettingsPage() {
               id="company"
               value={company}
               onChange={(event) => setCompany(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              className="app-input mt-2 px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -327,7 +327,7 @@ export default function ProfileSettingsPage() {
               rows={4}
               value={bio}
               onChange={(event) => setBio(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              className="app-input mt-2 px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -335,7 +335,7 @@ export default function ProfileSettingsPage() {
               {t("fields.avatarUrl")}
             </label>
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <label className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-violet-300 hover:text-violet-700">
+              <label className="app-secondary-btn cursor-pointer px-3 py-2 text-sm font-semibold text-slate-700">
                 <input
                   type="file"
                   accept="image/*"
@@ -364,7 +364,7 @@ export default function ProfileSettingsPage() {
           type="button"
           onClick={handleSave}
           disabled={isSaving}
-          className="mt-6 rounded-full bg-violet-600 px-6 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+          className="app-primary-btn mt-6 px-6 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSaving ? t("actions.saving") : t("actions.save")}
         </button>

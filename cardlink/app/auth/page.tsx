@@ -4,28 +4,28 @@ import { getTranslations } from "next-intl/server";
 export default async function AuthPage() {
   const t = await getTranslations("auth");
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+    <div className="app-shell flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="app-card w-full max-w-md p-8">
+        <p className="app-kicker">
           {t("brand")}
         </p>
-        <h1 className="mt-3 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-3 text-2xl font-semibold">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="app-subtitle mt-2 text-sm">
           {t("subtitle")}
         </p>
 
         <div className="mt-6 space-y-3">
           <Link
             href="/signup"
-            className="flex w-full items-center justify-center rounded-full bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            className="app-primary-btn flex w-full items-center justify-center px-4 py-2 text-sm font-semibold"
           >
             {t("actions.createAccount")}
           </Link>
           <Link
             href="/login"
-            className="flex w-full items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+            className="app-secondary-btn flex w-full items-center justify-center px-4 py-2 text-sm font-semibold"
           >
             {t("actions.signIn")}
           </Link>

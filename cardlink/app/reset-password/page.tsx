@@ -135,13 +135,13 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-violet-50 via-white to-indigo-50 px-4 py-12">
-      <div className="w-full max-w-md rounded-2xl border border-violet-100 bg-white p-8 shadow-xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+    <div className="app-shell flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="app-card w-full max-w-md p-8">
+        <p className="app-kicker text-sm">
           {t("brand")}
         </p>
         <h1 className="mt-4 text-3xl font-semibold text-slate-900">{t("title")}</h1>
-        <p className="mt-2 text-sm text-slate-500">{t("subtitle")}</p>
+        <p className="app-subtitle mt-2 text-sm">{t("subtitle")}</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleReset}>
           <div>
@@ -155,7 +155,7 @@ export default function ResetPasswordPage() {
               disabled={!isReady}
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              className="app-input mt-2 px-3 py-2"
             />
           </div>
 
@@ -170,18 +170,18 @@ export default function ResetPasswordPage() {
               disabled={!isReady}
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              className="app-input mt-2 px-3 py-2"
             />
           </div>
 
           {errorMessage ? (
-            <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+            <p className="app-error px-3 py-2 text-sm">
               {errorMessage}
             </p>
           ) : null}
 
           {infoMessage ? (
-            <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+            <p className="app-success px-3 py-2 text-sm">
               {infoMessage}
               {redirectCountdown !== null ? ` ${t("messages.redirecting", { seconds: redirectCountdown })}` : ""}
             </p>
@@ -190,7 +190,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={isSaving || !isReady}
-            className="flex w-full items-center justify-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="app-primary-btn flex w-full items-center justify-center px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
           >
             {!isReady ? t("actions.verifying") : isSaving ? t("actions.saving") : t("actions.save")}
           </button>

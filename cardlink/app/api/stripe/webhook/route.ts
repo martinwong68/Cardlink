@@ -2,6 +2,19 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
+const ACTIVE_STRIPE_STATUSES = new Set([
+  "active",
+  "trialing",
+  "past_due",
+]);
+
+const toIsoFromUnix = (value?: number | null) => {
+  if (!value) {
+    return null;
+  }
+  return new Date(value * 1000).toISOString();
+};
+
 export async function POST(request: Request) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -36,40 +49,211 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  const updatePlanByCustomer = async (
-    customerId: string,
-    plan: "premium" | "free"
-  ) => {
+  const recomputeByCustomer = async (customerId: string) => {
+    const { data: profileRows } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("stripe_customer_id", customerId);
+
+    for (const profile of profileRows ?? []) {
+      await supabaseAdmin.rpc("recompute_profile_premium", {
+        p_user_id: profile.id,
+      });
+    }
+  };
+
+  const syncSubscriptionByCustomer = async (params: {
+    customerId: string;
+    subscriptionId?: string | null;
+    subscriptionStatus?: string | null;
+    subscriptionCurrentPeriodEnd?: number | null;
+    touchLastPaymentAt?: boolean;
+  }) => {
+    const {
+      customerId,
+      subscriptionId,
+      subscriptionStatus,
+      subscriptionCurrentPeriodEnd,
+      touchLastPaymentAt,
+    } = params;
+
+    const nextStripeStatus = subscriptionStatus ?? null;
+    const nextStripePeriodEnd =
+      nextStripeStatus && ACTIVE_STRIPE_STATUSES.has(nextStripeStatus)
+        ? toIsoFromUnix(subscriptionCurrentPeriodEnd)
+        : null;
+
+    const payload: Record<string, string | null> = {
+      stripe_subscription_id: subscriptionId ?? null,
+      stripe_subscription_status: nextStripeStatus,
+      stripe_subscription_current_period_end: nextStripePeriodEnd,
+    };
+
+    if (touchLastPaymentAt) {
+      payload.last_payment_at = new Date().toISOString();
+    }
+
     await supabaseAdmin
       .from("profiles")
-      .update({ plan })
+      .update(payload)
       .eq("stripe_customer_id", customerId);
+
+    await recomputeByCustomer(customerId);
+  };
+
+  const getUserIdByCustomer = async (customerId: string) => {
+    const { data: profileRow } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("stripe_customer_id", customerId)
+      .maybeSingle();
+    return profileRow?.id ?? null;
+  };
+
+  const saveBillingEvent = async (params: {
+    stripeEventId: string;
+    stripeCheckoutSessionId?: string | null;
+    stripePaymentIntentId?: string | null;
+    stripeSubscriptionId?: string | null;
+    stripeCustomerId?: string | null;
+    userId?: string | null;
+    eventType: string;
+    mode?: string | null;
+    paymentStatus?: string | null;
+    amountTotal?: number | null;
+    currency?: string | null;
+    raw: unknown;
+  }) => {
+    await supabaseAdmin.from("billing_payment_events").upsert(
+      {
+        stripe_event_id: params.stripeEventId,
+        stripe_checkout_session_id: params.stripeCheckoutSessionId ?? null,
+        stripe_payment_intent_id: params.stripePaymentIntentId ?? null,
+        stripe_subscription_id: params.stripeSubscriptionId ?? null,
+        stripe_customer_id: params.stripeCustomerId ?? null,
+        user_id: params.userId ?? null,
+        event_type: params.eventType,
+        mode: params.mode ?? null,
+        payment_status: params.paymentStatus ?? null,
+        amount_total: params.amountTotal ?? null,
+        currency: params.currency ?? null,
+        raw: params.raw,
+      },
+      { onConflict: "stripe_event_id" }
+    );
   };
 
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const customerId = session.customer as string | null;
+      const subscriptionId = session.subscription as string | null;
+      const clientReferenceUserId = session.client_reference_id ?? null;
+      const resolvedUserId =
+        clientReferenceUserId ??
+        (customerId ? await getUserIdByCustomer(customerId) : null);
+
+      await saveBillingEvent({
+        stripeEventId: event.id,
+        stripeCheckoutSessionId: session.id,
+        stripePaymentIntentId:
+          typeof session.payment_intent === "string"
+            ? session.payment_intent
+            : null,
+        stripeSubscriptionId: subscriptionId,
+        stripeCustomerId: customerId,
+        userId: resolvedUserId,
+        eventType: event.type,
+        mode: session.mode,
+        paymentStatus: session.payment_status,
+        amountTotal: session.amount_total,
+        currency: session.currency,
+        raw: event.data.object,
+      });
+
       if (customerId) {
-        await updatePlanByCustomer(customerId, "premium");
+        if (subscriptionId) {
+          const subscription = await stripe.subscriptions.retrieve(
+            subscriptionId
+          );
+          await syncSubscriptionByCustomer({
+            customerId,
+            subscriptionId,
+            subscriptionStatus: subscription.status,
+            subscriptionCurrentPeriodEnd: subscription.current_period_end,
+            touchLastPaymentAt: true,
+          });
+        } else {
+          await supabaseAdmin
+            .from("profiles")
+            .update({ last_payment_at: new Date().toISOString() })
+            .eq("stripe_customer_id", customerId);
+        }
+      }
+      break;
+    }
+    case "invoice.paid": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string | null;
+      const subscriptionId = invoice.subscription as string | null;
+      const resolvedUserId =
+        customerId ? await getUserIdByCustomer(customerId) : null;
+
+      await saveBillingEvent({
+        stripeEventId: event.id,
+        stripePaymentIntentId:
+          typeof invoice.payment_intent === "string"
+            ? invoice.payment_intent
+            : null,
+        stripeSubscriptionId: subscriptionId,
+        stripeCustomerId: customerId,
+        userId: resolvedUserId,
+        eventType: event.type,
+        mode: "subscription",
+        paymentStatus: invoice.status,
+        amountTotal: invoice.amount_paid,
+        currency: invoice.currency,
+        raw: event.data.object,
+      });
+
+      if (customerId && subscriptionId) {
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        await syncSubscriptionByCustomer({
+          customerId,
+          subscriptionId,
+          subscriptionStatus: subscription.status,
+          subscriptionCurrentPeriodEnd: subscription.current_period_end,
+          touchLastPaymentAt: true,
+        });
+      }
+      break;
+    }
+    case "customer.subscription.created":
+    case "customer.subscription.updated": {
+      const subscription = event.data.object as Stripe.Subscription;
+      const customerId = subscription.customer as string | null;
+
+      if (customerId) {
+        await syncSubscriptionByCustomer({
+          customerId,
+          subscriptionId: subscription.id,
+          subscriptionStatus: subscription.status,
+          subscriptionCurrentPeriodEnd: subscription.current_period_end,
+        });
       }
       break;
     }
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
       const customerId = subscription.customer as string | null;
+
       if (customerId) {
-        await updatePlanByCustomer(customerId, "free");
-      }
-      break;
-    }
-    case "customer.subscription.updated": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const customerId = subscription.customer as string | null;
-      const status = subscription.status;
-      if (customerId) {
-        const nextPlan = status === "active" || status === "trialing" ? "premium" : "free";
-        await updatePlanByCustomer(customerId, nextPlan);
+        await syncSubscriptionByCustomer({
+          customerId,
+          subscriptionId: subscription.id,
+          subscriptionStatus: subscription.status,
+          subscriptionCurrentPeriodEnd: null,
+        });
       }
       break;
     }

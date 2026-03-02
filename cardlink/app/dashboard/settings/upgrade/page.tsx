@@ -7,16 +7,53 @@ import { createClient } from "@/src/lib/supabase/client";
 
 type Interval = "monthly" | "yearly";
 
+type BillingDisplaySettings = {
+  monthlyDisplayPrice: string;
+  yearlyDisplayPrice: string;
+  currencySymbol: string;
+};
+
+const defaultBillingDisplaySettings: BillingDisplaySettings = {
+  monthlyDisplayPrice: "9.99",
+  yearlyDisplayPrice: "99",
+  currencySymbol: "$",
+};
+
 export default function UpgradePage() {
   const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState<Interval | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
+  const [billingDisplay, setBillingDisplay] = useState<BillingDisplaySettings>(
+    defaultBillingDisplaySettings
+  );
   const t = useTranslations("upgrade");
 
   useEffect(() => {
-    const loadPlan = async () => {
-      const { data: userData } = await supabase.auth.getUser();
+    const loadState = async () => {
+      const [{ data: userData }, billingRes] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase
+          .from("app_billing_settings")
+          .select("monthly_display_price, yearly_display_price, currency_symbol")
+          .eq("id", 1)
+          .maybeSingle(),
+      ]);
+
+      if (billingRes.data) {
+        setBillingDisplay({
+          monthlyDisplayPrice:
+            billingRes.data.monthly_display_price ??
+            defaultBillingDisplaySettings.monthlyDisplayPrice,
+          yearlyDisplayPrice:
+            billingRes.data.yearly_display_price ??
+            defaultBillingDisplaySettings.yearlyDisplayPrice,
+          currencySymbol:
+            billingRes.data.currency_symbol ??
+            defaultBillingDisplaySettings.currencySymbol,
+        });
+      }
+
       if (!userData?.user) {
         setViewerPlan("free");
         return;
@@ -30,7 +67,7 @@ export default function UpgradePage() {
       setViewerPlan(data?.plan === "premium" ? "premium" : "free");
     };
 
-    void loadPlan();
+    void loadState();
   }, [supabase]);
 
   const handleCheckout = async (interval: Interval) => {
@@ -106,10 +143,12 @@ export default function UpgradePage() {
             </span>
           </div>
           <p className="mt-2 text-sm text-slate-500">
-            {t("premium.yearlyLabel")}
+            {billingDisplay.currencySymbol}
+            {billingDisplay.yearlyDisplayPrice} {t("premium.yearlyLabel")}
           </p>
           <p className="mt-4 text-3xl font-semibold text-slate-900">
-            $9.99
+            {billingDisplay.currencySymbol}
+            {billingDisplay.monthlyDisplayPrice}
           </p>
           <ul className="mt-6 space-y-3 text-sm text-slate-600">
             <li>{t("premium.features.unlimitedCards")}</li>

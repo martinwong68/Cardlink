@@ -416,7 +416,7 @@ export default function ContactDetailPage({
 
   if (!card) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
+      <div className="app-card p-6 text-center text-sm text-slate-500">
         {t("states.notFound")}
       </div>
     );
@@ -442,7 +442,7 @@ export default function ContactDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-lg font-semibold text-white">

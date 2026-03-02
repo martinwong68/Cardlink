@@ -247,29 +247,29 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="app-kicker">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="app-subtitle mt-2 text-sm">
           {t("subtitle")}
         </p>
       </div>
 
       {message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+        <p className="app-error px-3 py-2 text-sm">
           {message}
         </p>
       ) : null}
 
       {isLoading ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+        <div className="app-card p-6 text-center text-sm text-slate-500">
           {t("loading")}
         </div>
       ) : notifications.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+        <div className="app-card p-6 text-center text-sm text-slate-500">
           {t("empty")}
         </div>
       ) : (
@@ -281,7 +281,7 @@ export default function NotificationsPage() {
             return (
               <div
                 key={item.id}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                className="app-card p-4"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">

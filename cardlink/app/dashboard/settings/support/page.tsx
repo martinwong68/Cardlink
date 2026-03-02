@@ -39,17 +39,17 @@ export default function SupportPage() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="app-kicker">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="app-title mt-2 text-2xl font-semibold">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">{t("subtitle")}</p>
+        <p className="app-subtitle mt-2 text-sm">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="app-card p-6">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
             <LifeBuoy className="h-4 w-4 text-violet-500" />
             {t("contact.title")}
@@ -85,7 +85,7 @@ export default function SupportPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="app-card p-6">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
             <CreditCard className="h-4 w-4 text-violet-500" />
             {t("subscription.title")}
@@ -98,7 +98,7 @@ export default function SupportPage() {
               type="button"
               onClick={openBillingPortal}
               disabled={isLoading}
-              className="rounded-full bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="app-primary-btn px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isLoading ? t("subscription.loading") : t("subscription.button")}
             </button>
@@ -109,7 +109,7 @@ export default function SupportPage() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-card p-6">
         <h2 className="text-sm font-semibold text-slate-900">
           {t("faq.title")}
         </h2>
@@ -123,7 +123,7 @@ export default function SupportPage() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-card p-6">
         <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
           <Shield className="h-4 w-4 text-violet-500" />
           {t("privacy.title")}
@@ -149,7 +149,7 @@ export default function SupportPage() {
       </div>
 
       {message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+        <p className="app-error px-3 py-2 text-sm">
           {message}
         </p>
       ) : null}
