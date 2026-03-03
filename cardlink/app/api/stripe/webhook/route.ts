@@ -61,6 +61,12 @@ const getInvoicePaymentIntentId = (invoice: Stripe.Invoice) => {
   return typeof value === "string" ? value : value.id;
 };
 
+const throwIfSupabaseError = (context: string, error: { message: string } | null) => {
+  if (error) {
+    throw new Error(`${context}: ${error.message}`);
+  }
+};
+
 export async function POST(request: Request) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -92,19 +98,29 @@ export async function POST(request: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecretValue);
   } catch (error) {
+    console.error("[stripe-webhook] signature verification failed", error);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   const recomputeByCustomer = async (customerId: string) => {
-    const { data: profileRows } = await supabaseAdmin
+    const { data: profileRows, error } = await supabaseAdmin
       .from("profiles")
       .select("id")
       .eq("stripe_customer_id", customerId);
+    throwIfSupabaseError("load profiles by stripe_customer_id", error);
+
+    if (!profileRows || profileRows.length === 0) {
+      console.warn("[stripe-webhook] no profile matched stripe customer", {
+        customerId,
+      });
+      return;
+    }
 
     for (const profile of profileRows ?? []) {
-      await supabaseAdmin.rpc("recompute_profile_premium", {
+      const { error: recomputeError } = await supabaseAdmin.rpc("recompute_profile_premium", {
         p_user_id: profile.id,
       });
+      throwIfSupabaseError("recompute_profile_premium", recomputeError);
     }
   };
 
@@ -139,20 +155,22 @@ export async function POST(request: Request) {
       payload.last_payment_at = new Date().toISOString();
     }
 
-    await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from("profiles")
       .update(payload)
       .eq("stripe_customer_id", customerId);
+    throwIfSupabaseError("update profile stripe subscription fields", error);
 
     await recomputeByCustomer(customerId);
   };
 
   const getUserIdByCustomer = async (customerId: string) => {
-    const { data: profileRow } = await supabaseAdmin
+    const { data: profileRow, error } = await supabaseAdmin
       .from("profiles")
       .select("id")
       .eq("stripe_customer_id", customerId)
       .maybeSingle();
+    throwIfSupabaseError("get user id by stripe customer", error);
     return profileRow?.id ?? null;
   };
 
@@ -170,7 +188,7 @@ export async function POST(request: Request) {
     currency?: string | null;
     raw: unknown;
   }) => {
-    await supabaseAdmin.from("billing_payment_events").upsert(
+    const { error } = await supabaseAdmin.from("billing_payment_events").upsert(
       {
         stripe_event_id: params.stripeEventId,
         stripe_checkout_session_id: params.stripeCheckoutSessionId ?? null,
@@ -187,122 +205,133 @@ export async function POST(request: Request) {
       },
       { onConflict: "stripe_event_id" }
     );
+    throwIfSupabaseError("upsert billing_payment_events", error);
   };
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const customerId = session.customer as string | null;
-      const subscriptionId = session.subscription as string | null;
-      const clientReferenceUserId = session.client_reference_id ?? null;
-      const resolvedUserId =
-        clientReferenceUserId ??
-        (customerId ? await getUserIdByCustomer(customerId) : null);
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const customerId = session.customer as string | null;
+        const subscriptionId = session.subscription as string | null;
+        const clientReferenceUserId = session.client_reference_id ?? null;
+        const resolvedUserId =
+          clientReferenceUserId ??
+          (customerId ? await getUserIdByCustomer(customerId) : null);
 
-      await saveBillingEvent({
-        stripeEventId: event.id,
-        stripeCheckoutSessionId: session.id,
-        stripePaymentIntentId:
-          typeof session.payment_intent === "string"
-            ? session.payment_intent
-            : null,
-        stripeSubscriptionId: subscriptionId,
-        stripeCustomerId: customerId,
-        userId: resolvedUserId,
-        eventType: event.type,
-        mode: session.mode,
-        paymentStatus: session.payment_status,
-        amountTotal: session.amount_total,
-        currency: session.currency,
-        raw: event.data.object,
-      });
+        await saveBillingEvent({
+          stripeEventId: event.id,
+          stripeCheckoutSessionId: session.id,
+          stripePaymentIntentId:
+            typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : null,
+          stripeSubscriptionId: subscriptionId,
+          stripeCustomerId: customerId,
+          userId: resolvedUserId,
+          eventType: event.type,
+          mode: session.mode,
+          paymentStatus: session.payment_status,
+          amountTotal: session.amount_total,
+          currency: session.currency,
+          raw: event.data.object,
+        });
 
-      if (customerId) {
-        if (subscriptionId) {
-          const subscription = await stripe.subscriptions.retrieve(
-            subscriptionId
-          );
+        if (customerId) {
+          if (subscriptionId) {
+            const subscription = await stripe.subscriptions.retrieve(
+              subscriptionId
+            );
+            await syncSubscriptionByCustomer({
+              customerId,
+              subscriptionId,
+              subscriptionStatus: subscription.status,
+              subscriptionCurrentPeriodEnd:
+                getSubscriptionPeriodEndUnix(subscription),
+              touchLastPaymentAt: true,
+            });
+          } else {
+            const { error: updateError } = await supabaseAdmin
+              .from("profiles")
+              .update({ last_payment_at: new Date().toISOString() })
+              .eq("stripe_customer_id", customerId);
+            throwIfSupabaseError("update last_payment_at", updateError);
+          }
+        }
+        break;
+      }
+      case "invoice.paid": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = invoice.customer as string | null;
+        const subscriptionId = getInvoiceSubscriptionId(invoice);
+        const resolvedUserId =
+          customerId ? await getUserIdByCustomer(customerId) : null;
+
+        await saveBillingEvent({
+          stripeEventId: event.id,
+          stripePaymentIntentId: getInvoicePaymentIntentId(invoice),
+          stripeSubscriptionId: subscriptionId,
+          stripeCustomerId: customerId,
+          userId: resolvedUserId,
+          eventType: event.type,
+          mode: "subscription",
+          paymentStatus: invoice.status,
+          amountTotal: invoice.amount_paid,
+          currency: invoice.currency,
+          raw: event.data.object,
+        });
+
+        if (customerId && subscriptionId) {
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
           await syncSubscriptionByCustomer({
             customerId,
             subscriptionId,
             subscriptionStatus: subscription.status,
-            subscriptionCurrentPeriodEnd:
-              getSubscriptionPeriodEndUnix(subscription),
+            subscriptionCurrentPeriodEnd: getSubscriptionPeriodEndUnix(subscription),
             touchLastPaymentAt: true,
           });
-        } else {
-          await supabaseAdmin
-            .from("profiles")
-            .update({ last_payment_at: new Date().toISOString() })
-            .eq("stripe_customer_id", customerId);
         }
+        break;
       }
-      break;
-    }
-    case "invoice.paid": {
-      const invoice = event.data.object as Stripe.Invoice;
-      const customerId = invoice.customer as string | null;
-      const subscriptionId = getInvoiceSubscriptionId(invoice);
-      const resolvedUserId =
-        customerId ? await getUserIdByCustomer(customerId) : null;
+      case "customer.subscription.created":
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string | null;
 
-      await saveBillingEvent({
-        stripeEventId: event.id,
-        stripePaymentIntentId: getInvoicePaymentIntentId(invoice),
-        stripeSubscriptionId: subscriptionId,
-        stripeCustomerId: customerId,
-        userId: resolvedUserId,
-        eventType: event.type,
-        mode: "subscription",
-        paymentStatus: invoice.status,
-        amountTotal: invoice.amount_paid,
-        currency: invoice.currency,
-        raw: event.data.object,
-      });
-
-      if (customerId && subscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-        await syncSubscriptionByCustomer({
-          customerId,
-          subscriptionId,
-          subscriptionStatus: subscription.status,
-          subscriptionCurrentPeriodEnd: getSubscriptionPeriodEndUnix(subscription),
-          touchLastPaymentAt: true,
-        });
+        if (customerId) {
+          await syncSubscriptionByCustomer({
+            customerId,
+            subscriptionId: subscription.id,
+            subscriptionStatus: subscription.status,
+            subscriptionCurrentPeriodEnd: getSubscriptionPeriodEndUnix(subscription),
+          });
+        }
+        break;
       }
-      break;
-    }
-    case "customer.subscription.created":
-    case "customer.subscription.updated": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const customerId = subscription.customer as string | null;
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string | null;
 
-      if (customerId) {
-        await syncSubscriptionByCustomer({
-          customerId,
-          subscriptionId: subscription.id,
-          subscriptionStatus: subscription.status,
-          subscriptionCurrentPeriodEnd: getSubscriptionPeriodEndUnix(subscription),
-        });
+        if (customerId) {
+          await syncSubscriptionByCustomer({
+            customerId,
+            subscriptionId: subscription.id,
+            subscriptionStatus: subscription.status,
+            subscriptionCurrentPeriodEnd: null,
+          });
+        }
+        break;
       }
-      break;
+      default:
+        break;
     }
-    case "customer.subscription.deleted": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const customerId = subscription.customer as string | null;
-
-      if (customerId) {
-        await syncSubscriptionByCustomer({
-          customerId,
-          subscriptionId: subscription.id,
-          subscriptionStatus: subscription.status,
-          subscriptionCurrentPeriodEnd: null,
-        });
-      }
-      break;
-    }
-    default:
-      break;
+  } catch (error) {
+    console.error("[stripe-webhook] processing failed", {
+      eventType: event.type,
+      eventId: event.id,
+      error,
+    });
+    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });
