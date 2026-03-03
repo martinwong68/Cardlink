@@ -14,6 +14,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
+import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 import QRCodeModal from "@/components/QRCodeModal";
 import ContactsPanel from "@/components/ContactsPanel";
 import NfcCardsPanel from "@/components/NfcCardsPanel";
@@ -175,7 +176,7 @@ export default function CardsDashboardPage() {
         .order("created_at", { ascending: false }),
       supabase
         .from("profiles")
-        .select("plan")
+        .select("plan, premium_until")
         .eq("id", userData.user.id)
         .maybeSingle(),
       supabase
@@ -190,7 +191,7 @@ export default function CardsDashboardPage() {
       supabase.rpc("get_my_admin_company_ids"),
     ]);
 
-    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
+    setViewerPlan(resolveEffectiveViewerPlan(profileData));
     const ownerByRole = ((companyRoleData ?? []) as { role: string }[]).some(
       (item) =>
         ["owner", "admin", "manager", "company_owner", "company_admin"].includes(

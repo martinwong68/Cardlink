@@ -13,6 +13,25 @@ type VisibleField<T> = T & {
   message?: string;
 };
 
+type ProfilePlanLike = {
+  plan?: string | null;
+  premium_until?: string | Date | null;
+};
+
+export function resolveEffectiveViewerPlan(
+  profile: ProfilePlanLike | null | undefined
+): "free" | "premium" {
+  const premiumUntilValue = profile?.premium_until;
+  if (premiumUntilValue) {
+    const premiumUntilTime = new Date(premiumUntilValue).getTime();
+    if (!Number.isNaN(premiumUntilTime) && premiumUntilTime > Date.now()) {
+      return "premium";
+    }
+  }
+
+  return profile?.plan === "premium" ? "premium" : "free";
+}
+
 export function getVisibleFields<T extends CardField>(
   fields: T[],
   viewerPlan: ViewerPlan,

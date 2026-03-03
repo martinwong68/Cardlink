@@ -22,6 +22,7 @@ import {
   rejectConnection,
   removeConnection,
 } from "@/src/lib/connections";
+import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 
 type ContactRow = {
   connectionId: string;
@@ -95,12 +96,12 @@ export default function ContactsPanel() {
       getPendingRequests(userData.user.id),
       supabase
         .from("profiles")
-        .select("plan")
+        .select("plan, premium_until")
         .eq("id", userData.user.id)
         .maybeSingle(),
     ]);
 
-    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
+    setViewerPlan(resolveEffectiveViewerPlan(profileData));
 
     const defaultCard = (cards ?? []).find((card) => card.is_default);
     setDefaultCardId(defaultCard?.id ?? null);

@@ -13,6 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
+import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 import TemplateSelector from "@/components/TemplateSelector";
 import type { TemplateId } from "@/src/lib/templates";
 
@@ -316,7 +317,7 @@ export default function CardEditorPage() {
           .maybeSingle(),
         supabase
           .from("profiles")
-          .select("avatar_url, plan")
+          .select("avatar_url, plan, premium_until")
           .eq("id", userData.user.id)
           .maybeSingle(),
       ]);
@@ -375,7 +376,7 @@ export default function CardEditorPage() {
     );
 
     setAvatarUrl(profileData?.avatar_url ?? "");
-    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
+    setViewerPlan(resolveEffectiveViewerPlan(profileData));
     setIsLoading(false);
   };
 

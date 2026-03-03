@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
+import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 
 type Interval = "monthly" | "yearly";
 
@@ -61,10 +62,10 @@ export default function UpgradePage() {
 
       const { data } = await supabase
         .from("profiles")
-        .select("plan")
+        .select("plan, premium_until")
         .eq("id", userData.user.id)
         .maybeSingle();
-      setViewerPlan(data?.plan === "premium" ? "premium" : "free");
+      setViewerPlan(resolveEffectiveViewerPlan(data));
     };
 
     void loadState();

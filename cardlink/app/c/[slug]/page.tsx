@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
-import type { ViewerPlan } from "@/src/lib/visibility";
+import { resolveEffectiveViewerPlan, type ViewerPlan } from "@/src/lib/visibility";
 import PublicCardView from "@/components/PublicCardView";
 import type { TemplateId } from "@/src/lib/templates";
 
@@ -220,10 +220,10 @@ export default async function PublicCardPage({
   if (user?.id) {
     const { data: profileData } = await supabase
       .from("profiles")
-      .select("plan")
+      .select("plan, premium_until")
       .eq("id", user.id)
       .maybeSingle();
-    viewerPlan = profileData?.plan === "premium" ? "premium" : "free";
+    viewerPlan = resolveEffectiveViewerPlan(profileData);
   }
 
   const { data: cardBySlug, error: slugError } = await supabase

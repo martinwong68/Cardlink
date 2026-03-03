@@ -26,6 +26,7 @@ import { rejectConnection } from "@/src/lib/connections";
 import {
   canAccessCRM,
   getVisibleFields,
+  resolveEffectiveViewerPlan,
   type ViewerPlan,
 } from "@/src/lib/visibility";
 import { useLocale, useTranslations } from "next-intl";
@@ -226,7 +227,7 @@ export default function ContactDetailPage({
         .maybeSingle<ConnectionRecord>(),
       supabase
         .from("profiles")
-        .select("plan")
+        .select("plan, premium_until")
         .eq("id", userData.user.id)
         .maybeSingle(),
     ]);
@@ -239,7 +240,7 @@ export default function ContactDetailPage({
 
     setCard(cardData);
     setConnection(connectionData ?? null);
-    setViewerPlan(profileData?.plan === "premium" ? "premium" : "free");
+    setViewerPlan(resolveEffectiveViewerPlan(profileData));
     await loadCrm(userData.user.id, cardData.id);
     setIsLoading(false);
   };

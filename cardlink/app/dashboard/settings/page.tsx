@@ -7,7 +7,7 @@ import { ChevronRight, Download, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
-import { canAccessCRM } from "@/src/lib/visibility";
+import { canAccessCRM, resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 import { getFriends } from "@/src/lib/connections";
 
 export default function SettingsPage() {
@@ -26,10 +26,10 @@ export default function SettingsPage() {
 
     const { data } = await supabase
       .from("profiles")
-      .select("plan")
+      .select("plan, premium_until")
       .eq("id", userData.user.id)
       .maybeSingle();
-    return data?.plan === "premium" ? "premium" : "free";
+    return resolveEffectiveViewerPlan(data);
   };
 
   const handleExport = async () => {

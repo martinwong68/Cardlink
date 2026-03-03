@@ -6,6 +6,7 @@ import { Search, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
+import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 
 type ProfileRow = {
   id: string;
@@ -75,11 +76,11 @@ export default function DiscoverPage() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("plan")
+      .select("plan, premium_until")
       .eq("id", data.user.id)
       .maybeSingle();
 
-    setViewerPlan(profile?.plan === "premium" ? "premium" : "free");
+    setViewerPlan(resolveEffectiveViewerPlan(profile));
 
     const { data: cards } = await supabase
       .from("business_cards")

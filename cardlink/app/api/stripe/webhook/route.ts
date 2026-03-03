@@ -16,6 +16,14 @@ const toIsoFromUnix = (value?: number | null) => {
 };
 
 const getSubscriptionPeriodEndUnix = (subscription: Stripe.Subscription) => {
+  const subscriptionLike = subscription as unknown as {
+    current_period_end?: unknown;
+  };
+
+  if (typeof subscriptionLike.current_period_end === "number") {
+    return subscriptionLike.current_period_end;
+  }
+
   const latestInvoice = subscription.latest_invoice;
 
   if (
