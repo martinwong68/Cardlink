@@ -1,8 +1,32 @@
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+"use client";
 
-export default async function UpgradeSuccessPage() {
-  const t = await getTranslations("upgradeSuccess");
+import Link from "next/link";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+
+export default function UpgradeSuccessPage() {
+  const t = useTranslations("upgradeSuccess");
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    if (!sessionId) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    void fetch("/api/stripe/checkout/confirm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+      signal: controller.signal,
+    }).catch(() => undefined);
+
+    return () => controller.abort();
+  }, [searchParams]);
+
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
       <h1 className="text-3xl font-semibold text-slate-900">

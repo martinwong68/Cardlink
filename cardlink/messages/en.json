@@ -766,7 +766,8 @@
     "subtitle": "Manage your account and preferences.",
     "errors": {
       "upgradeToExport": "Upgrade to Premium to export contacts.",
-      "signInExport": "Please sign in to export contacts."
+      "signInExport": "Please sign in to export contacts.",
+      "openPortal": "Unable to open billing portal. Please try again."
     },
     "export": {
       "headers": {
@@ -783,7 +784,10 @@
       "password": "Reset Password",
       "subscription": "Subscription Plan",
       "subscriptionActive": "Subscription",
+      "premiumUntil": "Premium until {date}",
       "premiumBadge": "Premium",
+      "downgrade": "Downgrade to Free",
+      "openingPortal": "Opening...",
       "orderNfc": "Order NFC Card",
       "export": "Export Contacts",
       "support": "Help & Support"
@@ -979,7 +983,8 @@
     "subtitle": "Unlock premium tools to grow your network.",
     "errors": {
       "checkout": "Unable to start checkout.",
-      "unavailable": "Checkout unavailable."
+      "unavailable": "Checkout unavailable.",
+      "portal": "Unable to open billing portal."
     },
     "free": {
       "title": "Free",
@@ -998,6 +1003,7 @@
       "monthlyLabel": "Per month",
       "yearlyLabel": "per year",
       "status": "You are in Premium now.",
+      "until": "Premium until {date}",
       "features": {
         "unlimitedCards": "Unlimited business cards",
         "unlimitedFields": "Unlimited contact fields",
@@ -1012,7 +1018,9 @@
     "actions": {
       "redirecting": "Redirecting...",
       "upgradeMonthly": "Upgrade Monthly",
-      "upgradeYearly": "Upgrade Yearly"
+      "upgradeYearly": "Upgrade Yearly",
+      "downgrade": "Downgrade to Free",
+      "manageBilling": "Manage billing details"
     }
   },
   "upgradeSuccess": {

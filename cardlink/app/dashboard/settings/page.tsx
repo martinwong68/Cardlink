@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Download, LogOut } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import { canAccessCRM, resolveEffectiveViewerPlan } from "@/src/lib/visibility";
@@ -13,15 +13,18 @@ import { getFriends } from "@/src/lib/connections";
 export default function SettingsPage() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("settings");
   const [message, setMessage] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
+  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
 
   const getViewerPlan = async () => {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData?.user) {
-      return "free" as const;
+      return { plan: "free" as const, premiumUntil: null as string | null };
     }
 
     const { data } = await supabase
@@ -29,15 +32,18 @@ export default function SettingsPage() {
       .select("plan, premium_until")
       .eq("id", userData.user.id)
       .maybeSingle();
-    return resolveEffectiveViewerPlan(data);
+    return {
+      plan: resolveEffectiveViewerPlan(data),
+      premiumUntil: data?.premium_until ?? null,
+    };
   };
 
   const handleExport = async () => {
     setMessage(null);
     setIsExporting(true);
 
-    const plan = await getViewerPlan();
-    if (!canAccessCRM(plan)) {
+    const planState = await getViewerPlan();
+    if (!canAccessCRM(planState.plan)) {
       setMessage(t("errors.upgradeToExport"));
       setIsExporting(false);
       return;
@@ -87,12 +93,53 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const loadPlan = async () => {
-      const plan = await getViewerPlan();
-      setViewerPlan(plan);
+      const planState = await getViewerPlan();
+      setViewerPlan(planState.plan);
+      setPremiumUntil(planState.premiumUntil);
     };
 
     void loadPlan();
   }, []);
+
+  const formatDateOnly = (value: string | null) => {
+    if (!value) {
+      return null;
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  };
+
+  const handleDowngrade = async () => {
+    setMessage(null);
+    setIsOpeningPortal(true);
+
+    const response = await fetch("/api/stripe/portal", { method: "POST" });
+    if (!response.ok) {
+      setMessage(t("errors.openPortal"));
+      setIsOpeningPortal(false);
+      return;
+    }
+
+    const data = (await response.json()) as { url?: string };
+    if (!data.url) {
+      setMessage(t("errors.openPortal"));
+      setIsOpeningPortal(false);
+      return;
+    }
+
+    window.location.href = data.url;
+  };
+
+  const premiumUntilDateLabel = formatDateOnly(premiumUntil);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -139,11 +186,23 @@ export default function SettingsPage() {
         </Link>
 
         {viewerPlan === "premium" ? (
-          <div className="app-card-soft flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-700">
-            {t("links.subscriptionActive")}
-            <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
-              {t("links.premiumBadge")}
-            </span>
+          <div className="app-card-soft flex items-center justify-between gap-3 px-4 py-4 text-sm text-slate-700">
+            <div className="min-w-0">
+              <p className="font-semibold text-slate-800">{t("links.subscriptionActive")}</p>
+              <p className="text-xs text-slate-500">
+                {premiumUntilDateLabel
+                  ? t("links.premiumUntil", { date: premiumUntilDateLabel })
+                  : t("links.premiumBadge")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleDowngrade}
+              disabled={isOpeningPortal}
+              className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isOpeningPortal ? t("links.openingPortal") : t("links.downgrade")}
+            </button>
           </div>
         ) : (
           <Link

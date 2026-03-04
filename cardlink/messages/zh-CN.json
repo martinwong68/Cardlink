@@ -766,7 +766,8 @@
     "subtitle": "管理你的账号与偏好设置。",
     "errors": {
       "upgradeToExport": "升级到高级版以导出联系人。",
-      "signInExport": "请登录以导出联系人。"
+      "signInExport": "请登录以导出联系人。",
+      "openPortal": "无法打开账单入口，请稍后重试。"
     },
     "export": {
       "headers": {
@@ -783,7 +784,10 @@
       "password": "重置密码",
       "subscription": "订阅方案",
       "subscriptionActive": "订阅状态",
+      "premiumUntil": "Premium 到期日：{date}",
       "premiumBadge": "高级版",
+      "downgrade": "降级为免费方案",
+      "openingPortal": "正在打开...",
       "orderNfc": "订购 NFC 名片",
       "export": "导出联系人",
       "support": "帮助与支持"
@@ -979,7 +983,8 @@
     "subtitle": "解锁高级工具以拓展人脉。",
     "errors": {
       "checkout": "无法开始结账。",
-      "unavailable": "结账不可用。"
+      "unavailable": "结账不可用。",
+      "portal": "无法打开账单入口。"
     },
     "free": {
       "title": "免费",
@@ -998,6 +1003,7 @@
       "monthlyLabel": "每月",
       "yearlyLabel": "每年",
       "status": "你已是高级版用户。",
+      "until": "Premium 到期日：{date}",
       "features": {
         "unlimitedCards": "无限名片",
         "unlimitedFields": "无限联系方式",
@@ -1012,7 +1018,9 @@
     "actions": {
       "redirecting": "正在跳转...",
       "upgradeMonthly": "按月升级",
-      "upgradeYearly": "按年升级"
+      "upgradeYearly": "按年升级",
+      "downgrade": "降级为免费方案",
+      "manageBilling": "管理账单与订阅"
     }
   },
   "upgradeSuccess": {

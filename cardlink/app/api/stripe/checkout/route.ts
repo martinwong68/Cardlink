@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     customer: customerId,
     line_items: [{ price: selectedPriceId, quantity: 1 }],
     client_reference_id: user.id,
-    success_url: `${origin}/dashboard/settings/upgrade/success`,
+    success_url: `${origin}/dashboard/settings/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/dashboard/settings/upgrade`,
     allow_promotion_codes: true,
   });

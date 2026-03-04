@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -23,8 +24,10 @@ const defaultBillingDisplaySettings: BillingDisplaySettings = {
 export default function UpgradePage() {
   const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState<Interval | null>(null);
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
+  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const [billingDisplay, setBillingDisplay] = useState<BillingDisplaySettings>(
     defaultBillingDisplaySettings
   );
@@ -66,6 +69,7 @@ export default function UpgradePage() {
         .eq("id", userData.user.id)
         .maybeSingle();
       setViewerPlan(resolveEffectiveViewerPlan(data));
+      setPremiumUntil(data?.premium_until ?? null);
     };
 
     void loadState();
@@ -96,6 +100,31 @@ export default function UpgradePage() {
 
     window.location.href = data.url;
   };
+
+  const handleDowngrade = async () => {
+    setMessage(null);
+    setIsPortalLoading(true);
+
+    const response = await fetch("/api/stripe/portal", { method: "POST" });
+    if (!response.ok) {
+      setMessage(t("errors.portal"));
+      setIsPortalLoading(false);
+      return;
+    }
+
+    const data = (await response.json()) as { url?: string };
+    if (!data.url) {
+      setMessage(t("errors.portal"));
+      setIsPortalLoading(false);
+      return;
+    }
+
+    window.location.href = data.url;
+  };
+
+  const premiumUntilDateLabel = premiumUntil
+    ? premiumUntil.slice(0, 10)
+    : null;
 
   return (
     <div className="space-y-8">
@@ -163,8 +192,27 @@ export default function UpgradePage() {
           </ul>
           <div className="mt-6">
             {viewerPlan === "premium" ? (
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600">
-                {t("premium.status")}
+              <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600">
+                <p>{t("premium.status")}</p>
+                {premiumUntilDateLabel ? (
+                  <p className="text-xs font-medium text-slate-500">
+                    {t("premium.until", { date: premiumUntilDateLabel })}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleDowngrade}
+                  disabled={isPortalLoading}
+                  className="w-full rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isPortalLoading ? t("actions.redirecting") : t("actions.downgrade")}
+                </button>
+                <Link
+                  href="/dashboard/settings/support"
+                  className="inline-block text-xs font-medium text-slate-500 underline-offset-2 hover:underline"
+                >
+                  {t("actions.manageBilling")}
+                </Link>
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">

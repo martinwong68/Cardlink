@@ -21,6 +21,14 @@ type ProfilePlanLike = {
 export function resolveEffectiveViewerPlan(
   profile: ProfilePlanLike | null | undefined
 ): "free" | "premium" {
+  if (profile?.plan === "premium") {
+    return "premium";
+  }
+
+  if (profile?.plan === "free") {
+    return "free";
+  }
+
   const premiumUntilValue = profile?.premium_until;
   if (premiumUntilValue) {
     const premiumUntilTime = new Date(premiumUntilValue).getTime();
@@ -28,8 +36,7 @@ export function resolveEffectiveViewerPlan(
       return "premium";
     }
   }
-
-  return profile?.plan === "premium" ? "premium" : "free";
+  return "free";
 }
 
 export function getVisibleFields<T extends CardField>(
