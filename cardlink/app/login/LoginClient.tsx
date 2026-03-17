@@ -82,7 +82,7 @@ export default function LoginClient() {
           <div className="mt-3 flex justify-center">
             <LanguageSwitcher compact />
           </div>
-          <h1 className="mt-4 text-3xl font-semibold text-slate-900">
+          <h1 className="mt-4 text-3xl font-semibold text-gray-900">
             {t("title")}
           </h1>
           <p className="app-subtitle mt-2 text-sm">
@@ -92,7 +92,7 @@ export default function LoginClient() {
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="email">
+            <label className="text-sm font-medium text-gray-700" htmlFor="email">
               {t("fields.email")}
             </label>
             <input
@@ -108,7 +108,7 @@ export default function LoginClient() {
 
           <div>
             <label
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-gray-700"
               htmlFor="password"
             >
               {t("fields.password")}
@@ -126,7 +126,7 @@ export default function LoginClient() {
               type="button"
               onClick={() => void handleForgotPassword()}
               disabled={isSendingReset}
-              className="mt-2 text-xs font-semibold text-violet-600 hover:text-violet-700 disabled:opacity-60"
+              className="mt-2 text-xs font-semibold text-indigo-600 hover:text-indigo-700 disabled:opacity-60"
             >
               {isSendingReset ? t("actions.sendingReset") : t("actions.forgotPassword")}
             </button>
@@ -153,10 +153,10 @@ export default function LoginClient() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-gray-500">
           {t("footer.newHere")} {" "}
           <Link
-            className="font-semibold text-violet-600 hover:text-violet-700"
+            className="font-semibold text-indigo-600 hover:text-indigo-700"
             href={
               returnTo
                 ? `/signup?returnTo=${encodeURIComponent(returnTo)}`

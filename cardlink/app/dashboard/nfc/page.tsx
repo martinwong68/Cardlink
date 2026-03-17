@@ -92,52 +92,52 @@ export default function DashboardNfcPage() {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <section className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
               {t("brand")}
             </p>
-            <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+            <h1 className="mt-2 text-2xl font-semibold text-gray-900">
               {t("title")}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm text-slate-500">
+            <p className="mt-3 max-w-2xl text-sm text-gray-500">
               {t("subtitle")}
             </p>
-            <ul className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
+            <ul className="mt-4 grid gap-2 text-sm text-gray-600 sm:grid-cols-2">
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-violet-600" />
+                <CheckCircle2 className="h-4 w-4 text-indigo-600" />
                 {t("highlights.shipping")}
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-violet-600" />
+                <CheckCircle2 className="h-4 w-4 text-indigo-600" />
                 {t("highlights.customize")}
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-violet-600" />
+                <CheckCircle2 className="h-4 w-4 text-indigo-600" />
                 {t("highlights.linked")}
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-violet-600" />
+                <CheckCircle2 className="h-4 w-4 text-indigo-600" />
                 {t("highlights.analytics")}
               </li>
             </ul>
           </div>
-          <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-slate-50 p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
+          <div className="w-full max-w-sm rounded-2xl border border-gray-100 bg-gray-50 p-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-gray-500">
               {t("cta.badge")}
             </p>
-            <p className="mt-3 text-2xl font-semibold text-slate-900">
+            <p className="mt-3 text-2xl font-semibold text-gray-900">
               ${t("cta.price", { price: DISPLAY_PRICE ?? "58" })}
             </p>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-500">
               {t("cta.note")}
             </p>
             <button
               type="button"
               onClick={handleCheckout}
               disabled={isLoading}
-              className="mt-5 w-full rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-5 w-full rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isLoading ? t("cta.loading") : t("cta.action")}
             </button>
@@ -156,15 +156,15 @@ export default function DashboardNfcPage() {
           return (
             <div
               key={feature.title}
-              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+              className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
                 <Icon className="h-6 w-6" />
               </div>
-              <h2 className="mt-4 text-lg font-semibold text-slate-900">
+              <h2 className="mt-4 text-lg font-semibold text-gray-900">
                 {feature.title}
               </h2>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-gray-500">
                 {feature.description}
               </p>
             </div>
@@ -172,12 +172,12 @@ export default function DashboardNfcPage() {
         })}
       </section>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <section className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
         <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
             {t("faq.badge")}
           </p>
-          <h2 className="text-2xl font-semibold text-slate-900">
+          <h2 className="text-2xl font-semibold text-gray-900">
             {t("faq.title")}
           </h2>
         </div>
@@ -185,12 +185,12 @@ export default function DashboardNfcPage() {
           {faqs.map((item) => (
             <div
               key={item.question}
-              className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4"
+              className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4"
             >
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-gray-900">
                 {item.question}
               </p>
-              <p className="mt-2 text-sm text-slate-500">{item.answer}</p>
+              <p className="mt-2 text-sm text-gray-500">{item.answer}</p>
             </div>
           ))}
         </div>

@@ -2,6 +2,8 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 import { createClient } from "@/src/lib/supabase/server";
+import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
+import { isBusinessScopedRequest } from "@/src/lib/business/scope-guard";
 
 type RequestBody = {
   companyId?: string;
@@ -29,8 +31,15 @@ function hasAdminRole(role: string | null | undefined) {
 
 export async function POST(request: Request) {
   try {
+    if (!isBusinessScopedRequest(request)) {
+      return NextResponse.json(
+        { error: "Company card writes are restricted to Business App routes." },
+        { status: 403 }
+      );
+    }
+
     const body = (await request.json()) as RequestBody;
-    const companyId = body.companyId?.trim();
+    const requestedCompanyId = body.companyId?.trim();
     const email = body.email?.trim().toLowerCase();
     const password = body.password?.trim();
     const fullName = body.fullName?.trim() ?? "";
@@ -38,12 +47,23 @@ export async function POST(request: Request) {
     const title = body.title?.trim() ?? "";
     const company = body.company?.trim() ?? "";
 
-    if (!companyId || !email || !password) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: "companyId, email, and password are required." },
+        { error: "email and password are required." },
         { status: 400 }
       );
     }
+
+    const contextGuard = await requireBusinessActiveCompanyContext({
+      request,
+      expectedCompanyId: requestedCompanyId,
+    });
+
+    if (!contextGuard.ok) {
+      return contextGuard.response;
+    }
+
+    const companyId = contextGuard.context.activeCompanyId;
 
     if (password.length < 8) {
       return NextResponse.json(

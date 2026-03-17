@@ -28,13 +28,13 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
 
   return (
     <div className={compact ? "" : "flex items-center gap-2"}>
-      <label className={compact ? "sr-only" : "text-xs font-semibold text-slate-500"}>
+      <label className={compact ? "sr-only" : "text-xs font-semibold text-gray-500"}>
         {t("label")}
       </label>
       <select
         value={current?.value ?? "en"}
         onChange={(event) => handleChange(event.target.value)}
-        className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm ${
+        className={`rounded-full border border-gray-100 bg-white px-3 py-1 text-xs font-semibold text-gray-600 shadow-sm ${
           compact ? "" : ""
         }`}
       >

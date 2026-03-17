@@ -764,6 +764,9 @@
     "brand": "CardLink",
     "title": "Settings",
     "subtitle": "Manage your account and preferences.",
+    "notices": {
+      "businessAccessDenied": "Business access is unavailable for your account."
+    },
     "errors": {
       "upgradeToExport": "Upgrade to Premium to export contacts.",
       "signInExport": "Please sign in to export contacts.",
@@ -788,12 +791,53 @@
       "premiumBadge": "Premium",
       "downgrade": "Downgrade to Free",
       "openingPortal": "Opening...",
+      "switchToBusiness": "Switch to Business Interface",
       "orderNfc": "Order NFC Card",
       "export": "Export Contacts",
       "support": "Help & Support"
     },
     "actions": {
       "logout": "Log Out"
+    }
+  },
+  "businessSettings": {
+    "brand": "Business Interface",
+    "title": "Settings",
+    "subtitle": "Manage business interface preferences.",
+    "links": {
+      "mainAccount": "Main Account Context",
+      "switchToClient": "Switch to Client GUI"
+    }
+  },
+  "businessMainAccount": {
+    "brand": "Business Interface",
+    "title": "Main Account",
+    "subtitle": "Choose the active company context for Business App operations.",
+    "states": {
+      "loading": "Loading account context...",
+      "activeTag": "Active: {company}"
+    },
+    "fields": {
+      "activeCompany": "Active Company",
+      "selectPlaceholder": "Select a company",
+      "quickSwitch": "Quick Company Switch",
+      "permissionScope": "Company Permission Scope"
+    },
+    "actions": {
+      "save": "Save Active Company",
+      "saving": "Saving..."
+    },
+    "badges": {
+      "masterRuntime": "Master (Runtime)",
+      "masterDb": "Master (DB Flag)"
+    },
+    "messages": {
+      "signInRequired": "Please sign in again.",
+      "loadFailed": "Failed to load main-account data.",
+      "selectCompany": "Please select a company first.",
+      "saveFailed": "Failed to save active company.",
+      "saved": "Active company updated.",
+      "notEligible": "Your account is not eligible for Business management context."
     }
   },
   "support": {

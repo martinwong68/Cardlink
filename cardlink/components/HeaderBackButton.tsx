@@ -27,7 +27,7 @@ export default function HeaderBackButton({
         router.push(fallbackHref);
       }}
       aria-label={ariaLabel}
-      className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-violet-200 hover:text-violet-600 ${className}`}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-100 bg-white text-gray-600 transition hover:border-indigo-200 hover:text-indigo-600 ${className}`}
     >
       <ChevronLeft className="h-4 w-4" />
     </button>

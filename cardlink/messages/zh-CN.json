@@ -764,6 +764,9 @@
     "brand": "CardLink",
     "title": "设置",
     "subtitle": "管理你的账号与偏好设置。",
+    "notices": {
+      "businessAccessDenied": "你的账号当前无法使用 Business 界面。"
+    },
     "errors": {
       "upgradeToExport": "升级到高级版以导出联系人。",
       "signInExport": "请登录以导出联系人。",
@@ -788,12 +791,53 @@
       "premiumBadge": "高级版",
       "downgrade": "降级为免费方案",
       "openingPortal": "正在打开...",
+      "switchToBusiness": "切换到 Business 界面",
       "orderNfc": "订购 NFC 名片",
       "export": "导出联系人",
       "support": "帮助与支持"
     },
     "actions": {
       "logout": "退出登录"
+    }
+  },
+  "businessSettings": {
+    "brand": "Business 界面",
+    "title": "设置",
+    "subtitle": "管理 Business 界面偏好。",
+    "links": {
+      "mainAccount": "主账号管理上下文",
+      "switchToClient": "切换回 Client GUI"
+    }
+  },
+  "businessMainAccount": {
+    "brand": "Business 界面",
+    "title": "主账号",
+    "subtitle": "选择 Business App 操作使用的当前公司上下文。",
+    "states": {
+      "loading": "正在加载账号上下文...",
+      "activeTag": "当前：{company}"
+    },
+    "fields": {
+      "activeCompany": "当前公司",
+      "selectPlaceholder": "请选择公司",
+      "quickSwitch": "快速切换公司",
+      "permissionScope": "公司权限范围"
+    },
+    "actions": {
+      "save": "保存当前公司",
+      "saving": "保存中..."
+    },
+    "badges": {
+      "masterRuntime": "Master（运行时判定）",
+      "masterDb": "Master（数据库标记）"
+    },
+    "messages": {
+      "signInRequired": "请重新登录。",
+      "loadFailed": "无法加载主账号数据。",
+      "selectCompany": "请先选择公司。",
+      "saveFailed": "无法保存当前公司。",
+      "saved": "当前公司已更新。",
+      "notEligible": "你的账号当前不具备 Business 管理上下文资格。"
     }
   },
   "support": {

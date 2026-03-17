@@ -250,7 +250,7 @@ export default function CommunityPage() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         {isLoading ? (
-          <div className="app-card p-6 text-sm text-slate-500">
+          <div className="app-card p-6 text-sm text-gray-500">
             {t("states.loading")}
           </div>
         ) : null}
@@ -259,15 +259,15 @@ export default function CommunityPage() {
           <Link
             key={board.id}
             href={`/dashboard/community/${board.slug}`}
-            className="app-card p-5 transition hover:-translate-y-0.5 hover:border-violet-200"
+            className="app-card p-5 transition hover:-translate-y-0.5 hover:border-indigo-200"
           >
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-lg font-semibold text-slate-900">
+                <p className="text-lg font-semibold text-gray-900">
                   <span className="mr-2">{board.icon}</span>
                   {board.name}
                 </p>
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-gray-500">
                   {board.description}
                 </p>
               </div>
@@ -281,12 +281,12 @@ export default function CommunityPage() {
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-gray-900">
             {t("sections.latest")}
           </h2>
           <Link
             href="/community"
-            className="text-xs font-semibold text-violet-600"
+            className="text-xs font-semibold text-indigo-600"
           >
             {t("actions.viewPublicFeed")}
           </Link>
@@ -294,7 +294,7 @@ export default function CommunityPage() {
 
         <div className="space-y-3">
           {posts.length === 0 ? (
-            <div className="app-card p-6 text-center text-sm text-slate-500">
+            <div className="app-card p-6 text-center text-sm text-gray-500">
               {t("empty.noPosts")}
             </div>
           ) : null}
@@ -308,32 +308,32 @@ export default function CommunityPage() {
               <Link
                 key={post.id}
                 href={`/dashboard/community/${post.board?.slug}/${post.subBoard?.slug}/${post.id}`}
-                className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-violet-200"
+                className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-indigo-200"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
                       {initials}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-gray-900">
                         {post.title}
                       </p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-gray-500">
                         {authorName}
                       </p>
                     </div>
                   </div>
                   <RelativeTime
-                    className="text-xs text-slate-400"
+                    className="text-xs text-gray-400"
                     date={lastActivity}
                   />
                 </div>
-                <p className="mt-3 text-xs text-slate-500">
+                <p className="mt-3 text-xs text-gray-500">
                   {(post.body ?? "").slice(0, 140)}
                   {post.body && post.body.length > 140 ? "..." : ""}
                 </p>
-                <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+                <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
                   <span>
                     {[post.board?.icon, post.board?.name]
                       .filter(Boolean)

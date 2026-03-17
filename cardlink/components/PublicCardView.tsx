@@ -40,7 +40,7 @@ const brandStyles: Record<string, string> = {
   WeChat: "bg-green-600 text-white",
   Telegram: "bg-sky-500 text-white",
   Instagram: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400 text-white",
-  Twitter: "bg-slate-900 text-white",
+  Twitter: "bg-gray-900 text-white",
   Website: "bg-indigo-600 text-white",
   Other: "bg-slate-700 text-white",
 };
@@ -315,7 +315,7 @@ export default function PublicCardView({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen bg-gray-50 pb-16">
       <div className="mx-auto w-full max-w-lg px-4 pb-10">
         <section
           className="cardlink-section cardlink-delay-1 relative mt-6 rounded-3xl shadow-md"
@@ -357,23 +357,23 @@ export default function PublicCardView({
 
         <section className="cardlink-section cardlink-delay-2 mt-12 rounded-3xl bg-white p-6 shadow-sm">
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-slate-900">
+            <h1 className="text-2xl font-semibold text-gray-900">
               {fullName}
             </h1>
             {(title || company) && (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-gray-500">
                 {[title, company].filter(Boolean).join(" • ")}
               </p>
             )}
           </div>
           {bio ? (
-            <p className="mt-4 text-sm text-slate-600">{bio}</p>
+            <p className="mt-4 text-sm text-gray-600">{bio}</p>
           ) : null}
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <a
               href={vcardHref}
               download={`${slug || "card"}.vcf`}
-              className="flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-violet-200 hover:text-violet-600"
+              className="flex items-center justify-center rounded-full border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-indigo-200 hover:text-indigo-600"
             >
               {t("actions.saveContact")}
             </a>
@@ -401,12 +401,12 @@ export default function PublicCardView({
         </section>
 
         <section className="cardlink-section cardlink-delay-4 mt-6 rounded-3xl bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
             {t("sections.contact")}
           </h2>
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {visibleFields.length === 0 ? (
-              <p className="col-span-full text-sm text-slate-500">
+              <p className="col-span-full text-sm text-gray-500">
                 {t("empty.contact")}
               </p>
             ) : null}
@@ -435,7 +435,7 @@ export default function PublicCardView({
 
         {sortedLinks.length > 0 ? (
           <section className="cardlink-section cardlink-delay-5 mt-6 rounded-3xl bg-white p-6 shadow-sm">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
               {t("sections.links")}
             </h2>
             <div className="mt-4 space-y-3">
@@ -445,7 +445,7 @@ export default function PublicCardView({
                   href={ensureUrl(link.url)}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
+                  className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <span className="flex items-center gap-3">
                     <span className="text-lg">
@@ -453,7 +453,7 @@ export default function PublicCardView({
                     </span>
                     {link.label}
                   </span>
-                  <Link2 className="h-4 w-4 text-slate-400" />
+                  <Link2 className="h-4 w-4 text-gray-400" />
                 </a>
               ))}
             </div>
@@ -462,22 +462,22 @@ export default function PublicCardView({
 
         {sortedExperiences.length > 0 ? (
           <section className="cardlink-section cardlink-delay-6 mt-6 rounded-3xl bg-white p-6 shadow-sm">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
               {t("sections.experience")}
             </h2>
             <div className="mt-5 space-y-6">
               {sortedExperiences.map((experience) => (
                 <div key={experience.id} className="relative pl-6">
-                  <span className="absolute left-0 top-1.5 h-full w-px bg-slate-200" />
+                  <span className="absolute left-0 top-1.5 h-full w-px bg-gray-200" />
                   <span className="absolute left-[-5px] top-1.5 h-3 w-3 rounded-full bg-indigo-600" />
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-gray-900">
                       {t("experience.roleAt", {
                         role: experience.role,
                         company: experience.company,
                       })}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-gray-500">
                       {formatDateRange(
                         experience.start_date,
                         experience.end_date,
@@ -486,7 +486,7 @@ export default function PublicCardView({
                       )}
                     </p>
                     {experience.description ? (
-                      <p className="mt-2 text-xs text-slate-600">
+                      <p className="mt-2 text-xs text-gray-600">
                         {experience.description}
                       </p>
                     ) : null}
@@ -497,7 +497,7 @@ export default function PublicCardView({
           </section>
         ) : null}
 
-        <footer className="mt-8 text-center text-xs text-slate-400">
+        <footer className="mt-8 text-center text-xs text-gray-400">
           <a href="/" className="hover:text-indigo-600">
             {t("footer.madeWith")}
           </a>
@@ -505,27 +505,27 @@ export default function PublicCardView({
       </div>
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gray-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
           {toast}
         </div>
       ) : null}
 
       {wechatValue ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4">
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-gray-900">
                 {t("wechat.title")}
               </h3>
               <button
                 type="button"
                 onClick={() => setWechatValue(null)}
-                className="text-sm font-semibold text-slate-400 hover:text-slate-600"
+                className="text-sm font-semibold text-gray-400 hover:text-gray-600"
               >
                 {t("wechat.close")}
               </button>
             </div>
-            <p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            <p className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-700">
               {wechatValue}
             </p>
             <button

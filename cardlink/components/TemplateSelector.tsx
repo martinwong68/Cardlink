@@ -19,8 +19,8 @@ export default function TemplateSelector({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">{t("title")}</h3>
-        <p className="mt-1 text-xs text-slate-500">{t("subtitle")}</p>
+        <h3 className="text-sm font-semibold text-gray-900">{t("title")}</h3>
+        <p className="mt-1 text-xs text-gray-500">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -35,7 +35,7 @@ export default function TemplateSelector({
               className={`group relative rounded-2xl border-2 p-4 text-left transition ${
                 isSelected
                   ? "border-indigo-600 bg-indigo-50"
-                  : "border-slate-200 bg-white hover:border-indigo-200"
+                  : "border-gray-100 bg-white hover:border-indigo-200"
               }`}
             >
               <div
@@ -46,10 +46,10 @@ export default function TemplateSelector({
               />
               
               <div className="mt-3">
-                <h4 className="text-sm font-semibold text-slate-900">
+                <h4 className="text-sm font-semibold text-gray-900">
                   {t(`templates.${template.id}.name`)}
                 </h4>
-                <p className="mt-1 text-xs text-slate-500">{t(`templates.${template.id}.category`)}</p>
+                <p className="mt-1 text-xs text-gray-500">{t(`templates.${template.id}.category`)}</p>
               </div>
 
               {isSelected && (

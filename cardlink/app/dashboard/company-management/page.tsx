@@ -1,5 +1,5 @@
-import CompanyManagementPanel from "@/components/CompanyManagementPanel";
+import { redirect } from "next/navigation";
 
 export default function CompanyManagementPage() {
-  return <CompanyManagementPanel />;
+  redirect("/business/company-management");
 }

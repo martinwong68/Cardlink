@@ -42,7 +42,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${inter.className} ${inter.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}
+        className={`${inter.className} ${inter.variable} min-h-screen bg-gray-50 text-gray-900 antialiased`}
       >
         <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
           <LoggedInTopHeader />

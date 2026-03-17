@@ -96,7 +96,7 @@ export default function LoggedInTopHeader() {
         <HeaderBackButton ariaLabel="Back" />
         <Link
           href="/dashboard/settings/profile"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-gradient-to-br from-violet-600 to-indigo-600 text-xs font-semibold text-white shadow-lg shadow-violet-300/30"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-gradient-to-br from-indigo-600 to-indigo-600 text-xs font-semibold text-white shadow-lg shadow-indigo-300/30"
           aria-label="Profile"
         >
           {profile?.avatar_url ? (

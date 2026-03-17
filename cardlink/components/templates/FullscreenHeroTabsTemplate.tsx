@@ -283,9 +283,9 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
       <section className="relative flex items-center px-4 pb-8 pt-8">
 
         <div className="app-page relative w-full max-w-5xl">
-          <div className="rounded-3xl border border-slate-700/70 bg-slate-900/70 p-6 backdrop-blur-lg sm:p-7">
+          <div className="rounded-3xl border border-slate-700/70 bg-gray-900/70 p-6 backdrop-blur-lg sm:p-7">
             <div className="grid gap-4 sm:grid-cols-[96px_1fr] sm:items-center">
-              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-slate-600 bg-slate-800 text-3xl font-bold text-white sm:h-24 sm:w-24">
+              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-slate-600 bg-gray-800 text-3xl font-bold text-white sm:h-24 sm:w-24">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -300,21 +300,21 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
               <div>
                 <h1 className="text-3xl font-bold text-white sm:text-4xl">{fullName}</h1>
                 {(title || company) ? (
-                  <p className="mt-1 text-sm text-slate-300">
+                  <p className="mt-1 text-sm text-gray-300">
                     {[title, company].filter(Boolean).join(" • ")}
                   </p>
                 ) : null}
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="rounded-full border border-violet-300/30 bg-violet-500/15 px-3 py-1 text-xs font-semibold text-violet-100">
+                  <span className="rounded-full border border-indigo-300/30 bg-indigo-500/15 px-3 py-1 text-xs font-semibold text-indigo-100">
                     Available for Work
                   </span>
                   {title ? (
-                    <span className="rounded-full border border-slate-500/60 bg-slate-800/80 px-3 py-1 text-xs font-semibold text-slate-200">
+                    <span className="rounded-full border border-slate-500/60 bg-gray-800/80 px-3 py-1 text-xs font-semibold text-slate-200">
                       {title}
                     </span>
                   ) : null}
                   {company ? (
-                    <span className="rounded-full border border-slate-500/60 bg-slate-800/80 px-3 py-1 text-xs font-semibold text-slate-200">
+                    <span className="rounded-full border border-slate-500/60 bg-gray-800/80 px-3 py-1 text-xs font-semibold text-slate-200">
                       {company}
                     </span>
                   ) : null}
@@ -323,7 +323,7 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
             </div>
 
             {bio ? (
-              <p className="mt-4 text-sm text-slate-300">
+              <p className="mt-4 text-sm text-gray-300">
                 {bio}
               </p>
             ) : null}
@@ -338,8 +338,8 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
             onClick={() => setActiveTab("info")}
             className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
               activeTab === "info"
-                ? "border-violet-500/70 bg-violet-500/20 text-violet-100"
-                : "border-slate-700 bg-slate-900 text-slate-200"
+                ? "border-indigo-500/70 bg-indigo-500/20 text-indigo-100"
+                : "border-slate-700 bg-gray-900 text-slate-200"
             }`}
           >
             簡介與資訊
@@ -349,8 +349,8 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
             onClick={() => setActiveTab("contact")}
             className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
               activeTab === "contact"
-                ? "border-violet-500/70 bg-violet-500/20 text-violet-100"
-                : "border-slate-700 bg-slate-900 text-slate-200"
+                ? "border-indigo-500/70 bg-indigo-500/20 text-indigo-100"
+                : "border-slate-700 bg-gray-900 text-slate-200"
             }`}
           >
             {t("sections.contact")}
@@ -360,8 +360,8 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
             onClick={() => setActiveTab("links")}
             className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
               activeTab === "links"
-                ? "border-violet-500/70 bg-violet-500/20 text-violet-100"
-                : "border-slate-700 bg-slate-900 text-slate-200"
+                ? "border-indigo-500/70 bg-indigo-500/20 text-indigo-100"
+                : "border-slate-700 bg-gray-900 text-slate-200"
             }`}
           >
             {t("sections.links")}
@@ -371,8 +371,8 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
             onClick={() => setActiveTab("experience")}
             className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
               activeTab === "experience"
-                ? "border-violet-500/70 bg-violet-500/20 text-violet-100"
-                : "border-slate-700 bg-slate-900 text-slate-200"
+                ? "border-indigo-500/70 bg-indigo-500/20 text-indigo-100"
+                : "border-slate-700 bg-gray-900 text-slate-200"
             }`}
           >
             {t("sections.experience")}
@@ -382,23 +382,23 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
 
       <section className="app-page relative max-w-5xl px-4 pt-4">
         {activeTab === "info" ? (
-          <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-lg">
+          <div className="rounded-3xl border border-slate-700 bg-gray-900 p-6 shadow-lg">
             <h2 className="app-kicker">簡介與資訊</h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3">
-                <p className="text-xs text-slate-400">姓名</p>
+                <p className="text-xs text-gray-400">姓名</p>
                 <p className="mt-1 text-sm text-slate-100">{fullName}</p>
               </div>
               <div className="rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3">
-                <p className="text-xs text-slate-400">職稱</p>
+                <p className="text-xs text-gray-400">職稱</p>
                 <p className="mt-1 text-sm text-slate-100">{title || "-"}</p>
               </div>
               <div className="rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3">
-                <p className="text-xs text-slate-400">公司</p>
+                <p className="text-xs text-gray-400">公司</p>
                 <p className="mt-1 text-sm text-slate-100">{company || "-"}</p>
               </div>
               <div className="rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 sm:col-span-2">
-                <p className="text-xs text-slate-400">簡介</p>
+                <p className="text-xs text-gray-400">簡介</p>
                 <p className="mt-1 text-sm text-slate-200">{bio || "-"}</p>
               </div>
             </div>
@@ -406,10 +406,10 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
         ) : null}
 
         {activeTab === "contact" ? (
-          <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-lg">
+          <div className="rounded-3xl border border-slate-700 bg-gray-900 p-6 shadow-lg">
             <h2 className="app-kicker">{t("sections.contact")}</h2>
             {visibleFields.length === 0 ? (
-              <p className="mt-4 text-sm text-slate-400">{t("empty.contact")}</p>
+              <p className="mt-4 text-sm text-gray-400">{t("empty.contact")}</p>
             ) : (
               <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(56px,1fr))] gap-3">
                 {visibleFields.map((field) => {
@@ -433,10 +433,10 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
         ) : null}
 
         {activeTab === "links" ? (
-          <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-lg">
+          <div className="rounded-3xl border border-slate-700 bg-gray-900 p-6 shadow-lg">
             <h2 className="app-kicker">{t("sections.links")}</h2>
             {sortedLinks.length === 0 ? (
-              <p className="mt-4 text-sm text-slate-400">{t("empty.links")}</p>
+              <p className="mt-4 text-sm text-gray-400">{t("empty.links")}</p>
             ) : (
               <div className="mt-4 grid grid-flow-col auto-cols-[70px] gap-3 overflow-x-auto pb-2">
                 {sortedLinks.map((link) => {
@@ -464,10 +464,10 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
         ) : null}
 
         {activeTab === "experience" ? (
-          <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-lg">
+          <div className="rounded-3xl border border-slate-700 bg-gray-900 p-6 shadow-lg">
             <h2 className="app-kicker">{t("sections.experience")}</h2>
             {sortedExperiences.length === 0 ? (
-              <p className="mt-4 text-sm text-slate-400">{t("empty.experience")}</p>
+              <p className="mt-4 text-sm text-gray-400">{t("empty.experience")}</p>
             ) : (
               <div className="mt-4 grid gap-3">
                 {sortedExperiences.map((experience) => (
@@ -481,10 +481,10 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
                         company: experience.company,
                       })}
                     </h4>
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-gray-400">
                       {experience.description || "-"}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-gray-500">
                       {formatDateRange(
                         experience.start_date,
                         experience.end_date,
@@ -501,7 +501,7 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
       </section>
 
       <section className="app-page relative max-w-5xl px-4 pt-5">
-        <div className="rounded-3xl border border-slate-700 bg-slate-900 p-5 shadow-lg">
+        <div className="rounded-3xl border border-slate-700 bg-gray-900 p-5 shadow-lg">
           <PublicCardConnectionSection
             ownerId={ownerId}
             slug={slug}
@@ -516,27 +516,27 @@ export default function FullscreenHeroTabsTemplate(props: TemplateRendererProps)
       </section>
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gray-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
           {toast}
         </div>
       ) : null}
 
       {wechatValue ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4">
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-gray-900">
                 {t("wechat.title")}
               </h3>
               <button
                 type="button"
                 onClick={() => setWechatValue(null)}
-                className="text-sm font-semibold text-slate-400 hover:text-slate-600"
+                className="text-sm font-semibold text-gray-400 hover:text-gray-600"
               >
                 {t("wechat.close")}
               </button>
             </div>
-            <p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            <p className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-700">
               {wechatValue}
             </p>
             <button

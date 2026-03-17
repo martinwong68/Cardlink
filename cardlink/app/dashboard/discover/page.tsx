@@ -260,12 +260,12 @@ export default function DiscoverPage() {
         className="app-card flex flex-col gap-3 p-4"
       >
         <Link href={`/c/${slug}`} className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-600 text-sm font-semibold text-white">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
             {initials}
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">{name}</p>
-            <p className="text-xs text-slate-500">{titleCompany}</p>
+            <p className="text-sm font-semibold text-gray-900">{name}</p>
+            <p className="text-xs text-gray-500">{titleCompany}</p>
           </div>
         </Link>
         <div className="flex items-center justify-between">
@@ -275,7 +275,7 @@ export default function DiscoverPage() {
                 ? "bg-emerald-50 text-emerald-600"
                 : status === "pending"
                 ? "bg-amber-50 text-amber-600"
-                : "bg-slate-100 text-slate-500"
+                : "bg-gray-100 text-gray-500"
             }`}
           >
             {status === "connected"
@@ -314,12 +314,12 @@ export default function DiscoverPage() {
 
       <div className="app-card p-4">
         <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-slate-400" />
+          <Search className="h-4 w-4 text-gray-400" />
           <input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder={t("search.placeholder")}
-            className="app-input border-0 bg-transparent px-0 py-0 text-sm text-slate-700 shadow-none"
+            className="app-input border-0 bg-transparent px-0 py-0 text-sm text-gray-700 shadow-none"
           />
           <button
             onClick={handleSearch}
@@ -337,11 +337,11 @@ export default function DiscoverPage() {
       ) : null}
 
       {isLoading ? (
-        <div className="app-card p-6 text-center text-sm text-slate-500">
+        <div className="app-card p-6 text-center text-sm text-gray-500">
           {t("loading")}
         </div>
       ) : results.length === 0 ? (
-        <div className="app-card p-6 text-center text-sm text-slate-500">
+        <div className="app-card p-6 text-center text-sm text-gray-500">
           {t("empty.results")}
         </div>
       ) : (
@@ -353,7 +353,7 @@ export default function DiscoverPage() {
       {hasMore && results.length > 0 ? (
         <button
           onClick={() => fetchResults(false)}
-          className="app-card w-full px-4 py-3 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-600"
+          className="app-card w-full px-4 py-3 text-sm font-semibold text-gray-700 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600"
         >
           {t("actions.loadMore")}
         </button>
@@ -361,12 +361,12 @@ export default function DiscoverPage() {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-900">
+          <h2 className="text-sm font-semibold text-gray-900">
             {t("suggested.title")}
           </h2>
         </div>
         {suggested.length === 0 ? (
-          <div className="app-card p-6 text-center text-sm text-slate-500">
+          <div className="app-card p-6 text-center text-sm text-gray-500">
             {t("suggested.empty")}
           </div>
         ) : (

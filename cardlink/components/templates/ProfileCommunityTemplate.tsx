@@ -359,12 +359,12 @@ export default function ProfileCommunityTemplate(props: TemplateRendererProps) {
           <div className="mt-4 grid gap-3">
             <div className="app-card-soft grid grid-cols-[92px_1fr] items-center gap-3 rounded-2xl px-4 py-3 text-sm">
               <span className="app-subtitle">姓名</span>
-              <span className="font-semibold text-slate-700">{fullName}</span>
+              <span className="font-semibold text-gray-700">{fullName}</span>
             </div>
             {(title || company) && (
               <div className="app-card-soft grid grid-cols-[92px_1fr] items-center gap-3 rounded-2xl px-4 py-3 text-sm">
                 <span className="app-subtitle">職稱 / 公司</span>
-                <span className="font-semibold text-slate-700">
+                <span className="font-semibold text-gray-700">
                   {[title, company].filter(Boolean).join(" • ")}
                 </span>
               </div>
@@ -372,7 +372,7 @@ export default function ProfileCommunityTemplate(props: TemplateRendererProps) {
             {bio ? (
               <div className="app-card-soft grid grid-cols-[92px_1fr] items-start gap-3 rounded-2xl px-4 py-3 text-sm">
                 <span className="app-subtitle">簡介</span>
-                <span className="text-slate-700">{bio}</span>
+                <span className="text-gray-700">{bio}</span>
               </div>
             ) : null}
           </div>
@@ -396,9 +396,9 @@ export default function ProfileCommunityTemplate(props: TemplateRendererProps) {
                     onClick={() =>
                       handleContactClick(field.field_type, field.field_value)
                     }
-                    className="app-card-soft mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border-dashed transition hover:border-violet-200"
+                    className="app-card-soft mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border-dashed transition hover:border-indigo-200"
                   >
-                    <Icon className="h-5 w-5 text-slate-600" />
+                    <Icon className="h-5 w-5 text-gray-600" />
                   </button>
                 );
               })}
@@ -423,14 +423,14 @@ export default function ProfileCommunityTemplate(props: TemplateRendererProps) {
                     title={link.label}
                     className="flex flex-col items-center gap-2"
                   >
-                    <span className="app-card-soft flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-2xl text-slate-600">
+                    <span className="app-card-soft flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-2xl text-gray-600">
                       {LinkIcon ? (
                         <LinkIcon className="h-6 w-6" />
                       ) : (
                         <span className="text-xl">{link.icon || "🔗"}</span>
                       )}
                     </span>
-                    <span className="line-clamp-1 w-full text-center text-[11px] text-slate-500">
+                    <span className="line-clamp-1 w-full text-center text-[11px] text-gray-500">
                       {link.label}
                     </span>
                   </a>
@@ -449,20 +449,20 @@ export default function ProfileCommunityTemplate(props: TemplateRendererProps) {
               {sortedExperiences.map((experience) => (
                 <div
                   key={experience.id}
-                  className="rounded-2xl border border-slate-200 p-4"
+                  className="rounded-2xl border border-gray-100 p-4"
                   style={{
                     background:
                       "linear-gradient(180deg, color-mix(in srgb, var(--cardlink-base) 14%, white), var(--app-surface))",
                     "--cardlink-base": accentColor,
                   } as React.CSSProperties}
                 >
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-sm font-semibold text-gray-900">
                     {t("experience.roleAt", {
                       role: experience.role,
                       company: experience.company,
                     })}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-gray-500">
                     {formatDateRange(
                       experience.start_date,
                       experience.end_date,
@@ -471,7 +471,7 @@ export default function ProfileCommunityTemplate(props: TemplateRendererProps) {
                     )}
                   </p>
                   {experience.description ? (
-                    <p className="mt-2 text-xs text-slate-600">
+                    <p className="mt-2 text-xs text-gray-600">
                       {experience.description}
                     </p>
                   ) : null}
@@ -496,27 +496,27 @@ export default function ProfileCommunityTemplate(props: TemplateRendererProps) {
       </div>
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gray-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
           {toast}
         </div>
       ) : null}
 
       {wechatValue ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4">
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-gray-900">
                 {t("wechat.title")}
               </h3>
               <button
                 type="button"
                 onClick={() => setWechatValue(null)}
-                className="text-sm font-semibold text-slate-400 hover:text-slate-600"
+                className="text-sm font-semibold text-gray-400 hover:text-gray-600"
               >
                 {t("wechat.close")}
               </button>
             </div>
-            <p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            <p className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-700">
               {wechatValue}
             </p>
             <button

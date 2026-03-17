@@ -158,8 +158,8 @@ export default function PublicCardConnectionSection({
   return (
     <>
       {showFields ? (
-        <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <div className="space-y-3 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
             {t("contactTitle")}
           </h2>
           <div className="space-y-3">
@@ -175,18 +175,18 @@ export default function PublicCardConnectionSection({
               return (
                 <div
                   key={field.id}
-                  className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                  className="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-violet-600 shadow-sm">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-indigo-600 shadow-sm">
                       <Icon className="h-4 w-4" />
                     </span>
                     <div>
-                      <p className="text-sm font-medium text-slate-800">
+                      <p className="text-sm font-medium text-gray-800">
                         {field.field_label || field.field_type}
                       </p>
                       <p
-                        className={`text-xs text-slate-500 ${
+                        className={`text-xs text-gray-500 ${
                           isLocked ? "blur-sm select-none" : ""
                         }`}
                       >
@@ -219,7 +219,7 @@ export default function PublicCardConnectionSection({
           <a
             href={vcardHref}
             download={`${slug || "card"}.vcf`}
-            className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-600"
+            className="flex items-center justify-center rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
           >
             {t("actions.saveContact")}
           </a>
@@ -228,14 +228,14 @@ export default function PublicCardConnectionSection({
         {viewerIsOwner ? (
           <Link
             href="/dashboard/cards"
-            className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            className="flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
           >
             {t("actions.editCard")}
           </Link>
         ) : !viewerId ? (
           <Link
             href="/signup"
-            className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            className="flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
           >
             {t("actions.signupToConnect")}
           </Link>
@@ -247,19 +247,19 @@ export default function PublicCardConnectionSection({
           <button
             type="button"
             onClick={handleAccept}
-            className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            className="flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
           >
             {t("actions.acceptConnection")}
           </button>
         ) : status === "pending_sent" ? (
-          <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500">
+          <div className="flex items-center justify-center rounded-2xl border border-gray-100 bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-500">
             {t("actions.requestSent")}
           </div>
         ) : (
           <button
             type="button"
             onClick={handleConnect}
-            className="flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            className="flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
           >
             {t("actions.connect")}
           </button>

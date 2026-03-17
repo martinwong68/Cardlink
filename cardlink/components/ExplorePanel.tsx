@@ -436,213 +436,231 @@ export default function ExplorePanel() {
   };
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">{t("loading")}</p>;
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
+      </div>
+    );
   }
 
   return (
     <div className="min-w-0 space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
-            {t("brand")}
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-900">{t("title")}</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {t("subtitle")}
-          </p>
+      {/* Header area matching design: indigo background, search */}
+      <div className="-mx-4 -mt-6 rounded-b-3xl bg-indigo-600 px-5 pb-5 pt-4 md:-mx-0 md:rounded-2xl">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h1 className="text-lg font-bold text-white">{t("title")}</h1>
+            <p className="text-xs text-indigo-200">{t("subtitle")}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {ownerCompanyIds.length > 0 ? (
+              <Link
+                href="/dashboard/company-management"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white"
+                aria-label="Company management"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </Link>
+            ) : null}
+          </div>
         </div>
-        {ownerCompanyIds.length > 0 ? (
-          <Link
-            href="/dashboard/company-management"
-            className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800"
-          >
-            Company management
-          </Link>
-        ) : null}
+        {/* Search bar */}
+        <div className="flex items-center gap-2 rounded-xl bg-white/20 px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-200"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span className="text-xs text-indigo-200">{t("subtitle")}</span>
+        </div>
       </div>
 
+      {/* Message / alert */}
       {message ? (
-        <div className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-700">
-          {message}
+        <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-500"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span className="text-xs font-medium text-indigo-800">{message}</span>
         </div>
       ) : null}
 
-      <div className="grid min-w-0 gap-4 xl:grid-cols-3 xl:items-start">
-        <section className="flex min-h-0 flex-col space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-slate-900">{t("sections.promotion")}</h2>
+      {/* Featured Offers — horizontal scroll cards */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-800">{t("sections.promotion")}</span>
+          <span className="text-xs font-medium text-indigo-600">View All</span>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {promoSlides.length ? (
+            promoSlides.map(({ offer, company }) => (
+              <Link
+                key={offer.id}
+                href={`/dashboard/explore?companyId=${company.id}`}
+                className="flex-shrink-0 w-40 rounded-xl bg-gradient-to-br from-indigo-500 to-teal-400 p-4 text-white shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="text-lg font-bold leading-tight">{formatOffer(offer)}</div>
+                <div className="mt-1 text-xs opacity-80 truncate">{company.name}</div>
+                <div className="mt-1 text-xs opacity-70 truncate">{offer.title}</div>
+                <div className="mt-3 rounded-lg bg-white/20 px-2 py-1 text-center text-xs font-medium">
+                  Claim Now
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="w-full rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+              {t("empty.promotions")}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Categories grid */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-800">Categories</span>
+        </div>
+        <div className="overflow-x-auto pb-1">
+          <div className="flex w-max gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedCompanyId("all")}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                selectedCompanyId === "all"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {t("actions.all")}
+            </button>
+            {partnerCompanies.map((company) => (
+              <button
+                key={company.id}
+                type="button"
+                onClick={() => setSelectedCompanyId(company.id)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                  selectedCompanyId === company.id
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {company.name}
+              </button>
+            ))}
           </div>
-          <div className="min-h-[18rem] space-y-3 overflow-y-auto pr-1 xl:max-h-[calc(100vh-20rem)]">
-            {promoSlides.length ? (
-              promoSlides.map(({ offer, company }) => (
-                <Link
-                  key={offer.id}
-                  href={`/dashboard/explore?companyId=${company.id}`}
-                  className="block overflow-hidden rounded-2xl border border-slate-200 bg-white"
+        </div>
+      </section>
+
+      {/* Partners — card list */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-800">{t("sections.partners")}</span>
+        </div>
+        <div className="space-y-2">
+          {partnerCompanies.length ? (
+            partnerCompanies.map((company) => {
+              const hasMembership = accounts.some(
+                (account) => account.company_id === company.id
+              );
+
+              return (
+                <article
+                  key={company.id}
+                  className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
                 >
                   <div
-                    className="h-36 w-full bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url(${company.cover_url || "/promo-template.svg"})`,
-                    }}
-                  />
-                  <div className="space-y-1 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
-                      {company.name}
-                    </p>
-                    <p className="text-sm font-semibold text-slate-900">{offer.title}</p>
-                    <p className="text-xs text-slate-500">{formatOffer(offer)}</p>
+                    className="h-10 w-10 shrink-0 rounded-lg bg-indigo-100 bg-cover bg-center flex items-center justify-center"
+                    style={company.logo_url ? { backgroundImage: `url(${company.logo_url})` } : {}}
+                  >
+                    {!company.logo_url && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    )}
                   </div>
-                </Link>
-              ))
-            ) : (
-              <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-                {t("empty.promotions")}
-              </article>
-            )}
-          </div>
-        </section>
-
-        <section className="flex min-h-0 flex-col space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">{t("sections.partners")}</h2>
-          <div className="min-h-[18rem] space-y-3 overflow-y-auto pr-1 xl:max-h-[calc(100vh-20rem)]">
-            {partnerCompanies.length ? (
-              partnerCompanies.map((company) => {
-                const hasMembership = accounts.some(
-                  (account) => account.company_id === company.id
-                );
-
-                return (
-                  <article
-                    key={company.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-4"
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">{company.name}</p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {company.description || t("labels.membershipPartner")}
+                    </p>
+                  </div>
+                  {hasMembership ? (
+                    <Link
+                      href="/dashboard/membership"
+                      className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full"
+                    >
+                      {t("actions.joined")}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void joinMembership(company.id)}
+                      disabled={busyJoinCompanyId === company.id}
+                      className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-60 transition-colors"
+                    >
+                      {busyJoinCompanyId === company.id ? t("actions.submitting") : t("actions.join")}
+                    </button>
+                  )}
+                  <Link
+                    href={companyProfileSlugMap[company.id] ? `/c/${companyProfileSlugMap[company.id]}` : `/dashboard/explore?companyId=${company.id}`}
+                    aria-label={t("actions.view")}
                   >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="h-16 w-16 shrink-0 rounded-xl bg-cover bg-center"
-                        style={{
-                          backgroundImage: `url(${company.logo_url || "/promo-template.svg"})`,
-                        }}
-                      />
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-900">
-                          {company.name}
-                        </p>
-                        <p className="mt-1 line-clamp-2 text-xs text-slate-500">
-                          {company.description || t("labels.membershipPartner")}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 flex items-center justify-between gap-2">
-                      <Link
-                        href={companyProfileSlugMap[company.id] ? `/c/${companyProfileSlugMap[company.id]}` : `/dashboard/explore?companyId=${company.id}`}
-                        className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                      >
-                        {t("actions.view")}
-                      </Link>
-                      {hasMembership ? (
-                        <Link
-                          href="/dashboard/membership"
-                          className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white hover:bg-violet-700"
-                        >
-                          {t("actions.joined")}
-                        </Link>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => void joinMembership(company.id)}
-                          disabled={busyJoinCompanyId === company.id}
-                          className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
-                        >
-                          {busyJoinCompanyId === company.id ? t("actions.submitting") : t("actions.join")}
-                        </button>
-                      )}
-                    </div>
-                  </article>
-                );
-              })
-            ) : (
-              <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-                {t("empty.partners")}
-              </article>
-            )}
-          </div>
-        </section>
-
-        <section className="flex min-h-0 flex-col space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="flex flex-col gap-3">
-            <h2 className="text-base font-semibold text-slate-900">{t("sections.discounts")}</h2>
-            <div className="overflow-x-auto pb-1">
-              <div className="flex w-max gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedCompanyId("all")}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                    selectedCompanyId === "all"
-                      ? "bg-violet-600 text-white"
-                      : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-                  }`}
-                >
-                  {t("actions.all")}
-                </button>
-                {partnerCompanies.map((company) => (
-                  <button
-                    key={company.id}
-                    type="button"
-                    onClick={() => setSelectedCompanyId(company.id)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                      selectedCompanyId === company.id
-                        ? "bg-violet-600 text-white"
-                        : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-                    }`}
-                  >
-                    {company.name}
-                  </button>
-                ))}
-              </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="m9 18 6-6-6-6"/></svg>
+                  </Link>
+                </article>
+              );
+            })
+          ) : (
+            <div className="rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+              {t("empty.partners")}
             </div>
-          </div>
+          )}
+        </div>
+      </section>
 
-          <div className="min-h-[18rem] space-y-3 overflow-y-auto pr-1 xl:max-h-[calc(100vh-23rem)]">
-            {visibleOffers.length ? (
-              visibleOffers.map((offer) => {
-                const company = companyMap.get(offer.company_id);
-                const account = accounts.find((item) => item.company_id === offer.company_id);
+      {/* Discounts — offer cards */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-800">{t("sections.discounts")}</span>
+        </div>
+        <div className="space-y-3">
+          {visibleOffers.length ? (
+            visibleOffers.map((offer) => {
+              const company = companyMap.get(offer.company_id);
+              const account = accounts.find((item) => item.company_id === offer.company_id);
 
-                return (
-                  <article
-                    key={offer.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-4"
-                  >
-                    <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
-                      {company?.name ?? t("labels.company")}
+              return (
+                <article
+                  key={offer.id}
+                  className="rounded-xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        {company?.name ?? t("labels.company")}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-gray-800">{offer.title}</p>
+                      <p className="mt-1 text-xs text-gray-500">{formatOffer(offer)}</p>
+                    </div>
+                    <div className="ml-3 flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-xs text-gray-500">
+                      {t("labels.balance")}: <span className="font-semibold text-indigo-700">{account?.points_balance ?? 0} {t("labels.pointUnit")}</span>
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-slate-900">{offer.title}</p>
-                    <p className="mt-1 text-xs text-slate-500">{formatOffer(offer)}</p>
-                    <p className="mt-2 text-xs text-slate-500">
-                      {t("labels.balance")}: <span className="font-semibold text-violet-700">{account?.points_balance ?? 0} {t("labels.pointUnit")}</span>
-                    </p>
-
                     <button
                       type="button"
                       onClick={() => void redeemOffer(offer)}
                       disabled={busyOfferId === offer.id}
-                      className="mt-3 rounded-full bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-violet-700 disabled:opacity-60"
+                      className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-60 transition-colors"
                     >
                       {busyOfferId === offer.id ? t("actions.submitting") : t("actions.redeem")}
                     </button>
-                  </article>
-                );
-              })
-            ) : (
-              <article className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-                {t("empty.discounts")}
-              </article>
-            )}
-          </div>
-        </section>
-      </div>
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <div className="rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+              {t("empty.discounts")}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

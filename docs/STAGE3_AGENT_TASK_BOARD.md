@@ -1,0 +1,22 @@
+# Stage-3 Agent Task Board
+
+## Objective
+- Deliver Business module execution with active-company tenancy as the single query/write scope.
+
+## Task Board
+| ID | Agent | Module | Task | Dependency | Done Condition | Evidence | Status |
+|---|---|---|---|---|---|---|---|
+| S3-AG-01 | Architecture-Guard | Tenancy | Enforce active-company guard on all Business write APIs | Existing active-company guard utility | Every write API rejects mismatched `company_id` and uses active company as write scope | `cardlink/src/lib/business/active-company-guard.ts`, guarded routes under `cardlink/app/api/**` | Done |
+| S3-AG-02 | Architecture-Guard | Schema | Add additive Stage-3 migration for Inventory/Procurement/POS tables, indexes, RLS, and RPC | S3-AG-01 | Migration is additive only, has rollback notes, and introduces idempotency + dedup constraints | `migrations/20260311_inventory_procurement_pos_core.sql` | Done |
+| S3-AG-03 | Module-Delivery-Inventory | Inventory | Implement real product/movement/balance functions against DB | S3-AG-01, S3-AG-02 | Products/movements/balances persist and read from DB by active company only | `cardlink/app/api/inventory/products/route.ts`, `cardlink/app/api/inventory/movements/route.ts`, `cardlink/app/api/inventory/balances/route.ts` | Done |
+| S3-AG-04 | Module-Delivery-Commerce | Procurement | Implement real suppliers/PO/receipt functions with transaction-safe receipt flow | S3-AG-01, S3-AG-02, S3-AG-03 | Receipt flow writes receipt + receipt_items + inventory stock-in atomically and blocks over-receive | `cardlink/app/api/procurement/suppliers/route.ts`, `cardlink/app/api/procurement/purchase-orders/route.ts`, `cardlink/app/api/procurement/receipts/route.ts`, `migrations/20260311_inventory_procurement_pos_core.sql` | Done |
+| S3-AG-05 | Module-Delivery-Commerce | POS | Implement checkout intent persistence + webhook replay dedup + state machine transitions | S3-AG-01, S3-AG-02 | Idempotent checkout + provider_event_id dedup + invalid transition 409 | `cardlink/app/api/pos/checkout-intents/route.ts`, `cardlink/app/api/pos/webhooks/payment/route.ts`, `migrations/20260311_inventory_procurement_pos_core.sql` | Done |
+| S3-AG-06 | Module-Delivery-Namecard | Company Cards | Remove client-direct write bypasses and force guarded APIs | S3-AG-01 | Company card create/delete/profile-card paths all pass server guard | `cardlink/app/api/company-cards/cards/route.ts`, `cardlink/app/api/company-cards/cards/[cardId]/route.ts`, `cardlink/app/api/company-cards/profile-card/route.ts`, `cardlink/components/CompanyCardsManagementPanel.tsx` | Done |
+| S3-AG-07 | Product-Orchestrator | Company Management | Remove client-direct write bypasses and force guarded APIs | S3-AG-01 | Company profile/offer/tier/redemption writes all pass server guard | `cardlink/app/api/company-management/profile/route.ts`, `cardlink/app/api/company-management/offers/route.ts`, `cardlink/app/api/company-management/offers/[offerId]/route.ts`, `cardlink/app/api/company-management/membership-tiers/[tierId]/route.ts`, `cardlink/app/api/company-management/redemptions/[redemptionId]/decision/route.ts`, `cardlink/components/CompanyManagementPanel.tsx` | Done |
+| S3-AG-08 | Product-Orchestrator | Master Account | Verify fast switch + permission scope view for cross-company management | S3-AG-01 | User can one-click switch active company and view company-level access roles | `cardlink/app/api/business/main-account/route.ts`, `cardlink/app/business/settings/main-account/page.tsx`, `cardlink/components/CompanyCardsManagementPanel.tsx` | Done |
+| S3-AG-09 | Architecture-Guard | Governance | Run stage gate checks and attach smoke-test acceptance evidence | S3-AG-01..08 | Gate checklist marked pass/conditional with residual risks listed | `docs/STAGE3_ARCH_GUARD_GATE_CHECKS.md`, `docs/STAGE3_SMOKE_TEST_RECORD.md`, `docs/STAGE3_ACCEPTANCE_EVIDENCE.md` | Done |
+| S3-AG-10 | Product-Orchestrator | Verification | Execute build/lint and smoke tests for Stage-3 scope | S3-AG-02..09 | Build pass, changed-files lint pass, smoke script status recorded with blockers | `cardlink` build logs, `docs/STAGE3_SMOKE_TEST_RECORD.md`, `docs/STAGE3_ACCEPTANCE_EVIDENCE.md` | Conditional |
+
+## Risk Notes
+- POS webhook route now follows active-company guard and state-machine transitions, but provider-direct signed webhook endpoint design is still a follow-up.
+- End-to-end smoke that requires authenticated seeded test data is currently blocked in CLI-only context and needs founder-provided smoke credentials.

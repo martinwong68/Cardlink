@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Copy,
@@ -18,7 +18,6 @@ import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 import QRCodeModal from "@/components/QRCodeModal";
 import ContactsPanel from "@/components/ContactsPanel";
 import NfcCardsPanel from "@/components/NfcCardsPanel";
-import CompanyCardsManagementPanel from "@/components/CompanyCardsManagementPanel";
 
 const patternClassMap: Record<string, string> = {
   "gradient-1": "cardlink-pattern-gradient-1",
@@ -68,7 +67,7 @@ function CardsTabs({
   activeTab,
   isOwner,
 }: {
-  activeTab: "cards" | "contacts" | "nfc" | "company";
+  activeTab: "cards" | "contacts" | "nfc";
   isOwner: boolean;
 }) {
   const t = useTranslations("cards.tabs");
@@ -78,8 +77,8 @@ function CardsTabs({
         href="/dashboard/cards"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "cards"
-            ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
-            : "app-secondary-btn text-slate-500"
+            ? "bg-gradient-to-r from-indigo-600 to-indigo-600 text-white shadow-md shadow-indigo-300/40"
+            : "app-secondary-btn text-gray-500"
         }`}
       >
         {t("cards")}
@@ -88,8 +87,8 @@ function CardsTabs({
         href="/dashboard/cards?tab=contacts"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "contacts"
-            ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
-            : "app-secondary-btn text-slate-500"
+            ? "bg-gradient-to-r from-indigo-600 to-indigo-600 text-white shadow-md shadow-indigo-300/40"
+            : "app-secondary-btn text-gray-500"
         }`}
       >
         {t("contacts")}
@@ -98,19 +97,17 @@ function CardsTabs({
         href="/dashboard/cards?tab=nfc"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "nfc"
-            ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
-            : "app-secondary-btn text-slate-500"
+            ? "bg-gradient-to-r from-indigo-600 to-indigo-600 text-white shadow-md shadow-indigo-300/40"
+            : "app-secondary-btn text-gray-500"
         }`}
       >
         {t("nfc")}
       </Link>
       {isOwner ? (
         <Link
-          href="/dashboard/cards?tab=company"
+          href="/business/company-cards"
           className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-            activeTab === "company"
-              ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40"
-              : "app-secondary-btn text-slate-500"
+            "app-secondary-btn text-gray-500"
           }`}
         >
           Company Cards
@@ -122,6 +119,7 @@ function CardsTabs({
 
 export default function CardsDashboardPage() {
   const supabase = useMemo(() => createClient(), []);
+  const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("cards");
   const locale = useLocale();
@@ -131,8 +129,6 @@ export default function CardsDashboardPage() {
       ? "contacts"
       : tabParam === "nfc"
       ? "nfc"
-      : tabParam === "company"
-      ? "company"
       : "cards";
   const [cards, setCards] = useState<CardRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -221,6 +217,12 @@ export default function CardsDashboardPage() {
   useEffect(() => {
     void loadCards();
   }, []);
+
+  useEffect(() => {
+    if (tabParam === "company" && isOwner) {
+      router.replace("/business/company-cards");
+    }
+  }, [isOwner, router, tabParam]);
 
   const createCard = async () => {
     setMessage(null);
@@ -343,15 +345,6 @@ export default function CardsDashboardPage() {
     );
   }
 
-  if (activeTab === "company" && isOwner) {
-    return (
-      <div className="space-y-6">
-        <CardsTabs activeTab="company" isOwner={isOwner} />
-        <CompanyCardsManagementPanel />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -386,13 +379,13 @@ export default function CardsDashboardPage() {
       ) : null}
 
       {isLoading ? (
-        <div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-500">
+        <div className="flex min-h-[40vh] items-center justify-center text-sm text-gray-500">
           {t("loading")}
         </div>
       ) : null}
 
       {!isLoading && cards.length === 0 ? (
-        <div className="app-card p-8 text-center text-sm text-slate-500">
+        <div className="app-card p-8 text-center text-sm text-gray-500">
           {t("empty")}
         </div>
       ) : null}
@@ -412,18 +405,18 @@ export default function CardsDashboardPage() {
               {viewerPlan === "premium" ? (
                 <div className="absolute -right-2 top-4 z-10">
                   {card.company_id ? (
-                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow">
+                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-700 shadow">
                       {t("badges.company")}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow">
+                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-700 shadow">
                       {t("badges.premium")}
                     </span>
                   )}
                 </div>
               ) : card.company_id ? (
                 <div className="absolute -right-2 top-4 z-10">
-                  <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow">
+                  <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-700 shadow">
                     {t("badges.company")}
                   </span>
                 </div>
@@ -436,16 +429,16 @@ export default function CardsDashboardPage() {
                   } as React.CSSProperties}
                 />
                 <div className="flex-1">
-                  <p className="text-lg font-semibold text-slate-900">
+                  <p className="text-lg font-semibold text-gray-900">
                     {card.card_name || t("card.defaultName")}
                   </p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-gray-600">
                     {card.full_name || t("card.defaultUser")}
                   </p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-gray-400">
                     {card.title || ""}
                   </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
                     <span>
                       {t("card.slug", {
                         slug: card.slug || t("card.unpublished"),
@@ -466,7 +459,7 @@ export default function CardsDashboardPage() {
               <div className="mt-4 grid gap-2 sm:grid-cols-4">
                 <Link
                   href={`/dashboard/cards/${card.id}`}
-                  className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
+                  className="flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                   {t("actions.edit")}
@@ -474,7 +467,7 @@ export default function CardsDashboardPage() {
                 <button
                   type="button"
                   onClick={() => handleCopyLink(card.slug)}
-                  className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
+                  className="flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <Copy className="h-3.5 w-3.5" />
                   {t("actions.share")}
@@ -482,7 +475,7 @@ export default function CardsDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setQrCard(card)}
-                  className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
+                  className="flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-indigo-200 hover:text-indigo-600"
                 >
                   <QrCode className="h-3.5 w-3.5" />
                   {t("actions.qr")}
@@ -511,7 +504,7 @@ export default function CardsDashboardPage() {
       ) : null}
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gray-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
           {toast}
         </div>
       ) : null}

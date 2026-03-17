@@ -129,29 +129,29 @@ export default function UpgradePage() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="mt-2 text-2xl font-semibold text-gray-900">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-gray-500">
           {t("subtitle")}
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-gray-900">
               {t("free.title")}
             </h2>
-            <span className="text-xs font-semibold text-slate-500">
+            <span className="text-xs font-semibold text-gray-500">
               {t("free.badge")}
             </span>
           </div>
-          <p className="mt-4 text-3xl font-semibold text-slate-900">$0</p>
-          <ul className="mt-6 space-y-3 text-sm text-slate-600">
+          <p className="mt-4 text-3xl font-semibold text-gray-900">$0</p>
+          <ul className="mt-6 space-y-3 text-sm text-gray-600">
             <li>{t("free.features.cards")}</li>
             <li>{t("free.features.fields")}</li>
             <li>{t("free.features.public")}</li>
@@ -160,27 +160,27 @@ export default function UpgradePage() {
           </ul>
         </div>
 
-        <div className="relative rounded-3xl border-2 border-violet-600 bg-white p-6 shadow-lg">
-          <div className="absolute -top-4 left-6 rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white">
+        <div className="relative rounded-3xl border-2 border-indigo-600 bg-white p-6 shadow-lg">
+          <div className="absolute -top-4 left-6 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white">
             {t("premium.badge")}
           </div>
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-gray-900">
               {t("premium.title")}
             </h2>
-            <span className="text-xs font-semibold text-slate-500">
+            <span className="text-xs font-semibold text-gray-500">
               {t("premium.monthlyLabel")}
             </span>
           </div>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-gray-500">
             {billingDisplay.currencySymbol}
             {billingDisplay.yearlyDisplayPrice} {t("premium.yearlyLabel")}
           </p>
-          <p className="mt-4 text-3xl font-semibold text-slate-900">
+          <p className="mt-4 text-3xl font-semibold text-gray-900">
             {billingDisplay.currencySymbol}
             {billingDisplay.monthlyDisplayPrice}
           </p>
-          <ul className="mt-6 space-y-3 text-sm text-slate-600">
+          <ul className="mt-6 space-y-3 text-sm text-gray-600">
             <li>{t("premium.features.unlimitedCards")}</li>
             <li>{t("premium.features.unlimitedFields")}</li>
             <li>{t("premium.features.fullDetails")}</li>
@@ -192,10 +192,10 @@ export default function UpgradePage() {
           </ul>
           <div className="mt-6">
             {viewerPlan === "premium" ? (
-              <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600">
+              <div className="space-y-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-center text-sm font-semibold text-gray-600">
                 <p>{t("premium.status")}</p>
                 {premiumUntilDateLabel ? (
-                  <p className="text-xs font-medium text-slate-500">
+                  <p className="text-xs font-medium text-gray-500">
                     {t("premium.until", { date: premiumUntilDateLabel })}
                   </p>
                 ) : null}
@@ -203,13 +203,13 @@ export default function UpgradePage() {
                   type="button"
                   onClick={handleDowngrade}
                   disabled={isPortalLoading}
-                  className="w-full rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="w-full rounded-full border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isPortalLoading ? t("actions.redirecting") : t("actions.downgrade")}
                 </button>
                 <Link
                   href="/dashboard/settings/support"
-                  className="inline-block text-xs font-medium text-slate-500 underline-offset-2 hover:underline"
+                  className="inline-block text-xs font-medium text-gray-500 underline-offset-2 hover:underline"
                 >
                   {t("actions.manageBilling")}
                 </Link>
@@ -220,7 +220,7 @@ export default function UpgradePage() {
                   type="button"
                   onClick={() => handleCheckout("monthly")}
                   disabled={isLoading !== null}
-                  className="rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isLoading === "monthly"
                     ? t("actions.redirecting")
@@ -230,7 +230,7 @@ export default function UpgradePage() {
                   type="button"
                   onClick={() => handleCheckout("yearly")}
                   disabled={isLoading !== null}
-                  className="rounded-full border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-600 shadow-sm transition hover:border-violet-300 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="rounded-full border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-600 shadow-sm transition hover:border-indigo-300 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isLoading === "yearly"
                     ? t("actions.redirecting")

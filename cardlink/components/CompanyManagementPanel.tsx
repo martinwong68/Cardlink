@@ -142,7 +142,6 @@ function formatDate(value: string) {
 export default function CompanyManagementPanel() {
   const supabase = useMemo(() => createClient(), []);
   const t = useTranslations("companyManagementPanel");
-  const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [adminCompanyIds, setAdminCompanyIds] = useState<string[]>([]);
@@ -181,8 +180,6 @@ export default function CompanyManagementPanel() {
       setIsLoading(false);
       return;
     }
-
-    setUserId(user.id);
 
     const [companiesRes, ownerRoleRes] = await Promise.all([
       supabase
@@ -358,9 +355,11 @@ export default function CompanyManagementPanel() {
     });
 
     setIsLoading(false);
-  }, [selectedCompanyId, supabase]);
+  }, [selectedCompanyId, supabase, t]);
 
   useEffect(() => {
+    // Initial data bootstrap for this panel is intentionally triggered from mount/dependency changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadData();
   }, [loadData]);
 
@@ -377,18 +376,24 @@ export default function CompanyManagementPanel() {
     setBusyId("save-company");
     setMessage(null);
 
-    const { error } = await supabase
-      .from("companies")
-      .update({
-        name: editor.name.trim(),
-        description: editor.description.trim() || null,
-        logo_url: editor.logo_url.trim() || null,
-        cover_url: editor.cover_url.trim() || null,
-      })
-      .eq("id", selectedCompanyId);
+    const response = await fetch("/api/company-management/profile", {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        "x-cardlink-app-scope": "business",
+      },
+      body: JSON.stringify({
+        company_id: selectedCompanyId,
+        name: editor.name,
+        description: editor.description,
+        logo_url: editor.logo_url,
+        cover_url: editor.cover_url,
+      }),
+    });
 
-    if (error) {
-      setMessage(error.message);
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      setMessage(result.error ?? "Failed to save company profile.");
       setBusyId(null);
       return;
     }
@@ -426,22 +431,27 @@ export default function CompanyManagementPanel() {
       return;
     }
 
-    const { error } = await supabase.from("company_offers").insert({
-      company_id: selectedCompanyId,
-      title: offerDraft.title.trim(),
-      description: offerDraft.description.trim() || null,
-      offer_type: "discount",
-      discount_type: offerDraft.discountType === "special" ? null : offerDraft.discountType,
-      discount_value: Number.isFinite(discountValue) ? discountValue : null,
-      points_cost: Number.isFinite(pointsCost) ? pointsCost : null,
-      usage_limit: Number.isFinite(usageLimit) ? usageLimit : null,
-      per_member_limit: Number.isFinite(perMemberLimit) ? perMemberLimit : null,
-      is_active: true,
-      created_by: userId,
+    const response = await fetch("/api/company-management/offers", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-cardlink-app-scope": "business",
+      },
+      body: JSON.stringify({
+        company_id: selectedCompanyId,
+        title: offerDraft.title,
+        description: offerDraft.description,
+        discount_type: offerDraft.discountType === "special" ? null : offerDraft.discountType,
+        discount_value: Number.isFinite(discountValue) ? discountValue : null,
+        points_cost: Number.isFinite(pointsCost) ? pointsCost : null,
+        usage_limit: Number.isFinite(usageLimit) ? usageLimit : null,
+        per_member_limit: Number.isFinite(perMemberLimit) ? perMemberLimit : null,
+      }),
     });
 
-    if (error) {
-      setMessage(error.message);
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      setMessage(result.error ?? "Failed to create discount.");
       setBusyId(null);
       return;
     }
@@ -465,14 +475,16 @@ export default function CompanyManagementPanel() {
     setBusyId(`delete-offer-${offerId}`);
     setMessage(null);
 
-    const { error } = await supabase
-      .from("company_offers")
-      .delete()
-      .eq("id", offerId)
-      .eq("company_id", selectedCompanyId);
+    const response = await fetch(`/api/company-management/offers/${offerId}`, {
+      method: "DELETE",
+      headers: {
+        "x-cardlink-app-scope": "business",
+      },
+    });
 
-    if (error) {
-      setMessage(error.message);
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      setMessage(result.error ?? "Failed to delete discount.");
       setBusyId(null);
       return;
     }
@@ -536,11 +548,16 @@ export default function CompanyManagementPanel() {
     setBusyId(`save-offer-${editingOfferId}`);
     setMessage(null);
 
-    const { error } = await supabase
-      .from("company_offers")
-      .update({
-        title: offerEditDraft.title.trim(),
-        description: offerEditDraft.description.trim() || null,
+    const response = await fetch(`/api/company-management/offers/${editingOfferId}`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        "x-cardlink-app-scope": "business",
+      },
+      body: JSON.stringify({
+        company_id: selectedCompanyId,
+        title: offerEditDraft.title,
+        description: offerEditDraft.description,
         discount_type:
           offerEditDraft.discountType === "special" ? null : offerEditDraft.discountType,
         discount_value: Number.isFinite(discountValue) ? discountValue : null,
@@ -548,12 +565,12 @@ export default function CompanyManagementPanel() {
         usage_limit: Number.isFinite(usageLimit) ? usageLimit : null,
         per_member_limit: Number.isFinite(perMemberLimit) ? perMemberLimit : null,
         is_active: offerEditDraft.isActive,
-      })
-      .eq("id", editingOfferId)
-      .eq("company_id", selectedCompanyId);
+      }),
+    });
 
-    if (error) {
-      setMessage(error.message);
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      setMessage(result.error ?? "Failed to update discount.");
       setBusyId(null);
       return;
     }
@@ -568,21 +585,29 @@ export default function CompanyManagementPanel() {
     setBusyId(`pending-${redemptionId}`);
     setMessage(null);
 
-    const { error } = await supabase.rpc("company_confirm_redemption", {
-      p_redemption_id: redemptionId,
-      p_approve: approve,
-      p_reason: approve ? null : t("messages.rejectedByOwner"),
-    });
+    const response = await fetch(
+      `/api/company-management/redemptions/${redemptionId}/decision`,
+      {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+          "x-cardlink-app-scope": "business",
+        },
+        body: JSON.stringify({
+          approve,
+          reason: approve ? null : t("messages.rejectedByOwner"),
+        }),
+      }
+    );
 
-    if (error) {
-      setMessage(error.message);
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      setMessage(result.error ?? "Failed to process redemption.");
       setBusyId(null);
       return;
     }
 
-    setMessage(
-      approve ? t("messages.couponRedeemed") : t("messages.couponRejected")
-    );
+    setMessage(approve ? t("messages.couponRedeemed") : t("messages.couponRejected"));
     setBusyId(null);
     await loadData();
   };
@@ -599,13 +624,20 @@ export default function CompanyManagementPanel() {
     setBusyId(`tier-${tierId}`);
     setMessage(null);
 
-    const { error } = await supabase
-      .from("membership_tiers")
-      .update({ required_spend_amount: value })
-      .eq("id", tierId);
+    const response = await fetch(`/api/company-management/membership-tiers/${tierId}`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        "x-cardlink-app-scope": "business",
+      },
+      body: JSON.stringify({
+        required_spend_amount: value,
+      }),
+    });
 
-    if (error) {
-      setMessage(error.message);
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      setMessage(result.error ?? "Failed to update tier requirement.");
       setBusyId(null);
       return;
     }
@@ -616,12 +648,12 @@ export default function CompanyManagementPanel() {
   };
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">{t("states.loading")}</p>;
+    return <p className="text-sm text-gray-500">{t("states.loading")}</p>;
   }
 
   if (adminCompanyIds.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+      <div className="rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-600 shadow-sm">
         {t("states.noAdmin")}
       </div>
     );
@@ -630,15 +662,15 @@ export default function CompanyManagementPanel() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">{t("header.brand")}</p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">{t("header.title")}</h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">{t("header.brand")}</p>
+        <h1 className="mt-2 text-2xl font-semibold text-gray-900">{t("header.title")}</h1>
+        <p className="mt-2 text-sm text-gray-500">
           {t("header.subtitle")}
         </p>
       </div>
 
       {message ? (
-        <div className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-700">
+        <div className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
           {message}
         </div>
       ) : null}
@@ -651,8 +683,8 @@ export default function CompanyManagementPanel() {
             onClick={() => setSelectedCompanyId(company.id)}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               selectedCompanyId === company.id
-                ? "bg-violet-600 text-white"
-                : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+                ? "bg-indigo-600 text-white"
+                : "bg-white text-gray-600 ring-1 ring-slate-200 hover:bg-gray-50"
             }`}
           >
             {company.name}
@@ -662,35 +694,35 @@ export default function CompanyManagementPanel() {
 
       {selectedCompany ? (
         <section className="grid gap-4 lg:grid-cols-2">
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-slate-900">{t("sections.companyProfile.title")}</h2>
-            <p className="mt-1 text-xs text-slate-500">{t("sections.companyProfile.subtitle")}</p>
+          <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+            <h2 className="text-base font-semibold text-gray-900">{t("sections.companyProfile.title")}</h2>
+            <p className="mt-1 text-xs text-gray-500">{t("sections.companyProfile.subtitle")}</p>
 
             <div className="mt-4 space-y-3">
               <input
                 value={editor.name}
                 onChange={(event) => setEditor((prev) => ({ ...prev, name: event.target.value }))}
                 placeholder={t("placeholders.companyName")}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
               />
               <textarea
                 value={editor.description}
                 onChange={(event) => setEditor((prev) => ({ ...prev, description: event.target.value }))}
                 placeholder={t("placeholders.companyDescription")}
                 rows={3}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
               />
               <input
                 value={editor.logo_url}
                 onChange={(event) => setEditor((prev) => ({ ...prev, logo_url: event.target.value }))}
                 placeholder={t("placeholders.companyLogoUrl")}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
               />
               <input
                 value={editor.cover_url}
                 onChange={(event) => setEditor((prev) => ({ ...prev, cover_url: event.target.value }))}
                 placeholder={t("placeholders.companyCoverUrl")}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
               />
             </div>
 
@@ -698,7 +730,7 @@ export default function CompanyManagementPanel() {
               type="button"
               onClick={() => void saveCompany()}
               disabled={busyId === "save-company"}
-              className="mt-4 rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+              className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
             >
               {busyId === "save-company"
                 ? t("actions.saving")
@@ -706,12 +738,12 @@ export default function CompanyManagementPanel() {
             </button>
           </article>
 
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-slate-900">{t("sections.currentDiscounts.title")}</h2>
+          <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+            <h2 className="text-base font-semibold text-gray-900">{t("sections.currentDiscounts.title")}</h2>
             <div className="mt-3 space-y-2">
               {offers.length ? (
                 offers.slice(0, 8).map((offer) => (
-                  <div key={offer.id} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                  <div key={offer.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
                     {editingOfferId === offer.id && offerEditDraft ? (
                       <div className="space-y-2">
                         <input
@@ -722,7 +754,7 @@ export default function CompanyManagementPanel() {
                             )
                           }
                           placeholder={t("placeholders.discountTitle")}
-                          className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                          className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
                         />
                         <textarea
                           value={offerEditDraft.description}
@@ -733,7 +765,7 @@ export default function CompanyManagementPanel() {
                           }
                           placeholder={t("placeholders.discountDescription")}
                           rows={2}
-                          className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                          className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
                         />
                         <div className="grid gap-2 sm:grid-cols-2">
                           <select
@@ -748,7 +780,7 @@ export default function CompanyManagementPanel() {
                                   : prev
                               )
                             }
-                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
                           >
                             <option value="percentage">{t("discountType.percentage")}</option>
                             <option value="fixed">{t("discountType.fixed")}</option>
@@ -762,7 +794,7 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.discountValue")}
-                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
                           />
                           <input
                             value={offerEditDraft.pointsCost}
@@ -772,7 +804,7 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.pointsCostOptional")}
-                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
                           />
                           <input
                             value={offerEditDraft.usageLimit}
@@ -782,7 +814,7 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.usageLimitOptional")}
-                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
                           />
                           <input
                             value={offerEditDraft.perMemberLimit}
@@ -792,9 +824,9 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.perMemberLimitOptional")}
-                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs outline-none ring-violet-300 focus:ring"
+                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
                           />
-                          <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-700">
+                          <label className="flex items-center gap-2 rounded-lg border border-gray-100 px-2 py-1.5 text-xs text-gray-700">
                             <input
                               type="checkbox"
                               checked={offerEditDraft.isActive}
@@ -812,14 +844,14 @@ export default function CompanyManagementPanel() {
                             type="button"
                             onClick={() => void saveEditedOffer()}
                             disabled={busyId === `save-offer-${offer.id}`}
-                            className="rounded-full bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+                            className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
                           >
                             {busyId === `save-offer-${offer.id}` ? t("actions.saving") : t("actions.saveDiscount")}
                           </button>
                           <button
                             type="button"
                             onClick={cancelEditOffer}
-                            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700"
+                            className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700"
                           >
                             {t("actions.cancel")}
                           </button>
@@ -827,8 +859,8 @@ export default function CompanyManagementPanel() {
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm font-semibold text-slate-900">{offer.title}</p>
-                        <p className="text-xs text-slate-600">
+                        <p className="text-sm font-semibold text-gray-900">{offer.title}</p>
+                        <p className="text-xs text-gray-600">
                           {offer.discount_type === "percentage" && offer.discount_value !== null
                             ? t("offer.percentageOff", { value: offer.discount_value })
                             : offer.discount_type === "fixed" && offer.discount_value !== null
@@ -837,10 +869,10 @@ export default function CompanyManagementPanel() {
                             ? t("offer.points", { value: offer.points_cost })
                             : t("offer.special")}
                         </p>
-                        <p className="text-[11px] text-slate-500">
+                        <p className="text-[11px] text-gray-500">
                           {offer.is_active ? t("common.active") : t("common.inactive")}
                         </p>
-                        <p className="text-[11px] text-slate-500">
+                        <p className="text-[11px] text-gray-500">
                           {t("labels.totalLimit")}: {offer.usage_limit ?? t("common.unlimited")} · {t("labels.perUserLimit")}: {offer.per_member_limit ?? t("common.unlimited")}
                         </p>
                         <div className="mt-2 flex flex-wrap gap-2">
@@ -865,7 +897,7 @@ export default function CompanyManagementPanel() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">{t("empty.noDiscount")}</p>
+                <p className="text-sm text-gray-500">{t("empty.noDiscount")}</p>
               )}
             </div>
           </article>
@@ -873,21 +905,21 @@ export default function CompanyManagementPanel() {
       ) : null}
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">{t("sections.uploadDiscount.title")}</h2>
+        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-gray-900">{t("sections.uploadDiscount.title")}</h2>
           <div className="mt-4 space-y-3">
             <input
               value={offerDraft.title}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, title: event.target.value }))}
               placeholder={t("placeholders.discountTitle")}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
             />
             <textarea
               value={offerDraft.description}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, description: event.target.value }))}
               placeholder={t("placeholders.discountDescription")}
               rows={3}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
             />
             <select
               value={offerDraft.discountType}
@@ -897,7 +929,7 @@ export default function CompanyManagementPanel() {
                   discountType: event.target.value as OfferDraft["discountType"],
                 }))
               }
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
             >
               <option value="percentage">{t("discountType.percentage")}</option>
               <option value="fixed">{t("discountType.fixed")}</option>
@@ -909,19 +941,19 @@ export default function CompanyManagementPanel() {
                 setOfferDraft((prev) => ({ ...prev, discountValue: event.target.value }))
               }
               placeholder={t("placeholders.discountValue")}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
             />
             <input
               value={offerDraft.pointsCost}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, pointsCost: event.target.value }))}
               placeholder={t("placeholders.pointsCostOptional")}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
             />
             <input
               value={offerDraft.usageLimit}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, usageLimit: event.target.value }))}
               placeholder={t("placeholders.usageLimitOptional")}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
             />
             <input
               value={offerDraft.perMemberLimit}
@@ -929,14 +961,14 @@ export default function CompanyManagementPanel() {
                 setOfferDraft((prev) => ({ ...prev, perMemberLimit: event.target.value }))
               }
               placeholder={t("placeholders.perMemberLimitOptional")}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-violet-300 focus:ring"
+              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
             />
           </div>
           <button
             type="button"
             onClick={() => void createOffer()}
             disabled={busyId === "create-offer"}
-            className="mt-4 rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+            className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
           >
             {busyId === "create-offer"
               ? t("actions.submitting")
@@ -944,39 +976,39 @@ export default function CompanyManagementPanel() {
           </button>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">{t("sections.members.title")}</h2>
+        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-gray-900">{t("sections.members.title")}</h2>
           <div className="mt-3 space-y-2">
             {memberships.length ? (
               memberships.slice(0, 30).map((account) => {
                 const profile = profileMap.get(account.user_id);
                 const tier = account.tier_id ? tierMap.get(account.tier_id) : null;
                 return (
-                  <div key={account.id} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                    <p className="text-sm font-semibold text-slate-900">
+                  <div key={account.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
+                    <p className="text-sm font-semibold text-gray-900">
                       {profile?.full_name || profile?.email || account.user_id.slice(0, 8)}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-gray-500">
                       {t("labels.status")}: {account.status} · {t("labels.tier")}: {tier?.name ?? t("common.na")} · {t("labels.spend")}: ${Number(account.total_spend_amount ?? 0).toFixed(2)}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-gray-500">
                       {t("labels.current")}: {account.points_balance} · {t("labels.lifetime")}: {account.lifetime_points}
                     </p>
-                    <p className="text-[11px] text-slate-400">{t("labels.joined")} {formatDate(account.joined_at)}</p>
+                    <p className="text-[11px] text-gray-400">{t("labels.joined")} {formatDate(account.joined_at)}</p>
                   </div>
                 );
               })
             ) : (
-              <p className="text-sm text-slate-500">{t("empty.noMembershipAccount")}</p>
+              <p className="text-sm text-gray-500">{t("empty.noMembershipAccount")}</p>
             )}
           </div>
         </article>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">{t("sections.tierRules.title")}</h2>
-          <p className="mt-1 text-xs text-slate-500">
+        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-gray-900">{t("sections.tierRules.title")}</h2>
+          <p className="mt-1 text-xs text-gray-500">
             {t("sections.tierRules.subtitle")}
           </p>
 
@@ -988,13 +1020,13 @@ export default function CompanyManagementPanel() {
                   const programName =
                     membershipPrograms.find((program) => program.id === tier.program_id)?.name ?? t("common.program");
                   return (
-                    <div key={tier.id} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                    <div key={tier.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-3">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">
-                            {tier.name} <span className="text-xs text-slate-500">({t("labels.rank")} {tier.rank})</span>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {tier.name} <span className="text-xs text-gray-500">({t("labels.rank")} {tier.rank})</span>
                           </p>
-                          <p className="text-[11px] text-slate-500">{programName}</p>
+                          <p className="text-[11px] text-gray-500">{programName}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <input
@@ -1003,13 +1035,13 @@ export default function CompanyManagementPanel() {
                               setTierRequirementDraft((prev) => ({ ...prev, [tier.id]: event.target.value }))
                             }
                             inputMode="decimal"
-                            className="w-28 rounded-lg border border-slate-200 px-2 py-1 text-sm outline-none ring-violet-300 focus:ring"
+                            className="w-28 rounded-lg border border-gray-100 px-2 py-1 text-sm outline-none ring-indigo-300 focus:ring"
                           />
                           <button
                             type="button"
                             onClick={() => void saveTierRequiredAmount(tier.id)}
                             disabled={busyId === `tier-${tier.id}`}
-                            className="rounded-full bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+                            className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
                           >
                             {busyId === `tier-${tier.id}` ? t("actions.saving") : t("actions.save")}
                           </button>
@@ -1019,14 +1051,14 @@ export default function CompanyManagementPanel() {
                   );
                 })
             ) : (
-              <p className="text-sm text-slate-500">{t("empty.noMembershipTiers")}</p>
+              <p className="text-sm text-gray-500">{t("empty.noMembershipTiers")}</p>
             )}
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">{t("sections.transactions.title")}</h2>
-          <p className="mt-1 text-xs text-slate-500">{t("sections.transactions.subtitle")}</p>
+        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-gray-900">{t("sections.transactions.title")}</h2>
+          <p className="mt-1 text-xs text-gray-500">{t("sections.transactions.subtitle")}</p>
 
           <div className="mt-3 space-y-2">
             {membershipTransactions.length ? (
@@ -1035,35 +1067,35 @@ export default function CompanyManagementPanel() {
                 const profile = account ? profileMap.get(account.user_id) : null;
 
                 return (
-                  <div key={txn.id} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                    <p className="text-sm font-semibold text-slate-900">
+                  <div key={txn.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
+                    <p className="text-sm font-semibold text-gray-900">
                       {profile?.full_name || profile?.email || txn.user_id.slice(0, 8)}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-gray-500">
                       {t("labels.amount")}: {txn.currency} {Number(txn.amount ?? 0).toFixed(2)} · {t("labels.account")}: {txn.account_id.slice(0, 8)}
                     </p>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-gray-400">
                       {formatDate(txn.occurred_at)}{txn.note ? ` · ${txn.note}` : ""}
                     </p>
                   </div>
                 );
               })
             ) : (
-              <p className="text-sm text-slate-500">{t("empty.noMembershipTransactions")}</p>
+              <p className="text-sm text-gray-500">{t("empty.noMembershipTransactions")}</p>
             )}
           </div>
         </article>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-slate-900">{t("sections.redemption.title")}</h2>
-            <p className="mt-1 text-sm text-slate-500">{t("sections.redemption.subtitle")}</p>
+            <h2 className="text-base font-semibold text-gray-900">{t("sections.redemption.title")}</h2>
+            <p className="mt-1 text-sm text-gray-500">{t("sections.redemption.subtitle")}</p>
           </div>
           <Link
             href="/dashboard/scan"
-            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
           >
             {t("actions.scanRedemption")}
           </Link>
@@ -1074,11 +1106,11 @@ export default function CompanyManagementPanel() {
             pendingRedemptions.map((item) => {
               const offer = offerMap.get(item.offer_id);
               return (
-                <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                <div key={item.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">{offer?.title ?? t("common.offer")}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-sm font-semibold text-gray-900">{offer?.title ?? t("common.offer")}</p>
+                      <p className="text-xs text-gray-500">
                         {t("labels.user")}: {item.user_id ? item.user_id.slice(0, 8) : t("common.unknown")} · {t("labels.points")}: {item.points_spent} · {formatDate(item.redeemed_at)}
                       </p>
                     </div>
@@ -1105,7 +1137,7 @@ export default function CompanyManagementPanel() {
               );
             })
           ) : (
-            <p className="text-sm text-slate-500">{t("empty.noPendingRedemption")}</p>
+            <p className="text-sm text-gray-500">{t("empty.noPendingRedemption")}</p>
           )}
         </div>
       </section>

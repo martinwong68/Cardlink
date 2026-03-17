@@ -764,6 +764,9 @@
     "brand": "CardLink",
     "title": "設定",
     "subtitle": "管理你的帳戶與偏好設定。",
+    "notices": {
+      "businessAccessDenied": "你的帳戶目前無法使用 Business 介面。"
+    },
     "errors": {
       "upgradeToExport": "升級至高級版以匯出聯絡人。",
       "signInExport": "請登入以匯出聯絡人。",
@@ -788,12 +791,53 @@
       "premiumBadge": "高級版",
       "downgrade": "降級為免費方案",
       "openingPortal": "開啟中...",
+      "switchToBusiness": "切換到 Business 介面",
       "orderNfc": "訂購 NFC 名片",
       "export": "匯出聯絡人",
       "support": "協助與支援"
     },
     "actions": {
       "logout": "登出"
+    }
+  },
+  "businessSettings": {
+    "brand": "Business 介面",
+    "title": "設定",
+    "subtitle": "管理 Business 介面偏好。",
+    "links": {
+      "mainAccount": "主帳號管理情境",
+      "switchToClient": "切換回 Client GUI"
+    }
+  },
+  "businessMainAccount": {
+    "brand": "Business 介面",
+    "title": "主帳號",
+    "subtitle": "選擇 Business App 操作使用的目前公司情境。",
+    "states": {
+      "loading": "載入帳號情境中...",
+      "activeTag": "目前：{company}"
+    },
+    "fields": {
+      "activeCompany": "目前公司",
+      "selectPlaceholder": "請選擇公司",
+      "quickSwitch": "快速切換公司",
+      "permissionScope": "公司權限範圍"
+    },
+    "actions": {
+      "save": "儲存目前公司",
+      "saving": "儲存中..."
+    },
+    "badges": {
+      "masterRuntime": "Master（執行判斷）",
+      "masterDb": "Master（資料庫旗標）"
+    },
+    "messages": {
+      "signInRequired": "請重新登入。",
+      "loadFailed": "無法載入主帳號資料。",
+      "selectCompany": "請先選擇公司。",
+      "saveFailed": "無法儲存目前公司。",
+      "saved": "已更新目前公司。",
+      "notEligible": "你的帳號目前不具備 Business 管理情境資格。"
     }
   },
   "support": {

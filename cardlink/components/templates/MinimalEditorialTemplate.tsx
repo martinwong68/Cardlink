@@ -279,13 +279,13 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
           ) : null}
           <div className="absolute inset-0 bg-white/75" />
 
-          <div className="relative ml-auto rounded-full border-2 border-slate-900 bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
+          <div className="relative ml-auto rounded-full border-2 border-slate-900 bg-gray-900 px-3 py-1 text-xs font-semibold text-white">
             Available
           </div>
 
           <div className="relative grid gap-4 sm:grid-cols-[96px_1fr] sm:items-center">
             <div
-              className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border-2 border-slate-900 bg-white text-3xl font-extrabold text-slate-900"
+              className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border-2 border-slate-900 bg-white text-3xl font-extrabold text-gray-900"
               style={{
                 backgroundImage:
                   "radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--cardlink-base) 30%, white), transparent 65%)",
@@ -303,25 +303,25 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900">{fullName}</h1>
+              <h1 className="text-3xl font-extrabold text-gray-900">{fullName}</h1>
               {(title || company) ? (
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-gray-600">
                   {[title, company].filter(Boolean).join(" • ")}
                 </p>
               ) : null}
               <div className="mt-3 flex flex-wrap gap-2">
                 {title ? (
-                  <span className="rounded-full border-2 border-dashed border-slate-900 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                  <span className="rounded-full border-2 border-dashed border-gray-900 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
                     {title}
                   </span>
                 ) : null}
                 {company ? (
-                  <span className="rounded-full border-2 border-dashed border-slate-900 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                  <span className="rounded-full border-2 border-dashed border-gray-900 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
                     {company}
                   </span>
                 ) : null}
                 {!title && !company ? (
-                  <span className="rounded-full border-2 border-dashed border-slate-900 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                  <span className="rounded-full border-2 border-dashed border-gray-900 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
                     CardLink
                   </span>
                 ) : null}
@@ -333,21 +333,21 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
         <section className="app-card mt-5 rounded-3xl border-2 border-slate-900 p-6">
           <h2 className="app-kicker">簡介與資訊</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-3">
-              <p className="text-xs text-slate-500">姓名</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">{fullName}</p>
+            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-3">
+              <p className="text-xs text-gray-500">姓名</p>
+              <p className="mt-1 text-sm font-semibold text-gray-900">{fullName}</p>
             </div>
-            <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-3">
-              <p className="text-xs text-slate-500">職稱</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">{title || "-"}</p>
+            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-3">
+              <p className="text-xs text-gray-500">職稱</p>
+              <p className="mt-1 text-sm font-semibold text-gray-900">{title || "-"}</p>
             </div>
-            <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-3">
-              <p className="text-xs text-slate-500">公司</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">{company || "-"}</p>
+            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-3">
+              <p className="text-xs text-gray-500">公司</p>
+              <p className="mt-1 text-sm font-semibold text-gray-900">{company || "-"}</p>
             </div>
-            <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-3 sm:col-span-2">
-              <p className="text-xs text-slate-500">簡介</p>
-              <p className="mt-1 text-sm text-slate-700">{bio || "-"}</p>
+            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-3 sm:col-span-2">
+              <p className="text-xs text-gray-500">簡介</p>
+              <p className="mt-1 text-sm text-gray-700">{bio || "-"}</p>
             </div>
           </div>
         </section>
@@ -355,7 +355,7 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
         <section className="app-card mt-5 rounded-3xl border-2 border-slate-900 p-6">
           <h2 className="app-kicker">{t("sections.contact")}</h2>
           {visibleFields.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">{t("empty.contact")}</p>
+            <p className="mt-4 text-sm text-gray-500">{t("empty.contact")}</p>
           ) : (
             <div className="mt-4 flex flex-wrap gap-3">
               {visibleFields.map((field) => {
@@ -367,7 +367,7 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
                     title={field.field_value}
                     aria-label={field.field_label || field.field_type}
                     onClick={() => handleContactClick(field.field_type, field.field_value)}
-                    className="app-card-soft flex h-14 w-14 items-center justify-center rounded-xl border-2 border-slate-900 bg-white text-slate-900"
+                    className="app-card-soft flex h-14 w-14 items-center justify-center rounded-xl border-2 border-slate-900 bg-white text-gray-900"
                   >
                     <Icon className="h-5 w-5" />
                   </button>
@@ -380,7 +380,7 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
         <section className="app-card mt-5 rounded-3xl border-2 border-slate-900 p-6">
           <h2 className="app-kicker">{t("sections.links")}</h2>
           {sortedLinks.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">{t("empty.links")}</p>
+            <p className="mt-4 text-sm text-gray-500">{t("empty.links")}</p>
           ) : (
             <div className="mt-4 grid grid-flow-col auto-cols-[72px] gap-3 overflow-x-auto pb-2">
               {sortedLinks.map((link) => {
@@ -392,7 +392,7 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
                     target="_blank"
                     rel="noreferrer"
                     title={link.label}
-                    className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl border-2 border-slate-900 bg-white text-slate-900"
+                    className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl border-2 border-slate-900 bg-white text-gray-900"
                   >
                     {LinkIcon ? (
                       <LinkIcon className="h-6 w-6" />
@@ -409,7 +409,7 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
         <section className="app-card mt-5 rounded-3xl border-2 border-slate-900 p-6">
           <h2 className="app-kicker">{t("sections.experience")}</h2>
           {sortedExperiences.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">{t("empty.experience")}</p>
+            <p className="mt-4 text-sm text-gray-500">{t("empty.experience")}</p>
           ) : (
             <div className="mt-4 grid gap-3">
               {sortedExperiences.map((experience) => (
@@ -422,16 +422,16 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
                     "--cardlink-base": accentColor,
                   } as React.CSSProperties}
                 >
-                  <h4 className="text-sm font-semibold text-slate-900">
+                  <h4 className="text-sm font-semibold text-gray-900">
                     {t("experience.roleAt", {
                       role: experience.role,
                       company: experience.company,
                     })}
                   </h4>
-                  <p className="mt-1 text-xs text-slate-600">
+                  <p className="mt-1 text-xs text-gray-600">
                     {experience.description || "-"}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-gray-500">
                     {formatDateRange(
                       experience.start_date,
                       experience.end_date,
@@ -460,27 +460,27 @@ export default function MinimalEditorialTemplate(props: TemplateRendererProps) {
       </div>
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gray-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
           {toast}
         </div>
       ) : null}
 
       {wechatValue ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4">
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-gray-900">
                 {t("wechat.title")}
               </h3>
               <button
                 type="button"
                 onClick={() => setWechatValue(null)}
-                className="text-sm font-semibold text-slate-400 hover:text-slate-600"
+                className="text-sm font-semibold text-gray-400 hover:text-gray-600"
               >
                 {t("wechat.close")}
               </button>
             </div>
-            <p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            <p className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-700">
               {wechatValue}
             </p>
             <button

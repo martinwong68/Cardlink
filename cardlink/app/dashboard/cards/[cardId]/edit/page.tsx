@@ -151,7 +151,7 @@ const contactPreviewClasses: Record<string, string> = {
   WeChat: "bg-green-600",
   Telegram: "bg-sky-500",
   Instagram: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400",
-  Twitter: "bg-slate-900",
+  Twitter: "bg-gray-900",
   Website: "bg-indigo-600",
 };
 
@@ -883,7 +883,7 @@ export default function CardEditorPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-slate-500">
+      <div className="flex min-h-[60vh] items-center justify-center text-sm text-gray-500">
         {t("messages.loading")}
       </div>
     );
@@ -891,7 +891,7 @@ export default function CardEditorPage() {
 
   if (!card) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm">
+      <div className="rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-500 shadow-sm">
         {message ?? t("errors.notFound")}
       </div>
     );
@@ -905,10 +905,10 @@ export default function CardEditorPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
               {t("brand")}
             </p>
-            <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+            <h1 className="mt-2 text-2xl font-semibold text-gray-900">
               {t("title")}
             </h1>
           </div>
@@ -916,7 +916,7 @@ export default function CardEditorPage() {
             <button
               type="button"
               onClick={() => setShowPreview((prev) => !prev)}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600 lg:hidden"
+              className="rounded-full border border-gray-100 bg-white px-4 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600 lg:hidden"
             >
               {showPreview ? t("actions.hidePreview") : t("actions.showPreview")}
             </button>
@@ -932,14 +932,14 @@ export default function CardEditorPage() {
             <button
               type="button"
               onClick={() => router.push("/dashboard/cards")}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
+              className="rounded-full border border-gray-100 bg-white px-4 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
             >
               {t("actions.back")}
             </button>
           </div>
         </div>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
           <TemplateSelector
             currentTemplate={card.template}
             isPremiumUser={viewerPlan === "premium"}
@@ -949,12 +949,12 @@ export default function CardEditorPage() {
           />
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900">
             {t("sections.background")}
           </h2>
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <label className="flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600">
+            <label className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-100 bg-white px-4 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600">
               <input
                 type="file"
                 accept="image/*"
@@ -974,11 +974,11 @@ export default function CardEditorPage() {
               type="button"
               onClick={() => void handleRemoveBackgroundImage()}
               disabled={!card.background_image_url || isUploading}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-rose-200 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full border border-gray-100 bg-white px-4 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:border-rose-200 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {t("actions.removeBackground")}
             </button>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-gray-500">
               {t("misc.backgroundUploadNote")}
             </p>
           </div>
@@ -998,7 +998,7 @@ export default function CardEditorPage() {
                   className={`rounded-2xl border p-1 transition ${
                     card.background_pattern === pattern
                       ? "border-indigo-500"
-                      : "border-slate-200"
+                      : "border-gray-100"
                   }`}
                 >
                   <div
@@ -1014,7 +1014,7 @@ export default function CardEditorPage() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold uppercase text-slate-500">
+                <label className="text-xs font-semibold uppercase text-gray-500">
                   {t("labels.color")}
                 </label>
                 <input
@@ -1027,7 +1027,7 @@ export default function CardEditorPage() {
                         : prev
                     )
                   }
-                  className="mt-2 h-10 w-full cursor-pointer rounded-lg border border-slate-200"
+                  className="mt-2 h-10 w-full cursor-pointer rounded-lg border border-gray-100"
                 />
               </div>
               <div className="grid grid-cols-5 gap-2">
@@ -1043,14 +1043,14 @@ export default function CardEditorPage() {
                     className={`h-8 w-8 rounded-full border transition ${
                       card.background_color === color
                         ? "border-slate-900"
-                        : "border-slate-200"
+                        : "border-gray-100"
                     }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
               </div>
-              <div className="rounded-2xl border border-slate-200 p-3">
-                <p className="text-xs font-semibold uppercase text-slate-500">
+              <div className="rounded-2xl border border-gray-100 p-3">
+                <p className="text-xs font-semibold uppercase text-gray-500">
                   {t("labels.preview")}
                 </p>
                 <div
@@ -1072,19 +1072,19 @@ export default function CardEditorPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900">
             {t("sections.profilePhoto")}
           </h2>
           <div className="mt-4 flex flex-wrap items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50">
+            <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-gray-100 bg-gray-50">
               {avatarUrl ? (
                 <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
               ) : (
-                <Camera className="h-6 w-6 text-slate-400" />
+                <Camera className="h-6 w-6 text-gray-400" />
               )}
             </div>
-            <label className="flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600">
+            <label className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-100 bg-white px-4 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600">
               <input
                 type="file"
                 accept="image/*"
@@ -1098,19 +1098,19 @@ export default function CardEditorPage() {
               />
               {isUploading ? t("actions.uploading") : t("actions.uploadPhoto")}
             </label>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-gray-500">
               {t("misc.storageNote")}
             </p>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900">
             {t("sections.bioInfo")}
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-slate-700" htmlFor="cardName">
+              <label className="text-sm font-medium text-gray-700" htmlFor="cardName">
                 {t("labels.cardName")}
               </label>
               <input
@@ -1121,11 +1121,11 @@ export default function CardEditorPage() {
                     prev ? { ...prev, card_name: event.target.value } : prev
                   )
                 }
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
+              <label className="text-sm font-medium text-gray-700" htmlFor="fullName">
                 {t("labels.fullName")}
               </label>
               <input
@@ -1136,11 +1136,11 @@ export default function CardEditorPage() {
                     prev ? { ...prev, full_name: event.target.value } : prev
                   )
                 }
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700" htmlFor="title">
+              <label className="text-sm font-medium text-gray-700" htmlFor="title">
                 {t("labels.title")}
               </label>
               <input
@@ -1151,11 +1151,11 @@ export default function CardEditorPage() {
                     prev ? { ...prev, title: event.target.value } : prev
                   )
                 }
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700" htmlFor="company">
+              <label className="text-sm font-medium text-gray-700" htmlFor="company">
                 {t("labels.company")}
               </label>
               <input
@@ -1166,11 +1166,11 @@ export default function CardEditorPage() {
                     prev ? { ...prev, company: event.target.value } : prev
                   )
                 }
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="bio">
+              <label className="text-sm font-medium text-gray-700" htmlFor="bio">
                 {t("labels.bio")}
               </label>
               <textarea
@@ -1182,15 +1182,15 @@ export default function CardEditorPage() {
                     prev ? { ...prev, bio: event.target.value } : prev
                   )
                 }
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
               />
             </div>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-gray-900">
               {t("sections.contactFields")}
             </h2>
             <button
@@ -1203,7 +1203,7 @@ export default function CardEditorPage() {
             </button>
           </div>
           {isFreePlan ? (
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 text-xs text-gray-500">
               {t("messages.freePlanContactLimit", {
                 count: FREE_CONTACT_FIELDS_LIMIT,
               })}
@@ -1212,16 +1212,16 @@ export default function CardEditorPage() {
 
           <div className="mt-4 space-y-4">
             {fields.length === 0 ? (
-              <p className="text-sm text-slate-500">{t("empty.fields")}</p>
+              <p className="text-sm text-gray-500">{t("empty.fields")}</p>
             ) : null}
             {fields.map((field, index) => (
               <div
                 key={field.id ?? `${field.field_type}-${index}`}
-                className="rounded-2xl border border-slate-200 p-4"
+                className="rounded-2xl border border-gray-100 p-4"
               >
                 <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.type")}
                     </label>
                     <select
@@ -1229,7 +1229,7 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateField(index, { field_type: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     >
                       {fieldTypes.map((type) => (
                         <option key={type} value={type}>
@@ -1239,7 +1239,7 @@ export default function CardEditorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.value")}
                     </label>
                     <input
@@ -1247,11 +1247,11 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateField(index, { field_value: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.label")}
                     </label>
                     <input
@@ -1260,11 +1260,11 @@ export default function CardEditorPage() {
                         updateField(index, { field_label: event.target.value })
                       }
                       placeholder={fieldTypeLabels[field.field_type] ?? field.field_type}
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.visibility")}
                     </label>
                     <select
@@ -1274,7 +1274,7 @@ export default function CardEditorPage() {
                           visibility: event.target.value as Visibility,
                         })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     >
                       {visibilityOptions.map((option) => (
                         <option key={option} value={option}>
@@ -1299,7 +1299,7 @@ export default function CardEditorPage() {
                         index > 0 &&
                         setFields((prev) => moveItem(prev, index, index - 1))
                       }
-                      className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500"
+                      className="rounded-full border border-gray-100 px-2 py-1 text-xs text-gray-500"
                     >
                       <ArrowUp className="h-3.5 w-3.5" />
                     </button>
@@ -1309,7 +1309,7 @@ export default function CardEditorPage() {
                         index < fields.length - 1 &&
                         setFields((prev) => moveItem(prev, index, index + 1))
                       }
-                      className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500"
+                      className="rounded-full border border-gray-100 px-2 py-1 text-xs text-gray-500"
                     >
                       <ArrowDown className="h-3.5 w-3.5" />
                     </button>
@@ -1327,9 +1327,9 @@ export default function CardEditorPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-gray-900">
               {t("sections.links")}
             </h2>
             <button
@@ -1342,7 +1342,7 @@ export default function CardEditorPage() {
             </button>
           </div>
           {isFreePlan ? (
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 text-xs text-gray-500">
               {t("messages.freePlanLinkLimit", {
                 count: FREE_LINKS_LIMIT,
               })}
@@ -1350,16 +1350,16 @@ export default function CardEditorPage() {
           ) : null}
           <div className="mt-4 space-y-4">
             {links.length === 0 ? (
-              <p className="text-sm text-slate-500">{t("empty.links")}</p>
+              <p className="text-sm text-gray-500">{t("empty.links")}</p>
             ) : null}
             {links.map((link, index) => (
               <div
                 key={link.id ?? `link-${index}`}
-                className="rounded-2xl border border-slate-200 p-4"
+                className="rounded-2xl border border-gray-100 p-4"
               >
                 <div className="grid gap-4 sm:grid-cols-[1fr_1fr_120px]">
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.label")}
                     </label>
                     <input
@@ -1367,11 +1367,11 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateLink(index, { label: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.url")}
                     </label>
                     <input
@@ -1379,11 +1379,11 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateLink(index, { url: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.icon")}
                     </label>
                     <input
@@ -1391,13 +1391,13 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateLink(index, { icon: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                 </div>
                 <div className="mt-4 flex justify-between">
-                  <span className="text-sm text-slate-500">{t("labels.preview")}:</span>
-                  <span className="text-sm font-semibold text-slate-700">
+                  <span className="text-sm text-gray-500">{t("labels.preview")}:</span>
+                  <span className="text-sm font-semibold text-gray-700">
                     {link.icon || "🔗"} {link.label || t("placeholders.linkLabel")}
                   </span>
                   <div className="flex gap-2">
@@ -1407,7 +1407,7 @@ export default function CardEditorPage() {
                         index > 0 &&
                         setLinks((prev) => moveItem(prev, index, index - 1))
                       }
-                      className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500"
+                      className="rounded-full border border-gray-100 px-2 py-1 text-xs text-gray-500"
                     >
                       <ArrowUp className="h-3.5 w-3.5" />
                     </button>
@@ -1417,7 +1417,7 @@ export default function CardEditorPage() {
                         index < links.length - 1 &&
                         setLinks((prev) => moveItem(prev, index, index + 1))
                       }
-                      className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500"
+                      className="rounded-full border border-gray-100 px-2 py-1 text-xs text-gray-500"
                     >
                       <ArrowDown className="h-3.5 w-3.5" />
                     </button>
@@ -1435,9 +1435,9 @@ export default function CardEditorPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-gray-900">
               {t("sections.experience")}
             </h2>
             <button
@@ -1450,22 +1450,22 @@ export default function CardEditorPage() {
             </button>
           </div>
           {isFreePlan ? (
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 text-xs text-gray-500">
               {t("messages.freePlanNoExperience")}
             </p>
           ) : null}
           <div className="mt-4 space-y-4">
             {experiences.length === 0 ? (
-              <p className="text-sm text-slate-500">{t("empty.experience")}</p>
+              <p className="text-sm text-gray-500">{t("empty.experience")}</p>
             ) : null}
             {(isFreePlan ? [] : experiences).map((experience, index) => (
               <div
                 key={experience.id ?? `experience-${index}`}
-                className="rounded-2xl border border-slate-200 p-4"
+                className="rounded-2xl border border-gray-100 p-4"
               >
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.role")}
                     </label>
                     <input
@@ -1473,11 +1473,11 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateExperience(index, { role: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.company")}
                     </label>
                     <input
@@ -1485,11 +1485,11 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateExperience(index, { company: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.startDate")}
                     </label>
                     <input
@@ -1498,11 +1498,11 @@ export default function CardEditorPage() {
                         updateExperience(index, { start_date: event.target.value })
                       }
                       placeholder={t("placeholders.startDate")}
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.endDate")}
                     </label>
                     <input
@@ -1511,11 +1511,11 @@ export default function CardEditorPage() {
                         updateExperience(index, { end_date: event.target.value })
                       }
                       placeholder={t("placeholders.endDate")}
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold uppercase text-slate-500">
+                    <label className="text-xs font-semibold uppercase text-gray-500">
                       {t("labels.description")}
                     </label>
                     <textarea
@@ -1524,12 +1524,12 @@ export default function CardEditorPage() {
                       onChange={(event) =>
                         updateExperience(index, { description: event.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-lg border border-gray-100 px-3 py-2 text-sm"
                     />
                   </div>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-gray-500">
                     {formatDateRange(
                       experience.start_date,
                       experience.end_date,
@@ -1545,7 +1545,7 @@ export default function CardEditorPage() {
                           moveItem(prev, index, index - 1)
                         )
                       }
-                      className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500"
+                      className="rounded-full border border-gray-100 px-2 py-1 text-xs text-gray-500"
                     >
                       <ArrowUp className="h-3.5 w-3.5" />
                     </button>
@@ -1557,7 +1557,7 @@ export default function CardEditorPage() {
                           moveItem(prev, index, index + 1)
                         )
                       }
-                      className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500"
+                      className="rounded-full border border-gray-100 px-2 py-1 text-xs text-gray-500"
                     >
                       <ArrowDown className="h-3.5 w-3.5" />
                     </button>
@@ -1587,11 +1587,11 @@ export default function CardEditorPage() {
           showPreview ? "block" : "hidden lg:block"
         }`}
       >
-        <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <div className="rounded-3xl border border-gray-100 bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
             {t("sections.livePreview")}
           </p>
-          <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50">
+          <div className="mt-4 rounded-3xl border border-gray-100 bg-gray-50">
             <div
               className={`cardlink-cover ${patternClass} h-24 rounded-t-3xl`}
               style={{
@@ -1607,21 +1607,21 @@ export default function CardEditorPage() {
               ) : null}
             </div>
             <div className="-mt-8 flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white text-sm font-semibold text-slate-700 shadow-md">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white text-sm font-semibold text-gray-700 shadow-md">
                 {card.full_name.trim()
                   ? card.full_name.trim().slice(0, 2).toUpperCase()
                   : "CL"}
               </div>
             </div>
             <div className="px-4 pb-4 pt-2">
-              <p className="text-base font-semibold text-slate-900">
+              <p className="text-base font-semibold text-gray-900">
                 {card.full_name || t("placeholders.yourName")}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-gray-500">
                 {[card.title, card.company].filter(Boolean).join(" • ")}
               </p>
               {card.bio ? (
-                <p className="mt-2 text-xs text-slate-600">{card.bio}</p>
+                <p className="mt-2 text-xs text-gray-600">{card.bio}</p>
               ) : null}
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {fields
@@ -1639,11 +1639,11 @@ export default function CardEditorPage() {
                   ))}
               </div>
               {links.length > 0 ? (
-                <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
-                  <p className="text-xs font-semibold text-slate-500">
+                <div className="mt-3 rounded-2xl border border-gray-100 bg-white p-3">
+                  <p className="text-xs font-semibold text-gray-500">
                     {t("sections.links")}
                   </p>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-gray-600">
                     {links[0]?.label || t("placeholders.linkLabel")}
                   </p>
                 </div>

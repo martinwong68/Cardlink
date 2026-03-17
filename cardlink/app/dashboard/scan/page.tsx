@@ -391,30 +391,30 @@ export default function ScanPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-violet-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="mt-2 text-2xl font-semibold text-gray-900">
           {t("title")}
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-gray-500">
           {t("subtitle")}
         </p>
       </div>
 
       {message ? (
-        <article className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-700">
+        <article className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
           {message}
         </article>
       ) : null}
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => void startCamera()}
             disabled={!hasCameraSupport || cameraStarted}
-            className="inline-flex items-center gap-2 rounded-full bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             <Camera className="h-4 w-4" />
             {cameraStarted ? t("actions.scanning") : t("actions.startScan")}
@@ -423,13 +423,13 @@ export default function ScanPage() {
             type="button"
             onClick={stopCamera}
             disabled={!cameraStarted}
-            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             {t("actions.stopScan")}
           </button>
           <Link
             href="/dashboard/discount"
-            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
           >
             {t("actions.backToDiscount")}
           </Link>
@@ -441,7 +441,7 @@ export default function ScanPage() {
 
         <video
           ref={videoRef}
-          className="mt-4 h-56 w-full rounded-2xl border border-slate-200 bg-slate-900 object-cover"
+          className="mt-4 h-56 w-full rounded-2xl border border-gray-100 bg-gray-900 object-cover"
           muted
           playsInline
         />
@@ -451,13 +451,13 @@ export default function ScanPage() {
             value={rawInput}
             onChange={(event) => setRawInput(event.target.value)}
             placeholder={t("placeholders.code")}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none ring-violet-100 focus:ring"
+            className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm text-gray-700 outline-none ring-indigo-100 focus:ring"
           />
           <button
             type="button"
             onClick={() => void handleProcessInput()}
             disabled={busy}
-            className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+            className="rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60"
           >
             {t("actions.verify")}
           </button>
@@ -465,11 +465,11 @@ export default function ScanPage() {
       </section>
 
       {target ? (
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-slate-900">{target.offer.title}</p>
-              <p className="mt-1 text-xs text-slate-500">{target.company?.name ?? t("labels.unknownCompany")}</p>
+              <p className="text-sm font-semibold text-gray-900">{target.offer.title}</p>
+              <p className="mt-1 text-xs text-gray-500">{target.company?.name ?? t("labels.unknownCompany")}</p>
             </div>
             <span
               className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -488,7 +488,7 @@ export default function ScanPage() {
             </span>
           </div>
 
-          <div className="mt-3 grid gap-2 text-xs text-slate-600 sm:grid-cols-3">
+          <div className="mt-3 grid gap-2 text-xs text-gray-600 sm:grid-cols-3">
             <p>{t("labels.points")}: <span className="font-semibold">{target.redemption.points_spent} {t("labels.pointUnit")}</span></p>
             <p>{t("labels.requestedAt")}: <span className="font-semibold">{new Date(target.redemption.redeemed_at).toLocaleString()}</span></p>
             <p>{t("labels.processedAt")}: <span className="font-semibold">{target.redemption.confirmed_at ? new Date(target.redemption.confirmed_at).toLocaleString() : "-"}</span></p>
@@ -512,11 +512,11 @@ export default function ScanPage() {
           </div>
         </section>
       ) : (
-        <section className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
+        <section className="rounded-3xl border border-gray-100 bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
             <QrCode className="h-8 w-8" />
           </div>
-          <p className="mt-4 text-sm text-slate-600">
+          <p className="mt-4 text-sm text-gray-600">
             {t("empty.noCode")}
           </p>
         </section>

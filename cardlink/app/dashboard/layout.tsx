@@ -58,7 +58,7 @@ export default async function DashboardLayout({
             <HeaderBackButton ariaLabel="Back" />
             <div>
               <p className="app-kicker">{t("brand")}</p>
-              <p className="text-sm text-slate-500">{t("title")}</p>
+              <p className="text-sm text-gray-500">{t("title")}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -66,7 +66,7 @@ export default async function DashboardLayout({
             <NotificationBell userId={user.id} />
             <Link
               href="/dashboard/settings/profile"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-gradient-to-br from-violet-600 to-indigo-600 text-xs font-semibold text-white shadow-lg shadow-violet-300/30"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-indigo-600 text-xs font-semibold text-white shadow-lg shadow-indigo-300/30"
               aria-label="Profile settings"
             >
               {profile?.avatar_url ? (

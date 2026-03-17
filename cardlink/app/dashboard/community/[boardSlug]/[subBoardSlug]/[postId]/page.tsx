@@ -164,7 +164,7 @@ export default function PostDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="app-card p-6 text-center text-sm text-slate-500">
+      <div className="app-card p-6 text-center text-sm text-gray-500">
         {t("states.loading")}
       </div>
     );
@@ -198,24 +198,24 @@ export default function PostDetailPage() {
       <div className="app-card p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
               {initials}
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-gray-900">
                 {authorName}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-gray-500">
                 <RelativeTime date={post.created_at} />
               </p>
             </div>
           </div>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-gray-400">
             {t("labels.replies", { count: post.reply_count ?? 0 })}
           </span>
         </div>
 
-        <p className="mt-4 whitespace-pre-wrap text-sm text-slate-700">
+        <p className="mt-4 whitespace-pre-wrap text-sm text-gray-700">
           {post.body}
         </p>
       </div>
@@ -227,10 +227,10 @@ export default function PostDetailPage() {
       ) : null}
 
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold text-slate-900">{t("sections.replies")}</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t("sections.replies")}</h2>
 
         {replies.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
             {t("empty.noReplies")}
           </div>
         ) : null}
@@ -246,21 +246,21 @@ export default function PostDetailPage() {
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
                     {replyInitials}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-gray-900">
                       {replyName}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-gray-500">
                       <RelativeTime date={reply.created_at} />
                     </p>
                   </div>
                 </div>
               </div>
 
-              <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
+              <p className="mt-3 whitespace-pre-wrap text-sm text-gray-700">
                 {reply.body}
               </p>
             </div>
@@ -269,7 +269,7 @@ export default function PostDetailPage() {
       </div>
 
       <div className="app-card p-5">
-        <h2 className="text-sm font-semibold text-slate-900">{t("sections.addReply")}</h2>
+        <h2 className="text-sm font-semibold text-gray-900">{t("sections.addReply")}</h2>
         <textarea
           value={replyBody}
           onChange={(event) => setReplyBody(event.target.value)}
@@ -278,7 +278,7 @@ export default function PostDetailPage() {
           className="app-input mt-3 w-full resize-none px-3 py-2 text-sm"
         />
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-gray-400">
             {t("hints.replyVisibility")}
           </span>
           <button

@@ -2,17 +2,25 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ChevronRight, Download, LogOut } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { BriefcaseBusiness, ChevronRight, Download, LogOut } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import { canAccessCRM, resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 import { getFriends } from "@/src/lib/connections";
+import { trackInterfaceEvent } from "@/src/lib/business/interface-events";
+
+type BusinessEligibilityState = {
+  eligible: boolean;
+  isMasterUser: boolean;
+  reasonCode: string;
+};
 
 export default function SettingsPage() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = useLocale();
   const t = useTranslations("settings");
   const [message, setMessage] = useState<string | null>(null);
@@ -20,6 +28,8 @@ export default function SettingsPage() {
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const [businessEligibility, setBusinessEligibility] =
+    useState<BusinessEligibilityState | null>(null);
 
   const getViewerPlan = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -101,6 +111,55 @@ export default function SettingsPage() {
     void loadPlan();
   }, []);
 
+  useEffect(() => {
+    const loadBusinessEligibility = async () => {
+      try {
+        const response = await fetch("/api/interface/eligibility", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          setBusinessEligibility({
+            eligible: false,
+            isMasterUser: false,
+            reasonCode: "not_authenticated",
+          });
+          return;
+        }
+
+        const data = (await response.json()) as BusinessEligibilityState;
+        setBusinessEligibility(data);
+      } catch {
+        setBusinessEligibility({
+          eligible: false,
+          isMasterUser: false,
+          reasonCode: "request_failed",
+        });
+      }
+    };
+
+    void loadBusinessEligibility();
+  }, []);
+
+  useEffect(() => {
+    const notice = searchParams.get("notice");
+    if (notice === "business-access-denied") {
+      trackInterfaceEvent({
+        event_name: "interface.switch.denied",
+        from_interface: "client",
+        to_interface: "business",
+        eligibility_result: "denied",
+        reason_code: "route_guard_redirect",
+      });
+    }
+  }, [searchParams, t]);
+
+  const noticeMessage =
+    searchParams.get("notice") === "business-access-denied"
+      ? t("notices.businessAccessDenied")
+      : null;
+
   const formatDateOnly = (value: string | null) => {
     if (!value) {
       return null;
@@ -146,6 +205,16 @@ export default function SettingsPage() {
     router.push("/login");
   };
 
+  const handleSwitchToBusiness = () => {
+    trackInterfaceEvent({
+      event_name: "interface.switch.requested",
+      from_interface: "client",
+      to_interface: "business",
+      eligibility_result: "eligible",
+      reason_code: businessEligibility?.reasonCode ?? null,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -163,33 +232,47 @@ export default function SettingsPage() {
       <div className="space-y-3">
         <Link
           href="/dashboard/settings/profile"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-800 transition hover:-translate-y-0.5 hover:border-violet-200"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
         >
           {t("links.profile")}
-          <ChevronRight className="h-4 w-4 text-slate-400" />
+          <ChevronRight className="h-4 w-4 text-gray-400" />
         </Link>
 
         <Link
           href="/dashboard/settings/privacy"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-800 transition hover:-translate-y-0.5 hover:border-violet-200"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
         >
           {t("links.privacy")}
-          <ChevronRight className="h-4 w-4 text-slate-400" />
+          <ChevronRight className="h-4 w-4 text-gray-400" />
         </Link>
 
         <Link
           href="/dashboard/settings/password"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-800 transition hover:-translate-y-0.5 hover:border-violet-200"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
         >
           {t("links.password")}
-          <ChevronRight className="h-4 w-4 text-slate-400" />
+          <ChevronRight className="h-4 w-4 text-gray-400" />
         </Link>
 
+        {businessEligibility?.eligible ? (
+          <Link
+            href="/business"
+            onClick={handleSwitchToBusiness}
+            className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
+          >
+            <span className="flex items-center gap-2">
+              {t("links.switchToBusiness")}
+              <BriefcaseBusiness className="h-4 w-4 text-indigo-500" />
+            </span>
+            <ChevronRight className="h-4 w-4 text-gray-400" />
+          </Link>
+        ) : null}
+
         {viewerPlan === "premium" ? (
-          <div className="app-card-soft flex items-center justify-between gap-3 px-4 py-4 text-sm text-slate-700">
+          <div className="app-card-soft flex items-center justify-between gap-3 px-4 py-4 text-sm text-gray-700">
             <div className="min-w-0">
-              <p className="font-semibold text-slate-800">{t("links.subscriptionActive")}</p>
-              <p className="text-xs text-slate-500">
+              <p className="font-semibold text-gray-800">{t("links.subscriptionActive")}</p>
+              <p className="text-xs text-gray-500">
                 {premiumUntilDateLabel
                   ? t("links.premiumUntil", { date: premiumUntilDateLabel })
                   : t("links.premiumBadge")}
@@ -199,7 +282,7 @@ export default function SettingsPage() {
               type="button"
               onClick={handleDowngrade}
               disabled={isOpeningPortal}
-              className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-70"
+              className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isOpeningPortal ? t("links.openingPortal") : t("links.downgrade")}
             </button>
@@ -207,40 +290,40 @@ export default function SettingsPage() {
         ) : (
           <Link
             href="/dashboard/settings/upgrade"
-            className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-800 transition hover:-translate-y-0.5 hover:border-violet-200"
+            className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
           >
             {t("links.subscription")}
-            <ChevronRight className="h-4 w-4 text-slate-400" />
+            <ChevronRight className="h-4 w-4 text-gray-400" />
           </Link>
         )}
 
         <Link
           href="/dashboard/cards?tab=nfc"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-800 transition hover:-translate-y-0.5 hover:border-violet-200"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
         >
           {t("links.orderNfc")}
-          <ChevronRight className="h-4 w-4 text-slate-400" />
+          <ChevronRight className="h-4 w-4 text-gray-400" />
         </Link>
 
         <button
           type="button"
           onClick={handleExport}
           disabled={isExporting}
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-800 transition hover:-translate-y-0.5 hover:border-violet-200 disabled:cursor-not-allowed disabled:opacity-70"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200 disabled:cursor-not-allowed disabled:opacity-70"
         >
           <span className="flex items-center gap-2">
             {t("links.export")}
-            <Download className="h-4 w-4 text-violet-500" />
+            <Download className="h-4 w-4 text-indigo-500" />
           </span>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
+          <ChevronRight className="h-4 w-4 text-gray-400" />
         </button>
 
         <Link
           href="/dashboard/settings/support"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-slate-800 transition hover:-translate-y-0.5 hover:border-violet-200"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
         >
           {t("links.support")}
-          <ChevronRight className="h-4 w-4 text-slate-400" />
+          <ChevronRight className="h-4 w-4 text-gray-400" />
         </Link>
 
         <button
@@ -256,9 +339,9 @@ export default function SettingsPage() {
         </button>
       </div>
 
-      {message ? (
+      {message || noticeMessage ? (
         <p className="app-error px-3 py-2 text-sm">
-          {message}
+          {message ?? noticeMessage}
         </p>
       ) : null}
     </div>

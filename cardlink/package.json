@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:check-context": "node scripts/db/check-business-context.mjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.7.0",

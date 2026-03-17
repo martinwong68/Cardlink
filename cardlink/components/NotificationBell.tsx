@@ -375,7 +375,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition hover:text-slate-900"
+        className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition hover:text-gray-900"
         aria-label={t("labels.ariaNotifications")}
       >
         <Bell className="h-6 w-6" />
@@ -387,9 +387,9 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       </button>
 
       {open ? (
-        <div className="absolute right-0 mt-3 w-80 rounded-xl border border-slate-200 bg-white shadow-xl md:w-96">
+        <div className="absolute right-0 mt-3 w-80 rounded-xl border border-gray-100 bg-white shadow-xl md:w-96">
           <div className="flex items-center justify-between px-4 py-3">
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-gray-900">
               {t("title")}
             </p>
             <button
@@ -400,20 +400,20 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
               {t("actions.markAllRead")}
             </button>
           </div>
-          <div className="max-h-96 overflow-y-auto border-t border-slate-100">
+          <div className="max-h-96 overflow-y-auto border-t border-gray-100">
             {isLoading ? (
-              <div className="px-4 py-8 text-center text-sm text-slate-500">
+              <div className="px-4 py-8 text-center text-sm text-gray-500">
                 {t("loading")}
               </div>
             ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 px-6 py-10 text-center text-sm text-slate-500">
+              <div className="flex flex-col items-center gap-2 px-6 py-10 text-center text-sm text-gray-500">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
                   <Bell className="h-5 w-5" />
                 </div>
-                <p className="text-sm font-semibold text-slate-700">
+                <p className="text-sm font-semibold text-gray-700">
                   {t("empty.title")}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-400">
                   {t("empty.body")}
                 </p>
               </div>
@@ -430,11 +430,11 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                     key={item.id}
                     type="button"
                     onClick={() => handleNotificationClick(item)}
-                    className={`flex w-full items-start gap-3 border-t border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50 ${
+                    className={`flex w-full items-start gap-3 border-t border-gray-100 px-4 py-3 text-left transition hover:bg-gray-50 ${
                       isUnread ? "bg-indigo-50" : "bg-white"
                     }`}
                   >
-                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-violet-600 text-xs font-semibold text-white">
+                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-indigo-600 text-xs font-semibold text-white">
                       {profile?.avatar_url ? (
                         <img
                           src={profile.avatar_url}
@@ -449,18 +449,18 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                       <p
                         className={`text-sm ${
                           isUnread
-                            ? "font-semibold text-slate-900"
-                            : "text-slate-700"
+                            ? "font-semibold text-gray-900"
+                            : "text-gray-700"
                         }`}
                       >
                         {item.title}
                       </p>
                       {item.body ? (
-                        <p className="mt-1 truncate text-xs text-slate-500">
+                        <p className="mt-1 truncate text-xs text-gray-500">
                           {item.body}
                         </p>
                       ) : null}
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-gray-400">
                         <RelativeTime date={item.created_at} />
                       </p>
                     </div>
@@ -476,23 +476,23 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       ) : null}
 
       {requestModal ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 px-4 py-6 backdrop-blur-sm md:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-gray-900/50 px-4 py-6 backdrop-blur-sm md:items-center">
           <div className="w-full max-w-md rounded-t-2xl bg-white p-6 shadow-xl md:rounded-2xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-gray-900">
                 {t("request.title")}
               </h3>
               <button
                 type="button"
                 onClick={() => setRequestModal(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="mt-4 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-violet-600 text-sm font-semibold text-white">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-indigo-600 text-sm font-semibold text-white">
                 {requestModal.requester?.avatar_url ? (
                   <img
                     src={requestModal.requester.avatar_url}
@@ -506,10 +506,10 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                 )}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-gray-900">
                   {requestModal.requester?.full_name ?? t("labels.member")}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-gray-500">
                   {[requestModal.card?.title, requestModal.card?.company]
                     .filter(Boolean)
                     .join(" • ")}
@@ -518,7 +518,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
             </div>
 
             {requestModal.card ? (
-              <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+              <div className="mt-4 rounded-2xl border border-gray-100 bg-white p-4">
                 <div
                   className={`cardlink-cover ${
                     patternClassMap[
@@ -532,10 +532,10 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                     } as React.CSSProperties
                   }
                 />
-                <p className="mt-3 text-sm font-semibold text-slate-900">
+                <p className="mt-3 text-sm font-semibold text-gray-900">
                   {requestModal.card.full_name ?? t("labels.sharedCard")}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-gray-500">
                   {[requestModal.card.title, requestModal.card.company]
                     .filter(Boolean)
                     .join(" • ")}
@@ -555,12 +555,12 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
             ) : null}
 
             <div className="mt-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
                 {t("labels.shareBack")}
               </p>
               <div className="mt-2 space-y-2">
                 {viewerCards.length === 0 ? (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+                  <div className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-500">
                     {t("errors.needCard")}
                   </div>
                 ) : (
@@ -577,7 +577,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                         className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
                           selectedCardId === card.id
                             ? "border-indigo-400 bg-indigo-50"
-                            : "border-slate-200 bg-white"
+                            : "border-gray-100 bg-white"
                         }`}
                       >
                         <input
@@ -588,10 +588,10 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                           onChange={() => setSelectedCardId(card.id)}
                         />
                         <div>
-                          <p className="font-semibold text-slate-900">
+                          <p className="font-semibold text-gray-900">
                             {label}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-gray-500">
                             {subtitle || ""}
                           </p>
                         </div>
@@ -626,7 +626,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       ) : null}
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg md:bottom-auto md:left-auto md:right-6 md:top-6 md:translate-x-0">
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-gray-900 px-4 py-2 text-xs font-semibold text-white shadow-lg md:bottom-auto md:left-auto md:right-6 md:top-6 md:translate-x-0">
           {toast}
         </div>
       ) : null}

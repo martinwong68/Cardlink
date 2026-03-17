@@ -265,11 +265,11 @@ export default function NotificationsPage() {
       ) : null}
 
       {isLoading ? (
-        <div className="app-card p-6 text-center text-sm text-slate-500">
+        <div className="app-card p-6 text-center text-sm text-gray-500">
           {t("loading")}
         </div>
       ) : notifications.length === 0 ? (
-        <div className="app-card p-6 text-center text-sm text-slate-500">
+        <div className="app-card p-6 text-center text-sm text-gray-500">
           {t("empty")}
         </div>
       ) : (
@@ -284,20 +284,20 @@ export default function NotificationsPage() {
                 className="app-card p-4"
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
                     {initials}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                      <Icon className="h-4 w-4 text-violet-600" />
+                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                      <Icon className="h-4 w-4 text-indigo-600" />
                       {item.title}
                     </div>
                     {item.subtitle ? (
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-gray-500">
                         {item.subtitle}
                       </p>
                     ) : null}
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-gray-400">
                       <RelativeTime date={item.date} />
                     </p>
                   </div>

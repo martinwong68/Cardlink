@@ -409,7 +409,7 @@ export default function ContactDetailPage({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-slate-500">
+      <div className="flex min-h-[60vh] items-center justify-center text-sm text-gray-500">
         {t("states.loading")}
       </div>
     );
@@ -417,7 +417,7 @@ export default function ContactDetailPage({
 
   if (!card) {
     return (
-      <div className="app-card p-6 text-center text-sm text-slate-500">
+      <div className="app-card p-6 text-center text-sm text-gray-500">
         {t("states.notFound")}
       </div>
     );
@@ -446,25 +446,25 @@ export default function ContactDetailPage({
       <div className="app-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-lg font-semibold text-white">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-lg font-semibold text-white">
             {initials}
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">{fullName}</h1>
-            <p className="text-sm text-slate-500">
+            <h1 className="text-2xl font-semibold text-gray-900">{fullName}</h1>
+            <p className="text-sm text-gray-500">
               {[card.title, card.company].filter(Boolean).join(" • ")}
             </p>
           </div>
           </div>
           <Link
             href={`/c/${card.slug ?? card.id}`}
-            className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600"
+            className="flex items-center gap-2 rounded-full border border-gray-100 bg-white px-4 py-2 text-xs font-semibold text-gray-600 transition hover:border-indigo-200 hover:text-indigo-600"
           >
             <span
               className={`inline-flex h-5 w-5 items-center justify-center rounded-full border ${
                 viewerPlan === "premium"
-                  ? "border-slate-300 text-slate-400"
-                  : "border-slate-400 text-slate-600"
+                  ? "border-gray-200 text-gray-400"
+                  : "border-slate-400 text-gray-600"
               }`}
             >
               <ExternalLink className="h-3 w-3" />
@@ -473,10 +473,10 @@ export default function ContactDetailPage({
           </Link>
         </div>
         {card.bio ? (
-          <p className="mt-4 text-sm text-slate-600">{card.bio}</p>
+          <p className="mt-4 text-sm text-gray-600">{card.bio}</p>
         ) : null}
 
-        <div className="mt-4 text-xs text-slate-400">
+        <div className="mt-4 text-xs text-gray-400">
           {connection?.connected_at
             ? t("connection.connected", {
                 date: formatDateValue(connection.connected_at, locale),
@@ -489,8 +489,8 @@ export default function ContactDetailPage({
         </div>
       </div>
 
-      <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+      <div className="space-y-3 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
           {t("labels.contactFields")}
         </h2>
         <div className="space-y-3">
@@ -506,20 +506,20 @@ export default function ContactDetailPage({
             return (
               <div
                 key={field.id}
-                className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                className="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-violet-600 shadow-sm">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-indigo-600 shadow-sm">
                     <Icon className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="text-sm font-medium text-slate-800">
+                    <p className="text-sm font-medium text-gray-800">
                       {field.field_label ||
                         fieldTypeLabels[field.field_type] ||
                         field.field_type}
                     </p>
                     <p
-                      className={`text-xs text-slate-500 ${
+                      className={`text-xs text-gray-500 ${
                         isLocked ? "blur-sm select-none" : ""
                       }`}
                     >
@@ -537,21 +537,21 @@ export default function ContactDetailPage({
       </div>
 
       {canAccessCRM(viewerPlan) ? (
-        <div className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-          <Bell className="h-4 w-4 text-violet-600" />
+        <div className="space-y-6 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+          <Bell className="h-4 w-4 text-indigo-600" />
           {t("crm.title")}
         </div>
 
-        <div className="border-t border-slate-100 pt-5">
+        <div className="border-t border-gray-100 pt-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <Tag className="h-4 w-4 text-violet-600" />
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <Tag className="h-4 w-4 text-indigo-600" />
               {t("crm.tags.title")}
             </div>
             <button
               onClick={() => setIsAddingTag((prev) => !prev)}
-              className="flex items-center gap-1 text-xs font-semibold text-violet-600"
+              className="flex items-center gap-1 text-xs font-semibold text-indigo-600"
             >
               <Plus className="h-3.5 w-3.5" />
               {t("crm.tags.add")}
@@ -560,13 +560,13 @@ export default function ContactDetailPage({
 
           <div className="mt-3 flex flex-wrap gap-2">
             {tags.length === 0 ? (
-              <span className="text-xs text-slate-400">{t("crm.tags.empty")}</span>
+              <span className="text-xs text-gray-400">{t("crm.tags.empty")}</span>
             ) : (
               tags.map((tag) => (
                 <button
                   key={tag}
                   onClick={() => handleRemoveTag(tag)}
-                  className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600"
+                  className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600"
                 >
                   {tag}
                 </button>
@@ -580,11 +580,11 @@ export default function ContactDetailPage({
                 value={tagInput}
                 onChange={(event) => setTagInput(event.target.value)}
                 placeholder={t("crm.tags.placeholder")}
-                className="flex-1 rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-700"
+                className="flex-1 rounded-full border border-gray-100 px-3 py-2 text-xs text-gray-700"
               />
               <button
                 onClick={() => handleAddTag(tagInput)}
-                className="rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white"
+                className="rounded-full bg-indigo-600 px-3 py-2 text-xs font-semibold text-white"
               >
                 {t("crm.tags.submit")}
               </button>
@@ -596,7 +596,7 @@ export default function ContactDetailPage({
               <button
                 key={tag}
                 onClick={() => handleAddTag(tag)}
-                className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-500"
+                className="rounded-full border border-gray-100 px-3 py-1 text-xs font-semibold text-gray-500"
               >
                 {tag}
               </button>
@@ -604,15 +604,15 @@ export default function ContactDetailPage({
           </div>
         </div>
 
-        <div className="border-t border-slate-100 pt-5">
+        <div className="border-t border-gray-100 pt-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <Pencil className="h-4 w-4 text-violet-600" />
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <Pencil className="h-4 w-4 text-indigo-600" />
               {t("crm.notes.title")}
             </div>
             <button
               onClick={() => setIsAddingNote((prev) => !prev)}
-              className="flex items-center gap-1 text-xs font-semibold text-violet-600"
+              className="flex items-center gap-1 text-xs font-semibold text-indigo-600"
             >
               <Plus className="h-3.5 w-3.5" />
               {t("crm.notes.add")}
@@ -626,18 +626,18 @@ export default function ContactDetailPage({
                 onChange={(event) => setNoteDraft(event.target.value)}
                 rows={3}
                 placeholder={t("crm.notes.placeholder")}
-                className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
+                className="w-full rounded-2xl border border-gray-100 px-3 py-2 text-sm text-gray-700"
               />
               <div className="flex gap-2">
                 <button
                   onClick={handleAddNote}
-                  className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white"
+                  className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
                 >
                   {t("crm.notes.save")}
                 </button>
                 <button
                   onClick={() => setIsAddingNote(false)}
-                  className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600"
+                  className="rounded-full border border-gray-100 px-4 py-2 text-xs font-semibold text-gray-600"
                 >
                   {t("actions.cancel")}
                 </button>
@@ -647,7 +647,7 @@ export default function ContactDetailPage({
 
           <div className="mt-4 space-y-3">
             {crmNotes.filter((note) => note.note_text).length === 0 ? (
-              <p className="text-xs text-slate-400">{t("crm.notes.empty")}</p>
+              <p className="text-xs text-gray-400">{t("crm.notes.empty")}</p>
             ) : null}
 
             {crmNotes
@@ -655,7 +655,7 @@ export default function ContactDetailPage({
               .map((note) => (
                 <div
                   key={note.id}
-                  className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                  className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3"
                 >
                   {editingNoteId === note.id ? (
                     <div className="space-y-2">
@@ -663,18 +663,18 @@ export default function ContactDetailPage({
                         value={editingText}
                         onChange={(event) => setEditingText(event.target.value)}
                         rows={3}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
+                        className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm text-gray-700"
                       />
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleSaveNote(note.id)}
-                          className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
+                          className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white"
                         >
                           {t("actions.save")}
                         </button>
                         <button
                           onClick={() => setEditingNoteId(null)}
-                          className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
+                          className="rounded-full border border-gray-100 px-3 py-1 text-xs font-semibold text-gray-600"
                         >
                           {t("actions.cancel")}
                         </button>
@@ -683,10 +683,10 @@ export default function ContactDetailPage({
                   ) : (
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm text-slate-700">
+                        <p className="text-sm text-gray-700">
                           {note.note_text}
                         </p>
-                        <p className="mt-2 text-xs text-slate-400">
+                        <p className="mt-2 text-xs text-gray-400">
                           {note.created_at
                             ? formatDateValue(note.created_at, locale)
                             : ""}
@@ -695,7 +695,7 @@ export default function ContactDetailPage({
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEditNote(note)}
-                          className="text-xs font-semibold text-violet-600"
+                          className="text-xs font-semibold text-indigo-600"
                         >
                           {t("actions.edit")}
                         </button>
@@ -713,10 +713,10 @@ export default function ContactDetailPage({
           </div>
         </div>
 
-        <div className="border-t border-slate-100 pt-5">
+        <div className="border-t border-gray-100 pt-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <Calendar className="h-4 w-4 text-violet-600" />
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <Calendar className="h-4 w-4 text-indigo-600" />
               {t("crm.reminders.title")}
             </div>
             <div className="flex items-center gap-2">
@@ -724,11 +724,11 @@ export default function ContactDetailPage({
                 type="date"
                 value={reminderDate}
                 onChange={(event) => setReminderDate(event.target.value)}
-                className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600"
+                className="rounded-full border border-gray-100 px-3 py-1 text-xs text-gray-600"
               />
               <button
                 onClick={handleAddReminder}
-                className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white"
+                className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white"
               >
                 {t("crm.reminders.set")}
               </button>
@@ -737,7 +737,7 @@ export default function ContactDetailPage({
 
           <div className="mt-4 space-y-2">
             {crmNotes.filter((note) => note.reminder_date).length === 0 ? (
-              <p className="text-xs text-slate-400">{t("crm.reminders.empty")}</p>
+              <p className="text-xs text-gray-400">{t("crm.reminders.empty")}</p>
             ) : null}
             {crmNotes
               .filter((note) => note.reminder_date)
@@ -765,12 +765,12 @@ export default function ContactDetailPage({
           </div>
         </div>
 
-        <div className="border-t border-slate-100 pt-5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <Bell className="h-4 w-4 text-violet-600" />
+        <div className="border-t border-gray-100 pt-5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+            <Bell className="h-4 w-4 text-indigo-600" />
             {t("crm.activity.title")}
           </div>
-          <div className="mt-3 space-y-2 text-xs text-slate-500">
+          <div className="mt-3 space-y-2 text-xs text-gray-500">
             {shareHistory.length === 0 ? (
               <p>{t("crm.activity.empty")}</p>
             ) : (
@@ -794,7 +794,7 @@ export default function ContactDetailPage({
         </div>
       </div>
       ) : (
-        <div className="rounded-3xl border border-violet-100 bg-violet-50 p-6 text-sm text-violet-700">
+        <div className="rounded-3xl border border-indigo-100 bg-indigo-50 p-6 text-sm text-indigo-700">
           {t("upgrade.cta")}
         </div>
       )}
@@ -816,7 +816,7 @@ export default function ContactDetailPage({
 
       <button
         onClick={() => router.push("/dashboard/cards?tab=contacts")}
-        className="text-sm font-semibold text-violet-600 hover:text-violet-700"
+        className="text-sm font-semibold text-indigo-600 hover:text-indigo-700"
       >
         {t("actions.backToContacts")}
       </button>

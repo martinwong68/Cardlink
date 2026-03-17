@@ -134,7 +134,7 @@ export default function BoardPage() {
 
   if (isLoading) {
     return (
-      <div className="app-card p-6 text-center text-sm text-slate-500">
+      <div className="app-card p-6 text-center text-sm text-gray-500">
         {t("states.loading")}
       </div>
     );
@@ -175,10 +175,10 @@ export default function BoardPage() {
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900">
+                  <h2 className="text-lg font-semibold text-gray-900">
                     {subBoard.name}
                   </h2>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-gray-500">
                     {subBoard.description}
                   </p>
                 </div>
@@ -192,7 +192,7 @@ export default function BoardPage() {
 
               <div className="mt-4 space-y-3">
                 {posts.length === 0 ? (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                  <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-sm text-gray-500">
                     {t("empty.noPosts")}
                   </div>
                 ) : null}
@@ -207,32 +207,32 @@ export default function BoardPage() {
                     <Link
                       key={post.id}
                       href={`/dashboard/community/${board.slug}/${subBoard.slug}/${post.id}`}
-                      className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-violet-200"
+                      className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-indigo-200"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
                             {initials}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-slate-900">
+                            <p className="text-sm font-semibold text-gray-900">
                               {post.title}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-gray-500">
                               {authorName}
                             </p>
                           </div>
                         </div>
                         <RelativeTime
-                          className="text-xs text-slate-400"
+                          className="text-xs text-gray-400"
                           date={lastActivity}
                         />
                       </div>
-                      <p className="mt-3 text-xs text-slate-500">
+                      <p className="mt-3 text-xs text-gray-500">
                         {(post.body ?? "").slice(0, 140)}
                         {post.body && post.body.length > 140 ? "..." : ""}
                       </p>
-                      <div className="mt-3 text-xs text-slate-400">
+                      <div className="mt-3 text-xs text-gray-400">
                         {t("labels.replies", { count: post.reply_count ?? 0 })}
                       </div>
                     </Link>

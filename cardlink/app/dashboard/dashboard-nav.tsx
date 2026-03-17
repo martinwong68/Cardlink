@@ -26,7 +26,7 @@ export default function DashboardNav() {
 
   return (
     <>
-      <aside className="hidden md:flex md:w-56 md:flex-col md:gap-2 md:rounded-[1.7rem] md:border md:border-slate-200/80 md:bg-white/85 md:p-4 md:shadow-lg md:shadow-slate-200/60 md:backdrop-blur">
+      <aside className="hidden md:flex md:w-56 md:flex-col md:gap-2 md:rounded-[1.7rem] md:border md:border-gray-100/80 md:bg-white/85 md:p-4 md:shadow-lg md:shadow-slate-200/60 md:backdrop-blur">
         <p className="app-kicker">
           CardLink
         </p>
@@ -44,10 +44,10 @@ export default function DashboardNav() {
                 href={item.href}
                 className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                   isActive
-                    ? "bg-gradient-to-r from-violet-100 to-indigo-100 text-violet-800"
+                    ? "bg-indigo-50 text-indigo-800"
                     : isPrimary
-                    ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-300/40 hover:from-violet-700 hover:to-indigo-700"
-                    : "text-slate-600 hover:bg-slate-100"
+                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-300/40 hover:bg-indigo-700"
+                    : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -77,13 +77,13 @@ export default function DashboardNav() {
                   <span
                     className={`flex h-14 w-14 items-center justify-center rounded-full shadow-md transition ${
                       isActive
-                        ? "bg-gradient-to-br from-violet-700 to-indigo-700 text-white"
-                        : "bg-gradient-to-br from-violet-600 to-indigo-600 text-white"
+                        ? "bg-indigo-700 text-white"
+                        : "bg-indigo-600 text-white"
                     }`}
                   >
                     <Icon className="h-6 w-6" />
                   </span>
-                  <span className="mt-2 text-[11px] font-semibold text-slate-500">
+                  <span className="mt-2 text-[11px] font-semibold text-gray-500">
                     {item.label}
                   </span>
                 </Link>
@@ -95,10 +95,10 @@ export default function DashboardNav() {
                 key={item.href}
                 href={item.href}
                 className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 text-xs font-medium transition ${
-                  isActive ? "text-violet-700" : "text-slate-500"
+                  isActive ? "text-indigo-600" : "text-gray-400"
                 }`}
               >
-                <span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${isActive ? "bg-violet-100" : ""}`}>
+                <span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${isActive ? "bg-indigo-50" : ""}`}>
                   <Icon className="h-5 w-5" />
                 </span>
                 {item.label}
