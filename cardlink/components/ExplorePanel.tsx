@@ -438,52 +438,32 @@ export default function ExplorePanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
       </div>
     );
   }
 
   return (
     <div className="min-w-0 space-y-6">
-      {/* Header area matching design: indigo background, search */}
-      <div className="-mx-4 -mt-6 rounded-b-3xl bg-indigo-600 px-5 pb-5 pt-4 md:-mx-0 md:rounded-2xl">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="text-lg font-bold text-white">{t("title")}</h1>
-            <p className="text-xs text-indigo-200">{t("subtitle")}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            {ownerCompanyIds.length > 0 ? (
-              <Link
-                href="/dashboard/company-management"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white"
-                aria-label="Company management"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </Link>
-            ) : null}
-          </div>
-        </div>
-        {/* Search bar */}
-        <div className="flex items-center gap-2 rounded-xl bg-white/20 px-3 py-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-200"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <span className="text-xs text-indigo-200">{t("subtitle")}</span>
-        </div>
+      {/* Search bar — Reference style */}
+      <div className="flex items-center gap-2 rounded-xl bg-primary-50 border border-primary-100 px-3 py-2.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span className="text-xs text-neutral-400">{t("subtitle")}</span>
       </div>
 
       {/* Message / alert */}
       {message ? (
-        <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-500"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span className="text-xs font-medium text-indigo-800">{message}</span>
+        <div className="app-info flex items-center gap-2 px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span className="text-xs font-medium text-info-dark">{message}</span>
         </div>
       ) : null}
 
       {/* Featured Offers — horizontal scroll cards */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-800">{t("sections.promotion")}</span>
-          <span className="text-xs font-medium text-indigo-600">View All</span>
+          <span className="text-sm font-semibold text-neutral-800">{t("sections.promotion")}</span>
+          <span className="text-xs font-medium text-primary-600">View All</span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2">
           {promoSlides.length ? (
@@ -491,7 +471,7 @@ export default function ExplorePanel() {
               <Link
                 key={offer.id}
                 href={`/dashboard/explore?companyId=${company.id}`}
-                className="flex-shrink-0 w-40 rounded-xl bg-gradient-to-br from-indigo-500 to-teal-400 p-4 text-white shadow-sm hover:shadow-md transition-shadow"
+                className="flex-shrink-0 w-40 rounded-xl bg-gradient-to-br from-primary-500 to-teal-400 p-4 text-white shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="text-lg font-bold leading-tight">{formatOffer(offer)}</div>
                 <div className="mt-1 text-xs opacity-80 truncate">{company.name}</div>
@@ -502,17 +482,17 @@ export default function ExplorePanel() {
               </Link>
             ))
           ) : (
-            <div className="w-full rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+            <div className="w-full rounded-xl bg-neutral-50 p-6 text-center text-sm text-neutral-500">
               {t("empty.promotions")}
             </div>
           )}
         </div>
       </section>
 
-      {/* Categories grid */}
+      {/* Categories — icon grid + filter pills */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-800">Categories</span>
+          <span className="text-sm font-semibold text-neutral-800">Categories</span>
         </div>
         <div className="overflow-x-auto pb-1">
           <div className="flex w-max gap-2">
@@ -521,8 +501,8 @@ export default function ExplorePanel() {
               onClick={() => setSelectedCompanyId("all")}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                 selectedCompanyId === "all"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-primary-600 text-white"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
               }`}
             >
               {t("actions.all")}
@@ -534,8 +514,8 @@ export default function ExplorePanel() {
                 onClick={() => setSelectedCompanyId(company.id)}
                 className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                   selectedCompanyId === company.id
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-primary-600 text-white"
+                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
                 }`}
               >
                 {company.name}
@@ -548,7 +528,7 @@ export default function ExplorePanel() {
       {/* Partners — card list */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-800">{t("sections.partners")}</span>
+          <span className="text-sm font-semibold text-neutral-800">{t("sections.partners")}</span>
         </div>
         <div className="space-y-2">
           {partnerCompanies.length ? (
@@ -560,19 +540,19 @@ export default function ExplorePanel() {
               return (
                 <article
                   key={company.id}
-                  className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+                  className="flex items-center gap-3 rounded-xl bg-neutral-50 p-3"
                 >
                   <div
-                    className="h-10 w-10 shrink-0 rounded-lg bg-indigo-100 bg-cover bg-center flex items-center justify-center"
+                    className="h-10 w-10 shrink-0 rounded-lg bg-primary-100 bg-cover bg-center flex items-center justify-center"
                     style={company.logo_url ? { backgroundImage: `url(${company.logo_url})` } : {}}
                   >
                     {!company.logo_url && (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-600"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{company.name}</p>
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-sm font-medium text-neutral-800 truncate">{company.name}</p>
+                    <p className="text-xs text-neutral-500 truncate">
                       {company.description || t("labels.membershipPartner")}
                     </p>
                   </div>
@@ -588,7 +568,7 @@ export default function ExplorePanel() {
                       type="button"
                       onClick={() => void joinMembership(company.id)}
                       disabled={busyJoinCompanyId === company.id}
-                      className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-60 transition-colors"
+                      className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-700 disabled:opacity-60 transition-colors"
                     >
                       {busyJoinCompanyId === company.id ? t("actions.submitting") : t("actions.join")}
                     </button>
@@ -597,13 +577,13 @@ export default function ExplorePanel() {
                     href={companyProfileSlugMap[company.id] ? `/c/${companyProfileSlugMap[company.id]}` : `/dashboard/explore?companyId=${company.id}`}
                     aria-label={t("actions.view")}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="m9 18 6-6-6-6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-400"><path d="m9 18 6-6-6-6"/></svg>
                   </Link>
                 </article>
               );
             })
           ) : (
-            <div className="rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+            <div className="rounded-xl bg-neutral-50 p-6 text-center text-sm text-neutral-500">
               {t("empty.partners")}
             </div>
           )}
@@ -613,7 +593,7 @@ export default function ExplorePanel() {
       {/* Discounts — offer cards */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-800">{t("sections.discounts")}</span>
+          <span className="text-sm font-semibold text-neutral-800">{t("sections.discounts")}</span>
         </div>
         <div className="space-y-3">
           {visibleOffers.length ? (
@@ -624,29 +604,29 @@ export default function ExplorePanel() {
               return (
                 <article
                   key={offer.id}
-                  className="rounded-xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                  className="rounded-xl bg-white p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                      <p className="text-xs font-medium text-primary-600 uppercase tracking-wider">
                         {company?.name ?? t("labels.company")}
                       </p>
-                      <p className="mt-1 text-sm font-semibold text-gray-800">{offer.title}</p>
-                      <p className="mt-1 text-xs text-gray-500">{formatOffer(offer)}</p>
+                      <p className="mt-1 text-sm font-semibold text-neutral-800">{offer.title}</p>
+                      <p className="mt-1 text-xs text-neutral-500">{formatOffer(offer)}</p>
                     </div>
-                    <div className="ml-3 flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <div className="ml-3 flex-shrink-0 w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-600"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between">
-                    <p className="text-xs text-gray-500">
-                      {t("labels.balance")}: <span className="font-semibold text-indigo-700">{account?.points_balance ?? 0} {t("labels.pointUnit")}</span>
+                    <p className="text-xs text-neutral-500">
+                      {t("labels.balance")}: <span className="font-semibold text-primary-700">{account?.points_balance ?? 0} {t("labels.pointUnit")}</span>
                     </p>
                     <button
                       type="button"
                       onClick={() => void redeemOffer(offer)}
                       disabled={busyOfferId === offer.id}
-                      className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-60 transition-colors"
+                      className="rounded-lg bg-primary-600 px-4 py-2 text-xs font-medium text-white hover:bg-primary-700 disabled:opacity-60 transition-colors"
                     >
                       {busyOfferId === offer.id ? t("actions.submitting") : t("actions.redeem")}
                     </button>
@@ -655,7 +635,7 @@ export default function ExplorePanel() {
               );
             })
           ) : (
-            <div className="rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+            <div className="rounded-xl bg-neutral-50 p-6 text-center text-sm text-neutral-500">
               {t("empty.discounts")}
             </div>
           )}

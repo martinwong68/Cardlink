@@ -27,7 +27,7 @@ type Deal = {
 
 const STAGE_COLORS: Record<string, string> = {
   qualification: "bg-blue-500",
-  proposal: "bg-indigo-500",
+  proposal: "bg-primary-500",
   negotiation: "bg-amber-500",
   closing: "bg-teal-500",
   won: "bg-emerald-500",
@@ -89,14 +89,14 @@ export default function CrmDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-gray-500">Loading CRM data…</p>
+        <p className="text-sm text-neutral-500">Loading CRM data…</p>
       </div>
     );
   }
 
   const statCards = [
     { label: "Hot Leads", value: metrics.hotLeads, Icon: Flame, iconBg: "bg-rose-50", iconColor: "text-rose-500" },
-    { label: "Open Deals", value: metrics.openDeals, Icon: Handshake, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
+    { label: "Open Deals", value: metrics.openDeals, Icon: Handshake, iconBg: "bg-primary-50", iconColor: "text-primary-600" },
     { label: "Pipeline", value: `$${(metrics.pipeline / 1000).toFixed(0)}k`, Icon: TrendingUp, iconBg: "bg-teal-50", iconColor: "text-teal-600" },
     { label: "Campaigns", value: metrics.activeCampaigns, Icon: Megaphone, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
   ];
@@ -104,26 +104,26 @@ export default function CrmDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">CRM</h1>
-        <p className="text-xs text-gray-500">Customer relationship management overview</p>
+        <h1 className="text-xl font-bold text-neutral-900">CRM</h1>
+        <p className="text-xs text-neutral-500">Customer relationship management overview</p>
       </div>
 
       {/* Metrics */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {statCards.map((m) => (
-          <div key={m.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div key={m.label} className="rounded-xl border border-neutral-100 bg-white p-4 shadow-sm">
             <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg ${m.iconBg}`}>
               <m.Icon className={`h-4 w-4 ${m.iconColor}`} />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{m.value}</p>
-            <p className="text-xs text-gray-500">{m.label}</p>
+            <p className="text-2xl font-bold text-neutral-900">{m.value}</p>
+            <p className="text-xs text-neutral-500">{m.label}</p>
           </div>
         ))}
       </div>
 
       {/* Pipeline by Stage */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Pipeline by Stage</h2>
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Pipeline by Stage</h2>
         <div className="space-y-2">
           {stages.map((stage) => {
             const stageDeals = deals.filter((d) => d.stage === stage);
@@ -131,12 +131,12 @@ export default function CrmDashboardPage() {
             return (
               <div
                 key={stage}
-                className="flex items-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm"
+                className="flex items-center rounded-xl border border-neutral-100 bg-white p-3 shadow-sm"
               >
-                <div className={`mr-3 h-3 w-3 rounded-full ${STAGE_COLORS[stage] ?? "bg-gray-400"}`} />
-                <span className="flex-1 text-sm font-medium capitalize text-gray-700">{stage}</span>
-                <span className="mr-3 text-xs text-gray-500">{stageDeals.length} deals</span>
-                <span className="text-sm font-semibold text-gray-900">${stageValue.toFixed(0)}</span>
+                <div className={`mr-3 h-3 w-3 rounded-full ${STAGE_COLORS[stage] ?? "bg-neutral-400"}`} />
+                <span className="flex-1 text-sm font-medium capitalize text-neutral-700">{stage}</span>
+                <span className="mr-3 text-xs text-neutral-500">{stageDeals.length} deals</span>
+                <span className="text-sm font-semibold text-neutral-900">${stageValue.toFixed(0)}</span>
               </div>
             );
           })}
@@ -145,7 +145,7 @@ export default function CrmDashboardPage() {
 
       {/* Quick Nav */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Modules</h2>
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Modules</h2>
         <div className="space-y-2">
           {[
             { label: "Leads", href: "/business/crm/leads", Icon: Target },
@@ -157,12 +157,12 @@ export default function CrmDashboardPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:border-indigo-100 hover:bg-indigo-50/30"
+              className="flex items-center rounded-xl border border-neutral-100 bg-white p-4 shadow-sm transition hover:border-primary-100 hover:bg-primary-50/30"
             >
-              <span className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
-                <item.Icon className="h-4 w-4 text-indigo-600" />
+              <span className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary-50">
+                <item.Icon className="h-4 w-4 text-primary-600" />
               </span>
-              <span className="text-sm font-medium text-gray-700">{item.label}</span>
+              <span className="text-sm font-medium text-neutral-700">{item.label}</span>
             </Link>
           ))}
         </div>
@@ -170,21 +170,21 @@ export default function CrmDashboardPage() {
 
       {/* Recent Activities */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Recent Activities</h2>
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Recent Activities</h2>
         {activities.length === 0 ? (
-          <p className="text-sm text-gray-500">No recent activities.</p>
+          <p className="text-sm text-neutral-500">No recent activities.</p>
         ) : (
           <div className="space-y-2">
             {activities.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-3 shadow-sm"
+                className="flex items-center justify-between rounded-xl border border-neutral-100 bg-white p-3 shadow-sm"
               >
                 <div>
-                  <p className="text-sm font-medium capitalize text-gray-700">{a.type}</p>
-                  <p className="text-xs text-gray-500">{a.title}</p>
+                  <p className="text-sm font-medium capitalize text-neutral-700">{a.type}</p>
+                  <p className="text-xs text-neutral-500">{a.title}</p>
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-neutral-400">
                   {new Date(a.created_at).toLocaleDateString()}
                 </span>
               </div>

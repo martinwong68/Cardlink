@@ -648,12 +648,12 @@ export default function CompanyManagementPanel() {
   };
 
   if (isLoading) {
-    return <p className="text-sm text-gray-500">{t("states.loading")}</p>;
+    return <p className="text-sm text-neutral-500">{t("states.loading")}</p>;
   }
 
   if (adminCompanyIds.length === 0) {
     return (
-      <div className="rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-600 shadow-sm">
+      <div className="rounded-2xl border border-neutral-100 bg-white p-6 text-sm text-neutral-600 shadow-sm">
         {t("states.noAdmin")}
       </div>
     );
@@ -662,15 +662,15 @@ export default function CompanyManagementPanel() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">{t("header.brand")}</p>
-        <h1 className="mt-2 text-2xl font-semibold text-gray-900">{t("header.title")}</h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary-600">{t("header.brand")}</p>
+        <h1 className="mt-2 text-2xl font-semibold text-neutral-900">{t("header.title")}</h1>
+        <p className="mt-2 text-sm text-neutral-500">
           {t("header.subtitle")}
         </p>
       </div>
 
       {message ? (
-        <div className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
+        <div className="rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-700">
           {message}
         </div>
       ) : null}
@@ -683,8 +683,8 @@ export default function CompanyManagementPanel() {
             onClick={() => setSelectedCompanyId(company.id)}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               selectedCompanyId === company.id
-                ? "bg-indigo-600 text-white"
-                : "bg-white text-gray-600 ring-1 ring-slate-200 hover:bg-gray-50"
+                ? "bg-primary-600 text-white"
+                : "bg-white text-neutral-600 ring-1 ring-slate-200 hover:bg-neutral-50"
             }`}
           >
             {company.name}
@@ -694,35 +694,35 @@ export default function CompanyManagementPanel() {
 
       {selectedCompany ? (
         <section className="grid gap-4 lg:grid-cols-2">
-          <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-900">{t("sections.companyProfile.title")}</h2>
-            <p className="mt-1 text-xs text-gray-500">{t("sections.companyProfile.subtitle")}</p>
+          <article className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
+            <h2 className="text-base font-semibold text-neutral-900">{t("sections.companyProfile.title")}</h2>
+            <p className="mt-1 text-xs text-neutral-500">{t("sections.companyProfile.subtitle")}</p>
 
             <div className="mt-4 space-y-3">
               <input
                 value={editor.name}
                 onChange={(event) => setEditor((prev) => ({ ...prev, name: event.target.value }))}
                 placeholder={t("placeholders.companyName")}
-                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+                className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
               />
               <textarea
                 value={editor.description}
                 onChange={(event) => setEditor((prev) => ({ ...prev, description: event.target.value }))}
                 placeholder={t("placeholders.companyDescription")}
                 rows={3}
-                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+                className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
               />
               <input
                 value={editor.logo_url}
                 onChange={(event) => setEditor((prev) => ({ ...prev, logo_url: event.target.value }))}
                 placeholder={t("placeholders.companyLogoUrl")}
-                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+                className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
               />
               <input
                 value={editor.cover_url}
                 onChange={(event) => setEditor((prev) => ({ ...prev, cover_url: event.target.value }))}
                 placeholder={t("placeholders.companyCoverUrl")}
-                className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+                className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
               />
             </div>
 
@@ -730,7 +730,7 @@ export default function CompanyManagementPanel() {
               type="button"
               onClick={() => void saveCompany()}
               disabled={busyId === "save-company"}
-              className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+              className="mt-4 rounded-full bg-primary-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
             >
               {busyId === "save-company"
                 ? t("actions.saving")
@@ -738,12 +738,12 @@ export default function CompanyManagementPanel() {
             </button>
           </article>
 
-          <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-900">{t("sections.currentDiscounts.title")}</h2>
+          <article className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
+            <h2 className="text-base font-semibold text-neutral-900">{t("sections.currentDiscounts.title")}</h2>
             <div className="mt-3 space-y-2">
               {offers.length ? (
                 offers.slice(0, 8).map((offer) => (
-                  <div key={offer.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
+                  <div key={offer.id} className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-2">
                     {editingOfferId === offer.id && offerEditDraft ? (
                       <div className="space-y-2">
                         <input
@@ -754,7 +754,7 @@ export default function CompanyManagementPanel() {
                             )
                           }
                           placeholder={t("placeholders.discountTitle")}
-                          className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
+                          className="w-full rounded-lg border border-neutral-100 px-2 py-1.5 text-xs outline-none ring-primary-300 focus:ring"
                         />
                         <textarea
                           value={offerEditDraft.description}
@@ -765,7 +765,7 @@ export default function CompanyManagementPanel() {
                           }
                           placeholder={t("placeholders.discountDescription")}
                           rows={2}
-                          className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
+                          className="w-full rounded-lg border border-neutral-100 px-2 py-1.5 text-xs outline-none ring-primary-300 focus:ring"
                         />
                         <div className="grid gap-2 sm:grid-cols-2">
                           <select
@@ -780,7 +780,7 @@ export default function CompanyManagementPanel() {
                                   : prev
                               )
                             }
-                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
+                            className="w-full rounded-lg border border-neutral-100 px-2 py-1.5 text-xs outline-none ring-primary-300 focus:ring"
                           >
                             <option value="percentage">{t("discountType.percentage")}</option>
                             <option value="fixed">{t("discountType.fixed")}</option>
@@ -794,7 +794,7 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.discountValue")}
-                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
+                            className="w-full rounded-lg border border-neutral-100 px-2 py-1.5 text-xs outline-none ring-primary-300 focus:ring"
                           />
                           <input
                             value={offerEditDraft.pointsCost}
@@ -804,7 +804,7 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.pointsCostOptional")}
-                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
+                            className="w-full rounded-lg border border-neutral-100 px-2 py-1.5 text-xs outline-none ring-primary-300 focus:ring"
                           />
                           <input
                             value={offerEditDraft.usageLimit}
@@ -814,7 +814,7 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.usageLimitOptional")}
-                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
+                            className="w-full rounded-lg border border-neutral-100 px-2 py-1.5 text-xs outline-none ring-primary-300 focus:ring"
                           />
                           <input
                             value={offerEditDraft.perMemberLimit}
@@ -824,9 +824,9 @@ export default function CompanyManagementPanel() {
                               )
                             }
                             placeholder={t("placeholders.perMemberLimitOptional")}
-                            className="w-full rounded-lg border border-gray-100 px-2 py-1.5 text-xs outline-none ring-indigo-300 focus:ring"
+                            className="w-full rounded-lg border border-neutral-100 px-2 py-1.5 text-xs outline-none ring-primary-300 focus:ring"
                           />
-                          <label className="flex items-center gap-2 rounded-lg border border-gray-100 px-2 py-1.5 text-xs text-gray-700">
+                          <label className="flex items-center gap-2 rounded-lg border border-neutral-100 px-2 py-1.5 text-xs text-neutral-700">
                             <input
                               type="checkbox"
                               checked={offerEditDraft.isActive}
@@ -844,14 +844,14 @@ export default function CompanyManagementPanel() {
                             type="button"
                             onClick={() => void saveEditedOffer()}
                             disabled={busyId === `save-offer-${offer.id}`}
-                            className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+                            className="rounded-full bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
                           >
                             {busyId === `save-offer-${offer.id}` ? t("actions.saving") : t("actions.saveDiscount")}
                           </button>
                           <button
                             type="button"
                             onClick={cancelEditOffer}
-                            className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700"
+                            className="rounded-full border border-neutral-100 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700"
                           >
                             {t("actions.cancel")}
                           </button>
@@ -859,8 +859,8 @@ export default function CompanyManagementPanel() {
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm font-semibold text-gray-900">{offer.title}</p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-sm font-semibold text-neutral-900">{offer.title}</p>
+                        <p className="text-xs text-neutral-600">
                           {offer.discount_type === "percentage" && offer.discount_value !== null
                             ? t("offer.percentageOff", { value: offer.discount_value })
                             : offer.discount_type === "fixed" && offer.discount_value !== null
@@ -869,17 +869,17 @@ export default function CompanyManagementPanel() {
                             ? t("offer.points", { value: offer.points_cost })
                             : t("offer.special")}
                         </p>
-                        <p className="text-[11px] text-gray-500">
+                        <p className="text-[11px] text-neutral-500">
                           {offer.is_active ? t("common.active") : t("common.inactive")}
                         </p>
-                        <p className="text-[11px] text-gray-500">
+                        <p className="text-[11px] text-neutral-500">
                           {t("labels.totalLimit")}: {offer.usage_limit ?? t("common.unlimited")} · {t("labels.perUserLimit")}: {offer.per_member_limit ?? t("common.unlimited")}
                         </p>
                         <div className="mt-2 flex flex-wrap gap-2">
                           <button
                             type="button"
                             onClick={() => startEditOffer(offer)}
-                            className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700"
+                            className="rounded-full border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700"
                           >
                             {t("actions.editDiscount")}
                           </button>
@@ -897,7 +897,7 @@ export default function CompanyManagementPanel() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">{t("empty.noDiscount")}</p>
+                <p className="text-sm text-neutral-500">{t("empty.noDiscount")}</p>
               )}
             </div>
           </article>
@@ -905,21 +905,21 @@ export default function CompanyManagementPanel() {
       ) : null}
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("sections.uploadDiscount.title")}</h2>
+        <article className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-neutral-900">{t("sections.uploadDiscount.title")}</h2>
           <div className="mt-4 space-y-3">
             <input
               value={offerDraft.title}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, title: event.target.value }))}
               placeholder={t("placeholders.discountTitle")}
-              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+              className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
             />
             <textarea
               value={offerDraft.description}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, description: event.target.value }))}
               placeholder={t("placeholders.discountDescription")}
               rows={3}
-              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+              className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
             />
             <select
               value={offerDraft.discountType}
@@ -929,7 +929,7 @@ export default function CompanyManagementPanel() {
                   discountType: event.target.value as OfferDraft["discountType"],
                 }))
               }
-              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+              className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
             >
               <option value="percentage">{t("discountType.percentage")}</option>
               <option value="fixed">{t("discountType.fixed")}</option>
@@ -941,19 +941,19 @@ export default function CompanyManagementPanel() {
                 setOfferDraft((prev) => ({ ...prev, discountValue: event.target.value }))
               }
               placeholder={t("placeholders.discountValue")}
-              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+              className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
             />
             <input
               value={offerDraft.pointsCost}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, pointsCost: event.target.value }))}
               placeholder={t("placeholders.pointsCostOptional")}
-              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+              className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
             />
             <input
               value={offerDraft.usageLimit}
               onChange={(event) => setOfferDraft((prev) => ({ ...prev, usageLimit: event.target.value }))}
               placeholder={t("placeholders.usageLimitOptional")}
-              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+              className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
             />
             <input
               value={offerDraft.perMemberLimit}
@@ -961,14 +961,14 @@ export default function CompanyManagementPanel() {
                 setOfferDraft((prev) => ({ ...prev, perMemberLimit: event.target.value }))
               }
               placeholder={t("placeholders.perMemberLimitOptional")}
-              className="w-full rounded-xl border border-gray-100 px-3 py-2 text-sm outline-none ring-indigo-300 focus:ring"
+              className="w-full rounded-xl border border-neutral-100 px-3 py-2 text-sm outline-none ring-primary-300 focus:ring"
             />
           </div>
           <button
             type="button"
             onClick={() => void createOffer()}
             disabled={busyId === "create-offer"}
-            className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+            className="mt-4 rounded-full bg-primary-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
           >
             {busyId === "create-offer"
               ? t("actions.submitting")
@@ -976,39 +976,39 @@ export default function CompanyManagementPanel() {
           </button>
         </article>
 
-        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("sections.members.title")}</h2>
+        <article className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-neutral-900">{t("sections.members.title")}</h2>
           <div className="mt-3 space-y-2">
             {memberships.length ? (
               memberships.slice(0, 30).map((account) => {
                 const profile = profileMap.get(account.user_id);
                 const tier = account.tier_id ? tierMap.get(account.tier_id) : null;
                 return (
-                  <div key={account.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
-                    <p className="text-sm font-semibold text-gray-900">
+                  <div key={account.id} className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-2">
+                    <p className="text-sm font-semibold text-neutral-900">
                       {profile?.full_name || profile?.email || account.user_id.slice(0, 8)}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-neutral-500">
                       {t("labels.status")}: {account.status} · {t("labels.tier")}: {tier?.name ?? t("common.na")} · {t("labels.spend")}: ${Number(account.total_spend_amount ?? 0).toFixed(2)}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-neutral-500">
                       {t("labels.current")}: {account.points_balance} · {t("labels.lifetime")}: {account.lifetime_points}
                     </p>
-                    <p className="text-[11px] text-gray-400">{t("labels.joined")} {formatDate(account.joined_at)}</p>
+                    <p className="text-[11px] text-neutral-400">{t("labels.joined")} {formatDate(account.joined_at)}</p>
                   </div>
                 );
               })
             ) : (
-              <p className="text-sm text-gray-500">{t("empty.noMembershipAccount")}</p>
+              <p className="text-sm text-neutral-500">{t("empty.noMembershipAccount")}</p>
             )}
           </div>
         </article>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("sections.tierRules.title")}</h2>
-          <p className="mt-1 text-xs text-gray-500">
+        <article className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-neutral-900">{t("sections.tierRules.title")}</h2>
+          <p className="mt-1 text-xs text-neutral-500">
             {t("sections.tierRules.subtitle")}
           </p>
 
@@ -1020,13 +1020,13 @@ export default function CompanyManagementPanel() {
                   const programName =
                     membershipPrograms.find((program) => program.id === tier.program_id)?.name ?? t("common.program");
                   return (
-                    <div key={tier.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-3">
+                    <div key={tier.id} className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-3">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {tier.name} <span className="text-xs text-gray-500">({t("labels.rank")} {tier.rank})</span>
+                          <p className="text-sm font-semibold text-neutral-900">
+                            {tier.name} <span className="text-xs text-neutral-500">({t("labels.rank")} {tier.rank})</span>
                           </p>
-                          <p className="text-[11px] text-gray-500">{programName}</p>
+                          <p className="text-[11px] text-neutral-500">{programName}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <input
@@ -1035,13 +1035,13 @@ export default function CompanyManagementPanel() {
                               setTierRequirementDraft((prev) => ({ ...prev, [tier.id]: event.target.value }))
                             }
                             inputMode="decimal"
-                            className="w-28 rounded-lg border border-gray-100 px-2 py-1 text-sm outline-none ring-indigo-300 focus:ring"
+                            className="w-28 rounded-lg border border-neutral-100 px-2 py-1 text-sm outline-none ring-primary-300 focus:ring"
                           />
                           <button
                             type="button"
                             onClick={() => void saveTierRequiredAmount(tier.id)}
                             disabled={busyId === `tier-${tier.id}`}
-                            className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+                            className="rounded-full bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
                           >
                             {busyId === `tier-${tier.id}` ? t("actions.saving") : t("actions.save")}
                           </button>
@@ -1051,14 +1051,14 @@ export default function CompanyManagementPanel() {
                   );
                 })
             ) : (
-              <p className="text-sm text-gray-500">{t("empty.noMembershipTiers")}</p>
+              <p className="text-sm text-neutral-500">{t("empty.noMembershipTiers")}</p>
             )}
           </div>
         </article>
 
-        <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("sections.transactions.title")}</h2>
-          <p className="mt-1 text-xs text-gray-500">{t("sections.transactions.subtitle")}</p>
+        <article className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-neutral-900">{t("sections.transactions.title")}</h2>
+          <p className="mt-1 text-xs text-neutral-500">{t("sections.transactions.subtitle")}</p>
 
           <div className="mt-3 space-y-2">
             {membershipTransactions.length ? (
@@ -1067,35 +1067,35 @@ export default function CompanyManagementPanel() {
                 const profile = account ? profileMap.get(account.user_id) : null;
 
                 return (
-                  <div key={txn.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
-                    <p className="text-sm font-semibold text-gray-900">
+                  <div key={txn.id} className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-2">
+                    <p className="text-sm font-semibold text-neutral-900">
                       {profile?.full_name || profile?.email || txn.user_id.slice(0, 8)}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-neutral-500">
                       {t("labels.amount")}: {txn.currency} {Number(txn.amount ?? 0).toFixed(2)} · {t("labels.account")}: {txn.account_id.slice(0, 8)}
                     </p>
-                    <p className="text-[11px] text-gray-400">
+                    <p className="text-[11px] text-neutral-400">
                       {formatDate(txn.occurred_at)}{txn.note ? ` · ${txn.note}` : ""}
                     </p>
                   </div>
                 );
               })
             ) : (
-              <p className="text-sm text-gray-500">{t("empty.noMembershipTransactions")}</p>
+              <p className="text-sm text-neutral-500">{t("empty.noMembershipTransactions")}</p>
             )}
           </div>
         </article>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">{t("sections.redemption.title")}</h2>
-            <p className="mt-1 text-sm text-gray-500">{t("sections.redemption.subtitle")}</p>
+            <h2 className="text-base font-semibold text-neutral-900">{t("sections.redemption.title")}</h2>
+            <p className="mt-1 text-sm text-neutral-500">{t("sections.redemption.subtitle")}</p>
           </div>
           <Link
             href="/dashboard/scan"
-            className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+            className="rounded-full border border-neutral-100 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-50"
           >
             {t("actions.scanRedemption")}
           </Link>
@@ -1106,11 +1106,11 @@ export default function CompanyManagementPanel() {
             pendingRedemptions.map((item) => {
               const offer = offerMap.get(item.offer_id);
               return (
-                <div key={item.id} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-3">
+                <div key={item.id} className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">{offer?.title ?? t("common.offer")}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm font-semibold text-neutral-900">{offer?.title ?? t("common.offer")}</p>
+                      <p className="text-xs text-neutral-500">
                         {t("labels.user")}: {item.user_id ? item.user_id.slice(0, 8) : t("common.unknown")} · {t("labels.points")}: {item.points_spent} · {formatDate(item.redeemed_at)}
                       </p>
                     </div>
@@ -1137,7 +1137,7 @@ export default function CompanyManagementPanel() {
               );
             })
           ) : (
-            <p className="text-sm text-gray-500">{t("empty.noPendingRedemption")}</p>
+            <p className="text-sm text-neutral-500">{t("empty.noPendingRedemption")}</p>
           )}
         </div>
       </section>

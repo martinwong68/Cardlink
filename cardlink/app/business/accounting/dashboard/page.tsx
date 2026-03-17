@@ -72,26 +72,26 @@ export default function AccountingDashboardPage() {
     <div className="space-y-4 pb-28 md:pb-2">
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <article className="app-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Accounts</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{stats.accountCount}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Accounts</p>
+          <p className="mt-2 text-3xl font-bold text-neutral-900">{stats.accountCount}</p>
         </article>
         <article className="app-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Posted Txns</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{stats.postedCount}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Posted Txns</p>
+          <p className="mt-2 text-3xl font-bold text-neutral-900">{stats.postedCount}</p>
         </article>
         <article className="app-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Invoiced</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{toAmount(stats.totalInvoiced)}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Invoiced</p>
+          <p className="mt-2 text-3xl font-bold text-neutral-900">{toAmount(stats.totalInvoiced)}</p>
         </article>
         <article className="app-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Overdue</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Overdue</p>
           <p className="mt-2 text-3xl font-bold text-rose-600">{toAmount(stats.overdueTotal)}</p>
         </article>
       </section>
 
       <section className="app-card p-4 md:p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-800">Recent Transactions</h2>
+          <h2 className="text-sm font-semibold text-neutral-800">Recent Transactions</h2>
           <button
             type="button"
             onClick={() => void loadData()}
@@ -101,7 +101,7 @@ export default function AccountingDashboardPage() {
           </button>
         </div>
 
-        {isLoading ? <p className="text-sm text-gray-500">Loading dashboard data...</p> : null}
+        {isLoading ? <p className="text-sm text-neutral-500">Loading dashboard data...</p> : null}
         {error ? <p className="app-error px-3 py-2 text-sm">{error}</p> : null}
 
         {!isLoading && !error ? (
@@ -109,17 +109,17 @@ export default function AccountingDashboardPage() {
             {recentTransactions.map((entry) => (
               <div
                 key={entry.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100 px-3 py-2"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-neutral-100 px-3 py-2"
               >
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">{entry.description ?? "Untitled entry"}</p>
-                  <p className="text-xs text-gray-500">{entry.reference_number ?? "No ref"} · {entry.date}</p>
+                  <p className="text-sm font-semibold text-neutral-800">{entry.description ?? "Untitled entry"}</p>
+                  <p className="text-xs text-neutral-500">{entry.reference_number ?? "No ref"} · {entry.date}</p>
                 </div>
                 <span className="app-pill px-2.5 py-1 text-xs uppercase">{entry.status}</span>
               </div>
             ))}
             {recentTransactions.length === 0 ? (
-              <p className="text-sm text-gray-500">No transactions yet.</p>
+              <p className="text-sm text-neutral-500">No transactions yet.</p>
             ) : null}
           </div>
         ) : null}

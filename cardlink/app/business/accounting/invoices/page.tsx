@@ -49,19 +49,19 @@ export default function AccountingInvoicesPage() {
       {message ? <p className="app-success px-3 py-2 text-sm">{message}</p> : null}
       <section className="app-card p-4 md:p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-800">Invoices</h2>
+          <h2 className="text-sm font-semibold text-neutral-800">Invoices</h2>
           <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>
         </div>
-        {isLoading ? <p className="text-sm text-gray-500">Loading invoices...</p> : null}
+        {isLoading ? <p className="text-sm text-neutral-500">Loading invoices...</p> : null}
 
         {!isLoading ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {invoices.map((invoice) => (
-              <article key={invoice.id} className="rounded-xl border border-gray-100 p-4">
-                <p className="text-xs font-mono text-gray-500">{invoice.invoice_number}</p>
-                <p className="mt-1 text-base font-semibold text-gray-800">{invoice.client_name}</p>
-                <p className="mt-2 text-xl font-bold text-gray-900">{formatAmount(invoice.total, invoice.currency)}</p>
-                <p className="mt-1 text-xs text-gray-500">Due {invoice.due_date}</p>
+              <article key={invoice.id} className="rounded-xl border border-neutral-100 p-4">
+                <p className="text-xs font-mono text-neutral-500">{invoice.invoice_number}</p>
+                <p className="mt-1 text-base font-semibold text-neutral-800">{invoice.client_name}</p>
+                <p className="mt-2 text-xl font-bold text-neutral-900">{formatAmount(invoice.total, invoice.currency)}</p>
+                <p className="mt-1 text-xs text-neutral-500">Due {invoice.due_date}</p>
                 <div className="mt-3 flex items-center gap-2">
                   <span className="app-pill px-2 py-1 text-[11px] uppercase">{invoice.status}</span>
                   <select
@@ -77,7 +77,7 @@ export default function AccountingInvoicesPage() {
                 </div>
               </article>
             ))}
-            {invoices.length === 0 ? <p className="text-sm text-gray-500">No invoices yet.</p> : null}
+            {invoices.length === 0 ? <p className="text-sm text-neutral-500">No invoices yet.</p> : null}
           </div>
         ) : null}
       </section>

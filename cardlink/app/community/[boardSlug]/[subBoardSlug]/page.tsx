@@ -133,7 +133,7 @@ export default function PublicSubBoardPage() {
   if (isLoading) {
     return (
       <div className="app-shell min-h-screen px-4 py-10">
-        <div className="app-card p-6 text-center text-sm text-gray-500">
+        <div className="app-card p-6 text-center text-sm text-neutral-500">
           {t("loading")}
         </div>
       </div>
@@ -183,13 +183,13 @@ export default function PublicSubBoardPage() {
           <p className="app-subtitle mt-2 text-sm">{subBoard.description}</p>
         </div>
 
-        <div className="app-card-soft p-5 text-sm text-gray-600">
+        <div className="app-card-soft p-5 text-sm text-neutral-600">
           {t("cta.loginToPost")}
         </div>
 
         <div className="space-y-3">
           {posts.length === 0 ? (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
+            <div className="rounded-2xl border border-neutral-100 bg-white p-6 text-center text-sm text-neutral-500 shadow-sm">
               {t("empty")}
             </div>
           ) : null}
@@ -204,34 +204,34 @@ export default function PublicSubBoardPage() {
               <Link
                 key={post.id}
                 href={`/community/${board.slug}/${subBoard.slug}/${post.id}`}
-                className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-indigo-200"
+                className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-primary-200"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white">
                       {initials}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-neutral-900">
                         {post.title}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-neutral-500">
                         {authorName}
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-neutral-400">
                     {formatDistanceToNow(new Date(lastActivity), {
                       addSuffix: true,
                       locale: dateLocale,
                     })}
                   </span>
                 </div>
-                <p className="mt-3 text-xs text-gray-500">
+                <p className="mt-3 text-xs text-neutral-500">
                   {(post.body ?? "").slice(0, 160)}
                   {post.body && post.body.length > 160 ? "..." : ""}
                 </p>
-                <div className="mt-3 text-xs text-gray-400">
+                <div className="mt-3 text-xs text-neutral-400">
                   {t("stats.replies", { count: post.reply_count ?? 0 })}
                 </div>
               </Link>

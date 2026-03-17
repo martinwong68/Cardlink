@@ -40,13 +40,13 @@ export default function OwnerModulesPage() {
     } catch { /* silent */ } finally { setToggling(null); }
   };
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading modules…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading modules…</p></div>;
 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">Module Access</h1>
-        <p className="text-xs text-gray-500">Enable or disable platform modules for your organization.</p>
+        <h1 className="text-xl font-bold text-neutral-900">Module Access</h1>
+        <p className="text-xs text-neutral-500">Enable or disable platform modules for your organization.</p>
       </div>
 
       <div className="space-y-3">
@@ -54,22 +54,22 @@ export default function OwnerModulesPage() {
           const record = enabledMap.get(mod.name);
           const enabled = record?.is_enabled ?? false;
           return (
-            <div key={mod.name} className="rounded-xl border border-gray-100 bg-white p-4">
+            <div key={mod.name} className="rounded-xl border border-neutral-100 bg-white p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{mod.icon}</span>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{mod.label}</p>
-                    <p className="text-[10px] text-gray-500">{mod.name}</p>
+                    <p className="text-sm font-semibold text-neutral-900">{mod.label}</p>
+                    <p className="text-[10px] text-neutral-500">{mod.name}</p>
                   </div>
                 </div>
-                <button onClick={() => handleToggle(mod.name)} disabled={toggling === mod.name} className={`rounded-full px-4 py-1.5 text-xs font-bold text-white transition ${enabled ? "bg-emerald-500 hover:bg-emerald-600" : "bg-gray-300 hover:bg-gray-400"}`}>
+                <button onClick={() => handleToggle(mod.name)} disabled={toggling === mod.name} className={`rounded-full px-4 py-1.5 text-xs font-bold text-white transition ${enabled ? "bg-emerald-500 hover:bg-emerald-600" : "bg-neutral-300 hover:bg-neutral-400"}`}>
                   {toggling === mod.name ? "…" : enabled ? "ON" : "OFF"}
                 </button>
               </div>
               {record && (
                 <div className="mt-2 flex gap-2">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${enabled ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>{enabled ? "Active" : "Disabled"}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${enabled ? "bg-emerald-100 text-emerald-700" : "bg-neutral-100 text-neutral-500"}`}>{enabled ? "Active" : "Disabled"}</span>
                   {record.settings?.integration && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">Integrated</span>}
                 </div>
               )}

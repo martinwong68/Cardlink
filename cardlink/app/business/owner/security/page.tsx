@@ -42,23 +42,23 @@ export default function OwnerSecurityPage() {
 
   const enabledCount = SETTING_METAS.filter((s) => settings[s.key]).length;
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading security settings…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading security settings…</p></div>;
 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">Security Settings</h1>
-        <p className="text-xs text-gray-500">{enabledCount} of {SETTING_METAS.length} controls active</p>
+        <h1 className="text-xl font-bold text-neutral-900">Security Settings</h1>
+        <p className="text-xs text-neutral-500">{enabledCount} of {SETTING_METAS.length} controls active</p>
       </div>
 
       <div className="space-y-3">
         {SETTING_METAS.map((s) => (
-          <div key={s.key} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-4">
+          <div key={s.key} className="flex items-center justify-between rounded-xl border border-neutral-100 bg-white p-4">
             <div className="flex-1 pr-4">
-              <p className="text-sm font-semibold text-gray-900">{s.label}</p>
-              <p className="mt-0.5 text-xs text-gray-500">{s.description}</p>
+              <p className="text-sm font-semibold text-neutral-900">{s.label}</p>
+              <p className="mt-0.5 text-xs text-neutral-500">{s.description}</p>
             </div>
-            <button onClick={() => toggle(s.key)} disabled={saving} className={`relative h-6 w-11 rounded-full transition ${settings[s.key] ? "bg-purple-600" : "bg-gray-300"}`}>
+            <button onClick={() => toggle(s.key)} disabled={saving} className={`relative h-6 w-11 rounded-full transition ${settings[s.key] ? "bg-purple-600" : "bg-neutral-300"}`}>
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${settings[s.key] ? "left-[22px]" : "left-0.5"}`} />
             </button>
           </div>
@@ -66,12 +66,12 @@ export default function OwnerSecurityPage() {
       </div>
 
       {/* Security Score */}
-      <div className="rounded-xl border border-gray-100 bg-white p-4">
-        <p className="text-sm font-semibold text-gray-900">Security Score</p>
-        <div className="mt-2 h-3 overflow-hidden rounded-full bg-gray-100">
+      <div className="rounded-xl border border-neutral-100 bg-white p-4">
+        <p className="text-sm font-semibold text-neutral-900">Security Score</p>
+        <div className="mt-2 h-3 overflow-hidden rounded-full bg-neutral-100">
           <div className="h-full rounded-full bg-purple-600 transition-all" style={{ width: `${(enabledCount / SETTING_METAS.length) * 100}%` }} />
         </div>
-        <p className="mt-1 text-xs text-gray-500">{Math.round((enabledCount / SETTING_METAS.length) * 100)}% — {enabledCount >= 5 ? "Strong" : enabledCount >= 3 ? "Moderate" : "Weak"}</p>
+        <p className="mt-1 text-xs text-neutral-500">{Math.round((enabledCount / SETTING_METAS.length) * 100)}% — {enabledCount >= 5 ? "Strong" : enabledCount >= 3 ? "Moderate" : "Weak"}</p>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Copy,
+  CreditCard,
   Eye,
   Pencil,
   Plus,
@@ -77,8 +78,8 @@ function CardsTabs({
         href="/dashboard/cards"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "cards"
-            ? "bg-gradient-to-r from-indigo-600 to-indigo-600 text-white shadow-md shadow-indigo-300/40"
-            : "app-secondary-btn text-gray-500"
+            ? "bg-primary-600 text-white shadow-sm"
+            : "app-secondary-btn text-neutral-500"
         }`}
       >
         {t("cards")}
@@ -87,8 +88,8 @@ function CardsTabs({
         href="/dashboard/cards?tab=contacts"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "contacts"
-            ? "bg-gradient-to-r from-indigo-600 to-indigo-600 text-white shadow-md shadow-indigo-300/40"
-            : "app-secondary-btn text-gray-500"
+            ? "bg-primary-600 text-white shadow-sm"
+            : "app-secondary-btn text-neutral-500"
         }`}
       >
         {t("contacts")}
@@ -97,8 +98,8 @@ function CardsTabs({
         href="/dashboard/cards?tab=nfc"
         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
           activeTab === "nfc"
-            ? "bg-gradient-to-r from-indigo-600 to-indigo-600 text-white shadow-md shadow-indigo-300/40"
-            : "app-secondary-btn text-gray-500"
+            ? "bg-primary-600 text-white shadow-sm"
+            : "app-secondary-btn text-neutral-500"
         }`}
       >
         {t("nfc")}
@@ -106,9 +107,7 @@ function CardsTabs({
       {isOwner ? (
         <Link
           href="/business/company-cards"
-          className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-            "app-secondary-btn text-gray-500"
-          }`}
+          className="app-secondary-btn rounded-full px-4 py-2 text-xs font-semibold text-neutral-500 transition"
         >
           Company Cards
         </Link>
@@ -138,6 +137,7 @@ export default function CardsDashboardPage() {
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
   const [isOwner, setIsOwner] = useState(false);
   const [companyAccountCompanyId, setCompanyAccountCompanyId] = useState<string | null>(null);
+  const [nfcLinkedCardId, setNfcLinkedCardId] = useState<string | null>(null);
 
   const pushToast = (text: string) => {
     setToast(text);
@@ -211,6 +211,17 @@ export default function CardsDashboardPage() {
     }
 
     setCards((data as CardRow[]) ?? []);
+
+    // Fetch NFC-linked card id so we can highlight it as the main card
+    const { data: nfcData } = await supabase
+      .from("nfc_cards")
+      .select("linked_card_id")
+      .eq("owner_id", userData.user.id)
+      .eq("status", "active")
+      .limit(1)
+      .maybeSingle();
+    setNfcLinkedCardId((nfcData as { linked_card_id: string | null } | null)?.linked_card_id ?? null);
+
     setIsLoading(false);
   };
 
@@ -349,23 +360,16 @@ export default function CardsDashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="app-kicker">
-            {t("brand")}
-          </p>
-          <h1 className="app-title mt-2 text-2xl font-semibold">
-            {t("title")}
-          </h1>
-          <p className="app-subtitle mt-1 text-sm">
-            {t("subtitle")}
-          </p>
+          <h2 className="text-sm font-semibold text-neutral-800">{t("title")}</h2>
+          <p className="text-xs text-neutral-500">{t("subtitle")}</p>
         </div>
         <button
           type="button"
           onClick={createCard}
           disabled={cards.length >= (viewerPlan === "premium" ? Number.POSITIVE_INFINITY : companyAccountCompanyId ? 2 : 1)}
-          className="app-primary-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex items-center gap-1 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
           {t("actions.create")}
         </button>
       </div>
@@ -378,121 +382,117 @@ export default function CardsDashboardPage() {
         </p>
       ) : null}
 
+      {/* Hero — main namecard preview (NFC-linked card or first card) */}
+      {!isLoading && cards.length > 0 ? (() => {
+        const mainCard = (nfcLinkedCardId && cards.find((c) => c.id === nfcLinkedCardId)) || cards[0];
+        const patternClass =
+          patternClassMap[mainCard.background_pattern ?? "gradient-1"] ??
+          patternClassMap["gradient-1"];
+        return (
+          <Link
+            href={`/dashboard/cards/${mainCard.id}`}
+            className={`cardlink-cover ${patternClass} relative block overflow-hidden rounded-2xl p-5 shadow-lg`}
+            style={{ "--cardlink-base": mainCard.background_color ?? "#6366f1" } as React.CSSProperties}
+          >
+            <div className="relative z-10 flex flex-col justify-between min-h-[140px] text-white">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold tracking-wider opacity-80">CARDLINK</span>
+                {nfcLinkedCardId === mainCard.id ? (
+                  <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold">NFC</span>
+                ) : null}
+              </div>
+              <div>
+                <p className="text-base font-bold leading-tight">
+                  {mainCard.full_name || t("card.defaultUser")}
+                </p>
+                {mainCard.title ? (
+                  <p className="mt-0.5 text-xs opacity-80">{mainCard.title}</p>
+                ) : null}
+                <p className="mt-1 text-[10px] tracking-wide opacity-60">
+                  {mainCard.card_name || t("card.defaultName")}
+                </p>
+              </div>
+            </div>
+          </Link>
+        );
+      })() : null}
+
+      {/* Action buttons — Reference 3-col */}
+      {!isLoading && cards.length > 0 ? (
+        <div className="flex gap-3">
+          {[
+            { icon: Eye, label: t("actions.edit") },
+            { icon: CreditCard, label: t("actions.share") },
+            { icon: QrCode, label: t("actions.qr") },
+          ].map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              onClick={() => {
+                if (action.icon === Eye) router.push(`/dashboard/cards/${cards[0].id}`);
+                else if (action.icon === CreditCard) void handleCopyLink(cards[0].slug);
+                else setQrCard(cards[0]);
+              }}
+              className="flex flex-1 flex-col items-center gap-1 rounded-xl bg-neutral-50 py-3 transition hover:bg-neutral-100"
+            >
+              <action.icon className="h-4 w-4 text-primary-600" />
+              <span className="text-xs text-neutral-600">{action.label}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       {isLoading ? (
-        <div className="flex min-h-[40vh] items-center justify-center text-sm text-gray-500">
-          {t("loading")}
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
         </div>
       ) : null}
 
       {!isLoading && cards.length === 0 ? (
-        <div className="app-card p-8 text-center text-sm text-gray-500">
+        <div className="rounded-xl bg-neutral-50 p-8 text-center text-sm text-neutral-500">
           {t("empty")}
         </div>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        {cards.map((card) => {
-          const patternClass =
-            patternClassMap[card.background_pattern ?? "gradient-1"] ??
-            patternClassMap["gradient-1"];
-          const viewCount = card.card_shares?.[0]?.count ?? 0;
+      {/* All Cards — Reference list with chevron */}
+      {!isLoading && cards.length > 0 ? (
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold text-neutral-800">
+              {t("title")}
+            </span>
+          </div>
+          <div className="space-y-2">
+            {cards.map((card) => {
+              const patternClass =
+                patternClassMap[card.background_pattern ?? "gradient-1"] ??
+                patternClassMap["gradient-1"];
 
-          return (
-            <div
-              key={card.id}
-              className="app-card relative p-5"
-            >
-              {viewerPlan === "premium" ? (
-                <div className="absolute -right-2 top-4 z-10">
-                  {card.company_id ? (
-                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-700 shadow">
-                      {t("badges.company")}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-700 shadow">
-                      {t("badges.premium")}
-                    </span>
-                  )}
-                </div>
-              ) : card.company_id ? (
-                <div className="absolute -right-2 top-4 z-10">
-                  <span className="inline-flex items-center rounded-l-full bg-slate-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-700 shadow">
-                    {t("badges.company")}
-                  </span>
-                </div>
-              ) : null}
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div
-                  className={`cardlink-cover ${patternClass} h-24 w-full rounded-2xl sm:h-28 sm:w-40`}
-                  style={{
-                    "--cardlink-base": card.background_color ?? "#6366f1",
-                  } as React.CSSProperties}
-                />
-                <div className="flex-1">
-                  <p className="text-lg font-semibold text-gray-900">
-                    {card.card_name || t("card.defaultName")}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {card.full_name || t("card.defaultUser")}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {card.title || ""}
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                    <span>
-                      {t("card.slug", {
-                        slug: card.slug || t("card.unpublished"),
-                      })}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-3 w-3" /> {viewCount}
-                    </span>
-                    <span>
-                      {t("card.created", {
-                        date: formatDate(card.created_at, locale),
-                      })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-2 sm:grid-cols-4">
+              return (
                 <Link
+                  key={card.id}
                   href={`/dashboard/cards/${card.id}`}
-                  className="flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-indigo-200 hover:text-indigo-600"
+                  className="flex items-center gap-3 rounded-xl bg-neutral-50 p-3 transition hover:bg-neutral-100"
                 >
-                  <Pencil className="h-3.5 w-3.5" />
-                  {t("actions.edit")}
+                  <div
+                    className={`cardlink-cover ${patternClass} h-10 w-10 shrink-0 rounded-lg`}
+                    style={{ "--cardlink-base": card.background_color ?? "#6366f1" } as React.CSSProperties}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-neutral-800 truncate">
+                      {card.card_name || t("card.defaultName")}
+                    </p>
+                    <p className="text-xs text-neutral-500 truncate">
+                      {card.full_name || t("card.defaultUser")}
+                    </p>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-neutral-400"><path d="m9 18 6-6-6-6"/></svg>
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => handleCopyLink(card.slug)}
-                  className="flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-indigo-200 hover:text-indigo-600"
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                  {t("actions.share")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setQrCard(card)}
-                  className="flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-indigo-200 hover:text-indigo-600"
-                >
-                  <QrCode className="h-3.5 w-3.5" />
-                  {t("actions.qr")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(card.id)}
-                  className="flex items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:border-rose-300"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  {t("actions.delete")}
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       {qrCard ? (
         <QRCodeModal

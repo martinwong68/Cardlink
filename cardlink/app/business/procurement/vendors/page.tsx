@@ -43,44 +43,44 @@ export default function ProcurementVendorsPage() {
 
   const filtered = vendors.filter((v) => !search || v.name.toLowerCase().includes(search.toLowerCase()));
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading vendors…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading vendors…</p></div>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Vendors / Suppliers</h1>
-          <p className="text-xs text-gray-500">{vendors.length} vendor(s)</p>
+          <h1 className="text-xl font-bold text-neutral-900">Vendors / Suppliers</h1>
+          <p className="text-xs text-neutral-500">{vendors.length} vendor(s)</p>
         </div>
         <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">+ Add Vendor</button>
       </div>
 
-      <input type="text" placeholder="Search vendors…" value={search} onChange={(e) => setSearch(e.target.value)} className="w-full rounded-xl border border-gray-100 px-4 py-2 text-sm focus:border-purple-400 focus:outline-none" />
+      <input type="text" placeholder="Search vendors…" value={search} onChange={(e) => setSearch(e.target.value)} className="w-full rounded-xl border border-neutral-100 px-4 py-2 text-sm focus:border-purple-400 focus:outline-none" />
 
       {showForm && (
-        <div className="rounded-xl border border-gray-100 bg-white p-4 space-y-3">
-          <h2 className="text-sm font-bold text-gray-900">{editId ? "Edit Vendor" : "New Vendor"}</h2>
-          <input type="text" placeholder="Vendor name *" value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" />
+        <div className="rounded-xl border border-neutral-100 bg-white p-4 space-y-3">
+          <h2 className="text-sm font-bold text-neutral-900">{editId ? "Edit Vendor" : "New Vendor"}</h2>
+          <input type="text" placeholder="Vendor name *" value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" />
           <div className="grid grid-cols-2 gap-3">
-            <input type="text" placeholder="Contact name" value={contactName} onChange={(e) => setContactName(e.target.value)} className="rounded-lg border border-gray-100 px-3 py-2 text-sm" />
-            <input type="text" placeholder="Contact phone" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} className="rounded-lg border border-gray-100 px-3 py-2 text-sm" />
+            <input type="text" placeholder="Contact name" value={contactName} onChange={(e) => setContactName(e.target.value)} className="rounded-lg border border-neutral-100 px-3 py-2 text-sm" />
+            <input type="text" placeholder="Contact phone" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} className="rounded-lg border border-neutral-100 px-3 py-2 text-sm" />
           </div>
           <div className="flex gap-2">
             <button onClick={handleSubmit} disabled={saving} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
-            <button onClick={() => { setShowForm(false); resetForm(); }} className="rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600">Cancel</button>
+            <button onClick={() => { setShowForm(false); resetForm(); }} className="rounded-lg bg-neutral-100 px-4 py-2 text-sm text-neutral-600">Cancel</button>
           </div>
         </div>
       )}
 
       <div className="space-y-2">
-        {filtered.length === 0 && <p className="py-8 text-center text-sm text-gray-400">No vendors found</p>}
+        {filtered.length === 0 && <p className="py-8 text-center text-sm text-neutral-400">No vendors found</p>}
         {filtered.map((v) => (
-          <div key={v.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-4">
+          <div key={v.id} className="flex items-center justify-between rounded-xl border border-neutral-100 bg-white p-4">
             <div>
-              <p className="text-sm font-semibold text-gray-900">{v.name}</p>
-              <p className="text-xs text-gray-500">{v.contact_name ?? "—"} · {v.contact_phone ?? "—"}</p>
+              <p className="text-sm font-semibold text-neutral-900">{v.name}</p>
+              <p className="text-xs text-neutral-500">{v.contact_name ?? "—"} · {v.contact_phone ?? "—"}</p>
             </div>
-            <button onClick={() => openEdit(v)} className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-200">Edit</button>
+            <button onClick={() => openEdit(v)} className="rounded-lg bg-neutral-100 px-3 py-1.5 text-xs text-neutral-600 hover:bg-neutral-200">Edit</button>
           </div>
         ))}
       </div>

@@ -32,7 +32,7 @@ export default function OwnerDashboardPage() {
 
   const statCards = [
     { label: "Active Modules", value: `${enabledModules}/${totalModules}`, Icon: Puzzle, iconBg: "bg-teal-50", iconColor: "text-teal-600" },
-    { label: "API Keys", value: activeKeys, Icon: Key, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
+    { label: "API Keys", value: activeKeys, Icon: Key, iconBg: "bg-primary-50", iconColor: "text-primary-600" },
     { label: "Audit Events", value: auditEntries.length, Icon: ClipboardList, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
   ];
 
@@ -45,21 +45,21 @@ export default function OwnerDashboardPage() {
     { label: "Billing", href: "/business/owner/billing", Icon: CreditCard, desc: "Subscription and usage" },
   ];
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading admin data…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading admin data…</p></div>;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Owner Admin</h1>
+      <h1 className="text-xl font-bold text-neutral-900">Owner Admin</h1>
 
       {/* Metrics */}
       <div className="grid grid-cols-3 gap-3">
         {statCards.map((m) => (
-          <div key={m.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div key={m.label} className="rounded-xl border border-neutral-100 bg-white p-4 shadow-sm">
             <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg ${m.iconBg}`}>
               <m.Icon className={`h-4 w-4 ${m.iconColor}`} />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{m.value}</p>
-            <p className="text-[10px] text-gray-500">{m.label}</p>
+            <p className="text-2xl font-bold text-neutral-900">{m.value}</p>
+            <p className="text-[10px] text-neutral-500">{m.label}</p>
           </div>
         ))}
       </div>
@@ -67,13 +67,13 @@ export default function OwnerDashboardPage() {
       {/* Quick nav */}
       <div className="space-y-2">
         {navItems.map((item) => (
-          <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:border-indigo-100 hover:bg-indigo-50/30">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
-              <item.Icon className="h-4 w-4 text-indigo-600" />
+          <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-xl border border-neutral-100 bg-white p-4 shadow-sm transition hover:border-primary-100 hover:bg-primary-50/30">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-50">
+              <item.Icon className="h-4 w-4 text-primary-600" />
             </span>
             <div>
-              <p className="text-sm font-medium text-gray-900">{item.label}</p>
-              <p className="text-xs text-gray-500">{item.desc}</p>
+              <p className="text-sm font-medium text-neutral-900">{item.label}</p>
+              <p className="text-xs text-neutral-500">{item.desc}</p>
             </div>
           </Link>
         ))}
@@ -81,18 +81,18 @@ export default function OwnerDashboardPage() {
 
       {/* Recent Audit */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Recent Activity</h2>
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Recent Activity</h2>
         <div className="space-y-2">
           {auditEntries.map((e) => (
-            <div key={e.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+            <div key={e.id} className="flex items-center justify-between rounded-xl border border-neutral-100 bg-white px-4 py-3 shadow-sm">
               <div>
-                <p className="text-xs font-medium text-gray-900">{e.action}</p>
-                <p className="text-[10px] text-gray-500">{e.entity_type ?? ""} · {e.ip_address ?? "—"}</p>
+                <p className="text-xs font-medium text-neutral-900">{e.action}</p>
+                <p className="text-[10px] text-neutral-500">{e.entity_type ?? ""} · {e.ip_address ?? "—"}</p>
               </div>
-              <p className="text-[10px] text-gray-500">{new Date(e.created_at).toLocaleString()}</p>
+              <p className="text-[10px] text-neutral-500">{new Date(e.created_at).toLocaleString()}</p>
             </div>
           ))}
-          {auditEntries.length === 0 && <p className="text-xs text-gray-400">No recent activity.</p>}
+          {auditEntries.length === 0 && <p className="text-xs text-neutral-400">No recent activity.</p>}
         </div>
       </div>
     </div>

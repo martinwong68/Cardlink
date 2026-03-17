@@ -65,42 +65,42 @@ export default function CrmActivitiesPage() {
 
   const filtered = activities.filter((a) => typeFilter === "all" || a.type === typeFilter);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading activities…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading activities…</p></div>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Activities</h1>
+        <h1 className="text-xl font-bold text-neutral-900">Activities</h1>
         <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">+ Log Activity</button>
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
         {TYPES.map((t) => (
-          <button key={t} onClick={() => setTypeFilter(t)} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium capitalize transition ${typeFilter === t ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+          <button key={t} onClick={() => setTypeFilter(t)} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium capitalize transition ${typeFilter === t ? "bg-purple-600 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"}`}>
             {t === "all" ? "All" : `${TYPE_ICONS[t] ?? ""} ${t}`}
           </button>
         ))}
       </div>
 
       {showForm && (
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-lg font-bold text-gray-900">{editId ? "Edit Activity" : "Log Activity"}</h2>
+        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h2 className="mb-4 text-lg font-bold text-neutral-900">{editId ? "Edit Activity" : "Log Activity"}</h2>
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Type</label>
+              <label className="mb-1 block text-xs font-medium text-neutral-500">Type</label>
               <div className="flex gap-2">
                 {(["call", "email", "meeting", "task", "note"] as const).map((t) => (
-                  <button key={t} onClick={() => setType(t)} className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize ${type === t ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600"}`}>
+                  <button key={t} onClick={() => setType(t)} className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize ${type === t ? "bg-purple-600 text-white" : "bg-neutral-100 text-neutral-600"}`}>
                     {TYPE_ICONS[t]} {t}
                   </button>
                 ))}
               </div>
             </div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Title</label><input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Due Date</label><input value={dueDate} onChange={(e) => setDueDate(e.target.value)} type="date" className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Description</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Title</label><input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Due Date</label><input value={dueDate} onChange={(e) => setDueDate(e.target.value)} type="date" className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Description</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
             <div className="flex gap-3">
-              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-gray-100 py-2.5 text-sm font-medium text-gray-600">Cancel</button>
+              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-neutral-100 py-2.5 text-sm font-medium text-neutral-600">Cancel</button>
               <button onClick={handleSubmit} disabled={saving || !title.trim()} className="flex-1 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
             </div>
           </div>
@@ -108,26 +108,26 @@ export default function CrmActivitiesPage() {
       )}
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 p-8 text-center">
-          <p className="text-sm font-medium text-gray-500">No activities</p>
-          <p className="text-xs text-gray-400">Log your first activity.</p>
+        <div className="rounded-xl border border-dashed border-neutral-200 p-8 text-center">
+          <p className="text-sm font-medium text-neutral-500">No activities</p>
+          <p className="text-xs text-neutral-400">Log your first activity.</p>
         </div>
       ) : (
         <div className="space-y-2">
           {filtered.map((a) => (
-            <div key={a.id} className="flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-4">
-              <button onClick={() => toggleComplete(a)} className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border ${a.is_completed ? "border-emerald-500 bg-emerald-500 text-white" : "border-gray-200"}`}>
+            <div key={a.id} className="flex items-start gap-3 rounded-xl border border-neutral-100 bg-white p-4">
+              <button onClick={() => toggleComplete(a)} className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border ${a.is_completed ? "border-emerald-500 bg-emerald-500 text-white" : "border-neutral-200"}`}>
                 {a.is_completed && <span className="text-xs">✓</span>}
               </button>
               <button onClick={() => openEdit(a)} className="flex-1 text-left">
                 <div className="flex items-center justify-between">
-                  <span className={`text-sm font-semibold ${a.is_completed ? "text-gray-400 line-through" : "text-gray-900"}`}>{a.title}</span>
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{TYPE_ICONS[a.type] ?? ""} {a.type}</span>
+                  <span className={`text-sm font-semibold ${a.is_completed ? "text-neutral-400 line-through" : "text-neutral-900"}`}>{a.title}</span>
+                  <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">{TYPE_ICONS[a.type] ?? ""} {a.type}</span>
                 </div>
-                {a.description && <p className="mt-1 text-xs text-gray-500">{a.description}</p>}
+                {a.description && <p className="mt-1 text-xs text-neutral-500">{a.description}</p>}
                 <div className="mt-1 flex gap-3">
-                  {a.due_date && <span className="text-xs text-gray-400">Due: {a.due_date}</span>}
-                  <span className="text-xs text-gray-400">{new Date(a.created_at).toLocaleDateString()}</span>
+                  {a.due_date && <span className="text-xs text-neutral-400">Due: {a.due_date}</span>}
+                  <span className="text-xs text-neutral-400">{new Date(a.created_at).toLocaleDateString()}</span>
                 </div>
               </button>
             </div>

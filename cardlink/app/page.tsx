@@ -155,10 +155,10 @@ export default async function HomePage() {
                   key={item.label}
                   className="app-card p-4"
                 >
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-neutral-900">
                     {item.label}
                   </p>
-                  <p className="mt-1 text-xs text-gray-500">{item.text}</p>
+                  <p className="mt-1 text-xs text-neutral-500">{item.text}</p>
                 </div>
               ))}
             </div>
@@ -170,7 +170,7 @@ export default async function HomePage() {
             </p>
             <div className="mt-4 space-y-4">
               {previewPosts.length === 0 ? (
-                <div className="app-card p-4 text-center text-sm text-gray-500">
+                <div className="app-card p-4 text-center text-sm text-neutral-500">
                   {t("forum.empty")}
                 </div>
               ) : (
@@ -190,30 +190,30 @@ export default async function HomePage() {
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white">
                             {initials}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-gray-900">
+                            <p className="text-sm font-semibold text-neutral-900">
                               {post.title}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-neutral-500">
                               {name}
                             </p>
                           </div>
                         </div>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-neutral-400">
                           {formatDistanceToNow(new Date(lastActivity), {
                             addSuffix: true,
                             locale: dateLocale,
                           })}
                         </span>
                       </div>
-                      <p className="mt-3 text-xs text-gray-500">
+                      <p className="mt-3 text-xs text-neutral-500">
                         {(post.body ?? "").slice(0, 120)}
                         {post.body && post.body.length > 120 ? "..." : ""}
                       </p>
-                      <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
+                      <div className="mt-3 flex items-center justify-between text-xs text-neutral-400">
                         <span>
                           {boardLabel}
                           {boardLabel && subBoardLabel ? " • " : ""}
@@ -233,7 +233,7 @@ export default async function HomePage() {
       </main>
 
       <footer className="mt-6 border-t border-white/70 py-8">
-        <div className="app-page text-xs text-gray-400">
+        <div className="app-page text-xs text-neutral-400">
           {t("brand")}
         </div>
       </footer>

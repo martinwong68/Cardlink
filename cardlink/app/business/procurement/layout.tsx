@@ -20,7 +20,7 @@ export default function ProcurementLayout({ children }: { children: React.ReactN
         {tabs.map((t) => {
           const active = pathname === t.href || (t.href !== "/business/procurement" && pathname.startsWith(t.href));
           return (
-            <Link key={t.href} href={t.href} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition ${active ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+            <Link key={t.href} href={t.href} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition ${active ? "bg-purple-600 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"}`}>
               {t.label}
             </Link>
           );

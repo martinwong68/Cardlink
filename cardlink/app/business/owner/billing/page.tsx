@@ -11,7 +11,7 @@ function statusColor(s: string) {
   if (s === "paid") return "bg-emerald-100 text-emerald-700";
   if (s === "pending" || s === "requires_action") return "bg-amber-100 text-amber-700";
   if (s === "failed" || s === "canceled") return "bg-rose-100 text-rose-700";
-  return "bg-gray-100 text-gray-600";
+  return "bg-neutral-100 text-neutral-600";
 }
 
 export default function OwnerBillingPage() {
@@ -49,35 +49,35 @@ export default function OwnerBillingPage() {
     { label: "Priority support", included: plan === "enterprise" },
   ];
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading billing…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading billing…</p></div>;
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-gray-900">Billing & Subscription</h1>
+      <h1 className="text-xl font-bold text-neutral-900">Billing & Subscription</h1>
 
       {/* Current Plan */}
       <div className="rounded-xl border border-purple-200 bg-purple-50 p-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500">Current Plan</p>
-            <p className="text-lg font-bold text-gray-900">{PLAN_LABELS[plan] ?? plan}</p>
+            <p className="text-xs text-neutral-500">Current Plan</p>
+            <p className="text-lg font-bold text-neutral-900">{PLAN_LABELS[plan] ?? plan}</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-bold text-purple-600">{PLAN_PRICES[plan] ?? "$?"}<span className="text-xs font-normal text-gray-500">/ month</span></p>
+            <p className="text-lg font-bold text-purple-600">{PLAN_PRICES[plan] ?? "$?"}<span className="text-xs font-normal text-neutral-500">/ month</span></p>
             <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${isActive ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>{isActive ? "Active" : planStatus}</span>
           </div>
         </div>
-        {stripeSubId && <p className="mt-2 text-xs text-gray-500">Subscription: {stripeSubId}</p>}
+        {stripeSubId && <p className="mt-2 text-xs text-neutral-500">Subscription: {stripeSubId}</p>}
       </div>
 
       {/* Plan Features */}
-      <div className="rounded-xl border border-gray-100 bg-white p-5">
-        <h2 className="mb-2 text-sm font-semibold text-gray-900">Plan Features</h2>
+      <div className="rounded-xl border border-neutral-100 bg-white p-5">
+        <h2 className="mb-2 text-sm font-semibold text-neutral-900">Plan Features</h2>
         <div className="space-y-1">
           {features.map((f) => (
             <div key={f.label} className="flex items-center gap-2">
-              <span className={f.included ? "text-green-500" : "text-gray-400"}>{f.included ? "✓" : "—"}</span>
-              <span className={`text-xs ${f.included ? "text-gray-900" : "text-gray-400"}`}>{f.label}</span>
+              <span className={f.included ? "text-green-500" : "text-neutral-400"}>{f.included ? "✓" : "—"}</span>
+              <span className={`text-xs ${f.included ? "text-neutral-900" : "text-neutral-400"}`}>{f.label}</span>
             </div>
           ))}
         </div>
@@ -90,16 +90,16 @@ export default function OwnerBillingPage() {
 
       {/* Payment History */}
       <div>
-        <h2 className="mb-2 text-sm font-semibold text-gray-900">Payment History</h2>
+        <h2 className="mb-2 text-sm font-semibold text-neutral-900">Payment History</h2>
         {orders.length === 0 ? (
-          <div className="rounded-xl border border-gray-100 bg-white p-4"><p className="text-xs text-gray-400">No payment history yet.</p></div>
+          <div className="rounded-xl border border-neutral-100 bg-white p-4"><p className="text-xs text-neutral-400">No payment history yet.</p></div>
         ) : (
           <div className="space-y-2">
             {orders.map((o) => (
-              <div key={o.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3">
+              <div key={o.id} className="flex items-center justify-between rounded-xl border border-neutral-100 bg-white px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{o.order_type === "membership" ? "Membership" : "Store"} — {o.currency} {(o.total_amount / 100).toFixed(2)}</p>
-                  <p className="text-[10px] text-gray-500">{new Date(o.created_at).toLocaleDateString()}</p>
+                  <p className="text-sm font-medium text-neutral-900">{o.order_type === "membership" ? "Membership" : "Store"} — {o.currency} {(o.total_amount / 100).toFixed(2)}</p>
+                  <p className="text-[10px] text-neutral-500">{new Date(o.created_at).toLocaleDateString()}</p>
                 </div>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(o.status)}`}>{o.status}</span>
               </div>

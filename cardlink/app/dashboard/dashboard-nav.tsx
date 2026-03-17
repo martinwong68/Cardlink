@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CreditCard,
+  Crown,
   MessageSquare,
-  Settings,
-  TicketPercent,
-  UserRound,
+  Search,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -15,39 +15,36 @@ export default function DashboardNav() {
   const pathname = usePathname();
   const t = useTranslations("dashboardNav");
 
-
   const navItems = [
-    { href: "/dashboard/explore", label: t("discount"), icon: TicketPercent },
+    { href: "/dashboard/explore", label: t("discount"), icon: Search },
     { href: "/dashboard/community", label: t("community"), icon: MessageSquare },
-    { href: "/dashboard/cards", label: t("cards"), icon: CreditCard, primary: true },
-    { href: "/dashboard/membership", label: t("membership"), icon: UserRound },
-    { href: "/dashboard/settings", label: t("settings"), icon: Settings },
+    { href: "/dashboard/cards", label: t("cards"), icon: CreditCard },
+    { href: "/dashboard/membership", label: t("membership"), icon: Crown },
+    { href: "/dashboard/settings", label: t("settings"), icon: User },
   ];
 
   return (
     <>
-      <aside className="hidden md:flex md:w-56 md:flex-col md:gap-2 md:rounded-[1.7rem] md:border md:border-gray-100/80 md:bg-white/85 md:p-4 md:shadow-lg md:shadow-slate-200/60 md:backdrop-blur">
-        <p className="app-kicker">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex md:w-52 md:flex-col md:rounded-xl md:border md:border-neutral-100 md:bg-white md:p-3 md:shadow-sm">
+        <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral-400">
           CardLink
         </p>
-        <div className="mt-4 flex flex-col gap-1">
+        <div className="mt-2 flex flex-col gap-0.5">
           {navItems.map((item) => {
             const currentPath = pathname ?? "";
             const isActive =
               currentPath === item.href || currentPath.startsWith(`${item.href}/`);
             const Icon = item.icon;
-            const isPrimary = item.primary;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                   isActive
-                    ? "bg-indigo-50 text-indigo-800"
-                    : isPrimary
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-300/40 hover:bg-indigo-700"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-primary-50 text-primary-700"
+                    : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -58,50 +55,27 @@ export default function DashboardNav() {
         </div>
       </aside>
 
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-white/80 bg-white/92 backdrop-blur-xl md:hidden">
-        <div className="mx-auto flex w-full max-w-5xl items-end justify-between px-5">
+      {/* Mobile Bottom Nav — matches Reference: 5 equal tabs */}
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-neutral-100 bg-white px-2 py-2 md:hidden">
+        <div className="flex justify-around">
           {navItems.map((item) => {
             const currentPath = pathname ?? "";
             const isActive =
               currentPath === item.href || currentPath.startsWith(`${item.href}/`);
             const Icon = item.icon;
-            const isPrimary = item.primary;
-
-            if (isPrimary) {
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="relative -mt-6 flex flex-1 flex-col items-center"
-                >
-                  <span
-                    className={`flex h-14 w-14 items-center justify-center rounded-full shadow-md transition ${
-                      isActive
-                        ? "bg-indigo-700 text-white"
-                        : "bg-indigo-600 text-white"
-                    }`}
-                  >
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <span className="mt-2 text-[11px] font-semibold text-gray-500">
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            }
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 text-xs font-medium transition ${
-                  isActive ? "text-indigo-600" : "text-gray-400"
+                className={`flex flex-col items-center gap-0.5 px-2 py-1 transition ${
+                  isActive
+                    ? "font-medium text-primary-600"
+                    : "text-neutral-400"
                 }`}
               >
-                <span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${isActive ? "bg-indigo-50" : ""}`}>
-                  <Icon className="h-5 w-5" />
-                </span>
-                {item.label}
+                <Icon className="h-[18px] w-[18px]" />
+                <span className="text-xs">{item.label}</span>
               </Link>
             );
           })}

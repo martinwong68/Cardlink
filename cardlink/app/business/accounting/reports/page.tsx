@@ -40,7 +40,7 @@ export default function AccountingReportsPage() {
   return (
     <div className="space-y-4 pb-28 md:pb-2">
       <section className="app-card p-4 md:p-5">
-        <h2 className="text-sm font-semibold text-gray-800">Report Builder</h2>
+        <h2 className="text-sm font-semibold text-neutral-800">Report Builder</h2>
         <div className="mt-3 grid gap-2 md:grid-cols-4">
           <select value={reportType} onChange={(event) => setReportType(event.target.value)} className="app-input px-3 py-2 text-sm">
             {reportTypes.map((type) => (
@@ -53,13 +53,13 @@ export default function AccountingReportsPage() {
         </div>
       </section>
 
-      {isLoading ? <p className="text-sm text-gray-500">Generating report...</p> : null}
+      {isLoading ? <p className="text-sm text-neutral-500">Generating report...</p> : null}
       {error ? <p className="app-error px-3 py-2 text-sm">{error}</p> : null}
 
       {report ? (
         <section className="app-card p-4 md:p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">{report.contract ?? "accounting.reports.v1"}</p>
-          <pre className="mt-3 overflow-auto rounded-xl bg-gray-950 p-3 text-xs text-gray-100">{JSON.stringify(report, null, 2)}</pre>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">{report.contract ?? "accounting.reports.v1"}</p>
+          <pre className="mt-3 overflow-auto rounded-xl bg-gray-950 p-3 text-xs text-neutral-100">{JSON.stringify(report, null, 2)}</pre>
         </section>
       ) : null}
     </div>

@@ -70,33 +70,33 @@ export default function CrmContactsPage() {
     return c.first_name.toLowerCase().includes(q) || (c.last_name ?? "").toLowerCase().includes(q) || (c.email ?? "").toLowerCase().includes(q) || (c.crm_company_name ?? "").toLowerCase().includes(q);
   });
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading contacts…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading contacts…</p></div>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Contacts</h1>
+        <h1 className="text-xl font-bold text-neutral-900">Contacts</h1>
         <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">+ Add Contact</button>
       </div>
 
-      <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search contacts…" className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" />
+      <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search contacts…" className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" />
 
       {showForm && (
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-lg font-bold text-gray-900">{editId ? "Edit Contact" : "New Contact"}</h2>
+        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h2 className="mb-4 text-lg font-bold text-neutral-900">{editId ? "Edit Contact" : "New Contact"}</h2>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="mb-1 block text-xs font-medium text-gray-500">First Name</label><input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-              <div><label className="mb-1 block text-xs font-medium text-gray-500">Last Name</label><input value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
+              <div><label className="mb-1 block text-xs font-medium text-neutral-500">First Name</label><input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+              <div><label className="mb-1 block text-xs font-medium text-neutral-500">Last Name</label><input value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
             </div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Email</label><input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Phone</label><input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Company</label><input value={company} onChange={(e) => setCompany(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Job Title</label><input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Address</label><input value={address} onChange={(e) => setAddress(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
-            <div><label className="mb-1 block text-xs font-medium text-gray-500">Notes</label><textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Email</label><input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Phone</label><input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Company</label><input value={company} onChange={(e) => setCompany(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Job Title</label><input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Address</label><input value={address} onChange={(e) => setAddress(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-xs font-medium text-neutral-500">Notes</label><textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" /></div>
             <div className="flex gap-3">
-              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-gray-100 py-2.5 text-sm font-medium text-gray-600">Cancel</button>
+              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-neutral-100 py-2.5 text-sm font-medium text-neutral-600">Cancel</button>
               <button onClick={handleSubmit} disabled={saving || !firstName.trim()} className="flex-1 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
             </div>
           </div>
@@ -104,19 +104,19 @@ export default function CrmContactsPage() {
       )}
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 p-8 text-center">
-          <p className="text-sm font-medium text-gray-500">No contacts</p>
-          <p className="text-xs text-gray-400">Add your first CRM contact.</p>
+        <div className="rounded-xl border border-dashed border-neutral-200 p-8 text-center">
+          <p className="text-sm font-medium text-neutral-500">No contacts</p>
+          <p className="text-xs text-neutral-400">Add your first CRM contact.</p>
         </div>
       ) : (
         <div className="space-y-2">
           {filtered.map((c) => (
-            <button key={c.id} onClick={() => openEdit(c)} className="w-full rounded-xl border border-gray-100 bg-white p-4 text-left transition hover:bg-gray-50">
-              <p className="text-sm font-bold text-gray-900">{c.first_name} {c.last_name}</p>
-              <p className="text-xs text-gray-500">{c.crm_company_name ?? "—"} · {c.job_title ?? ""}</p>
+            <button key={c.id} onClick={() => openEdit(c)} className="w-full rounded-xl border border-neutral-100 bg-white p-4 text-left transition hover:bg-neutral-50">
+              <p className="text-sm font-bold text-neutral-900">{c.first_name} {c.last_name}</p>
+              <p className="text-xs text-neutral-500">{c.crm_company_name ?? "—"} · {c.job_title ?? ""}</p>
               <div className="mt-1 flex gap-3">
                 {c.email && <span className="text-xs text-purple-500">{c.email}</span>}
-                {c.phone && <span className="text-xs text-gray-500">{c.phone}</span>}
+                {c.phone && <span className="text-xs text-neutral-500">{c.phone}</span>}
               </div>
               {c.tags && c.tags.length > 0 && (
                 <div className="mt-2 flex gap-1">

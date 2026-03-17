@@ -70,47 +70,88 @@ export default async function MembershipPage() {
     0
   );
 
+  // Fetch member profile for the hero banner
+  const { data: profileData } = user
+    ? await supabase
+        .from("profiles")
+        .select("full_name, avatar_url, email")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+  const memberProfile = profileData as { full_name: string | null; avatar_url: string | null; email: string | null } | null;
+  const memberName = memberProfile?.full_name ?? user?.email ?? "Member";
+  const memberInitials = memberName
+    .split(" ")
+    .filter(Boolean)
+    .map((w: string) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase() || "CL";
+
+  // Find the highest tier across all accounts
+  const bestTier = accounts.reduce<string | null>((best, account) => {
+    if (account.tier_id) {
+      const tier = tierMap.get(account.tier_id);
+      if (tier) return tier.name;
+    }
+    return best;
+  }, null);
+
   return (
     <div className="space-y-6">
-      <div>
-        <p className="app-kicker">
-          {t("brand")}
-        </p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">
-          {t("title")}
-        </h1>
-        <p className="app-subtitle mt-2 text-sm">
-          {t("subtitle")}
-        </p>
+      {/* Hero banner — member detail card */}
+      <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-purple-700 p-5 text-white shadow-lg">
+        <div className="flex items-center gap-3 mb-4">
+          {memberProfile?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={memberProfile.avatar_url}
+              alt={memberName}
+              className="h-12 w-12 rounded-full border-2 border-white/30 object-cover"
+            />
+          ) : (
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/30 bg-white/20 text-sm font-bold">
+              {memberInitials}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-base font-bold truncate">{memberName}</p>
+            <div className="flex items-center gap-2">
+              {bestTier ? (
+                <span className="rounded-full bg-yellow-400/20 px-2 py-0.5 text-[10px] font-semibold text-yellow-200">
+                  {bestTier}
+                </span>
+              ) : null}
+              <span className="text-xs opacity-70">{accounts.length} {t("brand")}</span>
+            </div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-yellow-300"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5.5 21h13"/></svg>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-lg bg-white/15 p-2 text-center">
+            <p className="text-xs opacity-70">{t("cards.totalBalanceTitle")}</p>
+            <p className="text-sm font-bold">{totalPoints}</p>
+          </div>
+          <div className="rounded-lg bg-white/15 p-2 text-center">
+            <p className="text-xs opacity-70">{t("cards.totalSpendTitle")}</p>
+            <p className="text-sm font-bold">${totalSpendAmount.toFixed(2)}</p>
+          </div>
+          <div className="rounded-lg bg-white/15 p-2 text-center">
+            <p className="text-xs opacity-70">{t("cards.pointSystemTitle")}</p>
+            <p className="text-sm font-bold">{t("cards.pointSystemName")}</p>
+          </div>
+        </div>
       </div>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        <article className="app-card p-5">
-          <p className="text-sm font-semibold text-gray-800">{t("cards.pointSystemTitle")}</p>
-          <p className="mt-2 text-2xl font-bold text-indigo-700">{t("cards.pointSystemName")}</p>
-          <p className="mt-1 text-sm text-gray-600">{t("cards.pointSystemBody")}</p>
-        </article>
-
-        <article className="app-card p-5">
-          <p className="text-sm font-semibold text-gray-800">{t("cards.totalBalanceTitle")}</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{totalPoints}</p>
-          <p className="mt-1 text-sm text-gray-600">{t("cards.totalBalanceBody")}</p>
-        </article>
-
-        <article className="app-card p-5">
-          <p className="text-sm font-semibold text-gray-800">{t("cards.totalSpendTitle")}</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">${totalSpendAmount.toFixed(2)}</p>
-          <p className="mt-1 text-sm text-gray-600">{t("cards.totalSpendBody")}</p>
-        </article>
-      </section>
-
       {accountsError ? (
-        <section className="app-card p-5 text-sm text-amber-700">
+        <section className="app-warning p-4 text-sm">
           {t("errors.tablesNotReady")}
         </section>
       ) : null}
 
+      {/* Membership accounts list */}
       <section className="space-y-3">
+        <span className="text-sm font-semibold text-neutral-800">{t("brand")}</span>
         {accounts.length ? (
           accounts.map((account) => {
             const company = companyMap.get(account.company_id);
@@ -118,56 +159,56 @@ export default async function MembershipPage() {
             return (
               <article
                 key={account.id}
-                className="app-card p-5"
+                className="rounded-xl border border-neutral-100 bg-white p-4 shadow-sm"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-base font-semibold text-gray-900">
+                    <h2 className="text-sm font-semibold text-neutral-800">
                       {company?.name ?? t("labels.unknownCompany")}
                     </h2>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-0.5 text-xs text-neutral-500">
                       {company?.slug ? `/${company.slug}` : t("labels.membershipAccount")}
                     </p>
                   </div>
-                  <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                  <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700">
                     {account.status}
                   </span>
                 </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4 text-xs">
                   <div>
-                    <p className="text-xs text-gray-500">{t("labels.tier")}</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-neutral-400">{t("labels.tier")}</p>
+                    <p className="font-semibold text-neutral-800">
                       {tier?.name ?? t("labels.noTier")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t("labels.totalSpend")}</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-neutral-400">{t("labels.totalSpend")}</p>
+                    <p className="font-semibold text-neutral-800">
                       ${Number(account.total_spend_amount ?? 0).toFixed(2)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t("labels.current")}</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-neutral-400">{t("labels.current")}</p>
+                    <p className="font-semibold text-neutral-800">
                       {account.points_balance} {t("labels.pointUnit")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t("labels.lifetime")}</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-neutral-400">{t("labels.lifetime")}</p>
+                    <p className="font-semibold text-neutral-800">
                       {account.lifetime_points} {t("labels.pointUnit")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t("labels.joined")}</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-neutral-400">{t("labels.joined")}</p>
+                    <p className="font-semibold text-neutral-800">
                       {new Date(account.joined_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t("labels.expires")}</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-neutral-400">{t("labels.expires")}</p>
+                    <p className="font-semibold text-neutral-800">
                       {account.expires_at
                         ? new Date(account.expires_at).toLocaleDateString()
                         : t("labels.noExpiry")}
@@ -178,7 +219,7 @@ export default async function MembershipPage() {
             );
           })
         ) : (
-          <article className="app-card p-5 text-sm text-gray-600">
+          <article className="rounded-xl bg-neutral-50 p-5 text-center text-sm text-neutral-500">
             {t("empty.noMemberships")}
           </article>
         )}

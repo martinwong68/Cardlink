@@ -138,24 +138,24 @@ export default function MembershipRedemptionsPanel() {
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-gray-900">{t("redeemHistory.title")}</h2>
+        <h2 className="text-base font-semibold text-neutral-900">{t("redeemHistory.title")}</h2>
         <button
           type="button"
           onClick={() => void loadData()}
-          className="rounded-full border border-gray-100 bg-white px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-50"
+          className="rounded-full border border-neutral-100 bg-white px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
         >
           {t("redeemHistory.actions.refresh")}
         </button>
       </div>
 
       {message ? (
-        <article className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-sm text-indigo-700">
+        <article className="rounded-2xl border border-primary-200 bg-primary-50 p-4 text-sm text-primary-700">
           {message}
         </article>
       ) : null}
 
       {isLoading ? (
-        <article className="rounded-2xl border border-gray-100 bg-white p-4 text-sm text-gray-500 shadow-sm">
+        <article className="rounded-2xl border border-neutral-100 bg-white p-4 text-sm text-neutral-500 shadow-sm">
           {t("redeemHistory.loading")}
         </article>
       ) : rows.length ? (
@@ -163,12 +163,12 @@ export default function MembershipRedemptionsPanel() {
           {rows.map((item) => (
             <article
               key={item.id}
-              className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+              className="rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{item.offerTitle}</p>
-                  <p className="mt-1 text-xs text-gray-500">{item.companyName}</p>
+                  <p className="text-sm font-semibold text-neutral-900">{item.offerTitle}</p>
+                  <p className="mt-1 text-xs text-neutral-500">{item.companyName}</p>
                 </div>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClassName(item.status)}`}
@@ -177,7 +177,7 @@ export default function MembershipRedemptionsPanel() {
                 </span>
               </div>
 
-              <div className="mt-3 grid gap-2 text-xs text-gray-600 sm:grid-cols-3">
+              <div className="mt-3 grid gap-2 text-xs text-neutral-600 sm:grid-cols-3">
                 <p>
                   {t("redeemHistory.labels.points")}: <span className="font-semibold">{item.points_spent} {t("labels.pointUnit")}</span>
                 </p>
@@ -200,12 +200,12 @@ export default function MembershipRedemptionsPanel() {
                   <button
                     type="button"
                     onClick={() => setQrTarget(item)}
-                    className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+                    className="rounded-full bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-700"
                   >
                     {t("redeemHistory.actions.showQr")}
                   </button>
                 ) : (
-                  <span className="text-xs font-semibold text-gray-500">
+                  <span className="text-xs font-semibold text-neutral-500">
                     {item.status === "confirmed"
                       ? t("redeemHistory.actions.used")
                       : t("redeemHistory.actions.unavailable")}
@@ -216,7 +216,7 @@ export default function MembershipRedemptionsPanel() {
           ))}
         </div>
       ) : (
-        <article className="rounded-2xl border border-gray-100 bg-white p-4 text-sm text-gray-500 shadow-sm">
+        <article className="rounded-2xl border border-neutral-100 bg-white p-4 text-sm text-neutral-500 shadow-sm">
           {t("redeemHistory.empty")}
         </article>
       )}

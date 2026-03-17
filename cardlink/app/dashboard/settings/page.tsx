@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BriefcaseBusiness, ChevronRight, Download, LogOut } from "lucide-react";
+import { BriefcaseBusiness, CreditCard, Crown, Download, HelpCircle, Lock, LogOut, Shield, Smartphone, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -30,6 +30,12 @@ export default function SettingsPage() {
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const [businessEligibility, setBusinessEligibility] =
     useState<BusinessEligibilityState | null>(null);
+  const [profile, setProfile] = useState<{
+    full_name: string | null;
+    avatar_url: string | null;
+    email: string | null;
+    title: string | null;
+  } | null>(null);
 
   const getViewerPlan = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -109,6 +115,20 @@ export default function SettingsPage() {
     };
 
     void loadPlan();
+  }, []);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url, email, title")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+      setProfile(data as typeof profile);
+    };
+    void loadProfile();
   }, []);
 
   useEffect(() => {
@@ -215,132 +235,144 @@ export default function SettingsPage() {
     });
   };
 
+  const settingsTiles = [
+    { icon: User, label: t("links.profile"), href: "/dashboard/settings/profile", color: "bg-primary-50 text-primary-600" },
+    { icon: Shield, label: t("links.privacy"), href: "/dashboard/settings/privacy", color: "bg-teal-50 text-teal-600" },
+    { icon: Lock, label: t("links.password"), href: "/dashboard/settings/password", color: "bg-amber-50 text-amber-600" },
+    viewerPlan === "premium"
+      ? null
+      : { icon: Crown, label: t("links.subscription"), href: "/dashboard/settings/upgrade", color: "bg-purple-50 text-purple-600" },
+    { icon: Smartphone, label: t("links.orderNfc"), href: "/dashboard/cards?tab=nfc", color: "bg-cyan-50 text-cyan-600" },
+    { icon: Download, label: t("links.export"), onClick: handleExport, color: "bg-emerald-50 text-emerald-600" },
+    { icon: HelpCircle, label: t("links.support"), href: "/dashboard/settings/support", color: "bg-sky-50 text-sky-600" },
+    businessEligibility?.eligible
+      ? { icon: BriefcaseBusiness, label: t("links.switchToBusiness"), href: "/business", onClick: handleSwitchToBusiness, color: "bg-primary-50 text-primary-600" }
+      : null,
+  ].filter(Boolean) as { icon: React.ElementType; label: string; href?: string; onClick?: () => void; color: string }[];
+
+  const displayName = profile?.full_name || "User";
+  const displayInitials = displayName
+    .split(" ")
+    .filter(Boolean)
+    .map((w: string) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase() || "CL";
+
   return (
     <div className="space-y-6">
-      <div>
-        <p className="app-kicker">
-          {t("brand")}
-        </p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">
-          {t("title")}
-        </h1>
-        <p className="app-subtitle mt-2 text-sm">
-          {t("subtitle")}
-        </p>
-      </div>
-
-      <div className="space-y-3">
+      {/* Profile banner */}
+      <div className="flex items-center gap-4 rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">
+        <Link href="/dashboard/settings/profile" className="shrink-0">
+          {profile?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.avatar_url}
+              alt={displayName}
+              className="h-14 w-14 rounded-full object-cover ring-2 ring-primary-100"
+            />
+          ) : (
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 text-lg font-bold text-primary-700">
+              {displayInitials}
+            </div>
+          )}
+        </Link>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold text-neutral-800 truncate">{displayName}</p>
+          {profile?.title ? (
+            <p className="text-xs text-neutral-500 truncate">{profile.title}</p>
+          ) : null}
+          {profile?.email ? (
+            <p className="text-xs text-neutral-400 truncate">{profile.email}</p>
+          ) : null}
+        </div>
         <Link
           href="/dashboard/settings/profile"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
+          className="shrink-0 rounded-lg bg-neutral-50 px-3 py-1.5 text-xs font-semibold text-neutral-600 transition hover:bg-neutral-100"
         >
           {t("links.profile")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
         </Link>
-
-        <Link
-          href="/dashboard/settings/privacy"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.privacy")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        <Link
-          href="/dashboard/settings/password"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.password")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        {businessEligibility?.eligible ? (
-          <Link
-            href="/business"
-            onClick={handleSwitchToBusiness}
-            className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-          >
-            <span className="flex items-center gap-2">
-              {t("links.switchToBusiness")}
-              <BriefcaseBusiness className="h-4 w-4 text-indigo-500" />
-            </span>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-          </Link>
-        ) : null}
-
-        {viewerPlan === "premium" ? (
-          <div className="app-card-soft flex items-center justify-between gap-3 px-4 py-4 text-sm text-gray-700">
-            <div className="min-w-0">
-              <p className="font-semibold text-gray-800">{t("links.subscriptionActive")}</p>
-              <p className="text-xs text-gray-500">
-                {premiumUntilDateLabel
-                  ? t("links.premiumUntil", { date: premiumUntilDateLabel })
-                  : t("links.premiumBadge")}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleDowngrade}
-              disabled={isOpeningPortal}
-              className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isOpeningPortal ? t("links.openingPortal") : t("links.downgrade")}
-            </button>
-          </div>
-        ) : (
-          <Link
-            href="/dashboard/settings/upgrade"
-            className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-          >
-            {t("links.subscription")}
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-          </Link>
-        )}
-
-        <Link
-          href="/dashboard/cards?tab=nfc"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.orderNfc")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        <button
-          type="button"
-          onClick={handleExport}
-          disabled={isExporting}
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200 disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          <span className="flex items-center gap-2">
-            {t("links.export")}
-            <Download className="h-4 w-4 text-indigo-500" />
-          </span>
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </button>
-
-        <Link
-          href="/dashboard/settings/support"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.support")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300"
-        >
-          <span className="flex items-center gap-2">
-            {t("actions.logout")}
-            <LogOut className="h-4 w-4" />
-          </span>
-          <ChevronRight className="h-4 w-4 text-rose-300" />
-        </button>
       </div>
 
+      {/* Premium banner */}
+      {viewerPlan === "premium" ? (
+        <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 px-4 py-3 text-white shadow-sm">
+          <div>
+            <p className="text-sm font-bold">{t("links.subscriptionActive")}</p>
+            <p className="text-xs opacity-80">
+              {premiumUntilDateLabel
+                ? t("links.premiumUntil", { date: premiumUntilDateLabel })
+                : t("links.premiumBadge")}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleDowngrade}
+            disabled={isOpeningPortal}
+            className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold transition hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isOpeningPortal ? t("links.openingPortal") : t("links.downgrade")}
+          </button>
+        </div>
+      ) : null}
+
+      {/* 2-col square grid — mobile; 3-col on md; 4-col on lg */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+        {settingsTiles.map((tile) => {
+          const Icon = tile.icon;
+          const content = (
+            <div className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-neutral-100 bg-white p-3 shadow-sm transition hover:shadow-md hover:-translate-y-0.5">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${tile.color}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <span className="text-xs font-semibold text-neutral-700 text-center leading-tight">
+                {tile.label}
+              </span>
+            </div>
+          );
+
+          if (tile.href && !tile.onClick) {
+            return (
+              <Link key={tile.label} href={tile.href}>
+                {content}
+              </Link>
+            );
+          }
+
+          if (tile.href && tile.onClick) {
+            return (
+              <Link key={tile.label} href={tile.href} onClick={tile.onClick}>
+                {content}
+              </Link>
+            );
+          }
+
+          return (
+            <button
+              key={tile.label}
+              type="button"
+              onClick={tile.onClick}
+              disabled={isExporting}
+              className="text-left disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {content}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Logout */}
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3.5 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300"
+      >
+        <LogOut className="h-4 w-4" />
+        {t("actions.logout")}
+      </button>
+
       {message || noticeMessage ? (
-        <p className="app-error px-3 py-2 text-sm">
+        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
           {message ?? noticeMessage}
         </p>
       ) : null}

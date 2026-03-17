@@ -30,23 +30,23 @@ export default function AccountingDocumentsPage() {
   return (
     <section className="app-card p-4 md:p-5 pb-28 md:pb-5">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-800">Documents</h2>
+        <h2 className="text-sm font-semibold text-neutral-800">Documents</h2>
         <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>
       </div>
 
-      {isLoading ? <p className="text-sm text-gray-500">Loading documents...</p> : null}
+      {isLoading ? <p className="text-sm text-neutral-500">Loading documents...</p> : null}
       {error ? <p className="app-error px-3 py-2 text-sm">{error}</p> : null}
 
       {!isLoading && !error ? (
         <div className="space-y-2">
           {documents.map((doc) => (
-            <article key={doc.id} className="rounded-xl border border-gray-100 p-3">
-              <p className="text-sm font-semibold text-gray-800">{doc.file_url}</p>
-              <p className="mt-1 text-xs text-gray-500">Uploaded: {new Date(doc.created_at).toLocaleString()}</p>
-              <p className="mt-2 text-xs text-gray-600">OCR: {doc.ocr_text ? "Complete" : "Not available"}</p>
+            <article key={doc.id} className="rounded-xl border border-neutral-100 p-3">
+              <p className="text-sm font-semibold text-neutral-800">{doc.file_url}</p>
+              <p className="mt-1 text-xs text-neutral-500">Uploaded: {new Date(doc.created_at).toLocaleString()}</p>
+              <p className="mt-2 text-xs text-neutral-600">OCR: {doc.ocr_text ? "Complete" : "Not available"}</p>
             </article>
           ))}
-          {documents.length === 0 ? <p className="text-sm text-gray-500">No documents found.</p> : null}
+          {documents.length === 0 ? <p className="text-sm text-neutral-500">No documents found.</p> : null}
         </div>
       ) : null}
     </section>

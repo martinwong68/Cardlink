@@ -229,72 +229,88 @@ export default function CommunityPage() {
   }, [loadPosts]);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <p className="app-kicker">
-          {t("header.brand")}
-        </p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">
-          {t("header.title")}
-        </h1>
-        <p className="app-subtitle mt-2 text-sm">
-          {t("header.subtitle")}
-        </p>
-      </div>
-
+    <div className="space-y-6">
       {message ? (
         <p className="app-error px-3 py-2 text-sm">
           {message}
         </p>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      {/* Filter pills — Reference style */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {["All", "My Boards", "Trending", "New"].map((label, i) => (
+          <span
+            key={label}
+            className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
+              i === 0
+                ? "bg-primary-600 text-white"
+                : "bg-neutral-100 text-neutral-600"
+            }`}
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+
+      {/* Boards — Reference: avatar icon, post count, member count, join */}
+      <div className="space-y-3">
         {isLoading ? (
-          <div className="app-card p-6 text-sm text-gray-500">
-            {t("states.loading")}
+          <div className="flex items-center justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
           </div>
         ) : null}
 
-        {boards.map((board) => (
-          <Link
-            key={board.id}
-            href={`/dashboard/community/${board.slug}`}
-            className="app-card p-5 transition hover:-translate-y-0.5 hover:border-indigo-200"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-lg font-semibold text-gray-900">
-                  <span className="mr-2">{board.icon}</span>
-                  {board.name}
-                </p>
-                <p className="mt-2 text-sm text-gray-500">
-                  {board.description}
-                </p>
+        {boards.map((board) => {
+          const boardColors = ["#6366F1", "#14B8A6", "#F59E0B", "#3B82F6", "#EF4444", "#10B981"];
+          const color = boardColors[(board.sort_order ?? 0) % boardColors.length];
+          const count = postCounts[board.id] ?? 0;
+
+          return (
+            <Link
+              key={board.id}
+              href={`/dashboard/community/${board.slug}`}
+              className="block rounded-xl bg-neutral-50 p-4"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white"
+                  style={{ backgroundColor: color }}
+                >
+                  {board.icon || (board.name ?? "B").charAt(0)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-neutral-800">
+                    {board.name}
+                  </p>
+                  <p className="text-xs text-neutral-500">
+                    {count} {t("labels.posts", { count })}
+                  </p>
+                </div>
+                <span className="rounded-lg bg-primary-600 px-3 py-1 text-xs font-medium text-white">
+                  {t("actions.viewPublicFeed")}
+                </span>
               </div>
-              <span className="app-pill px-3 py-1 text-xs">
-                {t("labels.posts", { count: postCounts[board.id] ?? 0 })}
-              </span>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-sm font-semibold text-neutral-800">
             {t("sections.latest")}
           </h2>
           <Link
             href="/community"
-            className="text-xs font-semibold text-indigo-600"
+            className="text-xs font-medium text-primary-600"
           >
             {t("actions.viewPublicFeed")}
           </Link>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           {posts.length === 0 ? (
-            <div className="app-card p-6 text-center text-sm text-gray-500">
+            <div className="rounded-xl bg-neutral-50 p-6 text-center text-sm text-neutral-500">
               {t("empty.noPosts")}
             </div>
           ) : null}
@@ -308,37 +324,37 @@ export default function CommunityPage() {
               <Link
                 key={post.id}
                 href={`/dashboard/community/${post.board?.slug}/${post.subBoard?.slug}/${post.id}`}
-                className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-indigo-200"
+                className="block rounded-xl bg-neutral-50 p-4 transition hover:bg-neutral-100"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white">
                       {initials}
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-neutral-800 truncate">
                         {post.title}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-neutral-500">
                         {authorName}
                       </p>
                     </div>
                   </div>
                   <RelativeTime
-                    className="text-xs text-gray-400"
+                    className="shrink-0 text-xs text-neutral-400"
                     date={lastActivity}
                   />
                 </div>
-                <p className="mt-3 text-xs text-gray-500">
+                <p className="mt-2 text-xs text-neutral-500 line-clamp-2">
                   {(post.body ?? "").slice(0, 140)}
                   {post.body && post.body.length > 140 ? "..." : ""}
                 </p>
-                <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
+                <div className="mt-2 flex items-center justify-between text-xs text-neutral-400">
                   <span>
                     {[post.board?.icon, post.board?.name]
                       .filter(Boolean)
                       .join(" ")}
-                    {post.subBoard?.name ? ` • ${post.subBoard.name}` : ""}
+                    {post.subBoard?.name ? ` · ${post.subBoard.name}` : ""}
                   </span>
                   <span>{post.reply_count ?? 0} replies</span>
                 </div>

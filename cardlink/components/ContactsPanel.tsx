@@ -175,7 +175,7 @@ export default function ContactsPanel() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center text-sm text-gray-500">
+      <div className="flex min-h-[40vh] items-center justify-center text-sm text-neutral-500">
         {t("loading")}
       </div>
     );
@@ -193,12 +193,12 @@ export default function ContactsPanel() {
           </h2>
         </div>
         <div className="relative w-full sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="app-input rounded-full py-2 pl-10 pr-4 text-sm text-gray-700"
+            className="app-input rounded-full py-2 pl-10 pr-4 text-sm text-neutral-700"
           />
         </div>
       </div>
@@ -216,11 +216,11 @@ export default function ContactsPanel() {
             onClick={() => setPendingOpen((prev) => !prev)}
             className="flex w-full items-center justify-between text-left"
           >
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm font-semibold text-neutral-900">
               {t("pendingTitle", { count: pendingRequests.length })}
             </span>
             <ChevronDown
-              className={`h-4 w-4 text-gray-400 transition ${
+              className={`h-4 w-4 text-neutral-400 transition ${
                 pendingOpen ? "rotate-180" : ""
               }`}
             />
@@ -232,17 +232,17 @@ export default function ContactsPanel() {
                 return (
                   <div
                     key={`pending-${request.connectionId}`}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-100 bg-neutral-50 px-4 py-3"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white">
                         {initials}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-sm font-semibold text-neutral-900">
                           {request.fullName}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-neutral-500">
                           {[request.title, request.company]
                             .filter(Boolean)
                             .join(" • ")}
@@ -275,12 +275,12 @@ export default function ContactsPanel() {
 
       <div className="space-y-3">
         {filteredContacts.length === 0 ? (
-          <div className="app-card p-6 text-center text-sm text-gray-500">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+          <div className="app-card p-6 text-center text-sm text-neutral-500">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary-600">
               <Handshake className="h-5 w-5" />
             </div>
             {t("empty.title")}
-            <p className="mt-2 text-xs text-gray-400">
+            <p className="mt-2 text-xs text-neutral-400">
               {t("empty.body")}
             </p>
           </div>
@@ -303,20 +303,20 @@ export default function ContactsPanel() {
                   }
                   className="flex items-center gap-3 text-left"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white">
                     {initials}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-sm font-semibold text-neutral-900">
                       {contact.fullName}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-neutral-500">
                       {[contact.title, contact.company]
                         .filter(Boolean)
                         .join(" • ")}
                     </p>
                     {dateValue ? (
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-neutral-400">
                         {t("connectedOn", {
                           date: formatDate(dateValue, locale),
                         })}
@@ -328,13 +328,13 @@ export default function ContactsPanel() {
                   {contact.cardSlug ? (
                     <Link
                       href={`/c/${contact.cardSlug}`}
-                      className="flex items-center gap-1 rounded-full border border-gray-100 bg-white px-3 py-1 text-xs font-semibold text-gray-600 transition hover:border-indigo-200 hover:text-indigo-600"
+                      className="flex items-center gap-1 rounded-full border border-neutral-100 bg-white px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-primary-200 hover:text-primary-600"
                     >
                       <span
                         className={`inline-flex h-5 w-5 items-center justify-center rounded-full border ${
                           viewerPlan === "premium"
-                            ? "border-gray-200 text-gray-400"
-                            : "border-slate-400 text-gray-600"
+                            ? "border-neutral-200 text-neutral-400"
+                            : "border-slate-400 text-neutral-600"
                         }`}
                       >
                         <ExternalLink className="h-3 w-3" />

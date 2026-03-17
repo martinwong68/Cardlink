@@ -49,19 +49,19 @@ export default function PasswordSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary-600">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-gray-900">{t("title")}</h1>
-        <p className="mt-2 text-sm text-gray-500">{t("subtitle")}</p>
+        <h1 className="mt-2 text-2xl font-semibold text-neutral-900">{t("title")}</h1>
+        <p className="mt-2 text-sm text-neutral-500">{t("subtitle")}</p>
       </div>
 
       <form
         onSubmit={handleSave}
-        className="space-y-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
+        className="space-y-4 rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm"
       >
         <div>
-          <label className="text-sm font-medium text-gray-700" htmlFor="newPassword">
+          <label className="text-sm font-medium text-neutral-700" htmlFor="newPassword">
             {t("fields.newPassword")}
           </label>
           <input
@@ -70,12 +70,12 @@ export default function PasswordSettingsPage() {
             autoComplete="new-password"
             value={newPassword}
             onChange={(event) => setNewPassword(event.target.value)}
-            className="mt-2 w-full rounded-lg border border-gray-100 bg-white px-3 py-2 text-gray-900 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="mt-2 w-full rounded-lg border border-neutral-100 bg-white px-3 py-2 text-neutral-900 shadow-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700" htmlFor="confirmPassword">
+          <label className="text-sm font-medium text-neutral-700" htmlFor="confirmPassword">
             {t("fields.confirmPassword")}
           </label>
           <input
@@ -84,7 +84,7 @@ export default function PasswordSettingsPage() {
             autoComplete="new-password"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
-            className="mt-2 w-full rounded-lg border border-gray-100 bg-white px-3 py-2 text-gray-900 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="mt-2 w-full rounded-lg border border-neutral-100 bg-white px-3 py-2 text-neutral-900 shadow-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -103,7 +103,7 @@ export default function PasswordSettingsPage() {
         <button
           type="submit"
           disabled={isSaving}
-          className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
         >
           {isSaving ? t("actions.saving") : t("actions.save")}
         </button>

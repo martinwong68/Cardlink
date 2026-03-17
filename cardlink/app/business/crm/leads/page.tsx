@@ -121,13 +121,13 @@ export default function CrmLeadsPage() {
   const filtered = leads.filter((l) => statusFilter === "all" || l.status === statusFilter);
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading leads…</p></div>;
+    return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading leads…</p></div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Leads</h1>
+        <h1 className="text-xl font-bold text-neutral-900">Leads</h1>
         <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">
           + New Lead
         </button>
@@ -140,7 +140,7 @@ export default function CrmLeadsPage() {
             key={s}
             onClick={() => setStatusFilter(s)}
             className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium capitalize transition ${
-              statusFilter === s ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              statusFilter === s ? "bg-purple-600 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
             }`}
           >
             {s}
@@ -150,30 +150,30 @@ export default function CrmLeadsPage() {
 
       {/* Form */}
       {showForm && (
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-lg font-bold text-gray-900">{editId ? "Edit Lead" : "New Lead"}</h2>
+        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h2 className="mb-4 text-lg font-bold text-neutral-900">{editId ? "Edit Lead" : "New Lead"}</h2>
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Title</label>
-              <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" placeholder="Lead title" />
+              <label className="mb-1 block text-xs font-medium text-neutral-500">Title</label>
+              <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" placeholder="Lead title" />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Source</label>
-              <input value={source} onChange={(e) => setSource(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" placeholder="e.g. website, referral" />
+              <label className="mb-1 block text-xs font-medium text-neutral-500">Source</label>
+              <input value={source} onChange={(e) => setSource(e.target.value)} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" placeholder="e.g. website, referral" />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Score (0–100)</label>
-              <input value={score} onChange={(e) => setScore(e.target.value)} type="number" min="0" max="100" className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" />
+              <label className="mb-1 block text-xs font-medium text-neutral-500">Score (0–100)</label>
+              <input value={score} onChange={(e) => setScore(e.target.value)} type="number" min="0" max="100" className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Temperature</label>
+              <label className="mb-1 block text-xs font-medium text-neutral-500">Temperature</label>
               <div className="flex gap-2">
                 {(["hot", "warm", "cold"] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => setTemperature(t)}
                     className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize transition ${
-                      temperature === t ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600"
+                      temperature === t ? "bg-purple-600 text-white" : "bg-neutral-100 text-neutral-600"
                     }`}
                   >
                     {t}
@@ -182,11 +182,11 @@ export default function CrmLeadsPage() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Notes</label>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" />
+              <label className="mb-1 block text-xs font-medium text-neutral-500">Notes</label>
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full rounded-lg border border-neutral-100 px-3 py-2 text-sm" />
             </div>
             <div className="flex gap-3">
-              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-gray-100 py-2.5 text-sm font-medium text-gray-600">
+              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-neutral-100 py-2.5 text-sm font-medium text-neutral-600">
                 Cancel
               </button>
               <button onClick={handleSubmit} disabled={saving || !title.trim()} className="flex-1 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50">
@@ -199,32 +199,32 @@ export default function CrmLeadsPage() {
 
       {/* Leads list */}
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 p-8 text-center">
-          <p className="text-sm font-medium text-gray-500">No leads found</p>
-          <p className="text-xs text-gray-400">Add your first lead to get started.</p>
+        <div className="rounded-xl border border-dashed border-neutral-200 p-8 text-center">
+          <p className="text-sm font-medium text-neutral-500">No leads found</p>
+          <p className="text-xs text-neutral-400">Add your first lead to get started.</p>
         </div>
       ) : (
         <div className="space-y-2">
           {filtered.map((l) => (
-            <button key={l.id} onClick={() => openEdit(l)} className="w-full rounded-xl border border-gray-100 bg-white p-4 text-left transition hover:bg-gray-50">
+            <button key={l.id} onClick={() => openEdit(l)} className="w-full rounded-xl border border-neutral-100 bg-white p-4 text-left transition hover:bg-neutral-50">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-gray-900">{l.title}</span>
+                <span className="text-sm font-bold text-neutral-900">{l.title}</span>
                 <div className="flex gap-2">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${TEMP_COLORS[l.temperature] ?? "bg-gray-100 text-gray-600"}`}>
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${TEMP_COLORS[l.temperature] ?? "bg-neutral-100 text-neutral-600"}`}>
                     {l.temperature}
                   </span>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[l.status] ?? "bg-gray-100 text-gray-600"}`}>
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[l.status] ?? "bg-neutral-100 text-neutral-600"}`}>
                     {l.status}
                   </span>
                 </div>
               </div>
-              <p className="mt-1 text-xs text-gray-500">{l.source ?? "—"}</p>
+              <p className="mt-1 text-xs text-neutral-500">{l.source ?? "—"}</p>
               <div className="mt-2 flex items-center justify-between">
-                <span className="text-xs text-gray-500">Value: ${Number(l.value ?? 0).toFixed(0)}</span>
+                <span className="text-xs text-neutral-500">Value: ${Number(l.value ?? 0).toFixed(0)}</span>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${
                   (l.score ?? 0) >= 70 ? "bg-emerald-100 text-emerald-700" :
                   (l.score ?? 0) >= 40 ? "bg-amber-100 text-amber-700" :
-                  "bg-gray-100 text-gray-700"
+                  "bg-neutral-100 text-neutral-700"
                 }`}>
                   Score: {l.score ?? 0}
                 </span>

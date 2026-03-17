@@ -41,7 +41,7 @@ export default function AccountingContactsPage() {
     <div className="space-y-4 pb-28 md:pb-2">
       <section className="app-card p-4 md:p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-gray-800">Contacts</h2>
+          <h2 className="text-sm font-semibold text-neutral-800">Contacts</h2>
           <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>
         </div>
 
@@ -52,7 +52,7 @@ export default function AccountingContactsPage() {
               type="button"
               onClick={() => setFilter(item)}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                filter === item ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600"
+                filter === item ? "bg-primary-600 text-white" : "bg-neutral-100 text-neutral-600"
               }`}
             >
               {item}
@@ -60,20 +60,20 @@ export default function AccountingContactsPage() {
           ))}
         </div>
 
-        {isLoading ? <p className="text-sm text-gray-500">Loading contacts...</p> : null}
+        {isLoading ? <p className="text-sm text-neutral-500">Loading contacts...</p> : null}
         {error ? <p className="app-error px-3 py-2 text-sm">{error}</p> : null}
 
         {!isLoading && !error ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {filteredContacts.map((contact) => (
-              <article key={contact.id} className="rounded-xl border border-gray-100 p-4">
-                <p className="text-base font-semibold text-gray-800">{contact.name}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.12em] text-gray-500">{contact.type}</p>
-                <p className="mt-2 text-sm text-gray-600">{contact.email ?? "No email"}</p>
-                <p className="text-sm text-gray-600">{contact.phone ?? "No phone"}</p>
+              <article key={contact.id} className="rounded-xl border border-neutral-100 p-4">
+                <p className="text-base font-semibold text-neutral-800">{contact.name}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.12em] text-neutral-500">{contact.type}</p>
+                <p className="mt-2 text-sm text-neutral-600">{contact.email ?? "No email"}</p>
+                <p className="text-sm text-neutral-600">{contact.phone ?? "No phone"}</p>
               </article>
             ))}
-            {filteredContacts.length === 0 ? <p className="text-sm text-gray-500">No contacts found.</p> : null}
+            {filteredContacts.length === 0 ? <p className="text-sm text-neutral-500">No contacts found.</p> : null}
           </div>
         ) : null}
       </section>

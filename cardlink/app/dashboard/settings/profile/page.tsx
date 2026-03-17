@@ -259,7 +259,7 @@ export default function ProfileSettingsPage() {
 
       <div className="app-card p-6">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-indigo-600 text-lg font-semibold text-white">
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary-600 text-lg font-semibold text-white">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
             ) : (
@@ -267,14 +267,14 @@ export default function ProfileSettingsPage() {
             )}
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900">{t("avatar.title")}</p>
-            <p className="text-xs text-gray-500">{t("avatar.subtitle")}</p>
+            <p className="text-sm font-semibold text-neutral-900">{t("avatar.title")}</p>
+            <p className="text-xs text-neutral-500">{t("avatar.subtitle")}</p>
           </div>
         </div>
 
         <div className="mt-6 space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700" htmlFor="fullName">
+            <label className="text-sm font-medium text-neutral-700" htmlFor="fullName">
               {t("fields.fullName")}
             </label>
             <input
@@ -285,7 +285,7 @@ export default function ProfileSettingsPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700" htmlFor="email">
+            <label className="text-sm font-medium text-neutral-700" htmlFor="email">
               {t("fields.email")}
             </label>
             <input
@@ -297,7 +297,7 @@ export default function ProfileSettingsPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700" htmlFor="title">
+            <label className="text-sm font-medium text-neutral-700" htmlFor="title">
               {t("fields.title")}
             </label>
             <input
@@ -308,7 +308,7 @@ export default function ProfileSettingsPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700" htmlFor="company">
+            <label className="text-sm font-medium text-neutral-700" htmlFor="company">
               {t("fields.company")}
             </label>
             <input
@@ -319,7 +319,7 @@ export default function ProfileSettingsPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700" htmlFor="bio">
+            <label className="text-sm font-medium text-neutral-700" htmlFor="bio">
               {t("fields.bio")}
             </label>
             <textarea
@@ -331,11 +331,11 @@ export default function ProfileSettingsPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-neutral-700">
               {t("fields.avatarUrl")}
             </label>
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <label className="app-secondary-btn cursor-pointer px-3 py-2 text-sm font-semibold text-gray-700">
+              <label className="app-secondary-btn cursor-pointer px-3 py-2 text-sm font-semibold text-neutral-700">
                 <input
                   type="file"
                   accept="image/*"
@@ -349,7 +349,7 @@ export default function ProfileSettingsPage() {
                 />
                 {isUploading ? "Uploading..." : "Upload Avatar"}
               </label>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-neutral-500">
                 Auto-compress before upload. One user stores one avatar only.
               </span>
             </div>
@@ -357,7 +357,7 @@ export default function ProfileSettingsPage() {
         </div>
 
         {message ? (
-          <p className="mt-4 text-sm text-indigo-600">{message}</p>
+          <p className="mt-4 text-sm text-primary-600">{message}</p>
         ) : null}
 
         <button

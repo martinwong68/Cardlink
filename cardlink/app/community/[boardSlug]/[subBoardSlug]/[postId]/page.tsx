@@ -131,7 +131,7 @@ export default function PublicPostDetailPage() {
   if (isLoading) {
     return (
       <div className="app-shell min-h-screen px-4 py-10">
-        <div className="app-card p-6 text-center text-sm text-gray-500">
+        <div className="app-card p-6 text-center text-sm text-neutral-500">
           {t("loading")}
         </div>
       </div>
@@ -187,14 +187,14 @@ export default function PublicPostDetailPage() {
         <div className="app-card p-6">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white">
                 {initials}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-semibold text-neutral-900">
                   {authorName}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-neutral-500">
                   {formatDistanceToNow(new Date(post.created_at), {
                     addSuffix: true,
                     locale: dateLocale,
@@ -202,27 +202,27 @@ export default function PublicPostDetailPage() {
                 </p>
               </div>
             </div>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-neutral-400">
               {t("stats.replies", { count: post.reply_count ?? 0 })}
             </span>
           </div>
 
-          <p className="mt-4 whitespace-pre-wrap text-sm text-gray-700">
+          <p className="mt-4 whitespace-pre-wrap text-sm text-neutral-700">
             {post.body}
           </p>
         </div>
 
-        <div className="app-card-soft p-5 text-sm text-gray-600">
+        <div className="app-card-soft p-5 text-sm text-neutral-600">
           {t("cta.loginToReply")}
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-neutral-900">
             {t("replies.title")}
           </h2>
 
           {replies.length === 0 ? (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
+            <div className="rounded-2xl border border-neutral-100 bg-white p-6 text-center text-sm text-neutral-500 shadow-sm">
               {t("replies.empty")}
             </div>
           ) : null}
@@ -238,14 +238,14 @@ export default function PublicPostDetailPage() {
                 className="app-card p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white">
                     {replyInitials}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-sm font-semibold text-neutral-900">
                       {replyName}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-neutral-500">
                       {formatDistanceToNow(new Date(reply.created_at), {
                         addSuffix: true,
                         locale: dateLocale,
@@ -253,7 +253,7 @@ export default function PublicPostDetailPage() {
                     </p>
                   </div>
                 </div>
-                <p className="mt-3 whitespace-pre-wrap text-sm text-gray-700">
+                <p className="mt-3 whitespace-pre-wrap text-sm text-neutral-700">
                   {reply.body}
                 </p>
               </div>

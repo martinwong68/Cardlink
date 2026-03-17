@@ -30,7 +30,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
               className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                 isActive
                   ? "bg-purple-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
               }`}
             >
               {item.icon} {item.label}

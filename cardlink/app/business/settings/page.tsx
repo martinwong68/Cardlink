@@ -30,22 +30,22 @@ export default function BusinessSettingsPage() {
       <div className="space-y-3">
         <Link
           href="/business/settings/main-account"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-neutral-800 transition hover:-translate-y-0.5 hover:border-primary-200"
         >
           <span className="flex items-center gap-2">{t("links.mainAccount")}</span>
-          <ChevronRight className="h-4 w-4 text-gray-400" />
+          <ChevronRight className="h-4 w-4 text-neutral-400" />
         </Link>
 
         <Link
           href="/dashboard/settings"
           onClick={handleSwitchToClient}
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
+          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-neutral-800 transition hover:-translate-y-0.5 hover:border-primary-200"
         >
           <span className="flex items-center gap-2">
             {t("links.switchToClient")}
-            <LayoutDashboard className="h-4 w-4 text-indigo-500" />
+            <LayoutDashboard className="h-4 w-4 text-primary-500" />
           </span>
-          <ChevronRight className="h-4 w-4 text-gray-400" />
+          <ChevronRight className="h-4 w-4 text-neutral-400" />
         </Link>
       </div>
     </div>

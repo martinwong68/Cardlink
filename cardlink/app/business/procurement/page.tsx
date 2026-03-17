@@ -34,10 +34,10 @@ export default function BusinessProcurementPage() {
   useEffect(() => { load(); }, [load]);
 
   const statCards = [
-    { label: "Active Vendors", value: activeVendors, Icon: Building2, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
+    { label: "Active Vendors", value: activeVendors, Icon: Building2, iconBg: "bg-primary-50", iconColor: "text-primary-600" },
     { label: "Pending PRs", value: pendingPRs, Icon: FileText, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
     { label: "Active POs", value: activePOs, Icon: Package, iconBg: "bg-teal-50", iconColor: "text-teal-600" },
-    { label: "Active Contracts", value: activeContracts, Icon: FileSignature, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
+    { label: "Active Contracts", value: activeContracts, Icon: FileSignature, iconBg: "bg-primary-50", iconColor: "text-primary-600" },
   ];
 
   const navItems = [
@@ -48,35 +48,35 @@ export default function BusinessProcurementPage() {
     { label: "Contracts", href: "/business/procurement/contracts", Icon: FileSignature },
   ];
 
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading procurement data…</p></div>;
+  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-neutral-500">Loading procurement data…</p></div>;
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-bold text-gray-900">Procurement</h1>
+      <h1 className="text-xl font-bold text-neutral-900">Procurement</h1>
 
       {/* Metrics */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {statCards.map((m) => (
-          <div key={m.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div key={m.label} className="rounded-xl border border-neutral-100 bg-white p-4 shadow-sm">
             <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg ${m.iconBg}`}>
               <m.Icon className={`h-4 w-4 ${m.iconColor}`} />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{m.value}</p>
-            <p className="text-[10px] text-gray-500">{m.label}</p>
+            <p className="text-2xl font-bold text-neutral-900">{m.value}</p>
+            <p className="text-[10px] text-neutral-500">{m.label}</p>
           </div>
         ))}
       </div>
 
       {/* Quick Nav */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Modules</h2>
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Modules</h2>
         <div className="space-y-2">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:border-indigo-100 hover:bg-indigo-50/30">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
-                <item.Icon className="h-4 w-4 text-indigo-600" />
+            <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-xl border border-neutral-100 bg-white p-4 shadow-sm transition hover:border-primary-100 hover:bg-primary-50/30">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-50">
+                <item.Icon className="h-4 w-4 text-primary-600" />
               </span>
-              <span className="text-sm font-medium text-gray-700">{item.label}</span>
+              <span className="text-sm font-medium text-neutral-700">{item.label}</span>
             </Link>
           ))}
         </div>
@@ -84,20 +84,20 @@ export default function BusinessProcurementPage() {
 
       {/* Recent POs */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Recent Purchase Orders</h2>
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Recent Purchase Orders</h2>
         {recentPOs.length > 0 ? (
           <div className="space-y-2">
             {recentPOs.map((po) => (
-              <div key={po.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+              <div key={po.id} className="flex items-center justify-between rounded-xl border border-neutral-100 bg-white px-4 py-3 shadow-sm">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{po.po_number}</p>
-                  <p className="text-xs text-gray-500">{po.status}</p>
+                  <p className="text-sm font-medium text-neutral-900">{po.po_number}</p>
+                  <p className="text-xs text-neutral-500">{po.status}</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">${Number(po.total ?? 0).toFixed(2)}</p>
+                <p className="text-sm font-bold text-neutral-900">${Number(po.total ?? 0).toFixed(2)}</p>
               </div>
             ))}
           </div>
-        ) : <p className="text-xs text-gray-400">No purchase orders yet.</p>}
+        ) : <p className="text-xs text-neutral-400">No purchase orders yet.</p>}
       </div>
     </div>
   );

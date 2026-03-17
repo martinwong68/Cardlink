@@ -121,7 +121,7 @@ export default function BusinessMainAccountSettingsPage() {
   };
 
   if (isLoading) {
-    return <p className="text-sm text-gray-500">{t("states.loading")}</p>;
+    return <p className="text-sm text-neutral-500">{t("states.loading")}</p>;
   }
 
   if (!eligible) {
@@ -151,14 +151,14 @@ export default function BusinessMainAccountSettingsPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700" htmlFor="active-company">
+          <label className="text-sm font-semibold text-neutral-700" htmlFor="active-company">
             {t("fields.activeCompany")}
           </label>
           <select
             id="active-company"
             value={activeCompanyId}
             onChange={(event) => setActiveCompanyId(event.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+            className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-800"
           >
             <option value="">{t("fields.selectPlaceholder")}</option>
             {managedCompanies.map((company) => (
@@ -170,7 +170,7 @@ export default function BusinessMainAccountSettingsPage() {
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm font-semibold text-gray-700">{t("fields.quickSwitch")}</p>
+          <p className="text-sm font-semibold text-neutral-700">{t("fields.quickSwitch")}</p>
           <div className="flex flex-wrap gap-2">
             {managedCompanies.map((company) => {
               const isActive = company.id === activeCompanyId;
@@ -183,7 +183,7 @@ export default function BusinessMainAccountSettingsPage() {
                   className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                     isActive
                       ? "bg-emerald-100 text-emerald-800"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
                   } disabled:cursor-not-allowed disabled:opacity-80`}
                 >
                   {isActive ? t("states.activeTag", { company: company.name }) : company.name}
@@ -193,13 +193,13 @@ export default function BusinessMainAccountSettingsPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
-          <p className="text-sm font-semibold text-gray-700">{t("fields.permissionScope")}</p>
-          <ul className="mt-2 space-y-1 text-xs text-gray-600">
+        <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
+          <p className="text-sm font-semibold text-neutral-700">{t("fields.permissionScope")}</p>
+          <ul className="mt-2 space-y-1 text-xs text-neutral-600">
             {managedCompanies.map((company) => (
               <li key={company.id} className="flex items-center justify-between gap-2">
                 <span className="truncate">{company.name}</span>
-                <span className="rounded-full bg-white px-2 py-0.5 font-semibold text-gray-700 ring-1 ring-gray-200">
+                <span className="rounded-full bg-white px-2 py-0.5 font-semibold text-neutral-700 ring-1 ring-neutral-200">
                   {company.access_role ?? (isMasterUser ? "master" : "admin")}
                 </span>
               </li>
@@ -211,13 +211,13 @@ export default function BusinessMainAccountSettingsPage() {
           type="button"
           onClick={handleSave}
           disabled={isSaving}
-          className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-70"
         >
           <CheckCircle2 className="h-4 w-4" />
           {isSaving ? t("actions.saving") : t("actions.save")}
         </button>
 
-        {message ? <p className="text-sm text-gray-600">{message}</p> : null}
+        {message ? <p className="text-sm text-neutral-600">{message}</p> : null}
       </div>
     </div>
   );

@@ -140,12 +140,12 @@ export default function ResetPasswordPage() {
         <p className="app-kicker text-sm">
           {t("brand")}
         </p>
-        <h1 className="mt-4 text-3xl font-semibold text-gray-900">{t("title")}</h1>
+        <h1 className="mt-4 text-3xl font-semibold text-neutral-800">{t("title")}</h1>
         <p className="app-subtitle mt-2 text-sm">{t("subtitle")}</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleReset}>
           <div>
-            <label className="text-sm font-medium text-gray-700" htmlFor="newPassword">
+            <label className="text-sm font-medium text-neutral-700" htmlFor="newPassword">
               {t("fields.newPassword")}
             </label>
             <input
@@ -160,7 +160,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700" htmlFor="confirmPassword">
+            <label className="text-sm font-medium text-neutral-700" htmlFor="confirmPassword">
               {t("fields.confirmPassword")}
             </label>
             <input
@@ -196,8 +196,8 @@ export default function ResetPasswordPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
-          <Link className="font-semibold text-indigo-600 hover:text-indigo-700" href="/login">
+        <p className="mt-6 text-center text-sm text-neutral-500">
+          <Link className="font-semibold text-primary-600 hover:text-primary-700" href="/login">
             {t("actions.backToLogin")}
           </Link>
         </p>

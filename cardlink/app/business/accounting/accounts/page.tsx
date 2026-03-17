@@ -62,7 +62,7 @@ export default function AccountingAccountsPage() {
   return (
     <div className="space-y-4 pb-28 md:pb-2">
       <section className="app-card p-4 md:p-5">
-        <h2 className="text-sm font-semibold text-gray-800">Create Account</h2>
+        <h2 className="text-sm font-semibold text-neutral-800">Create Account</h2>
         <div className="mt-3 grid gap-2 md:grid-cols-4">
           <input value={code} onChange={(event) => setCode(event.target.value)} placeholder="Code" className="app-input px-3 py-2 text-sm" />
           <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Name" className="app-input px-3 py-2 text-sm md:col-span-2" />
@@ -79,21 +79,21 @@ export default function AccountingAccountsPage() {
       </section>
 
       {message ? <p className="app-error px-3 py-2 text-sm">{message}</p> : null}
-      {isLoading ? <p className="text-sm text-gray-500">Loading accounts...</p> : null}
+      {isLoading ? <p className="text-sm text-neutral-500">Loading accounts...</p> : null}
 
       {!isLoading ? (
         <section className="space-y-3">
           {grouped.map((group) => (
             <article key={group.groupType} className="app-card p-4 md:p-5">
-              <h3 className="text-sm font-semibold capitalize text-gray-800">{group.groupType}</h3>
+              <h3 className="text-sm font-semibold capitalize text-neutral-800">{group.groupType}</h3>
               <div className="mt-3 space-y-2">
                 {group.items.map((account) => (
-                  <div key={account.id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-2 text-sm">
-                    <span className="font-semibold text-gray-700">{account.code} · {account.name}</span>
-                    <span className="text-xs text-gray-500">{account.is_active ? "Active" : "Inactive"}</span>
+                  <div key={account.id} className="flex items-center justify-between rounded-xl border border-neutral-100 px-3 py-2 text-sm">
+                    <span className="font-semibold text-neutral-700">{account.code} · {account.name}</span>
+                    <span className="text-xs text-neutral-500">{account.is_active ? "Active" : "Inactive"}</span>
                   </div>
                 ))}
-                {group.items.length === 0 ? <p className="text-sm text-gray-500">No accounts in this group.</p> : null}
+                {group.items.length === 0 ? <p className="text-sm text-neutral-500">No accounts in this group.</p> : null}
               </div>
             </article>
           ))}

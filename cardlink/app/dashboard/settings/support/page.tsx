@@ -50,35 +50,35 @@ export default function SupportPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="app-card p-6">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-            <LifeBuoy className="h-4 w-4 text-indigo-500" />
+          <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+            <LifeBuoy className="h-4 w-4 text-primary-500" />
             {t("contact.title")}
           </div>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-neutral-500">
             {t("contact.subtitle")}
           </p>
-          <div className="mt-4 space-y-3 text-sm text-gray-700">
+          <div className="mt-4 space-y-3 text-sm text-neutral-700">
             <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-500">{t("contact.emailLabel")}</span>
+              <Mail className="h-4 w-4 text-neutral-400" />
+              <span className="text-neutral-500">{t("contact.emailLabel")}</span>
               <a
-                className="font-semibold text-indigo-600 hover:text-indigo-700"
+                className="font-semibold text-primary-600 hover:text-primary-700"
                 href={`mailto:${t("contact.emailValue")}`}
               >
                 {t("contact.emailValue")}
               </a>
             </div>
             <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-500">{t("contact.hoursLabel")}</span>
-              <span className="font-semibold text-gray-700">
+              <Shield className="h-4 w-4 text-neutral-400" />
+              <span className="text-neutral-500">{t("contact.hoursLabel")}</span>
+              <span className="font-semibold text-neutral-700">
                 {t("contact.hoursValue")}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-500">{t("contact.responseLabel")}</span>
-              <span className="font-semibold text-gray-700">
+              <Shield className="h-4 w-4 text-neutral-400" />
+              <span className="text-neutral-500">{t("contact.responseLabel")}</span>
+              <span className="font-semibold text-neutral-700">
                 {t("contact.responseValue")}
               </span>
             </div>
@@ -86,11 +86,11 @@ export default function SupportPage() {
         </div>
 
         <div className="app-card p-6">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-            <CreditCard className="h-4 w-4 text-indigo-500" />
+          <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+            <CreditCard className="h-4 w-4 text-primary-500" />
             {t("subscription.title")}
           </div>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-neutral-500">
             {t("subscription.subtitle")}
           </p>
           <div className="mt-5">
@@ -102,7 +102,7 @@ export default function SupportPage() {
             >
               {isLoading ? t("subscription.loading") : t("subscription.button")}
             </button>
-            <p className="mt-3 text-xs text-gray-500">
+            <p className="mt-3 text-xs text-neutral-500">
               {t("subscription.note")}
             </p>
           </div>
@@ -110,30 +110,30 @@ export default function SupportPage() {
       </div>
 
       <div className="app-card p-6">
-        <h2 className="text-sm font-semibold text-gray-900">
+        <h2 className="text-sm font-semibold text-neutral-900">
           {t("faq.title")}
         </h2>
-        <div className="mt-4 space-y-4 text-sm text-gray-600">
+        <div className="mt-4 space-y-4 text-sm text-neutral-600">
           {faqItems.map((item, index) => (
             <div key={`${item.question}-${index}`}>
-              <p className="font-semibold text-gray-800">{item.question}</p>
-              <p className="mt-1 text-gray-500">{item.answer}</p>
+              <p className="font-semibold text-neutral-800">{item.question}</p>
+              <p className="mt-1 text-neutral-500">{item.answer}</p>
             </div>
           ))}
         </div>
       </div>
 
       <div className="app-card p-6">
-        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-          <Shield className="h-4 w-4 text-indigo-500" />
+          <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+          <Shield className="h-4 w-4 text-primary-500" />
           {t("privacy.title")}
         </div>
-        <p className="mt-2 text-sm text-gray-500">{t("privacy.subtitle")}</p>
-        <p className="mt-2 text-xs text-gray-400">{t("privacy.lastUpdated")}</p>
-        <div className="mt-6 space-y-5 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-neutral-500">{t("privacy.subtitle")}</p>
+        <p className="mt-2 text-xs text-neutral-400">{t("privacy.lastUpdated")}</p>
+        <div className="mt-6 space-y-5 text-sm text-neutral-600">
           {privacySections.map((section, index) => (
             <div key={`${section.title}-${index}`}>
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-neutral-900">
                 {section.title}
               </h3>
               <div className="mt-2 space-y-2">

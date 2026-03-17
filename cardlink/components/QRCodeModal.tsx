@@ -81,18 +81,18 @@ export default function QRCodeModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 px-4 py-10">
-      <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/60 px-4 py-10">
+      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 text-sm font-semibold text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 text-sm font-semibold text-neutral-400 hover:text-neutral-600"
         >
           {t("close")}
         </button>
 
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">
             <QRCodeSVG
               id="cardlink-qr-code"
               value={url}
@@ -105,26 +105,26 @@ export default function QRCodeModal({
           </div>
 
           <div>
-            <p className="text-lg font-semibold text-gray-900">{fullName}</p>
+            <p className="text-lg font-semibold text-neutral-900">{fullName}</p>
             {title ? (
-              <p className="text-sm text-gray-500">{title}</p>
+              <p className="text-sm text-neutral-500">{title}</p>
             ) : null}
           </div>
 
-          <p className="text-xs text-gray-500 break-all">{url}</p>
+          <p className="text-xs text-neutral-500 break-all">{url}</p>
 
           <div className="flex w-full flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={handleDownload}
-              className="flex-1 rounded-xl border border-gray-100 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
+              className="flex-1 rounded-xl border border-neutral-100 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm transition hover:border-primary-200 hover:text-primary-600"
             >
               {t("download")}
             </button>
             <button
               type="button"
               onClick={handleCopy}
-              className="flex-1 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+              className="flex-1 rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700"
             >
               {copyState === "copied" ? t("copied") : t("copy")}
             </button>

@@ -295,31 +295,31 @@ export default function DiscountRedeemPanel({
   };
 
   if (isLoading) {
-    return <p className="text-sm text-gray-500">{t("loading")}</p>;
+    return <p className="text-sm text-neutral-500">{t("loading")}</p>;
   }
 
   return (
     <div className="space-y-6">
       {message ? (
-        <div className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
+        <div className="rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-700">
           {message}
         </div>
       ) : null}
 
       {adminCompanyIds.length > 0 ? (
-        <section className="flex flex-wrap items-center gap-2 rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <section className="flex flex-wrap items-center gap-2 rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
             {t("quickAccess")}
           </p>
           <Link
             href="/dashboard/discount"
-            className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white"
+            className="rounded-full bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white"
           >
             {t("actions.reviewPending")}
           </Link>
           <Link
             href="/dashboard/discount/history"
-            className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+            className="rounded-full border border-neutral-100 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-50"
           >
             {t("actions.reviewHistory")}
           </Link>
@@ -332,8 +332,8 @@ export default function DiscountRedeemPanel({
           onClick={() => setSelectedCompanyId("all")}
           className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
             selectedCompanyId === "all"
-              ? "bg-indigo-600 text-white"
-              : "bg-white text-gray-600 ring-1 ring-slate-200 hover:bg-gray-50"
+              ? "bg-primary-600 text-white"
+              : "bg-white text-neutral-600 ring-1 ring-slate-200 hover:bg-neutral-50"
           }`}
         >
           {t("actions.allCompanies")}
@@ -345,8 +345,8 @@ export default function DiscountRedeemPanel({
             onClick={() => setSelectedCompanyId(company.id)}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               selectedCompanyId === company.id
-                ? "bg-indigo-600 text-white"
-                : "bg-white text-gray-600 ring-1 ring-slate-200 hover:bg-gray-50"
+                ? "bg-primary-600 text-white"
+                : "bg-white text-neutral-600 ring-1 ring-slate-200 hover:bg-neutral-50"
             }`}
           >
             {company.name}
@@ -362,15 +362,15 @@ export default function DiscountRedeemPanel({
           return (
             <article
               key={company.id}
-              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
+              className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm"
             >
-              <h2 className="text-base font-semibold text-gray-900">{company.name}</h2>
-              <p className="mt-1 text-xs text-gray-500">
+              <h2 className="text-base font-semibold text-neutral-900">{company.name}</h2>
+              <p className="mt-1 text-xs text-neutral-500">
                 {company.slug ? `/${company.slug}` : t("labels.serviceCompany")}
               </p>
 
-              <p className="mt-3 text-xs text-gray-500">
-                {t("labels.yourBalance")}: <span className="font-semibold text-indigo-700">{userAccount?.points_balance ?? 0} {t("admin.pointUnit")}</span>
+              <p className="mt-3 text-xs text-neutral-500">
+                {t("labels.yourBalance")}: <span className="font-semibold text-primary-700">{userAccount?.points_balance ?? 0} {t("admin.pointUnit")}</span>
               </p>
 
               <div className="mt-4 space-y-2">
@@ -378,23 +378,23 @@ export default function DiscountRedeemPanel({
                   companyOffers.slice(0, 4).map((offer) => (
                     <div
                       key={offer.id}
-                      className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-3"
+                      className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-3"
                     >
-                      <p className="text-sm font-medium text-gray-800">{offer.title}</p>
-                      <p className="text-xs text-indigo-700">{formatOffer(offer)}</p>
+                      <p className="text-sm font-medium text-neutral-800">{offer.title}</p>
+                      <p className="text-xs text-primary-700">{formatOffer(offer)}</p>
 
                       <button
                         type="button"
                         onClick={() => void submitRedeemRequest(offer, userAccount)}
                         disabled={busyId === `request-${offer.id}`}
-                        className="mt-2 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+                        className="mt-2 rounded-full bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-700 disabled:opacity-60"
                       >
                         {busyId === `request-${offer.id}` ? t("actions.submitting") : t("actions.redeem")}
                       </button>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500">{t("empty.noActiveDiscounts")}</p>
+                  <p className="text-sm text-neutral-500">{t("empty.noActiveDiscounts")}</p>
                 )}
               </div>
             </article>
@@ -403,9 +403,9 @@ export default function DiscountRedeemPanel({
       </section>
 
       {adminCompanyIds.length > 0 ? (
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h3 className="text-base font-semibold text-gray-900">{t("admin.title")}</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <section className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm">
+          <h3 className="text-base font-semibold text-neutral-900">{t("admin.title")}</h3>
+          <p className="mt-1 text-sm text-neutral-500">
             {t("admin.subtitle")}
           </p>
 
@@ -415,8 +415,8 @@ export default function DiscountRedeemPanel({
               onClick={() => setAdminView("pending")}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                 adminView === "pending"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-white text-gray-600 ring-1 ring-slate-200 hover:bg-gray-50"
+                  ? "bg-primary-600 text-white"
+                  : "bg-white text-neutral-600 ring-1 ring-slate-200 hover:bg-neutral-50"
               }`}
             >
               {t("admin.pending")}
@@ -426,8 +426,8 @@ export default function DiscountRedeemPanel({
               onClick={() => setAdminView("history")}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                 adminView === "history"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-white text-gray-600 ring-1 ring-slate-200 hover:bg-gray-50"
+                  ? "bg-primary-600 text-white"
+                  : "bg-white text-neutral-600 ring-1 ring-slate-200 hover:bg-neutral-50"
               }`}
             >
               {t("admin.history")}
@@ -457,15 +457,15 @@ export default function DiscountRedeemPanel({
                     return (
                       <div
                         key={item.id}
-                        className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
+                        className="rounded-xl border border-neutral-100 bg-neutral-50 px-4 py-3"
                       >
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-sm font-semibold text-neutral-900">
                           {offer?.title ?? t("labels.offer")} · {company?.name ?? t("labels.company")}
                         </p>
-                        <p className="mt-1 text-xs text-gray-600">
+                        <p className="mt-1 text-xs text-neutral-600">
                           {t("admin.accountPoints")}: {account?.points_balance ?? 0} · {t("admin.required")}: {item.points_spent} {t("admin.pointUnit")}
                         </p>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-neutral-500">
                           {t("admin.requested")}: {new Date(item.redeemed_at).toLocaleString()}
                         </p>
 
@@ -491,7 +491,7 @@ export default function DiscountRedeemPanel({
                     );
                   })
               ) : (
-                <p className="text-sm text-gray-500">{t("empty.noPending")}</p>
+                <p className="text-sm text-neutral-500">{t("empty.noPending")}</p>
               )
             ) : historyRedemptions.filter((item) => {
               const offer = offerMap.get(item.offer_id);
@@ -513,13 +513,13 @@ export default function DiscountRedeemPanel({
                   return (
                     <div
                       key={item.id}
-                      className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
+                      className="rounded-xl border border-neutral-100 bg-neutral-50 px-4 py-3"
                     >
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-neutral-900">
                         {offer?.title ?? t("labels.offer")} · {company?.name ?? t("labels.company")}
                       </p>
-                      <p className="mt-1 text-xs text-gray-600">{t("admin.required")}: {item.points_spent} {t("admin.pointUnit")}</p>
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-neutral-600">{t("admin.required")}: {item.points_spent} {t("admin.pointUnit")}</p>
+                      <p className="mt-1 text-xs text-neutral-500">
                         {t("admin.requested")}: {new Date(item.redeemed_at).toLocaleString()} · {t("admin.processed")}: {item.confirmed_at ? new Date(item.confirmed_at).toLocaleString() : "-"}
                       </p>
                       <p className="mt-1 text-xs font-semibold">
@@ -532,14 +532,14 @@ export default function DiscountRedeemPanel({
                   );
                 })
             ) : (
-              <p className="text-sm text-gray-500">{t("empty.noHistory")}</p>
+              <p className="text-sm text-neutral-500">{t("empty.noHistory")}</p>
             )}
           </div>
         </section>
       ) : null}
 
       {!userId ? (
-        <p className="text-sm text-gray-500">{t("messages.signInToUse")}</p>
+        <p className="text-sm text-neutral-500">{t("messages.signInToUse")}</p>
       ) : null}
     </div>
   );

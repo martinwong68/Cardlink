@@ -137,42 +137,42 @@ export default function RegisterNfcCardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <p className="text-sm text-gray-500">{t("loading")}</p>
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50">
+        <p className="text-sm text-neutral-500">{t("loading")}</p>
       </div>
     );
   }
 
   if (!userId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-gray-50 px-4 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-neutral-50 px-4 py-12">
         <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-8 text-center">
-          <div className="rounded-full bg-indigo-600 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+          <div className="rounded-full bg-primary-600 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white">
             {t("brand")}
           </div>
-          <div className="relative h-44 w-72 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 shadow-2xl">
-            <div className="absolute inset-0 rounded-3xl border border-white/40" />
+          <div className="relative h-44 w-72 rounded-2xl bg-gradient-to-br from-primary-500 via-purple-500 to-fuchsia-500 shadow-2xl">
+            <div className="absolute inset-0 rounded-2xl border border-white/40" />
             <div className="absolute left-6 top-6 h-10 w-10 rounded-full bg-white/40" />
             <div className="absolute right-6 bottom-6 h-6 w-16 rounded-full bg-white/30" />
           </div>
           <div>
-            <h1 className="text-3xl font-semibold text-gray-900">
+            <h1 className="text-3xl font-semibold text-neutral-900">
               {t("guest.title")}
             </h1>
-            <p className="mt-3 text-sm text-gray-600">
+            <p className="mt-3 text-sm text-neutral-600">
               {t("guest.subtitle")}
             </p>
           </div>
           <div className="flex w-full flex-col gap-3">
             <Link
               href={`/login?returnTo=${encodeURIComponent(returnTo)}`}
-              className="flex items-center justify-center rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+              className="flex items-center justify-center rounded-full bg-primary-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700"
             >
               {t("guest.signIn")}
             </Link>
             <Link
               href={`/signup?returnTo=${encodeURIComponent(returnTo)}`}
-              className="flex items-center justify-center rounded-full border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-600 shadow-sm transition hover:border-indigo-300"
+              className="flex items-center justify-center rounded-full border border-primary-200 bg-white px-4 py-3 text-sm font-semibold text-primary-600 shadow-sm transition hover:border-primary-300"
             >
               {t("guest.createAccount")}
             </Link>
@@ -184,35 +184,35 @@ export default function RegisterNfcCardPage() {
 
   if (registerState === "success") {
     return (
-      <div className="min-h-screen bg-gray-50 px-4 py-12">
+      <div className="min-h-screen bg-neutral-50 px-4 py-12">
         <div className="mx-auto flex w-full max-w-lg flex-col items-center text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
             <CheckCircle className="h-8 w-8 text-emerald-600 motion-safe:animate-bounce" />
           </div>
-          <h1 className="mt-6 text-2xl font-semibold text-gray-900">
+          <h1 className="mt-6 text-2xl font-semibold text-neutral-900">
             {t("success.title")}
           </h1>
-          <p className="mt-3 text-sm text-gray-600">
+          <p className="mt-3 text-sm text-neutral-600">
             {t("success.subtitle")}
           </p>
-          <div className="mt-6 w-full rounded-2xl border border-gray-100 bg-white p-5 text-left">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+          <div className="mt-6 w-full rounded-2xl border border-neutral-100 bg-white p-5 text-left">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
               {t("success.testTitle")}
             </p>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-neutral-600">
               {t("success.testBody")}
             </p>
           </div>
           <div className="mt-6 flex w-full flex-col gap-3">
             <Link
               href="/dashboard"
-              className="flex items-center justify-center rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+              className="flex items-center justify-center rounded-full bg-primary-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700"
             >
               {t("success.goDashboard")}
             </Link>
             <Link
               href={`/tap/${uid}`}
-              className="flex items-center justify-center rounded-full border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-gray-700"
+              className="flex items-center justify-center rounded-full border border-neutral-100 bg-white px-4 py-3 text-sm font-semibold text-neutral-700"
             >
               {t("success.testButton")}
             </Link>
@@ -223,36 +223,36 @@ export default function RegisterNfcCardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-12">
+    <div className="min-h-screen bg-neutral-50 px-4 py-12">
       <div className="mx-auto w-full max-w-3xl space-y-8">
         <div className="flex flex-col items-start gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white">
             <Sparkles className="h-3 w-3" />
             {t("brand")}
           </div>
-          <h1 className="text-3xl font-semibold text-gray-900">
+          <h1 className="text-3xl font-semibold text-neutral-900">
             {t("title")}
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-neutral-600">
             {t("cardId", { id: maskUid(uid) })}
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-neutral-600">
             {t("subtitle")}
           </p>
         </div>
 
         {cards.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-gray-100 bg-white p-8 text-center">
-            <CreditCard className="mx-auto h-10 w-10 text-gray-400" />
-            <h2 className="mt-4 text-lg font-semibold text-gray-900">
+          <div className="rounded-2xl border border-dashed border-neutral-100 bg-white p-8 text-center">
+            <CreditCard className="mx-auto h-10 w-10 text-neutral-400" />
+            <h2 className="mt-4 text-lg font-semibold text-neutral-900">
               {t("empty.title")}
             </h2>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-neutral-500">
               {t("empty.body")}
             </p>
             <Link
               href="/dashboard/cards"
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"
+              className="mt-6 inline-flex items-center justify-center rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white"
             >
               {t("empty.cta")}
             </Link>
@@ -269,10 +269,10 @@ export default function RegisterNfcCardPage() {
                   key={card.id}
                   type="button"
                   onClick={() => setSelectedCardId(card.id)}
-                  className={`rounded-3xl border px-4 py-5 text-left transition ${
+                  className={`rounded-2xl border px-4 py-5 text-left transition ${
                     isSelected
-                      ? "border-indigo-500 bg-white shadow-md"
-                      : "border-gray-100 bg-white"
+                      ? "border-primary-500 bg-white shadow-md"
+                      : "border-neutral-100 bg-white"
                   }`}
                 >
                   <div
@@ -281,10 +281,10 @@ export default function RegisterNfcCardPage() {
                       "--cardlink-base": card.background_color ?? "#6366f1",
                     } as CSSProperties}
                   />
-                  <h3 className="mt-4 text-lg font-semibold text-gray-900">
+                  <h3 className="mt-4 text-lg font-semibold text-neutral-900">
                     {card.card_name ?? card.full_name ?? "Untitled Card"}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-neutral-500">
                     {card.title ?? "Personal"}
                   </p>
                 </button>
@@ -314,7 +314,7 @@ export default function RegisterNfcCardPage() {
             type="button"
             onClick={handleRegister}
             disabled={registerState === "submitting" || cards.length === 0}
-            className="flex flex-1 items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex flex-1 items-center justify-center rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {registerState === "submitting"
               ? t("actions.activating")
@@ -322,7 +322,7 @@ export default function RegisterNfcCardPage() {
           </button>
           <Link
             href="/dashboard"
-            className="flex flex-1 items-center justify-center rounded-full border border-gray-100 bg-white px-6 py-3 text-sm font-semibold text-gray-700"
+            className="flex flex-1 items-center justify-center rounded-full border border-neutral-100 bg-white px-6 py-3 text-sm font-semibold text-neutral-700"
           >
             {t("actions.goDashboard")}
           </Link>

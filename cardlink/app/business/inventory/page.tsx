@@ -143,40 +143,40 @@ export default function BusinessInventoryPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="app-card space-y-3 p-5">
-          <h2 className="text-sm font-semibold text-gray-800">Create Product</h2>
+          <h2 className="text-sm font-semibold text-neutral-800">Create Product</h2>
           <input
             value={sku}
             onChange={(event) => setSku(event.target.value)}
             placeholder="SKU"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
           />
           <input
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="Name"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
           />
           <input
             value={unit}
             onChange={(event) => setUnit(event.target.value)}
             placeholder="Unit"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
           />
           <button
             type="button"
             onClick={() => void createProduct()}
-            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white"
           >
             POST /api/inventory/products
           </button>
         </section>
 
         <section className="app-card space-y-3 p-5">
-          <h2 className="text-sm font-semibold text-gray-800">Create Movement</h2>
+          <h2 className="text-sm font-semibold text-neutral-800">Create Movement</h2>
           <select
             value={movementProductId}
             onChange={(event) => setMovementProductId(event.target.value)}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
           >
             <option value="">Select Product</option>
             {products.map((product) => (
@@ -188,7 +188,7 @@ export default function BusinessInventoryPage() {
           <select
             value={movementType}
             onChange={(event) => setMovementType(event.target.value as "in" | "out" | "adjust")}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
           >
             <option value="in">in</option>
             <option value="out">out</option>
@@ -198,18 +198,18 @@ export default function BusinessInventoryPage() {
             value={movementQty}
             onChange={(event) => setMovementQty(event.target.value)}
             placeholder="Qty"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
           />
           <input
             value={movementReason}
             onChange={(event) => setMovementReason(event.target.value)}
             placeholder="Reason (optional)"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
           />
           <button
             type="button"
             onClick={() => void createMovement()}
-            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white"
           >
             POST /api/inventory/movements
           </button>
@@ -218,32 +218,32 @@ export default function BusinessInventoryPage() {
 
       <section className="app-card p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-800">Products & Balances</h2>
+          <h2 className="text-sm font-semibold text-neutral-800">Products & Balances</h2>
           <button
             type="button"
             onClick={() => void loadData()}
-            className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700"
+            className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-700"
           >
             Refresh
           </button>
         </div>
-        {isLoading ? <p className="text-sm text-gray-500">Loading...</p> : null}
+        {isLoading ? <p className="text-sm text-neutral-500">Loading...</p> : null}
         {!isLoading ? (
           <div className="space-y-2 text-sm">
             {products.map((product) => {
               const balance = balances.find((item) => item.product_id === product.id);
               return (
-                <div key={product.id} className="rounded-xl border border-gray-100 px-3 py-2">
-                  <p className="font-semibold text-gray-800">
+                <div key={product.id} className="rounded-xl border border-neutral-100 px-3 py-2">
+                  <p className="font-semibold text-neutral-800">
                     {product.name} ({product.sku})
                   </p>
-                  <p className="text-gray-600">
+                  <p className="text-neutral-600">
                     on_hand: {balance?.on_hand ?? 0} {product.unit}
                   </p>
                 </div>
               );
             })}
-            {products.length === 0 ? <p className="text-gray-500">No products yet.</p> : null}
+            {products.length === 0 ? <p className="text-neutral-500">No products yet.</p> : null}
           </div>
         ) : null}
       </section>
