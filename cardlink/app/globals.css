@@ -150,6 +150,22 @@ body {
   color: #15803d;
 }
 
+/* Overrides for components rendered inside the indigo-600 dashboard header */
+.dashboard-header-controls select {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.dashboard-header-controls button {
+  color: #ffffff;
+}
+
+.dashboard-header-controls button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
 .cardlink-cover {
   background-color: var(--cardlink-base, #6366f1);
   background-size: cover;

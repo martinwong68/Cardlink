@@ -4,6 +4,7 @@ import { createClient } from "@/src/lib/supabase/server";
 import { getUserAccessState } from "@/src/lib/access-state";
 import { resolveBusinessEligibility } from "@/src/lib/business/eligibility";
 import BusinessNav from "@/components/BusinessNav";
+import BusinessHeader from "./business-header";
 
 export default async function BusinessLayout({
   children,
@@ -68,13 +69,14 @@ export default async function BusinessLayout({
   }
 
   return (
-    <div className="app-shell pb-24 md:pb-10">
-      <div className="app-page flex gap-6 py-6">
+    <div className="min-h-screen bg-gray-50 pb-24 md:pb-10">
+      <BusinessHeader userId={user.id} activeCompanyName={activeCompanyName} />
+      <div className="mx-auto max-w-5xl flex gap-6 px-4 py-6">
         <BusinessNav
           isMasterUser={eligibility.isMasterUser}
           activeCompanyName={activeCompanyName}
         />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 min-w-0">{children}</main>
       </div>
     </div>
   );

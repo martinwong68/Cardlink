@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Flame, Handshake, TrendingUp, Megaphone, Target, DollarSign, User, Phone, Mail } from "lucide-react";
+import { Flame, Handshake, TrendingUp, Megaphone, Filter, Plus } from "lucide-react";
 
 type Metrics = {
   hotLeads: number;
@@ -25,13 +25,13 @@ type Deal = {
   value: number;
 };
 
-const STAGE_COLORS: Record<string, string> = {
-  qualification: "bg-blue-500",
-  proposal: "bg-indigo-500",
-  negotiation: "bg-amber-500",
-  closing: "bg-teal-500",
-  won: "bg-emerald-500",
-  lost: "bg-rose-500",
+const STAGE_CONFIG: Record<string, { color: string; label: string }> = {
+  qualification: { color: "#14B8A6", label: "Qualified" },
+  proposal: { color: "#6366F1", label: "Proposal" },
+  negotiation: { color: "#F59E0B", label: "Negotiation" },
+  closing: { color: "#8B5CF6", label: "Closing" },
+  won: { color: "#10B981", label: "Won" },
+  lost: { color: "#EF4444", label: "Lost" },
 };
 
 export default function CrmDashboardPage() {
@@ -84,8 +84,6 @@ export default function CrmDashboardPage() {
     load();
   }, []);
 
-  const stages = ["qualification", "proposal", "negotiation", "closing", "won", "lost"];
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -101,76 +99,97 @@ export default function CrmDashboardPage() {
     { label: "Campaigns", value: metrics.activeCampaigns, Icon: Megaphone, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
   ];
 
+  const stages = ["qualification", "proposal", "negotiation", "closing", "won", "lost"];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">CRM</h1>
-        <p className="text-xs text-gray-500">Customer relationship management overview</p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">CRM Pipeline</h2>
+          <p className="text-xs text-gray-500">Manage leads, deals, and contacts</p>
+        </div>
+        <div className="flex gap-2">
+          <button className="flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
+            <Filter className="h-3 w-3" />Filter
+          </button>
+          <Link
+            href="/business/crm/deals"
+            className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white"
+          >
+            <Plus className="h-3 w-3" />New Deal
+          </Link>
+        </div>
       </div>
 
       {/* Metrics */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {statCards.map((m) => (
           <div key={m.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-            <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg ${m.iconBg}`}>
-              <m.Icon className={`h-4 w-4 ${m.iconColor}`} />
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{m.label}</span>
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${m.iconBg}`}>
+                <m.Icon className={`h-4 w-4 ${m.iconColor}`} />
+              </div>
             </div>
             <p className="text-2xl font-bold text-gray-900">{m.value}</p>
-            <p className="text-xs text-gray-500">{m.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Pipeline by Stage */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Pipeline by Stage</h2>
-        <div className="space-y-2">
-          {stages.map((stage) => {
-            const stageDeals = deals.filter((d) => d.stage === stage);
-            const stageValue = stageDeals.reduce((s, d) => s + Number(d.value ?? 0), 0);
-            return (
-              <div
-                key={stage}
-                className="flex items-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm"
-              >
-                <div className={`mr-3 h-3 w-3 rounded-full ${STAGE_COLORS[stage] ?? "bg-gray-400"}`} />
-                <span className="flex-1 text-sm font-medium capitalize text-gray-700">{stage}</span>
-                <span className="mr-3 text-xs text-gray-500">{stageDeals.length} deals</span>
-                <span className="text-sm font-semibold text-gray-900">${stageValue.toFixed(0)}</span>
+      {/* Pipeline Kanban */}
+      <div className="flex gap-3 overflow-x-auto pb-2">
+        {stages.map((stage) => {
+          const cfg = STAGE_CONFIG[stage] ?? { color: "#9CA3AF", label: stage };
+          const stageDeals = deals.filter((d) => d.stage === stage);
+          return (
+            <div key={stage} className="min-w-[160px] flex-1">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-700">{cfg.label}</span>
+                <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600">
+                  {stageDeals.length}
+                </span>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Quick Nav */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Modules</h2>
-        <div className="space-y-2">
-          {[
-            { label: "Leads", href: "/business/crm/leads", Icon: Target },
-            { label: "Deals", href: "/business/crm/deals", Icon: DollarSign },
-            { label: "Contacts", href: "/business/crm/contacts", Icon: User },
-            { label: "Activities", href: "/business/crm/activities", Icon: Phone },
-            { label: "Campaigns", href: "/business/crm/campaigns", Icon: Mail },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:border-indigo-100 hover:bg-indigo-50/30"
-            >
-              <span className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
-                <item.Icon className="h-4 w-4 text-indigo-600" />
-              </span>
-              <span className="text-sm font-medium text-gray-700">{item.label}</span>
-            </Link>
-          ))}
-        </div>
+              <div className="space-y-2">
+                {stageDeals.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-gray-200 p-3 text-center text-xs text-gray-400">
+                    No deals
+                  </div>
+                ) : (
+                  stageDeals.map((d) => (
+                    <div
+                      key={d.id}
+                      className="cursor-pointer rounded-lg border border-gray-100 bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
+                    >
+                      <div className="mb-1 flex items-center gap-2">
+                        <div
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: cfg.color }}
+                        />
+                        <span className="truncate text-xs font-medium text-gray-800">
+                          {d.title}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-gray-900">
+                        ${Number(d.value).toLocaleString()}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Recent Activities */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Recent Activities</h2>
+      <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-sm font-semibold text-gray-800">Recent Activities</span>
+          <Link href="/business/crm/activities" className="text-xs font-medium text-indigo-600">
+            View All
+          </Link>
+        </div>
         {activities.length === 0 ? (
           <p className="text-sm text-gray-500">No recent activities.</p>
         ) : (
@@ -178,10 +197,10 @@ export default function CrmDashboardPage() {
             {activities.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-3 shadow-sm"
+                className="flex items-center justify-between border-b border-gray-50 py-2 last:border-0"
               >
                 <div>
-                  <p className="text-sm font-medium capitalize text-gray-700">{a.type}</p>
+                  <p className="text-xs font-medium capitalize text-gray-700">{a.type}</p>
                   <p className="text-xs text-gray-500">{a.title}</p>
                 </div>
                 <span className="text-xs text-gray-400">

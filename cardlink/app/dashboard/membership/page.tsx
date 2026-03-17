@@ -72,37 +72,28 @@ export default async function MembershipPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="app-kicker">
-          {t("brand")}
-        </p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">
-          {t("title")}
-        </h1>
-        <p className="app-subtitle mt-2 text-sm">
-          {t("subtitle")}
-        </p>
+      {/* Gradient hero banner matching Reference */}
+      <div className="rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 p-5 text-white shadow-lg">
+        <div className="mb-2 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-300"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+          <span className="text-sm font-bold">{t("title")}</span>
+        </div>
+        <div className="mb-4 text-xs opacity-70">{t("subtitle")}</div>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-lg bg-white/15 p-2 text-center">
+            <div className="text-xs opacity-70">{t("cards.totalBalanceTitle")}</div>
+            <div className="text-sm font-bold">{totalPoints}</div>
+          </div>
+          <div className="rounded-lg bg-white/15 p-2 text-center">
+            <div className="text-xs opacity-70">{t("cards.pointSystemTitle")}</div>
+            <div className="text-sm font-bold">{t("cards.pointSystemName")}</div>
+          </div>
+          <div className="rounded-lg bg-white/15 p-2 text-center">
+            <div className="text-xs opacity-70">{t("cards.totalSpendTitle")}</div>
+            <div className="text-sm font-bold">${totalSpendAmount.toFixed(0)}</div>
+          </div>
+        </div>
       </div>
-
-      <section className="grid gap-4 md:grid-cols-3">
-        <article className="app-card p-5">
-          <p className="text-sm font-semibold text-gray-800">{t("cards.pointSystemTitle")}</p>
-          <p className="mt-2 text-2xl font-bold text-indigo-700">{t("cards.pointSystemName")}</p>
-          <p className="mt-1 text-sm text-gray-600">{t("cards.pointSystemBody")}</p>
-        </article>
-
-        <article className="app-card p-5">
-          <p className="text-sm font-semibold text-gray-800">{t("cards.totalBalanceTitle")}</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{totalPoints}</p>
-          <p className="mt-1 text-sm text-gray-600">{t("cards.totalBalanceBody")}</p>
-        </article>
-
-        <article className="app-card p-5">
-          <p className="text-sm font-semibold text-gray-800">{t("cards.totalSpendTitle")}</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">${totalSpendAmount.toFixed(2)}</p>
-          <p className="mt-1 text-sm text-gray-600">{t("cards.totalSpendBody")}</p>
-        </article>
-      </section>
 
       {accountsError ? (
         <section className="app-card p-5 text-sm text-amber-700">

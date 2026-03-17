@@ -445,32 +445,6 @@ export default function ExplorePanel() {
 
   return (
     <div className="min-w-0 space-y-6">
-      {/* Header area matching design: indigo background, search */}
-      <div className="-mx-4 -mt-6 rounded-b-3xl bg-indigo-600 px-5 pb-5 pt-4 md:-mx-0 md:rounded-2xl">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="text-lg font-bold text-white">{t("title")}</h1>
-            <p className="text-xs text-indigo-200">{t("subtitle")}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            {ownerCompanyIds.length > 0 ? (
-              <Link
-                href="/dashboard/company-management"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white"
-                aria-label="Company management"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </Link>
-            ) : null}
-          </div>
-        </div>
-        {/* Search bar */}
-        <div className="flex items-center gap-2 rounded-xl bg-white/20 px-3 py-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-200"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <span className="text-xs text-indigo-200">{t("subtitle")}</span>
-        </div>
-      </div>
-
       {/* Message / alert */}
       {message ? (
         <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2">

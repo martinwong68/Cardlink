@@ -70,13 +70,13 @@ export default function CrmActivitiesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Activities</h1>
-        <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">+ Log Activity</button>
+        <h1 className="text-lg font-bold text-gray-900">Activities</h1>
+        <button onClick={openCreate} className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white">+ Log Activity</button>
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
         {TYPES.map((t) => (
-          <button key={t} onClick={() => setTypeFilter(t)} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium capitalize transition ${typeFilter === t ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+          <button key={t} onClick={() => setTypeFilter(t)} className={`whitespace-nowrap rounded-lg px-3 py-1 text-xs font-medium capitalize transition ${typeFilter === t ? "bg-indigo-100 text-indigo-700" : "text-gray-500 hover:bg-gray-100"}`}>
             {t === "all" ? "All" : `${TYPE_ICONS[t] ?? ""} ${t}`}
           </button>
         ))}
@@ -90,7 +90,7 @@ export default function CrmActivitiesPage() {
               <label className="mb-1 block text-xs font-medium text-gray-500">Type</label>
               <div className="flex gap-2">
                 {(["call", "email", "meeting", "task", "note"] as const).map((t) => (
-                  <button key={t} onClick={() => setType(t)} className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize ${type === t ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600"}`}>
+                  <button key={t} onClick={() => setType(t)} className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize ${type === t ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600"}`}>
                     {TYPE_ICONS[t]} {t}
                   </button>
                 ))}
@@ -101,7 +101,7 @@ export default function CrmActivitiesPage() {
             <div><label className="mb-1 block text-xs font-medium text-gray-500">Description</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
             <div className="flex gap-3">
               <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-gray-100 py-2.5 text-sm font-medium text-gray-600">Cancel</button>
-              <button onClick={handleSubmit} disabled={saving || !title.trim()} className="flex-1 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
+              <button onClick={handleSubmit} disabled={saving || !title.trim()} className="flex-1 rounded-lg bg-indigo-600 py-2 text-xs font-medium text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
             </div>
           </div>
         </div>

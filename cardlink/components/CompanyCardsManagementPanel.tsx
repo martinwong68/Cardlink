@@ -497,6 +497,30 @@ export default function CompanyCardsManagementPanel() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">Card Management</h2>
+          <p className="text-xs text-gray-500">Manage company cards, assign and track</p>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-xl bg-indigo-50 p-3 text-center">
+          <div className="text-xl font-bold text-indigo-700">{companyNameCards.length}</div>
+          <div className="text-xs text-indigo-500">Total Cards</div>
+        </div>
+        <div className="rounded-xl bg-emerald-50 p-3 text-center">
+          <div className="text-xl font-bold text-emerald-700">{companyNameCards.length}</div>
+          <div className="text-xs text-emerald-500">Active</div>
+        </div>
+        <div className="rounded-xl bg-amber-50 p-3 text-center">
+          <div className="text-xl font-bold text-amber-700">0</div>
+          <div className="text-xs text-amber-500">Suspended</div>
+        </div>
+      </div>
+
       {message ? (
         <div className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
           {message}
@@ -677,55 +701,71 @@ export default function CompanyCardsManagementPanel() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-base font-semibold text-gray-900">{t("sections.performance.title")}</h2>
+        <div className="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+            <span className="text-sm font-semibold text-gray-800">{t("sections.performance.title")}</span>
+          </div>
         {companyNameCards.length ? (
-          companyNameCards.map((card) => {
+          <div className="divide-y divide-gray-50">
+          {companyNameCards.map((card) => {
             const profile = profileMap.get(card.user_id);
             const viewCount = card.card_shares?.[0]?.count ?? 0;
             const connectionCount = connectionCountByUser.get(card.user_id) ?? 0;
             const role = roleMap.get(card.user_id) ?? t("labels.member");
+            const colors = ["#6366F1", "#14B8A6", "#F59E0B", "#EF4444", "#8B5CF6", "#10B981"];
+            const initial = (card.card_name || card.full_name || "?").charAt(0).toUpperCase();
 
             return (
-              <article key={card.id} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{card.card_name || t("labels.untitledCard")}</p>
-                    <p className="text-xs text-gray-500">
-                      {card.full_name || profile?.full_name || profile?.email || card.user_id.slice(0, 8)} · {role}
-                    </p>
-                    <p className="text-xs text-gray-500">{card.title || ""}</p>
-                    <p className="mt-1 text-xs text-gray-500">{t("labels.views")}: {viewCount} · {t("labels.connections")}: {connectionCount}</p>
-                    {card.slug ? (
-                      <Link href={`/c/${card.slug}`} className="mt-1 inline-block text-xs text-indigo-600 hover:underline">
-                        {t("actions.openPublicCard")}
-                      </Link>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Link
-                      href={`/dashboard/cards/${card.id}/edit?mode=company`}
-                      className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700"
-                    >
-                      {t("actions.editPage")}
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => void deleteCard(card.id)}
-                      disabled={busyId === `delete-${card.id}`}
-                      className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 disabled:opacity-60"
-                    >
-                      {t("actions.delete")}
-                    </button>
-                  </div>
+              <div key={card.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition">
+                <div
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                  style={{ backgroundColor: colors[companyNameCards.indexOf(card) % colors.length] }}
+                >
+                  {initial}
                 </div>
-              </article>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-medium text-gray-800">
+                    {card.card_name || t("labels.untitledCard")}
+                  </p>
+                  <p className="truncate text-xs text-gray-500">
+                    {card.full_name || profile?.full_name || profile?.email || card.user_id.slice(0, 8)} · {role}
+                  </p>
+                </div>
+                <div className="hidden sm:flex items-center gap-4 text-xs text-gray-500">
+                  <span>{viewCount} views</span>
+                  <span>{connectionCount} conns</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {card.slug ? (
+                    <Link href={`/c/${card.slug}`} className="rounded-lg bg-gray-50 px-2 py-1 text-[11px] font-medium text-indigo-600 hover:bg-indigo-50">
+                      View
+                    </Link>
+                  ) : null}
+                  <Link
+                    href={`/dashboard/cards/${card.id}/edit?mode=company`}
+                    className="rounded-lg bg-gray-50 px-2 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-100"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => void deleteCard(card.id)}
+                    disabled={busyId === `delete-${card.id}`}
+                    className="rounded-lg bg-gray-50 px-2 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 disabled:opacity-60"
+                  >
+                    {t("actions.delete")}
+                  </button>
+                </div>
+              </div>
             );
-          })
+          })}
+          </div>
         ) : (
-          <article className="rounded-2xl border border-gray-100 bg-white p-5 text-sm text-gray-600 shadow-sm">
+          <div className="p-5 text-center text-sm text-gray-600">
             {t("empty.noCards")}
-          </article>
+          </div>
         )}
+        </div>
       </section>
     </div>
   );

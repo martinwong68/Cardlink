@@ -229,17 +229,21 @@ export default function CommunityPage() {
   }, [loadPosts]);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <p className="app-kicker">
-          {t("header.brand")}
-        </p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">
-          {t("header.title")}
-        </h1>
-        <p className="app-subtitle mt-2 text-sm">
-          {t("header.subtitle")}
-        </p>
+    <div className="space-y-6">
+      {/* Filter pills */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {["All", "My Boards", "Trending", "New"].map((label, i) => (
+          <span
+            key={label}
+            className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
+              i === 0
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-100 text-gray-600"
+            }`}
+          >
+            {label}
+          </span>
+        ))}
       </div>
 
       {message ? (
@@ -248,35 +252,47 @@ export default function CommunityPage() {
         </p>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      {/* Board cards */}
+      <div className="space-y-2">
         {isLoading ? (
-          <div className="app-card p-6 text-sm text-gray-500">
+          <div className="rounded-xl bg-gray-50 p-6 text-sm text-gray-500">
             {t("states.loading")}
           </div>
         ) : null}
 
-        {boards.map((board) => (
-          <Link
-            key={board.id}
-            href={`/dashboard/community/${board.slug}`}
-            className="app-card p-5 transition hover:-translate-y-0.5 hover:border-indigo-200"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-lg font-semibold text-gray-900">
-                  <span className="mr-2">{board.icon}</span>
-                  {board.name}
-                </p>
-                <p className="mt-2 text-sm text-gray-500">
-                  {board.description}
-                </p>
+        {boards.map((board) => {
+          const count = postCounts[board.id] ?? 0;
+          const colors = ["#6366F1", "#14B8A6", "#F59E0B", "#3B82F6", "#EF4444", "#10B981"];
+          const color = colors[(board.sort_order ?? 0) % colors.length];
+
+          return (
+            <Link
+              key={board.id}
+              href={`/dashboard/community/${board.slug}`}
+              className="block rounded-xl bg-gray-50 p-4"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold text-white"
+                  style={{ backgroundColor: color }}
+                >
+                  {board.icon || (board.name ?? "B").charAt(0)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-800">
+                    {board.name}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {count} {t("labels.posts", { count })} • {board.description ?? ""}
+                  </div>
+                </div>
+                <span className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-medium text-white">
+                  Join
+                </span>
               </div>
-              <span className="app-pill px-3 py-1 text-xs">
-                {t("labels.posts", { count: postCounts[board.id] ?? 0 })}
-              </span>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       <section className="space-y-4">

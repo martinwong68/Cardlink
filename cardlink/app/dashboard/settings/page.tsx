@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BriefcaseBusiness, ChevronRight, Download, LogOut } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, CreditCard, Download, HelpCircle, Lock, LogOut, Mail, Shield, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -217,127 +217,160 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Account Section */}
       <div>
-        <p className="app-kicker">
-          {t("brand")}
-        </p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">
-          {t("title")}
-        </h1>
-        <p className="app-subtitle mt-2 text-sm">
-          {t("subtitle")}
-        </p>
-      </div>
-
-      <div className="space-y-3">
-        <Link
-          href="/dashboard/settings/profile"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.profile")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        <Link
-          href="/dashboard/settings/privacy"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.privacy")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        <Link
-          href="/dashboard/settings/password"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.password")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        {businessEligibility?.eligible ? (
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+          Account
+        </span>
+        <div className="mt-1 space-y-1">
           <Link
-            href="/business"
-            onClick={handleSwitchToBusiness}
-            className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
+            href="/dashboard/settings/profile"
+            className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
           >
-            <span className="flex items-center gap-2">
-              {t("links.switchToBusiness")}
-              <BriefcaseBusiness className="h-4 w-4 text-indigo-500" />
-            </span>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-          </Link>
-        ) : null}
-
-        {viewerPlan === "premium" ? (
-          <div className="app-card-soft flex items-center justify-between gap-3 px-4 py-4 text-sm text-gray-700">
-            <div className="min-w-0">
-              <p className="font-semibold text-gray-800">{t("links.subscriptionActive")}</p>
-              <p className="text-xs text-gray-500">
-                {premiumUntilDateLabel
-                  ? t("links.premiumUntil", { date: premiumUntilDateLabel })
-                  : t("links.premiumBadge")}
-              </p>
+            <User className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.profile")}</div>
+              <div className="text-xs text-gray-500">Name, email, phone</div>
             </div>
-            <button
-              type="button"
-              onClick={handleDowngrade}
-              disabled={isOpeningPortal}
-              className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isOpeningPortal ? t("links.openingPortal") : t("links.downgrade")}
-            </button>
-          </div>
-        ) : (
-          <Link
-            href="/dashboard/settings/upgrade"
-            className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-          >
-            {t("links.subscription")}
-            <ChevronRight className="h-4 w-4 text-gray-400" />
+            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
           </Link>
-        )}
-
-        <Link
-          href="/dashboard/cards?tab=nfc"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.orderNfc")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        <button
-          type="button"
-          onClick={handleExport}
-          disabled={isExporting}
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200 disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          <span className="flex items-center gap-2">
-            {t("links.export")}
-            <Download className="h-4 w-4 text-indigo-500" />
-          </span>
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </button>
-
-        <Link
-          href="/dashboard/settings/support"
-          className="app-card flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-indigo-200"
-        >
-          {t("links.support")}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </Link>
-
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300"
-        >
-          <span className="flex items-center gap-2">
-            {t("actions.logout")}
-            <LogOut className="h-4 w-4" />
-          </span>
-          <ChevronRight className="h-4 w-4 text-rose-300" />
-        </button>
+          <Link
+            href="/dashboard/settings/privacy"
+            className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+          >
+            <Shield className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.privacy")}</div>
+              <div className="text-xs text-gray-500">Data sharing, visibility</div>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+          </Link>
+          <Link
+            href="/dashboard/settings/password"
+            className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+          >
+            <Lock className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.password")}</div>
+              <div className="text-xs text-gray-500">Change password, 2FA</div>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+          </Link>
+        </div>
       </div>
+
+      {/* Subscription Section */}
+      <div>
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+          Subscription
+        </span>
+        <div className="mt-1 space-y-1">
+          {viewerPlan === "premium" ? (
+            <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
+              <CreditCard className="h-4 w-4 text-indigo-600" />
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-gray-800">{t("links.subscriptionActive")}</div>
+                <div className="text-xs text-gray-500">
+                  {premiumUntilDateLabel
+                    ? t("links.premiumUntil", { date: premiumUntilDateLabel })
+                    : t("links.premiumBadge")}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleDowngrade}
+                disabled={isOpeningPortal}
+                className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isOpeningPortal ? t("links.openingPortal") : t("links.downgrade")}
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/dashboard/settings/upgrade"
+              className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+            >
+              <CreditCard className="h-4 w-4 text-indigo-600" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-800">{t("links.subscription")}</div>
+                <div className="text-xs text-gray-500">Current: Free</div>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+            </Link>
+          )}
+
+          <Link
+            href="/dashboard/cards?tab=nfc"
+            className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+          >
+            <CreditCard className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.orderNfc")}</div>
+              <div className="text-xs text-gray-500">Order physical NFC card</div>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Support Section */}
+      <div>
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+          Support
+        </span>
+        <div className="mt-1 space-y-1">
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex w-full items-center gap-3 rounded-xl bg-gray-50 p-3 text-left disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <Download className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.export")}</div>
+              <div className="text-xs text-gray-500">Export contacts as CSV</div>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+          </button>
+
+          <Link
+            href="/dashboard/settings/support"
+            className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+          >
+            <HelpCircle className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.support")}</div>
+              <div className="text-xs text-gray-500">FAQs, chat support</div>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+          </Link>
+
+          {businessEligibility?.eligible ? (
+            <Link
+              href="/business"
+              onClick={handleSwitchToBusiness}
+              className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+            >
+              <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-800">{t("links.switchToBusiness")}</div>
+                <div className="text-xs text-gray-500">Switch to Business mode</div>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+            </Link>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Logout */}
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="flex w-full items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-3"
+      >
+        <LogOut className="h-4 w-4 text-rose-600" />
+        <span className="text-sm font-semibold text-rose-600">{t("actions.logout")}</span>
+      </button>
 
       {message || noticeMessage ? (
         <p className="app-error px-3 py-2 text-sm">

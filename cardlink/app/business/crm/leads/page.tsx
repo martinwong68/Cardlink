@@ -127,8 +127,8 @@ export default function CrmLeadsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Leads</h1>
-        <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">
+        <h1 className="text-lg font-bold text-gray-900">Leads</h1>
+        <button onClick={openCreate} className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white">
           + New Lead
         </button>
       </div>
@@ -139,8 +139,8 @@ export default function CrmLeadsPage() {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium capitalize transition ${
-              statusFilter === s ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            className={`whitespace-nowrap rounded-lg px-3 py-1 text-xs font-medium capitalize transition ${
+              statusFilter === s ? "bg-indigo-100 text-indigo-700" : "text-gray-500 hover:bg-gray-100"
             }`}
           >
             {s}
@@ -173,7 +173,7 @@ export default function CrmLeadsPage() {
                     key={t}
                     onClick={() => setTemperature(t)}
                     className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize transition ${
-                      temperature === t ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600"
+                      temperature === t ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600"
                     }`}
                   >
                     {t}
@@ -189,7 +189,7 @@ export default function CrmLeadsPage() {
               <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-gray-100 py-2.5 text-sm font-medium text-gray-600">
                 Cancel
               </button>
-              <button onClick={handleSubmit} disabled={saving || !title.trim()} className="flex-1 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50">
+              <button onClick={handleSubmit} disabled={saving || !title.trim()} className="flex-1 rounded-lg bg-indigo-600 py-2 text-xs font-medium text-white disabled:opacity-50">
                 {saving ? "Saving…" : editId ? "Update" : "Create"}
               </button>
             </div>

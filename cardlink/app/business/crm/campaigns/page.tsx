@@ -84,13 +84,13 @@ export default function CrmCampaignsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Campaigns</h1>
-        <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">+ New Campaign</button>
+        <h1 className="text-lg font-bold text-gray-900">Campaigns</h1>
+        <button onClick={openCreate} className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white">+ New Campaign</button>
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
         {STATUSES.map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium capitalize transition ${statusFilter === s ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>{s}</button>
+          <button key={s} onClick={() => setStatusFilter(s)} className={`whitespace-nowrap rounded-lg px-3 py-1 text-xs font-medium capitalize transition ${statusFilter === s ? "bg-indigo-100 text-indigo-700" : "text-gray-500 hover:bg-gray-100"}`}>{s}</button>
         ))}
       </div>
 
@@ -102,7 +102,7 @@ export default function CrmCampaignsPage() {
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-500">Type</label>
               <div className="flex gap-2">{(["email", "sms", "social", "event"] as const).map((t) => (
-                <button key={t} onClick={() => setCampaignType(t)} className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize ${campaignType === t ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600"}`}>{t}</button>
+                <button key={t} onClick={() => setCampaignType(t)} className={`flex-1 rounded-lg py-2 text-center text-xs font-medium capitalize ${campaignType === t ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600"}`}>{t}</button>
               ))}</div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -113,7 +113,7 @@ export default function CrmCampaignsPage() {
             <div><label className="mb-1 block text-xs font-medium text-gray-500">Description</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
             <div className="flex gap-3">
               <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-gray-100 py-2.5 text-sm font-medium text-gray-600">Cancel</button>
-              <button onClick={handleSubmit} disabled={saving || !name.trim()} className="flex-1 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
+              <button onClick={handleSubmit} disabled={saving || !name.trim()} className="flex-1 rounded-lg bg-indigo-600 py-2 text-xs font-medium text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
             </div>
           </div>
         </div>

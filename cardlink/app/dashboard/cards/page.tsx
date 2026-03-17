@@ -347,30 +347,18 @@ export default function CardsDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="app-kicker">
-            {t("brand")}
-          </p>
-          <h1 className="app-title mt-2 text-2xl font-semibold">
-            {t("title")}
-          </h1>
-          <p className="app-subtitle mt-1 text-sm">
-            {t("subtitle")}
-          </p>
-        </div>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <CardsTabs activeTab="cards" isOwner={isOwner} />
         <button
           type="button"
           onClick={createCard}
           disabled={cards.length >= (viewerPlan === "premium" ? Number.POSITIVE_INFINITY : companyAccountCompanyId ? 2 : 1)}
-          className="app-primary-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 transition-colors"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
           {t("actions.create")}
         </button>
       </div>
-
-      <CardsTabs activeTab="cards" isOwner={isOwner} />
 
       {message ? (
         <p className="app-error px-3 py-2 text-sm">

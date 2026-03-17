@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CreditCard,
+  Crown,
   MessageSquare,
-  Settings,
-  TicketPercent,
-  UserRound,
+  Search,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -17,11 +17,11 @@ export default function DashboardNav() {
 
 
   const navItems = [
-    { href: "/dashboard/explore", label: t("discount"), icon: TicketPercent },
+    { href: "/dashboard/explore", label: t("discount"), icon: Search },
     { href: "/dashboard/community", label: t("community"), icon: MessageSquare },
-    { href: "/dashboard/cards", label: t("cards"), icon: CreditCard, primary: true },
-    { href: "/dashboard/membership", label: t("membership"), icon: UserRound },
-    { href: "/dashboard/settings", label: t("settings"), icon: Settings },
+    { href: "/dashboard/cards", label: t("cards"), icon: CreditCard },
+    { href: "/dashboard/membership", label: t("membership"), icon: Crown },
+    { href: "/dashboard/settings", label: t("settings"), icon: User },
   ];
 
   return (
@@ -36,7 +36,6 @@ export default function DashboardNav() {
             const isActive =
               currentPath === item.href || currentPath.startsWith(`${item.href}/`);
             const Icon = item.icon;
-            const isPrimary = item.primary;
 
             return (
               <Link
@@ -45,8 +44,6 @@ export default function DashboardNav() {
                 className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                   isActive
                     ? "bg-indigo-50 text-indigo-800"
-                    : isPrimary
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-300/40 hover:bg-indigo-700"
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
@@ -58,50 +55,34 @@ export default function DashboardNav() {
         </div>
       </aside>
 
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-white/80 bg-white/92 backdrop-blur-xl md:hidden">
-        <div className="mx-auto flex w-full max-w-5xl items-end justify-between px-5">
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-gray-100 bg-white px-2 py-2 md:hidden">
+        <div className="flex justify-around">
           {navItems.map((item) => {
             const currentPath = pathname ?? "";
             const isActive =
               currentPath === item.href || currentPath.startsWith(`${item.href}/`);
             const Icon = item.icon;
-            const isPrimary = item.primary;
-
-            if (isPrimary) {
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="relative -mt-6 flex flex-1 flex-col items-center"
-                >
-                  <span
-                    className={`flex h-14 w-14 items-center justify-center rounded-full shadow-md transition ${
-                      isActive
-                        ? "bg-indigo-700 text-white"
-                        : "bg-indigo-600 text-white"
-                    }`}
-                  >
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <span className="mt-2 text-[11px] font-semibold text-gray-500">
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            }
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 text-xs font-medium transition ${
-                  isActive ? "text-indigo-600" : "text-gray-400"
-                }`}
+                className="flex flex-col items-center gap-0.5 px-2 py-1"
               >
-                <span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${isActive ? "bg-indigo-50" : ""}`}>
-                  <Icon className="h-5 w-5" />
+                <Icon
+                  className={`h-[18px] w-[18px] ${
+                    isActive ? "text-indigo-600" : "text-gray-400"
+                  }`}
+                />
+                <span
+                  className={`text-xs ${
+                    isActive
+                      ? "font-medium text-indigo-600"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {item.label}
                 </span>
-                {item.label}
               </Link>
             );
           })}

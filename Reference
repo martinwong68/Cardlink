@@ -1,0 +1,1161 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Palette, Type, Grid3x3, Layers, Monitor, Smartphone,
+  CreditCard, Users, BarChart3, ShoppingBag, Settings,
+  Home, Search, MessageSquare, Crown, Bell, User,
+  ChevronRight, ChevronDown, Lock, Eye, AlertCircle,
+  CheckCircle, Loader, XCircle, ArrowLeft, Globe,
+  LayoutDashboard, Receipt, FileText, Contact,
+  DollarSign, Package, Shield, Key, Activity,
+  Target, Megaphone, Truck, ClipboardList, Store,
+  Menu, X, Plus, Filter, MoreHorizontal, TrendingUp,
+  TrendingDown, ArrowUpRight, ArrowDownRight, Circle,
+  Zap, Star, Heart, MapPin, Clock, Calendar, Mail,
+  Phone, Hash, Briefcase, PieChart, BarChart2
+} from 'lucide-react';
+
+const tokens = {
+  colors: {
+    primary: { 50: '#EEF2FF', 100: '#E0E7FF', 200: '#C7D2FE', 300: '#A5B4FC', 400: '#818CF8', 500: '#6366F1', 600: '#4F46E5', 700: '#4338CA', 800: '#3730A3', 900: '#312E81' },
+    secondary: { 50: '#F0FDFA', 100: '#CCFBF1', 200: '#99F6E4', 300: '#5EEAD4', 400: '#2DD4BF', 500: '#14B8A6', 600: '#0D9488', 700: '#0F766E' },
+    neutral: { 0: '#FFFFFF', 50: '#F8FAFC', 100: '#F1F5F9', 200: '#E2E8F0', 300: '#CBD5E1', 400: '#94A3B8', 500: '#64748B', 600: '#475569', 700: '#334155', 800: '#1E293B', 900: '#0F172A' },
+    success: { light: '#D1FAE5', main: '#10B981', dark: '#059669' },
+    warning: { light: '#FEF3C7', main: '#F59E0B', dark: '#D97706' },
+    error: { light: '#FEE2E2', main: '#EF4444', dark: '#DC2626' },
+    info: { light: '#DBEAFE', main: '#3B82F6', dark: '#2563EB' }
+  },
+  typography: {
+    displayLg: { size: '3rem', weight: 700, lineHeight: 1.1, tracking: '-0.02em' },
+    displaySm: { size: '2.25rem', weight: 700, lineHeight: 1.2, tracking: '-0.01em' },
+    headingLg: { size: '1.5rem', weight: 600, lineHeight: 1.3 },
+    headingMd: { size: '1.25rem', weight: 600, lineHeight: 1.4 },
+    headingSm: { size: '1rem', weight: 600, lineHeight: 1.5 },
+    bodyLg: { size: '1rem', weight: 400, lineHeight: 1.6 },
+    bodyMd: { size: '0.875rem', weight: 400, lineHeight: 1.5 },
+    bodySm: { size: '0.75rem', weight: 400, lineHeight: 1.4 },
+    label: { size: '0.75rem', weight: 500, lineHeight: 1.4, tracking: '0.04em' },
+    caption: { size: '0.6875rem', weight: 400, lineHeight: 1.3 }
+  },
+  spacing: [0, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96],
+  radius: { none: 0, sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
+  shadow: {
+    xs: '0 1px 2px rgba(0,0,0,0.05)',
+    sm: '0 1px 3px rgba(0,0,0,0.1)',
+    md: '0 4px 6px -1px rgba(0,0,0,0.1)',
+    lg: '0 10px 15px -3px rgba(0,0,0,0.1)',
+    xl: '0 20px 25px -5px rgba(0,0,0,0.1)'
+  }
+};
+
+const navSections = [
+  { id: 'system', label: 'Design System', icon: Palette },
+  { id: 'client', label: 'Client App', icon: Smartphone },
+  { id: 'business', label: 'Business App', icon: Monitor },
+  { id: 'components', label: 'Components', icon: Layers },
+  { id: 'specs', label: 'Screen Specs', icon: FileText },
+];
+
+const ColorSwatch = ({ name, hex, label }) => (
+  <div className="flex flex-col items-center gap-1">
+    <div className="w-12 h-12 rounded-lg shadow-sm border border-gray-100" style={{ backgroundColor: hex }} />
+    <span className="text-xs font-medium text-gray-700">{label || name}</span>
+    <span className="text-xs text-gray-400">{hex}</span>
+  </div>
+);
+
+const TypographySample = ({ name, style }) => (
+  <div className="flex items-baseline gap-4 py-2 border-b border-gray-100">
+    <span className="text-xs text-gray-400 w-24 flex-shrink-0">{name}</span>
+    <span style={{ fontSize: style.size, fontWeight: style.weight, lineHeight: style.lineHeight, letterSpacing: style.tracking || 'normal' }} className="text-gray-800">
+      Cardlink Design
+    </span>
+    <span className="text-xs text-gray-400 ml-auto flex-shrink-0">{style.size} / {style.weight}</span>
+  </div>
+);
+
+const StatCard = ({ label, value, change, up, icon: Icon }) => (
+  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</span>
+      <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+        <Icon size={16} className="text-indigo-600" />
+      </div>
+    </div>
+    <div className="text-2xl font-bold text-gray-900 mb-1">{value}</div>
+    <div className={`flex items-center gap-1 text-xs font-medium ${up ? 'text-emerald-600' : 'text-red-500'}`}>
+      {up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+      {change}
+    </div>
+  </div>
+);
+
+const PipelineStage = ({ label, count, color, deals }) => (
+  <div className="flex-1 min-w-0">
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-xs font-semibold text-gray-700">{label}</span>
+      <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">{count}</span>
+    </div>
+    <div className="space-y-2">
+      {deals.map((d, i) => (
+        <div key={i} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+            <span className="text-xs font-medium text-gray-800 truncate">{d.name}</span>
+          </div>
+          <div className="text-xs text-gray-500">{d.company}</div>
+          <div className="text-sm font-semibold text-gray-900 mt-1">{d.value}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const StateIndicator = ({ type, label }) => {
+  const configs = {
+    loading: { icon: Loader, color: 'text-blue-500', bg: 'bg-blue-50' },
+    empty: { icon: Package, color: 'text-gray-400', bg: 'bg-gray-50' },
+    error: { icon: XCircle, color: 'text-red-500', bg: 'bg-red-50' },
+    success: { icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    locked: { icon: Lock, color: 'text-amber-500', bg: 'bg-amber-50' },
+    denied: { icon: Shield, color: 'text-red-500', bg: 'bg-red-50' }
+  };
+  const c = configs[type];
+  return (
+    <div className={`${c.bg} rounded-xl p-6 flex flex-col items-center justify-center text-center`}>
+      <c.icon size={24} className={`${c.color} mb-2`} />
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="text-xs text-gray-400 mt-1">{type} state</span>
+    </div>
+  );
+};
+
+const MiniCard = ({ name, role, company, color }) => (
+  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
+    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: color }}>
+      {name.charAt(0)}
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="text-sm font-semibold text-gray-800 truncate">{name}</div>
+      <div className="text-xs text-gray-500">{role} • {company}</div>
+    </div>
+    <MoreHorizontal size={16} className="text-gray-400" />
+  </div>
+);
+
+const NfcStatusCard = ({ status, message, color, icon: Icon }) => (
+  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
+    <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4`} style={{ backgroundColor: color + '20' }}>
+      <Icon size={28} style={{ color }} />
+    </div>
+    <span className="text-sm font-semibold text-gray-800 mb-1">{status}</span>
+    <span className="text-xs text-gray-500">{message}</span>
+  </div>
+);
+
+export default function CardlinkDesignSystem() {
+  const [activeSection, setActiveSection] = useState('system');
+  const [activeSubTab, setActiveSubTab] = useState('colors');
+  const [clientScreen, setClientScreen] = useState('explore');
+  const [businessScreen, setBusinessScreen] = useState('dashboard');
+  const [mobileView, setMobileView] = useState(false);
+
+  const renderDesignSystem = () => {
+    const subTabs = ['colors', 'typography', 'spacing', 'states', 'motion'];
+    return (
+      <div>
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {subTabs.map(t => (
+            <button key={t} onClick={() => setActiveSubTab(t)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${activeSubTab === t ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.div key={activeSubTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+            {activeSubTab === 'colors' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Primary — Indigo</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(tokens.colors.primary).map(([k, v]) => <ColorSwatch key={k} hex={v} label={k} />)}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Secondary — Teal</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(tokens.colors.secondary).map(([k, v]) => <ColorSwatch key={k} hex={v} label={k} />)}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Neutral</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(tokens.colors.neutral).map(([k, v]) => <ColorSwatch key={k} hex={v} label={k} />)}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Semantic</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <ColorSwatch hex={tokens.colors.success.main} label="Success" />
+                    <ColorSwatch hex={tokens.colors.warning.main} label="Warning" />
+                    <ColorSwatch hex={tokens.colors.error.main} label="Error" />
+                    <ColorSwatch hex={tokens.colors.info.main} label="Info" />
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeSubTab === 'typography' && (
+              <div className="space-y-1">
+                {Object.entries(tokens.typography).map(([k, v]) => <TypographySample key={k} name={k} style={v} />)}
+              </div>
+            )}
+            {activeSubTab === 'spacing' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Spacing Scale (px)</h3>
+                  <div className="space-y-2">
+                    {tokens.spacing.map((s, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <span className="text-xs text-gray-400 w-8">{i}</span>
+                        <div className="h-4 bg-indigo-200 rounded" style={{ width: `${s}px` }} />
+                        <span className="text-xs text-gray-500">{s}px</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Border Radius</h3>
+                  <div className="flex flex-wrap gap-4">
+                    {Object.entries(tokens.radius).map(([k, v]) => (
+                      <div key={k} className="flex flex-col items-center gap-1">
+                        <div className="w-12 h-12 bg-indigo-100 border-2 border-indigo-300" style={{ borderRadius: v }} />
+                        <span className="text-xs text-gray-500">{k}</span>
+                        <span className="text-xs text-gray-400">{v}px</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Shadows</h3>
+                  <div className="flex flex-wrap gap-4">
+                    {Object.entries(tokens.shadow).map(([k, v]) => (
+                      <div key={k} className="flex flex-col items-center gap-1">
+                        <div className="w-16 h-16 bg-white rounded-lg" style={{ boxShadow: v }} />
+                        <span className="text-xs text-gray-500">{k}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeSubTab === 'states' && (
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Required Screen States</h3>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  <StateIndicator type="loading" label="Loading data..." />
+                  <StateIndicator type="empty" label="No items yet" />
+                  <StateIndicator type="error" label="Something went wrong" />
+                  <StateIndicator type="success" label="Action completed!" />
+                  <StateIndicator type="locked" label="Upgrade required" />
+                  <StateIndicator type="denied" label="Access denied" />
+                </div>
+              </div>
+            )}
+            {activeSubTab === 'motion' && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Motion Tokens</h3>
+                <div className="space-y-3">
+                  {[
+                    { name: 'micro', duration: '100ms', easing: 'ease-out', use: 'Button press, toggle' },
+                    { name: 'fast', duration: '200ms', easing: 'ease-in-out', use: 'Tooltip, dropdown' },
+                    { name: 'normal', duration: '300ms', easing: 'ease-in-out', use: 'Modal, panel slide' },
+                    { name: 'slow', duration: '500ms', easing: 'cubic-bezier(0.4,0,0.2,1)', use: 'Page transition' },
+                    { name: 'spring', duration: '600ms', easing: 'spring(1,80,10)', use: 'Card flip, NFC tap' }
+                  ].map(m => (
+                    <div key={m.name} className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
+                      <div>
+                        <span className="text-sm font-medium text-gray-800">{m.name}</span>
+                        <span className="text-xs text-gray-400 ml-2">{m.duration} • {m.easing}</span>
+                      </div>
+                      <span className="text-xs text-gray-500">{m.use}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  const clientScreens = [
+    { id: 'explore', label: 'Explore', icon: Search },
+    { id: 'community', label: 'Community', icon: MessageSquare },
+    { id: 'cards', label: 'Cards', icon: CreditCard },
+    { id: 'membership', label: 'Membership', icon: Crown },
+    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'nfc', label: 'NFC Status', icon: Zap },
+  ];
+
+  const renderClientApp = () => (
+    <div>
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+        {clientScreens.map(s => (
+          <button key={s.id} onClick={() => setClientScreen(s.id)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${clientScreen === s.id ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            <s.icon size={12} />{s.label}
+          </button>
+        ))}
+      </div>
+      <div className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-200">
+        {/* Mobile Frame */}
+        <div className="max-w-sm mx-auto bg-white min-h-96 relative">
+          {/* Status Bar */}
+          <div className="bg-indigo-600 px-4 py-2 flex items-center justify-between">
+            <span className="text-white text-xs font-medium">9:41</span>
+            <div className="flex gap-1">
+              <div className="w-4 h-2 bg-white rounded-sm opacity-80" />
+              <div className="w-3 h-2 bg-white rounded-sm opacity-60" />
+            </div>
+          </div>
+          {/* Header */}
+          <div className="bg-indigo-600 px-4 pb-4 pt-2">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <div className="text-white text-lg font-bold">
+                  {clientScreen === 'explore' && 'Explore'}
+                  {clientScreen === 'community' && 'Community'}
+                  {clientScreen === 'cards' && 'My Cards'}
+                  {clientScreen === 'membership' && 'Membership'}
+                  {clientScreen === 'settings' && 'Settings'}
+                  {clientScreen === 'nfc' && 'NFC Status'}
+                </div>
+                <div className="text-indigo-200 text-xs">Welcome back, Alex</div>
+              </div>
+              <div className="flex gap-2">
+                <div className="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                  <Bell size={14} className="text-white" />
+                </div>
+                <div className="w-8 h-8 rounded-full bg-teal-400 flex items-center justify-center text-white text-xs font-bold">A</div>
+              </div>
+            </div>
+            {clientScreen === 'explore' && (
+              <div className="bg-white bg-opacity-20 rounded-xl px-3 py-2 flex items-center gap-2">
+                <Search size={14} className="text-indigo-200" />
+                <span className="text-indigo-200 text-xs">Search discounts & offers...</span>
+              </div>
+            )}
+          </div>
+          {/* Content */}
+          <div className="p-4 space-y-3 pb-20">
+            {clientScreen === 'explore' && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-800">Featured Offers</span>
+                  <span className="text-xs text-indigo-600 font-medium">View All</span>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {['20% Off', '₹500 Back', 'Buy 1 Get 1'].map((o, i) => (
+                    <div key={i} className="flex-shrink-0 w-40 bg-gradient-to-br from-indigo-500 to-teal-400 rounded-xl p-4 text-white">
+                      <div className="text-lg font-bold">{o}</div>
+                      <div className="text-xs opacity-80 mt-1">Valid till Mar 30</div>
+                      <div className="mt-3 bg-white bg-opacity-20 rounded-lg px-2 py-1 text-xs text-center font-medium">Claim Now</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-sm font-semibold text-gray-800">Categories</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {[{ i: ShoppingBag, l: 'Shopping' }, { i: Store, l: 'Dining' }, { i: Activity, l: 'Health' }, { i: Star, l: 'Premium' }].map((c, idx) => (
+                    <div key={idx} className="flex flex-col items-center gap-1 p-2 bg-gray-50 rounded-xl">
+                      <c.i size={18} className="text-indigo-600" />
+                      <span className="text-xs text-gray-600">{c.l}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-sm font-semibold text-gray-800">Near You</span>
+                  <span className="text-xs text-indigo-600 font-medium">Map</span>
+                </div>
+                {[{ n: 'Café Bliss', d: '0.3 km', o: '15% off on all beverages' }, { n: 'Urban Threads', d: '0.7 km', o: 'Flat ₹200 off' }].map((p, i) => (
+                  <div key={i} className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                      <MapPin size={16} className="text-indigo-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-800">{p.n}</div>
+                      <div className="text-xs text-gray-500">{p.d} • {p.o}</div>
+                    </div>
+                    <ChevronRight size={14} className="text-gray-400" />
+                  </div>
+                ))}
+              </>
+            )}
+            {clientScreen === 'community' && (
+              <>
+                <div className="flex gap-2 mb-2">
+                  {['All', 'My Boards', 'Trending', 'New'].map((t, i) => (
+                    <span key={i} className={`px-3 py-1 rounded-full text-xs font-medium ${i === 0 ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600'}`}>{t}</span>
+                  ))}
+                </div>
+                {[{ b: 'Local Deals Hub', p: 127, m: '2.3k', c: '#6366F1' }, { b: 'Food & Dining', p: 89, m: '1.8k', c: '#14B8A6' }, { b: 'Tech Reviews', p: 54, m: '956', c: '#F59E0B' }].map((board, i) => (
+                  <div key={i} className="bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: board.c }}>{board.b.charAt(0)}</div>
+                      <div className="flex-1">
+                        <div className="text-sm font-semibold text-gray-800">{board.b}</div>
+                        <div className="text-xs text-gray-500">{board.p} posts • {board.m} members</div>
+                      </div>
+                      <button className="px-3 py-1 bg-indigo-600 text-white text-xs font-medium rounded-lg">Join</button>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {clientScreen === 'cards' && (
+              <>
+                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-5 text-white shadow-lg">
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-xs font-medium opacity-60">CARDLINK</span>
+                    <Zap size={16} className="text-teal-400" />
+                  </div>
+                  <div className="text-lg font-mono tracking-wider mb-4">•••• •••• •••• 4829</div>
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <div className="text-xs opacity-60">CARD HOLDER</div>
+                      <div className="text-sm font-medium">ALEX JOHNSON</div>
+                    </div>
+                    <div>
+                      <div className="text-xs opacity-60">EXPIRES</div>
+                      <div className="text-sm font-medium">12/28</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-2">
+                  {[{ i: Eye, l: 'Details' }, { i: Lock, l: 'Lock' }, { i: Settings, l: 'Manage' }].map((a, i) => (
+                    <button key={i} className="flex-1 flex flex-col items-center gap-1 py-3 bg-gray-50 rounded-xl">
+                      <a.i size={16} className="text-indigo-600" />
+                      <span className="text-xs text-gray-600">{a.l}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-sm font-semibold text-gray-800">All Cards</span>
+                  <button className="flex items-center gap-1 text-xs text-indigo-600 font-medium"><Plus size={12} />Add Card</button>
+                </div>
+                {[{ n: 'Business Premium', s: 'Active', c: '#6366F1' }, { n: 'Personal Silver', s: 'Active', c: '#94A3B8' }, { n: 'Digital Wallet', s: 'Pending', c: '#14B8A6' }].map((card, i) => (
+                  <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: card.c + '20' }}>
+                      <CreditCard size={16} style={{ color: card.c }} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-800">{card.n}</div>
+                      <div className="text-xs text-gray-500">{card.s}</div>
+                    </div>
+                    <ChevronRight size={14} className="text-gray-400" />
+                  </div>
+                ))}
+              </>
+            )}
+            {clientScreen === 'membership' && (
+              <>
+                <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-5 text-white shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Crown size={18} className="text-yellow-300" />
+                    <span className="text-sm font-bold">Premium Member</span>
+                  </div>
+                  <div className="text-xs opacity-70 mb-4">Since January 2024 • Renews Apr 2026</div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[{ l: 'Points', v: '12,450' }, { l: 'Tier', v: 'Gold' }, { l: 'Saved', v: '₹8,200' }].map((s, i) => (
+                      <div key={i} className="bg-white bg-opacity-15 rounded-lg p-2 text-center">
+                        <div className="text-xs opacity-70">{s.l}</div>
+                        <div className="text-sm font-bold">{s.v}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <span className="text-sm font-semibold text-gray-800">Membership Tiers</span>
+                </div>
+                {[
+                  { n: 'Silver', p: 'Free', f: ['Basic discounts', 'Community access'], c: '#94A3B8', active: false },
+                  { n: 'Gold', p: '₹499/mo', f: ['Premium discounts', 'Priority support', 'NFC card'], c: '#F59E0B', active: true },
+                  { n: 'Platinum', p: '₹999/mo', f: ['All Gold features', 'Concierge', 'Exclusive events'], c: '#6366F1', active: false }
+                ].map((tier, i) => (
+                  <div key={i} className={`rounded-xl p-4 mt-2 border-2 ${tier.active ? 'border-indigo-500 bg-indigo-50' : 'border-gray-100 bg-gray-50'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Star size={14} style={{ color: tier.c }} />
+                        <span className="text-sm font-semibold text-gray-800">{tier.n}</span>
+                        {tier.active && <span className="text-xs bg-indigo-600 text-white px-1.5 py-0.5 rounded">Current</span>}
+                      </div>
+                      <span className="text-sm font-bold text-gray-900">{tier.p}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {tier.f.map((f, j) => (
+                        <span key={j} className="text-xs text-gray-500 flex items-center gap-1"><CheckCircle size={10} className="text-emerald-500" />{f}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {clientScreen === 'settings' && (
+              <>
+                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4 mb-2">
+                  <div className="w-14 h-14 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xl font-bold">A</div>
+                  <div>
+                    <div className="text-base font-semibold text-gray-800">Alex Johnson</div>
+                    <div className="text-xs text-gray-500">alex@email.com • Gold Member</div>
+                  </div>
+                </div>
+                {[
+                  { s: 'Account', items: [{ i: User, l: 'Profile', sub: 'Name, email, phone' }, { i: Shield, l: 'Privacy', sub: 'Data sharing, visibility' }, { i: Lock, l: 'Password', sub: 'Change password, 2FA' }] },
+                  { s: 'Support', items: [{ i: MessageSquare, l: 'Help Center', sub: 'FAQs, chat support' }, { i: Mail, l: 'Contact Us', sub: 'Email, phone support' }] },
+                  { s: 'Subscription', items: [{ i: Crown, l: 'Upgrade Plan', sub: 'Current: Gold' }] }
+                ].map((section, si) => (
+                  <div key={si} className="mt-3">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{section.s}</span>
+                    <div className="mt-1 space-y-1">
+                      {section.items.map((item, ii) => (
+                        <div key={ii} className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+                          <item.i size={16} className="text-indigo-600" />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-800">{item.l}</div>
+                            <div className="text-xs text-gray-500">{item.sub}</div>
+                          </div>
+                          <ChevronRight size={14} className="text-gray-400" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {clientScreen === 'nfc' && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <NfcStatusCard status="No Card" message="Set up your NFC card" color="#94A3B8" icon={CreditCard} />
+                  <NfcStatusCard status="Active" message="Ready to tap" color="#10B981" icon={Zap} />
+                  <NfcStatusCard status="Deactivated" message="Card deactivated" color="#F59E0B" icon={AlertCircle} />
+                  <NfcStatusCard status="Suspended" message="Contact support" color="#EF4444" icon={XCircle} />
+                  <NfcStatusCard status="Expired" message="Renew membership" color="#6366F1" icon={Clock} />
+                  <NfcStatusCard status="Error" message="Tap failed, retry" color="#EF4444" icon={AlertCircle} />
+                </div>
+              </>
+            )}
+          </div>
+          {/* Bottom Nav */}
+          <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-2 py-2 flex justify-around">
+            {[{ i: Search, l: 'Explore' }, { i: MessageSquare, l: 'Community' }, { i: CreditCard, l: 'Cards' }, { i: Crown, l: 'Member' }, { i: User, l: 'Profile' }].map((n, i) => (
+              <button key={i} className="flex flex-col items-center gap-0.5 px-2 py-1">
+                <n.i size={18} className={i === clientScreens.findIndex(s => s.id === clientScreen) || (i === 4 && clientScreen === 'settings') ? 'text-indigo-600' : 'text-gray-400'} />
+                <span className={`text-xs ${i === clientScreens.findIndex(s => s.id === clientScreen) || (i === 4 && clientScreen === 'settings') ? 'text-indigo-600 font-medium' : 'text-gray-400'}`}>{n.l}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const businessScreensList = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'crm', label: 'CRM', icon: Users },
+    { id: 'cards', label: 'Cards', icon: CreditCard },
+    { id: 'accounting', label: 'Accounting', icon: Receipt },
+    { id: 'pos', label: 'POS', icon: Store },
+    { id: 'admin', label: 'Admin', icon: Shield },
+  ];
+
+  const renderBusinessApp = () => (
+    <div>
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+        {businessScreensList.map(s => (
+          <button key={s.id} onClick={() => setBusinessScreen(s.id)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${businessScreen === s.id ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            <s.icon size={12} />{s.label}
+          </button>
+        ))}
+      </div>
+      <div className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-200">
+        <div className="flex">
+          {/* Sidebar */}
+          <div className="w-48 bg-gray-900 p-3 hidden sm:block min-h-96">
+            <div className="flex items-center gap-2 mb-6 px-2">
+              <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+                <Zap size={14} className="text-white" />
+              </div>
+              <span className="text-white text-sm font-bold">Cardlink</span>
+            </div>
+            <div className="space-y-0.5">
+              {[
+                { i: LayoutDashboard, l: 'Dashboard', id: 'dashboard' },
+                { i: Users, l: 'CRM', id: 'crm' },
+                { i: CreditCard, l: 'Cards', id: 'cards' },
+                { i: Receipt, l: 'Accounting', id: 'accounting' },
+                { i: Settings, l: 'Settings', id: 'admin' }
+              ].map((item, idx) => (
+                <button key={idx} onClick={() => setBusinessScreen(item.id)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all ${businessScreen === item.id ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}>
+                  <item.i size={14} />{item.l}
+                </button>
+              ))}
+            </div>
+            <div className="mt-6 border-t border-gray-800 pt-3">
+              <span className="text-xs text-gray-600 px-3 uppercase tracking-wider">Modules</span>
+              <div className="mt-2 space-y-0.5">
+                {[
+                  { i: Store, l: 'POS', id: 'pos' },
+                  { i: Package, l: 'Inventory' },
+                  { i: Truck, l: 'Procurement' },
+                ].map((item, idx) => (
+                  <button key={idx} onClick={() => item.id && setBusinessScreen(item.id)}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-gray-400 hover:text-white hover:bg-gray-800 transition-all">
+                    <item.i size={14} />{item.l}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Main Content */}
+          <div className="flex-1 min-h-96">
+            {/* Top Bar */}
+            <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400">Business</span>
+                <ChevronRight size={12} className="text-gray-300" />
+                <span className="text-xs font-medium text-gray-700">
+                  {businessScreensList.find(s => s.id === businessScreen)?.label}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Globe size={14} className="text-gray-400" />
+                <Bell size={14} className="text-gray-400" />
+                <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">B</div>
+              </div>
+            </div>
+            <div className="p-4">
+              {businessScreen === 'dashboard' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">Dashboard</h2>
+                      <p className="text-xs text-gray-500">Overview of your business performance</p>
+                    </div>
+                    <select className="text-xs border border-gray-200 rounded-lg px-2 py-1.5">
+                      <option>Last 30 days</option>
+                      <option>Last 7 days</option>
+                      <option>This month</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <StatCard label="Revenue" value="₹12.4L" change="+12.5% from last month" up={true} icon={DollarSign} />
+                    <StatCard label="Active Cards" value="1,847" change="+3.2% new activations" up={true} icon={CreditCard} />
+                    <StatCard label="CRM Deals" value="₹8.2L" change="23 deals in pipeline" up={true} icon={Target} />
+                    <StatCard label="Expenses" value="₹4.1L" change="-2.1% from last month" up={false} icon={TrendingDown} />
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold text-gray-800">Revenue Trend</span>
+                      <div className="flex gap-1">
+                        {['1W', '1M', '3M', '1Y'].map((p, i) => (
+                          <span key={i} className={`text-xs px-2 py-0.5 rounded ${i === 1 ? 'bg-indigo-600 text-white' : 'text-gray-400'}`}>{p}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="h-24 flex items-end gap-1">
+                      {[40, 55, 45, 65, 50, 70, 60, 75, 85, 70, 80, 90].map((h, i) => (
+                        <div key={i} className="flex-1 bg-indigo-100 rounded-t" style={{ height: `${h}%` }}>
+                          <div className="w-full bg-indigo-500 rounded-t" style={{ height: `${h * 0.7}%` }} />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((m, i) => (
+                        <span key={i} className="text-xs text-gray-400 flex-1 text-center">{m}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                      <span className="text-sm font-semibold text-gray-800">Recent Transactions</span>
+                      <div className="mt-3 space-y-2">
+                        {[{ n: 'Payment from ABC Corp', a: '+₹45,000', t: 'credit' }, { n: 'Office Supplies', a: '-₹2,300', t: 'debit' }, { n: 'Client Invoice #127', a: '+₹18,000', t: 'credit' }].map((tx, i) => (
+                          <div key={i} className="flex items-center justify-between py-1">
+                            <span className="text-xs text-gray-600">{tx.n}</span>
+                            <span className={`text-xs font-semibold ${tx.t === 'credit' ? 'text-emerald-600' : 'text-red-500'}`}>{tx.a}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                      <span className="text-sm font-semibold text-gray-800">Active Deals</span>
+                      <div className="mt-3 space-y-2">
+                        {[{ n: 'Enterprise Plan - TechCo', s: 'Negotiation', c: '#F59E0B' }, { n: 'Pro Plan - StartupXYZ', s: 'Proposal', c: '#6366F1' }, { n: 'Basic - LocalBiz', s: 'Qualified', c: '#14B8A6' }].map((d, i) => (
+                          <div key={i} className="flex items-center justify-between py-1">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: d.c }} />
+                              <span className="text-xs text-gray-600">{d.n}</span>
+                            </div>
+                            <span className="text-xs text-gray-400">{d.s}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {businessScreen === 'crm' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">CRM Pipeline</h2>
+                      <p className="text-xs text-gray-500">Manage leads, deals, and contacts</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg"><Filter size={12} />Filter</button>
+                      <button className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg"><Plus size={12} />New Deal</button>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {['Pipeline', 'Leads', 'Contacts', 'Activities', 'Campaigns'].map((t, i) => (
+                      <span key={i} className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${i === 0 ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-100'}`}>{t}</span>
+                    ))}
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    <PipelineStage label="Qualified" count={4} color="#14B8A6" deals={[
+                      { name: 'Acme Corp Deal', company: 'Acme Corp', value: '₹2.5L' },
+                      { name: 'Tech Solutions', company: 'TechSol', value: '₹1.8L' }
+                    ]} />
+                    <PipelineStage label="Proposal" count={3} color="#6366F1" deals={[
+                      { name: 'RetailMax Pro', company: 'RetailMax', value: '₹4.2L' },
+                      { name: 'FinServ Plan', company: 'FinServ Ltd', value: '₹3.1L' }
+                    ]} />
+                    <PipelineStage label="Negotiation" count={2} color="#F59E0B" deals={[
+                      { name: 'Enterprise Upgrade', company: 'BigCorp', value: '₹8.5L' }
+                    ]} />
+                    <PipelineStage label="Won" count={5} color="#10B981" deals={[
+                      { name: 'Startup Bundle', company: 'NewVenture', value: '₹1.2L' }
+                    ]} />
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <span className="text-sm font-semibold text-gray-800">Recent Contacts</span>
+                    <div className="mt-3 space-y-2">
+                      <MiniCard name="Sarah Chen" role="CEO" company="TechSol" color="#6366F1" />
+                      <MiniCard name="Raj Patel" role="CFO" company="Acme Corp" color="#14B8A6" />
+                      <MiniCard name="Maria Lopez" role="VP Sales" company="RetailMax" color="#F59E0B" />
+                    </div>
+                  </div>
+                </div>
+              )}
+              {businessScreen === 'cards' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">Card Management</h2>
+                      <p className="text-xs text-gray-500">Manage company cards, assign and track</p>
+                    </div>
+                    <button className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg"><Plus size={12} />Issue Card</button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-indigo-50 rounded-xl p-3 text-center">
+                      <div className="text-xl font-bold text-indigo-700">247</div>
+                      <div className="text-xs text-indigo-500">Total Cards</div>
+                    </div>
+                    <div className="bg-emerald-50 rounded-xl p-3 text-center">
+                      <div className="text-xl font-bold text-emerald-700">231</div>
+                      <div className="text-xs text-emerald-500">Active</div>
+                    </div>
+                    <div className="bg-amber-50 rounded-xl p-3 text-center">
+                      <div className="text-xl font-bold text-amber-700">16</div>
+                      <div className="text-xs text-amber-500">Suspended</div>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-gray-800">All Cards</span>
+                      <div className="flex gap-2">
+                        <input className="text-xs border border-gray-200 rounded-lg px-2 py-1" placeholder="Search cards..." />
+                        <button className="flex items-center gap-1 text-xs text-gray-500"><Filter size={12} />Filter</button>
+                      </div>
+                    </div>
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-50">
+                          {['Card Holder', 'Card ID', 'Type', 'Status', 'Actions'].map((h, i) => (
+                            <th key={i} className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-2">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { n: 'John Doe', id: 'CL-4829', t: 'Premium', s: 'Active', sc: '#10B981' },
+                          { n: 'Jane Smith', id: 'CL-3721', t: 'Standard', s: 'Active', sc: '#10B981' },
+                          { n: 'Bob Wilson', id: 'CL-5614', t: 'Premium', s: 'Suspended', sc: '#F59E0B' },
+                          { n: 'Alice Brown', id: 'CL-2938', t: 'Basic', s: 'Expired', sc: '#EF4444' },
+                        ].map((row, i) => (
+                          <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
+                            <td className="px-4 py-2 text-xs font-medium text-gray-800">{row.n}</td>
+                            <td className="px-4 py-2 text-xs text-gray-500 font-mono">{row.id}</td>
+                            <td className="px-4 py-2 text-xs text-gray-500">{row.t}</td>
+                            <td className="px-4 py-2">
+                              <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: row.sc + '20', color: row.sc }}>{row.s}</span>
+                            </td>
+                            <td className="px-4 py-2"><MoreHorizontal size={14} className="text-gray-400" /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {businessScreen === 'accounting' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">Accounting</h2>
+                      <p className="text-xs text-gray-500">Financial overview and reporting</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg"><FileText size={12} />Reports</button>
+                      <button className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg"><Plus size={12} />New Invoice</button>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {['Overview', 'Accounts', 'Transactions', 'Invoices', 'Reports', 'Payroll'].map((t, i) => (
+                      <span key={i} className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${i === 0 ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-100'}`}>{t}</span>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <StatCard label="Total Income" value="₹18.6L" change="+8.3% vs last quarter" up={true} icon={TrendingUp} />
+                    <StatCard label="Total Expenses" value="₹6.2L" change="-2.1% vs last quarter" up={false} icon={TrendingDown} />
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold text-gray-800">Recent Invoices</span>
+                      <span className="text-xs text-indigo-600 font-medium">View All</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { id: 'INV-001', client: 'Acme Corp', amt: '₹45,000', status: 'Paid', sc: '#10B981' },
+                        { id: 'INV-002', client: 'TechSol Ltd', amt: '₹32,000', status: 'Pending', sc: '#F59E0B' },
+                        { id: 'INV-003', client: 'RetailMax', amt: '₹18,500', status: 'Overdue', sc: '#EF4444' },
+                        { id: 'INV-004', client: 'StartupXYZ', amt: '₹12,000', status: 'Draft', sc: '#94A3B8' },
+                      ].map((inv, i) => (
+                        <div key={i} className="flex items-center justify-between py-2 border-b border-gray-50">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-mono text-gray-400">{inv.id}</span>
+                            <span className="text-xs font-medium text-gray-800">{inv.client}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-semibold text-gray-700">{inv.amt}</span>
+                            <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: inv.sc + '20', color: inv.sc }}>{inv.status}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {businessScreen === 'pos' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">Point of Sale</h2>
+                      <p className="text-xs text-gray-500">Terminal, orders, and product management</p>
+                    </div>
+                    <button className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg"><Plus size={12} />New Order</button>
+                  </div>
+                  <div className="flex gap-2">
+                    {['Terminal', 'Orders', 'Products', 'Shifts'].map((t, i) => (
+                      <span key={i} className={`px-3 py-1 rounded-lg text-xs font-medium ${i === 0 ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500'}`}>{t}</span>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[{ n: 'Espresso', p: '₹180' }, { n: 'Latte', p: '₹250' }, { n: 'Sandwich', p: '₹350' }, { n: 'Salad Bowl', p: '₹420' }, { n: 'Fresh Juice', p: '₹200' }, { n: 'Brownie', p: '₹180' }].map((p, i) => (
+                      <button key={i} className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center hover:border-indigo-300 transition-colors">
+                        <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-indigo-50 flex items-center justify-center">
+                          <ShoppingBag size={14} className="text-indigo-600" />
+                        </div>
+                        <div className="text-xs font-medium text-gray-800">{p.n}</div>
+                        <div className="text-xs text-indigo-600 font-semibold">{p.p}</div>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <span className="text-sm font-semibold text-gray-800 mb-3 block">Current Order</span>
+                    {[{ n: 'Espresso x2', p: '₹360' }, { n: 'Sandwich x1', p: '₹350' }].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between py-1.5 border-b border-gray-50">
+                        <span className="text-xs text-gray-700">{item.n}</span>
+                        <span className="text-xs font-medium text-gray-800">{item.p}</span>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-200">
+                      <span className="text-sm font-bold text-gray-900">Total</span>
+                      <span className="text-sm font-bold text-indigo-600">₹710</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-3">
+                      <button className="py-2 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">Hold Order</button>
+                      <button className="py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg">Charge ₹710</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {businessScreen === 'admin' && (
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">Admin & Settings</h2>
+                    <p className="text-xs text-gray-500">Manage users, security, and business configuration</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { i: Users, l: 'Users & Roles', d: 'Manage team access', c: '#6366F1' },
+                      { i: Shield, l: 'Security', d: '2FA, sessions, logs', c: '#10B981' },
+                      { i: Key, l: 'API Keys', d: 'Manage integrations', c: '#F59E0B' },
+                      { i: Activity, l: 'Audit Log', d: 'Activity history', c: '#3B82F6' },
+                      { i: Receipt, l: 'Billing', d: 'Plans & invoices', c: '#EF4444' },
+                      { i: Grid3x3, l: 'Modules', d: 'Enable/disable features', c: '#14B8A6' },
+                    ].map((item, i) => (
+                      <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ backgroundColor: item.c + '15' }}>
+                          <item.i size={16} style={{ color: item.c }} />
+                        </div>
+                        <div className="text-sm font-semibold text-gray-800">{item.l}</div>
+                        <div className="text-xs text-gray-500">{item.d}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <span className="text-sm font-semibold text-gray-800 mb-3 block">Role Permissions Matrix</span>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr>
+                            <th className="text-left text-xs font-medium text-gray-400 px-2 py-1">Permission</th>
+                            {['Guest', 'User', 'Admin', 'Master'].map((r, i) => (
+                              <th key={i} className="text-center text-xs font-medium text-gray-400 px-2 py-1">{r}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { p: 'View Dashboard', g: true, u: true, a: true, m: true },
+                            { p: 'Manage Cards', g: false, u: false, a: true, m: true },
+                            { p: 'CRM Full Access', g: false, u: true, a: true, m: true },
+                            { p: 'Admin Settings', g: false, u: false, a: false, m: true },
+                            { p: 'API Keys', g: false, u: false, a: false, m: true },
+                          ].map((row, i) => (
+                            <tr key={i} className="border-t border-gray-50">
+                              <td className="text-xs text-gray-600 px-2 py-1.5">{row.p}</td>
+                              {[row.g, row.u, row.a, row.m].map((v, j) => (
+                                <td key={j} className="text-center px-2 py-1.5">
+                                  {v ? <CheckCircle size={12} className="text-emerald-500 mx-auto" /> : <XCircle size={12} className="text-gray-300 mx-auto" />}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderComponents = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Buttons</h3>
+        <div className="flex flex-wrap gap-2">
+          <button className="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors">Primary</button>
+          <button className="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-200 transition-colors">Secondary</button>
+          <button className="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">Outline</button>
+          <button className="px-4 py-2 text-indigo-600 text-xs font-medium rounded-lg hover:bg-indigo-50 transition-colors">Ghost</button>
+          <button className="px-4 py-2 bg-red-500 text-white text-xs font-medium rounded-lg">Danger</button>
+          <button className="px-4 py-2 bg-gray-100 text-gray-400 text-xs font-medium rounded-lg cursor-not-allowed" disabled>Disabled</button>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Badges & Status</h3>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { l: 'Active', c: '#10B981' }, { l: 'Pending', c: '#F59E0B' }, { l: 'Expired', c: '#EF4444' },
+            { l: 'Draft', c: '#94A3B8' }, { l: 'Locked', c: '#6366F1' }, { l: 'New', c: '#3B82F6' }
+          ].map((b, i) => (
+            <span key={i} className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: b.c + '15', color: b.c }}>{b.l}</span>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Form Controls</h3>
+        <div className="max-w-xs space-y-3">
+          <div>
+            <label className="text-xs font-medium text-gray-600 block mb-1">Input</label>
+            <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Enter value..." />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-gray-600 block mb-1">Select</label>
+            <select className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+              <option>Option 1</option><option>Option 2</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-gray-600 block mb-1">Error State</label>
+            <input className="w-full border border-red-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-red-50" value="Invalid input" readOnly />
+            <span className="text-xs text-red-500 mt-1">This field is required</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Cards & Containers</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <span className="text-sm font-semibold text-gray-800">Default Card</span>
+            <p className="text-xs text-gray-500 mt-1">Standard container with shadow and border</p>
+          </div>
+          <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+            <span className="text-sm font-semibold text-indigo-800">Highlighted Card</span>
+            <p className="text-xs text-indigo-500 mt-1">For selected or featured content</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Alerts / Toasts</h3>
+        <div className="space-y-2">
+          {[
+            { type: 'success', icon: CheckCircle, msg: 'Card successfully activated', bg: 'bg-emerald-50', bc: 'border-emerald-200', tc: 'text-emerald-800', ic: 'text-emerald-500' },
+            { type: 'error', icon: XCircle, msg: 'Transaction failed. Please retry.', bg: 'bg-red-50', bc: 'border-red-200', tc: 'text-red-800', ic: 'text-red-500' },
+            { type: 'warning', icon: AlertCircle, msg: 'Your membership expires in 7 days', bg: 'bg-amber-50', bc: 'border-amber-200', tc: 'text-amber-800', ic: 'text-amber-500' },
+            { type: 'info', icon: AlertCircle, msg: 'New module available: Procurement', bg: 'bg-blue-50', bc: 'border-blue-200', tc: 'text-blue-800', ic: 'text-blue-500' },
+          ].map((a, i) => (
+            <div key={i} className={`${a.bg} border ${a.bc} rounded-lg px-3 py-2 flex items-center gap-2`}>
+              <a.icon size={14} className={a.ic} />
+              <span className={`text-xs font-medium ${a.tc}`}>{a.msg}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Permission States</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 opacity-60">
+            <div className="flex items-center gap-2 mb-2">
+              <Lock size={14} className="text-gray-400" />
+              <span className="text-sm font-medium text-gray-500">View Only</span>
+            </div>
+            <button className="px-3 py-1.5 bg-gray-200 text-gray-400 text-xs rounded-lg cursor-not-allowed">Edit Locked</button>
+          </div>
+          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Crown size={14} className="text-amber-600" />
+              <span className="text-sm font-medium text-amber-800">Premium Feature</span>
+            </div>
+            <button className="px-3 py-1.5 bg-amber-500 text-white text-xs rounded-lg font-medium">Upgrade Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSpecs = () => (
+    <div className="space-y-4">
+      <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+        <h3 className="text-sm font-semibold text-indigo-800 mb-2">Screen Spec Format</h3>
+        <p className="text-xs text-indigo-600">Every screen follows this standardized spec template for engineering handoff.</p>
+      </div>
+      {[
+        {
+          id: 'CL-EXPL-001', route: '/client/explore', role: 'Logged-in User', goal: 'Browse and discover discounts/offers',
+          primary: 'Claim offer', secondary: 'Search, filter by category, view map',
+          states: 'Default, Loading skeleton, Empty (no offers nearby), Error (location failed), Permission (guest → login prompt)'
+        },
+        {
+          id: 'CL-CARD-001', route: '/client/cards', role: 'Logged-in User', goal: 'View and manage personal cards',
+          primary: 'Add new card, manage card settings', secondary: 'View card details, lock/unlock, NFC status',
+          states: 'Default, Loading, Empty (no cards), Error, NFC substates (no-card, active, deactivated, suspended, expired, error)'
+        },
+        {
+          id: 'BZ-DASH-001', route: '/business/dashboard', role: 'Business Admin', goal: 'Overview of all business metrics',
+          primary: 'Navigate to detailed module', secondary: 'Change date range, export report',
+          states: 'Default, Loading skeleton cards, Error (data fetch failed), Permission (user-role sees limited KPIs)'
+        },
+        {
+          id: 'BZ-CRM-001', route: '/business/crm/pipeline', role: 'Business Admin', goal: 'View and manage deal pipeline',
+          primary: 'Create new deal, move deal stage', secondary: 'Filter, search, assign owner',
+          states: 'Default Kanban, Loading, Empty (no deals), Error, View-only (for logged-in user role)'
+        },
+        {
+          id: 'BZ-CARD-001', route: '/business/cards', role: 'Business Admin', goal: 'Issue, manage, track company cards',
+          primary: 'Issue new card', secondary: 'Search, filter, suspend/activate, export',
+          states: 'Default table, Loading, Empty, Error, Permission (only admin+ can issue/suspend)'
+        },
+        {
+          id: 'BZ-ACCT-001', route: '/business/accounting', role: 'Business Admin', goal: 'Financial overview and invoice management',
+          primary: 'Create invoice', secondary: 'View transactions, generate reports, manage accounts',
+          states: 'Default, Loading, Empty, Error, Sub-tab states for each section'
+        },
+      ].map((spec, i) => (
+        <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded">{spec.id}</span>
+            <span className="text-xs text-gray-400">{spec.role}</span>
+          </div>
+          <div className="text-sm font-semibold text-gray-800 mb-1">{spec.goal}</div>
+          <div className="text-xs text-gray-500 mb-2">{spec.route}</div>
+          <div className="space-y-1">
+            <div className="text-xs"><span className="font-medium text-gray-600">Primary: </span><span className="text-gray-500">{spec.primary}</span></div>
+            <div className="text-xs"><span className="font-medium text-gray-600">Secondary: </span><span className="text-gray-500">{spec.secondary}</span></div>
+            <div className="text-xs"><span className="font-medium text-gray-600">States: </span><span className="text-gray-500">{spec.states}</span></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans">
+      {/* Top Header */}
+      <div className="bg-gray-900 text-white px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <Zap size={16} className="text-white" />
+          </div>
+          <div>
+            <div className="text-sm font-bold">Cardlink Design System</div>
+            <div className="text-xs text-gray-400">v2.0 — Full Product Redesign</div>
+          </div>
+        </div>
+      </div>
+      {/* Navigation */}
+      <div className="bg-white border-b border-gray-200 px-4 py-2 flex gap-1 overflow-x-auto">
+        {navSections.map(s => (
+          <button key={s.id} onClick={() => setActiveSection(s.id)}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${activeSection === s.id ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}>
+            <s.icon size={14} />{s.label}
+          </button>
+        ))}
+      </div>
+      {/* Content */}
+      <div className="max-w-5xl mx-auto p-4">
+        <AnimatePresence mode="wait">
+          <motion.div key={activeSection} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
+            {activeSection === 'system' && renderDesignSystem()}
+            {activeSection === 'client' && renderClientApp()}
+            {activeSection === 'business' && renderBusinessApp()}
+            {activeSection === 'components' && renderComponents()}
+            {activeSection === 'specs' && renderSpecs()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}

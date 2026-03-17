@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function BusinessRootPage() {
-  redirect("/business/accounting");
+  redirect("/business/company-cards");
 }

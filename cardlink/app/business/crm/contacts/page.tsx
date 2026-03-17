@@ -75,8 +75,8 @@ export default function CrmContactsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Contacts</h1>
-        <button onClick={openCreate} className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700">+ Add Contact</button>
+        <h1 className="text-lg font-bold text-gray-900">Contacts</h1>
+        <button onClick={openCreate} className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white">+ Add Contact</button>
       </div>
 
       <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search contacts…" className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" />
@@ -96,8 +96,8 @@ export default function CrmContactsPage() {
             <div><label className="mb-1 block text-xs font-medium text-gray-500">Address</label><input value={address} onChange={(e) => setAddress(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
             <div><label className="mb-1 block text-xs font-medium text-gray-500">Notes</label><textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full rounded-lg border border-gray-100 px-3 py-2 text-sm" /></div>
             <div className="flex gap-3">
-              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-xl border border-gray-100 py-2.5 text-sm font-medium text-gray-600">Cancel</button>
-              <button onClick={handleSubmit} disabled={saving || !firstName.trim()} className="flex-1 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
+              <button onClick={() => { setShowForm(false); resetForm(); }} className="flex-1 rounded-lg border border-gray-200 py-2 text-xs font-medium text-gray-600">Cancel</button>
+              <button onClick={handleSubmit} disabled={saving || !firstName.trim()} className="flex-1 rounded-lg bg-indigo-600 py-2 text-xs font-medium text-white disabled:opacity-50">{saving ? "Saving…" : editId ? "Update" : "Create"}</button>
             </div>
           </div>
         </div>
@@ -110,23 +110,28 @@ export default function CrmContactsPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map((c) => (
-            <button key={c.id} onClick={() => openEdit(c)} className="w-full rounded-xl border border-gray-100 bg-white p-4 text-left transition hover:bg-gray-50">
-              <p className="text-sm font-bold text-gray-900">{c.first_name} {c.last_name}</p>
-              <p className="text-xs text-gray-500">{c.crm_company_name ?? "—"} · {c.job_title ?? ""}</p>
-              <div className="mt-1 flex gap-3">
-                {c.email && <span className="text-xs text-purple-500">{c.email}</span>}
-                {c.phone && <span className="text-xs text-gray-500">{c.phone}</span>}
+          {filtered.map((c, i) => {
+            const colors = ["#6366F1", "#14B8A6", "#F59E0B", "#EF4444", "#8B5CF6", "#10B981"];
+            const color = colors[i % colors.length];
+            return (
+            <button key={c.id} onClick={() => openEdit(c)} className="flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 text-left shadow-sm transition hover:shadow-md">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ backgroundColor: color }}>
+                {c.first_name.charAt(0)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-gray-800">{c.first_name} {c.last_name}</p>
+                <p className="text-xs text-gray-500">{c.job_title ?? ""}{c.job_title && c.crm_company_name ? " · " : ""}{c.crm_company_name ?? ""}</p>
               </div>
               {c.tags && c.tags.length > 0 && (
-                <div className="mt-2 flex gap-1">
-                  {c.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-purple-50 px-2 py-0.5 text-xs text-purple-700">{tag}</span>
+                <div className="flex gap-1">
+                  {c.tags.slice(0, 2).map((tag) => (
+                    <span key={tag} className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs text-indigo-700">{tag}</span>
                   ))}
                 </div>
               )}
             </button>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

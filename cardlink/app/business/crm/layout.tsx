@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const crmNavItems = [
-  { href: "/business/crm", label: "Dashboard", icon: "📊" },
-  { href: "/business/crm/leads", label: "Leads", icon: "🎯" },
-  { href: "/business/crm/deals", label: "Deals", icon: "💰" },
-  { href: "/business/crm/contacts", label: "Contacts", icon: "👤" },
-  { href: "/business/crm/activities", label: "Activities", icon: "📞" },
-  { href: "/business/crm/campaigns", label: "Campaigns", icon: "📧" },
+  { href: "/business/crm", label: "Pipeline" },
+  { href: "/business/crm/leads", label: "Leads" },
+  { href: "/business/crm/deals", label: "Deals" },
+  { href: "/business/crm/contacts", label: "Contacts" },
+  { href: "/business/crm/activities", label: "Activities" },
+  { href: "/business/crm/campaigns", label: "Campaigns" },
 ];
 
 export default function CrmLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +17,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      <div className="flex gap-2 overflow-x-auto pb-1">
         {crmNavItems.map((item) => {
           const isActive =
             item.href === "/business/crm"
@@ -27,13 +27,13 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`whitespace-nowrap rounded-lg px-3 py-1 text-xs font-medium transition ${
                 isActive
-                  ? "bg-purple-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-indigo-100 text-indigo-700"
+                  : "text-gray-500 hover:bg-gray-100"
               }`}
             >
-              {item.icon} {item.label}
+              {item.label}
             </Link>
           );
         })}
