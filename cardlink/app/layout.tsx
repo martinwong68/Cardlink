@@ -34,7 +34,7 @@ export default async function RootLayout({
     <html lang={resolvedLocale}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#7c3aed" />
+        <meta name="theme-color" content="#4F46E5" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta
           name="viewport"
@@ -42,7 +42,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${inter.className} ${inter.variable} min-h-screen bg-gray-50 text-gray-900 antialiased`}
+        className={`${inter.className} ${inter.variable} min-h-screen bg-neutral-50 text-neutral-900 antialiased`}
       >
         <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
           <LoggedInTopHeader />
