@@ -345,20 +345,20 @@ export default function SettingsPage() {
             <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
           </Link>
 
-          {businessEligibility?.eligible ? (
-            <Link
-              href="/business"
-              onClick={handleSwitchToBusiness}
-              className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
-            >
-              <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">{t("links.switchToBusiness")}</div>
-                <div className="text-xs text-gray-500">Switch to Business mode</div>
+          <Link
+            href={businessEligibility?.eligible ? "/business" : "/register-business"}
+            onClick={businessEligibility?.eligible ? handleSwitchToBusiness : undefined}
+            className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+          >
+            <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.switchToBusiness")}</div>
+              <div className="text-xs text-gray-500">
+                {businessEligibility?.eligible ? "Switch to Business mode" : "Create a business account"}
               </div>
-              <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
-            </Link>
-          ) : null}
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+          </Link>
         </div>
       </div>
 

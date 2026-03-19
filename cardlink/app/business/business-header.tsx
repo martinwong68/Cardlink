@@ -8,6 +8,10 @@ import NotificationBell from "@/components/NotificationBell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const sectionLabels: Record<string, string> = {
+  "/business/store": "Store",
+  "/business/ai": "AI",
+  "/business/notifications": "Notifications",
+  "/business/settings": "Settings",
   "/business/accounting": "Accounting",
   "/business/crm": "CRM",
   "/business/company-cards": "Cards",
@@ -15,8 +19,9 @@ const sectionLabels: Record<string, string> = {
   "/business/pos": "POS",
   "/business/inventory": "Inventory",
   "/business/procurement": "Procurement",
-  "/business/owner": "Admin",
-  "/business/settings": "Settings",
+  "/business/cards": "Cards",
+  "/business/hr": "HR",
+  "/business/booking": "Booking",
 };
 
 export default function BusinessHeader({

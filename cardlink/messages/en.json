@@ -630,9 +630,18 @@
       "browseCommunity": "Browse Community"
     },
     "features": {
-      "share": { "title": "Share instantly", "body": "QR, NFC, or link-based cards." },
-      "crm": { "title": "Build CRM", "body": "Save connections with context." },
-      "discover": { "title": "Discover people", "body": "Meet peers in the forum." }
+      "share": {
+        "title": "Share instantly",
+        "body": "QR, NFC, or link-based cards."
+      },
+      "crm": {
+        "title": "Build CRM",
+        "body": "Save connections with context."
+      },
+      "discover": {
+        "title": "Discover people",
+        "body": "Meet peers in the forum."
+      }
     },
     "forum": {
       "kicker": "Latest in the forum",
@@ -1615,6 +1624,629 @@
     },
     "empty": {
       "noPosts": "No posts yet."
+    }
+  },
+  "businessNav": {
+    "business": "Business",
+    "store": "Store",
+    "ai": "AI",
+    "notifications": "Notifications",
+    "settings": "Settings"
+  },
+  "businessHandle": {
+    "brand": "Business Interface",
+    "title": "Business Handle",
+    "subtitle": "Your business command center.",
+    "modules": "Modules",
+    "aiSuggestions": {
+      "title": "AI Suggestions",
+      "empty": "No suggestions yet. Your AI assistant will show action items here."
+    },
+    "moduleNames": {
+      "accounting": "Accounting",
+      "hr": "HR",
+      "booking": "Booking",
+      "inventory": "Inventory",
+      "pos": "POS",
+      "crm": "CRM",
+      "procurement": "Procurement",
+      "companyCards": "Company Cards"
+    },
+    "moduleStats": {
+      "pending": "{count} pending"
+    },
+    "comingSoon": "Coming Soon",
+    "comingSoonDesc": "This module is under development and will be available soon."
+  },
+  "businessStore": {
+    "brand": "Business Interface",
+    "title": "Store",
+    "subtitle": "Build and manage your storefront.",
+    "empty": "Your store is not set up yet. Start building your storefront.",
+    "published": "Published",
+    "draft": "Draft",
+    "publishStore": "Publish Store",
+    "unpublishStore": "Unpublish Store",
+    "publishing": "Updating...",
+    "stats": {
+      "products": "Products",
+      "categories": "Categories",
+      "discounts": "Discounts"
+    },
+    "quickActions": {
+      "setup": "Store Setup",
+      "setupDesc": "Banner, name & hours",
+      "categories": "Categories",
+      "categoriesDesc": "Organize products",
+      "products": "Products",
+      "productsDesc": "Manage catalog",
+      "discounts": "Discounts",
+      "discountsDesc": "Promotions & deals",
+      "settings": "Delivery & Payments",
+      "settingsDesc": "Shipping & payment options"
+    },
+    "preview": {
+      "title": "Store Preview",
+      "noProducts": "No products yet.",
+      "noCategories": "No categories yet.",
+      "allCategories": "All",
+      "discountBadge": "{value}% off",
+      "discountFixedBadge": "${value} off"
+    },
+    "setup": {
+      "title": "Store Setup",
+      "subtitle": "Configure your storefront appearance and hours.",
+      "step1Title": "Branding",
+      "step2Title": "Hours & Theme",
+      "bannerLabel": "Store Banner",
+      "bannerHint": "Recommended: 1200×400px",
+      "uploadBanner": "Upload Banner",
+      "changeBanner": "Change Banner",
+      "removeBanner": "Remove",
+      "storeNameLabel": "Store Name",
+      "storeNamePlaceholder": "My Awesome Store",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Tell customers about your store...",
+      "themeColorLabel": "Theme Color",
+      "operatingHoursLabel": "Operating Hours",
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "closed": "Closed",
+      "open": "Open",
+      "openTime": "Open",
+      "closeTime": "Close",
+      "save": "Save",
+      "saving": "Saving...",
+      "saved": "Saved successfully!",
+      "error": "Failed to save. Please try again.",
+      "back": "Back",
+      "next": "Next"
+    },
+    "categories": {
+      "title": "Categories",
+      "subtitle": "Organize your products into categories.",
+      "addCategory": "Add Category",
+      "editCategory": "Edit Category",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Electronics",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Brief category description...",
+      "iconLabel": "Icon (emoji)",
+      "iconPlaceholder": "📦",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this category?",
+      "deleteWarning": "This category has {count} product(s). They will become uncategorized.",
+      "confirmDelete": "Yes, Delete",
+      "cancelDelete": "Cancel",
+      "empty": "No categories yet. Add your first category.",
+      "productCount": "{count} product(s)",
+      "active": "Active",
+      "inactive": "Inactive",
+      "saved": "Category saved!",
+      "deleted": "Category deleted!",
+      "error": "Something went wrong. Please try again."
+    },
+    "products": {
+      "title": "Products",
+      "subtitle": "Manage your product catalog.",
+      "addProduct": "Add Product",
+      "editProduct": "Edit Product",
+      "allCategories": "All",
+      "step1Title": "Type & Basics",
+      "step2Title": "Details",
+      "step3Title": "Images & Category",
+      "typePhysical": "Physical",
+      "typePhysicalDesc": "Tangible goods that ship",
+      "typeService": "Service",
+      "typeServiceDesc": "Time-based offerings",
+      "typeDigital": "Digital",
+      "typeDigitalDesc": "Downloadable content",
+      "nameLabel": "Product Name",
+      "namePlaceholder": "e.g. Wireless Earbuds",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe your product...",
+      "priceLabel": "Price",
+      "compareAtPriceLabel": "Compare-at Price",
+      "compareAtPriceHint": "Original price before discount",
+      "skuLabel": "SKU",
+      "skuPlaceholder": "e.g. WEB-001",
+      "stockLabel": "Stock Quantity",
+      "weightLabel": "Weight (kg)",
+      "durationLabel": "Duration (minutes)",
+      "availabilityNotesLabel": "Availability Notes",
+      "availabilityNotesPlaceholder": "e.g. Available weekdays 9am-5pm",
+      "fileUrlLabel": "File URL or Upload",
+      "fileUrlPlaceholder": "https://...",
+      "imagesLabel": "Product Images",
+      "uploadImages": "Upload Images",
+      "categoryLabel": "Category",
+      "noCategory": "No category",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this product?",
+      "confirmDelete": "Yes, Delete",
+      "cancelDelete": "Cancel",
+      "empty": "No products yet. Add your first product.",
+      "inStock": "{count} in stock",
+      "lowStock": "Low: {count}",
+      "active": "Active",
+      "inactive": "Inactive",
+      "saved": "Product saved!",
+      "deleted": "Product deleted!",
+      "error": "Something went wrong. Please try again.",
+      "back": "Back",
+      "next": "Next"
+    },
+    "discounts": {
+      "title": "Discounts",
+      "subtitle": "Create promotions and deals.",
+      "addDiscount": "Add Discount",
+      "editDiscount": "Edit Discount",
+      "nameLabel": "Discount Name",
+      "namePlaceholder": "e.g. Summer Sale",
+      "typeLabel": "Discount Type",
+      "typePercentage": "Percentage",
+      "typeFixed": "Fixed Amount",
+      "valueLabel": "Value",
+      "appliesToLabel": "Applies To",
+      "appliesToAll": "All Products",
+      "appliesToCategory": "Specific Category",
+      "appliesToProduct": "Specific Product",
+      "selectCategory": "Select category",
+      "selectProduct": "Select product",
+      "startDateLabel": "Start Date",
+      "endDateLabel": "End Date (optional)",
+      "noExpiry": "No expiry",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this discount?",
+      "confirmDelete": "Yes, Delete",
+      "cancelDelete": "Cancel",
+      "empty": "No discounts yet. Create your first discount.",
+      "percentOff": "{value}% off",
+      "fixedOff": "${value} off",
+      "allProducts": "All products",
+      "categoryTarget": "Category: {name}",
+      "productTarget": "Product: {name}",
+      "active": "Active",
+      "expired": "Expired",
+      "scheduled": "Scheduled",
+      "saved": "Discount saved!",
+      "deleted": "Discount deleted!",
+      "error": "Something went wrong. Please try again."
+    },
+    "storeSettings": {
+      "title": "Delivery & Payments",
+      "subtitle": "Configure delivery and payment options.",
+      "deliveryTitle": "Delivery",
+      "enableDelivery": "Enable Delivery",
+      "deliveryFeeLabel": "Delivery Fee",
+      "freeThresholdLabel": "Free Delivery Threshold",
+      "freeThresholdHint": "Orders above this amount get free delivery",
+      "paymentTitle": "Payment Methods",
+      "cash": "Cash",
+      "bankTransfer": "Bank Transfer",
+      "onlinePayment": "Online Payment",
+      "policiesTitle": "Store Policies",
+      "policiesPlaceholder": "Return policy, terms and conditions...",
+      "save": "Save",
+      "saving": "Saving...",
+      "saved": "Settings saved!",
+      "error": "Failed to save. Please try again."
+    }
+  },
+  "businessAi": {
+    "brand": "Business Interface",
+    "title": "AI Assistant",
+    "subtitle": "Your intelligent business companion.",
+    "empty": "Start a conversation with your AI assistant."
+  },
+  "businessNotifications": {
+    "brand": "Business Interface",
+    "title": "Notifications",
+    "subtitle": "Stay updated on your business activity.",
+    "empty": "No notifications yet."
+  },
+  "businessSettingsOverview": {
+    "title": "Settings",
+    "subtitle": "Manage your business app preferences and configuration.",
+    "cards": {
+      "mainAccount": {
+        "title": "Main Account",
+        "desc": "Manage your primary business account context."
+      },
+      "companyProfile": {
+        "title": "Company Profile",
+        "desc": "Update company details and branding."
+      },
+      "planBilling": {
+        "title": "Plan & Billing",
+        "desc": "View your subscription and manage billing."
+      },
+      "aiPreferences": {
+        "title": "AI Preferences",
+        "desc": "Configure AI assistant behavior and defaults."
+      },
+      "notificationSettings": {
+        "title": "Notifications",
+        "desc": "Control which notifications you receive."
+      },
+      "language": {
+        "title": "Language",
+        "desc": "Change the app display language."
+      },
+      "integrations": {
+        "title": "Integrations",
+        "desc": "Connect third-party services and tools."
+      },
+      "ownerPanel": {
+        "title": "Owner Panel",
+        "desc": "Admin-only settings and controls."
+      }
+    },
+    "switchToClient": "Switch to Client GUI"
+  },
+  "businessRegister": {
+    "back": "Back",
+    "stepIndicator": "Step {current} of {total}",
+    "step1": {
+      "title": "Start Your Business",
+      "subtitle": "Create your business account on Cardlink to unlock powerful tools.",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "e.g. Acme Corp",
+      "companyNameHint": "This is how your business will appear to customers.",
+      "businessType": "Business Type",
+      "businessTypePlaceholder": "Select business type",
+      "businessTypes": {
+        "sole_proprietorship": "Sole Proprietorship",
+        "partnership": "Partnership",
+        "corporation": "Corporation",
+        "llc": "LLC",
+        "nonprofit": "Nonprofit",
+        "cooperative": "Cooperative",
+        "franchise": "Franchise",
+        "other": "Other"
+      },
+      "industry": "Industry",
+      "industryPlaceholder": "Select an industry",
+      "industries": {
+        "retail": "Retail & E-commerce",
+        "food": "Food & Beverage",
+        "services": "Professional Services",
+        "tech": "Technology",
+        "health": "Health & Wellness",
+        "education": "Education",
+        "finance": "Finance & Insurance",
+        "realestate": "Real Estate",
+        "entertainment": "Entertainment & Media",
+        "manufacturing": "Manufacturing",
+        "logistics": "Logistics & Transportation",
+        "agriculture": "Agriculture",
+        "other": "Other"
+      },
+      "next": "Continue"
+    },
+    "step2": {
+      "title": "Business Details",
+      "subtitle": "Tell us more about your business. These fields are optional — you can complete them later.",
+      "registrationNumber": "Registration Number",
+      "registrationNumberPlaceholder": "e.g. 12345678",
+      "registrationNumberHint": "Your official company registration or business license number.",
+      "taxId": "Tax ID / VAT Number",
+      "taxIdPlaceholder": "e.g. XX-XXXXXXX",
+      "foundedDate": "Founded Date",
+      "employeeRange": "Employee Count",
+      "employeeRangePlaceholder": "Select range",
+      "employees": "employees",
+      "website": "Website",
+      "optional": "All fields on this step are optional. You can update them later in Settings.",
+      "next": "Continue"
+    },
+    "step3": {
+      "title": "Address & Contact",
+      "subtitle": "How can customers and partners reach your business?",
+      "email": "Business Email",
+      "emailPlaceholder": "hello@company.com",
+      "phone": "Business Phone",
+      "phonePlaceholder": "+1 (555) 000-0000",
+      "addressSection": "Business Address",
+      "addressLine1": "Address Line 1",
+      "addressLine1Placeholder": "Street address",
+      "addressLine2": "Address Line 2",
+      "addressLine2Placeholder": "Suite, unit, floor (optional)",
+      "city": "City",
+      "cityPlaceholder": "City",
+      "stateProvince": "State / Province",
+      "stateProvincePlaceholder": "State",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "Zip / Postal",
+      "country": "Country",
+      "countryPlaceholder": "Country",
+      "next": "Continue"
+    },
+    "step4": {
+      "title": "Choose Your Plan",
+      "subtitle": "Select a plan that fits your business needs. You can upgrade anytime.",
+      "free": {
+        "name": "Starter",
+        "price": "Free",
+        "period": "forever",
+        "features": [
+          "1 team member",
+          "Basic modules",
+          "Community support",
+          "100 transactions/mo"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$29",
+        "period": "/month",
+        "features": [
+          "5 team members",
+          "All modules",
+          "Priority support",
+          "Unlimited transactions",
+          "AI assistant"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "contact us",
+        "features": [
+          "Unlimited team",
+          "All modules + API",
+          "Dedicated support",
+          "Custom integrations",
+          "White-label options"
+        ]
+      },
+      "popular": "Most Popular",
+      "next": "Continue"
+    },
+    "step5": {
+      "title": "Review & Create",
+      "subtitle": "Review your details and create your business account.",
+      "companySection": "Company Info",
+      "companyNameLabel": "Company Name",
+      "businessTypeLabel": "Business Type",
+      "industryLabel": "Industry",
+      "contactSection": "Contact & Address",
+      "addressLabel": "Address",
+      "planSection": "Plan",
+      "planLabel": "Plan",
+      "create": "Create Business Account",
+      "creating": "Creating...",
+      "terms": "By creating an account, you agree to the Cardlink Business Terms of Service.",
+      "success": "Business account created! Redirecting...",
+      "error": "Something went wrong. Please try again."
+    }
+  },
+  "registerCompany": {
+    "pageTitle": "Register Your Company",
+    "back": "Back",
+    "next": "Next",
+    "stepOf": "Step {current} of {total}",
+    "step1": {
+      "title": "Choose Your Plan",
+      "subtitle": "Select the plan that best fits your business. You can upgrade or downgrade anytime.",
+      "selectPlan": "Select Plan",
+      "selected": "Selected",
+      "perMonth": "/mo",
+      "perYear": "/yr",
+      "plans": {
+        "free": {
+          "name": "Free",
+          "emoji": "🆓"
+        },
+        "professional": {
+          "name": "Professional",
+          "emoji": "💼"
+        },
+        "business": {
+          "name": "Business",
+          "emoji": "🏢"
+        }
+      },
+      "features": {
+        "aiActions": "AI Actions",
+        "aiChat": "AI Chat",
+        "companies": "Companies",
+        "users": "Users",
+        "storage": "Storage",
+        "modules": "Modules",
+        "store": "Store",
+        "pdfExport": "PDF Export",
+        "docOcr": "Doc OCR",
+        "support": "Support"
+      },
+      "featureValues": {
+        "none": "None",
+        "unlimited": "Unlimited",
+        "core": "Core",
+        "allPlusAi": "All + AI",
+        "allPlusCustomAi": "All + Custom AI",
+        "basic": "Basic",
+        "full": "Full",
+        "fullAnalytics": "Full + Analytics",
+        "community": "Community",
+        "email": "Email",
+        "priority": "Priority"
+      },
+      "aiCredits": {
+        "title": "Need more AI power?",
+        "subtitle": "Purchase additional AI action credits anytime.",
+        "pack100": "100 AI Actions",
+        "pack100Price": "$5",
+        "pack500": "500 AI Actions",
+        "pack500Price": "$20",
+        "pack500Save": "Save 20%",
+        "pack2000": "2,000 AI Actions",
+        "pack2000Price": "$60",
+        "pack2000Save": "Save 40%"
+      }
+    },
+    "step2a": {
+      "title": "Basic Information",
+      "subtitle": "Tell us about your company.",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "e.g. Acme Corp Sdn Bhd",
+      "registrationNumber": "Registration Number (SSM/BR)",
+      "registrationNumberPlaceholder": "e.g. 202301012345",
+      "industry": "Industry",
+      "industryPlaceholder": "Select industry",
+      "industries": {
+        "retail": "Retail",
+        "fnb": "F&B",
+        "services": "Services",
+        "manufacturing": "Manufacturing",
+        "technology": "Technology",
+        "healthcare": "Healthcare",
+        "education": "Education",
+        "construction": "Construction",
+        "professional": "Professional Services",
+        "other": "Other"
+      },
+      "companySize": "Company Size",
+      "companySizePlaceholder": "Select size",
+      "sizes": {
+        "1-5": "1–5 employees",
+        "6-20": "6–20 employees",
+        "21-50": "21–50 employees",
+        "50+": "50+ employees"
+      },
+      "yearEstablished": "Year Established",
+      "yearEstablishedPlaceholder": "e.g. 2020"
+    },
+    "step2b": {
+      "title": "Address & Contact",
+      "subtitle": "Where is your company located?",
+      "addressLine1": "Address Line 1",
+      "addressLine1Placeholder": "Street address",
+      "addressLine2": "Address Line 2",
+      "addressLine2Placeholder": "Suite, unit, floor (optional)",
+      "city": "City",
+      "cityPlaceholder": "City",
+      "stateRegion": "State / Region",
+      "stateRegionPlaceholder": "State or region",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "Postal code",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "countries": {
+        "MY": "Malaysia",
+        "HK": "Hong Kong",
+        "SG": "Singapore",
+        "other": "Other"
+      },
+      "phone": "Business Phone",
+      "phonePlaceholder": "+60 12-345 6789",
+      "email": "Business Email",
+      "emailPlaceholder": "hello@company.com",
+      "website": "Website",
+      "websitePlaceholder": "https://company.com"
+    },
+    "step3": {
+      "title": "Financial Settings",
+      "subtitle": "Configure your accounting defaults.",
+      "defaultCurrency": "Default Currency",
+      "currencies": {
+        "MYR": "MYR — Malaysian Ringgit",
+        "HKD": "HKD — Hong Kong Dollar",
+        "SGD": "SGD — Singapore Dollar",
+        "USD": "USD — US Dollar"
+      },
+      "taxRegistrationNumber": "Tax Registration Number",
+      "taxRegistrationNumberPlaceholder": "e.g. MY-12345678",
+      "taxRate": "Tax Rate (%)",
+      "taxRatePlaceholder": "e.g. 6",
+      "fiscalYearEnd": "Fiscal Year End",
+      "fiscalYearEndPlaceholder": "Select month",
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "accountingBasis": "Accounting Basis",
+      "accountingBasisPlaceholder": "Select basis",
+      "bases": {
+        "cash": "Cash Basis",
+        "accrual": "Accrual Basis"
+      }
+    },
+    "step4": {
+      "title": "Branding & Modules",
+      "subtitle": "Upload your logo and choose which modules to enable.",
+      "companyLogo": "Company Logo",
+      "uploadLogo": "Upload Logo",
+      "coverImage": "Cover / Banner Image",
+      "uploadCover": "Upload Banner",
+      "changeImage": "Change",
+      "modules": "Enable Modules",
+      "moduleNames": {
+        "accounting": "Accounting",
+        "hr": "HR & Payroll",
+        "booking": "Booking",
+        "inventory": "Inventory",
+        "pos": "POS",
+        "crm": "CRM",
+        "procurement": "Procurement"
+      },
+      "alwaysOn": "Always on",
+      "submit": "Register Company",
+      "submitting": "Registering...",
+      "success": "Company registered! Redirecting...",
+      "error": "Failed to register. Please try again."
+    },
+    "validation": {
+      "required": "This field is required",
+      "companyNameMin": "Company name must be at least 2 characters",
+      "invalidEmail": "Invalid email address",
+      "invalidPhone": "Invalid phone number"
     }
   }
 }

@@ -27,17 +27,7 @@ export default async function BusinessLayout({
 
   const eligibility = await resolveBusinessEligibility(supabase, user);
   if (!eligibility.eligible) {
-    console.info("interface.telemetry", {
-      contract: "interface.switching.events.v1",
-      event_name: "route.guard.redirected",
-      from_interface: "business",
-      to_interface: "client",
-      eligibility_result: "denied",
-      reason_code: eligibility.reasonCode,
-      timestamp: new Date().toISOString(),
-      source: "business.layout",
-    });
-    redirect("/dashboard/settings?notice=business-access-denied");
+    redirect("/register-business");
   }
 
   const { data: profileData } = await supabase

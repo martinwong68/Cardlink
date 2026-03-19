@@ -630,9 +630,18 @@
       "browseCommunity": "瀏覽社群"
     },
     "features": {
-      "share": { "title": "即時分享", "body": "QR、NFC 或連結名片。" },
-      "crm": { "title": "建立 CRM", "body": "保存並管理連結關係。" },
-      "discover": { "title": "發掘人脈", "body": "在論壇結識同行。" }
+      "share": {
+        "title": "即時分享",
+        "body": "QR、NFC 或連結名片。"
+      },
+      "crm": {
+        "title": "建立 CRM",
+        "body": "保存並管理連結關係。"
+      },
+      "discover": {
+        "title": "發掘人脈",
+        "body": "在論壇結識同行。"
+      }
     },
     "forum": {
       "kicker": "論壇最新",
@@ -1615,6 +1624,428 @@
     },
     "empty": {
       "noPosts": "目前尚無貼文。"
+    }
+  },
+  "businessNav": {
+    "business": "業務",
+    "store": "商店",
+    "ai": "AI",
+    "notifications": "通知",
+    "settings": "設定"
+  },
+  "businessHandle": {
+    "brand": "商業介面",
+    "title": "業務總覽",
+    "subtitle": "您的商業指揮中心。",
+    "modules": "模組",
+    "aiSuggestions": {
+      "title": "AI 建議",
+      "empty": "暫無建議。您的 AI 助手將在此顯示待辦事項。"
+    },
+    "moduleNames": {
+      "accounting": "會計",
+      "hr": "人力資源",
+      "booking": "預約",
+      "inventory": "庫存",
+      "pos": "銷售點",
+      "crm": "客戶管理",
+      "procurement": "採購",
+      "companyCards": "公司卡片"
+    },
+    "moduleStats": {
+      "pending": "{count} 待處理"
+    },
+    "comingSoon": "即將推出",
+    "comingSoonDesc": "此模組正在開發中，即將推出。"
+  },
+  "businessStore": {
+    "brand": "商業介面",
+    "title": "商店",
+    "subtitle": "建立和管理您的店面。",
+    "empty": "您的商店尚未設定。開始建立您的店面。",
+    "published": "已發佈",
+    "draft": "草稿",
+    "publishStore": "發佈商店",
+    "unpublishStore": "取消發佈",
+    "publishing": "更新中...",
+    "stats": { "products": "商品", "categories": "分類", "discounts": "優惠" },
+    "quickActions": { "setup": "商店設定", "setupDesc": "橫幅、名稱與營業時間", "categories": "分類", "categoriesDesc": "組織商品", "products": "商品", "productsDesc": "管理目錄", "discounts": "優惠", "discountsDesc": "促銷與折扣", "settings": "配送與付款", "settingsDesc": "運費與付款選項" },
+    "preview": { "title": "商店預覽", "noProducts": "暫無商品。", "noCategories": "暫無分類。", "allCategories": "全部", "discountBadge": "{value}% 折扣", "discountFixedBadge": "減 ${value}" },
+    "setup": { "title": "商店設定", "subtitle": "設定您的店面外觀與營業時間。", "step1Title": "品牌形象", "step2Title": "時間與主題", "bannerLabel": "商店橫幅", "bannerHint": "建議：1200×400px", "uploadBanner": "上傳橫幅", "changeBanner": "更換橫幅", "removeBanner": "移除", "storeNameLabel": "商店名稱", "storeNamePlaceholder": "我的商店", "descriptionLabel": "描述", "descriptionPlaceholder": "向顧客介紹您的商店...", "themeColorLabel": "主題色", "operatingHoursLabel": "營業時間", "days": { "monday": "星期一", "tuesday": "星期二", "wednesday": "星期三", "thursday": "星期四", "friday": "星期五", "saturday": "星期六", "sunday": "星期日" }, "closed": "休息", "open": "營業", "openTime": "開始", "closeTime": "結束", "save": "儲存", "saving": "儲存中...", "saved": "已儲存！", "error": "儲存失敗，請重試。", "back": "返回", "next": "下一步" },
+    "categories": { "title": "分類", "subtitle": "將商品組織到分類中。", "addCategory": "新增分類", "editCategory": "編輯分類", "nameLabel": "名稱", "namePlaceholder": "例如：電子產品", "descriptionLabel": "描述", "descriptionPlaceholder": "簡短分類描述...", "iconLabel": "圖示（表情符號）", "iconPlaceholder": "📦", "save": "儲存", "saving": "儲存中...", "cancel": "取消", "delete": "刪除", "deleteConfirm": "確定刪除此分類？", "deleteWarning": "此分類有 {count} 個商品，將變為未分類。", "confirmDelete": "確定刪除", "cancelDelete": "取消", "empty": "暫無分類。新增您的第一個分類。", "productCount": "{count} 個商品", "active": "啟用", "inactive": "停用", "saved": "分類已儲存！", "deleted": "分類已刪除！", "error": "發生錯誤，請重試。" },
+    "products": { "title": "商品", "subtitle": "管理您的商品目錄。", "addProduct": "新增商品", "editProduct": "編輯商品", "allCategories": "全部", "step1Title": "類型與基本資訊", "step2Title": "詳細資訊", "step3Title": "圖片與分類", "typePhysical": "實物商品", "typePhysicalDesc": "需要配送的商品", "typeService": "服務", "typeServiceDesc": "按時間計費", "typeDigital": "數碼商品", "typeDigitalDesc": "可下載內容", "nameLabel": "商品名稱", "namePlaceholder": "例如：無線耳機", "descriptionLabel": "描述", "descriptionPlaceholder": "描述您的商品...", "priceLabel": "價格", "compareAtPriceLabel": "原價", "compareAtPriceHint": "折扣前原價", "skuLabel": "SKU", "skuPlaceholder": "例如：WEB-001", "stockLabel": "庫存數量", "weightLabel": "重量（公斤）", "durationLabel": "時長（分鐘）", "availabilityNotesLabel": "可用性說明", "availabilityNotesPlaceholder": "例如：週一至週五 9am-5pm", "fileUrlLabel": "檔案網址或上傳", "fileUrlPlaceholder": "https://...", "imagesLabel": "商品圖片", "uploadImages": "上傳圖片", "categoryLabel": "分類", "noCategory": "無分類", "save": "儲存", "saving": "儲存中...", "cancel": "取消", "delete": "刪除", "deleteConfirm": "確定刪除此商品？", "confirmDelete": "確定刪除", "cancelDelete": "取消", "empty": "暫無商品。新增您的第一個商品。", "inStock": "庫存 {count}", "lowStock": "低庫存：{count}", "active": "啟用", "inactive": "停用", "saved": "商品已儲存！", "deleted": "商品已刪除！", "error": "發生錯誤，請重試。", "back": "返回", "next": "下一步" },
+    "discounts": { "title": "優惠", "subtitle": "建立促銷與折扣。", "addDiscount": "新增優惠", "editDiscount": "編輯優惠", "nameLabel": "優惠名稱", "namePlaceholder": "例如：夏季特賣", "typeLabel": "優惠類型", "typePercentage": "百分比", "typeFixed": "固定金額", "valueLabel": "數值", "appliesToLabel": "適用範圍", "appliesToAll": "所有商品", "appliesToCategory": "特定分類", "appliesToProduct": "特定商品", "selectCategory": "選擇分類", "selectProduct": "選擇商品", "startDateLabel": "開始日期", "endDateLabel": "結束日期（選填）", "noExpiry": "無期限", "save": "儲存", "saving": "儲存中...", "cancel": "取消", "delete": "刪除", "deleteConfirm": "確定刪除此優惠？", "confirmDelete": "確定刪除", "cancelDelete": "取消", "empty": "暫無優惠。建立您的第一個優惠。", "percentOff": "{value}% 折扣", "fixedOff": "減 ${value}", "allProducts": "所有商品", "categoryTarget": "分類：{name}", "productTarget": "商品：{name}", "active": "啟用", "expired": "已過期", "scheduled": "已排程", "saved": "優惠已儲存！", "deleted": "優惠已刪除！", "error": "發生錯誤，請重試。" },
+    "storeSettings": { "title": "配送與付款", "subtitle": "設定配送與付款選項。", "deliveryTitle": "配送", "enableDelivery": "啟用配送", "deliveryFeeLabel": "配送費", "freeThresholdLabel": "免運門檻", "freeThresholdHint": "超過此金額免運費", "paymentTitle": "付款方式", "cash": "現金", "bankTransfer": "銀行轉賬", "onlinePayment": "網上付款", "policiesTitle": "商店政策", "policiesPlaceholder": "退換貨政策、條款...", "save": "儲存", "saving": "儲存中...", "saved": "設定已儲存！", "error": "儲存失敗，請重試。" }
+  },
+  "businessAi": {
+    "brand": "商業介面",
+    "title": "AI 助手",
+    "subtitle": "您的智能商業夥伴。",
+    "empty": "與您的 AI 助手開始對話。"
+  },
+  "businessNotifications": {
+    "brand": "商業介面",
+    "title": "通知",
+    "subtitle": "隨時掌握您的業務動態。",
+    "empty": "暫無通知。"
+  },
+  "businessSettingsOverview": {
+    "title": "設定",
+    "subtitle": "管理您的商業應用偏好和配置。",
+    "cards": {
+      "mainAccount": {
+        "title": "主帳戶",
+        "desc": "管理您的主要商業帳戶。"
+      },
+      "companyProfile": {
+        "title": "公司檔案",
+        "desc": "更新公司資料和品牌。"
+      },
+      "planBilling": {
+        "title": "方案與帳單",
+        "desc": "查看訂閱和管理帳單。"
+      },
+      "aiPreferences": {
+        "title": "AI 偏好",
+        "desc": "配置 AI 助手行為和預設值。"
+      },
+      "notificationSettings": {
+        "title": "通知",
+        "desc": "控制接收的通知。"
+      },
+      "language": {
+        "title": "語言",
+        "desc": "更改應用顯示語言。"
+      },
+      "integrations": {
+        "title": "整合",
+        "desc": "連接第三方服務和工具。"
+      },
+      "ownerPanel": {
+        "title": "管理員面板",
+        "desc": "僅限管理員的設定和控制。"
+      }
+    },
+    "switchToClient": "切換到客戶介面"
+  },
+  "businessRegister": {
+    "back": "返回",
+    "stepIndicator": "第 {current} 步（共 {total} 步）",
+    "step1": {
+      "title": "開始您的業務",
+      "subtitle": "在 Cardlink 上創建商業帳戶，解鎖強大工具。",
+      "companyName": "公司名稱",
+      "companyNamePlaceholder": "例如：Acme 公司",
+      "companyNameHint": "這是您的公司向客戶展示的名稱。",
+      "businessType": "企業類型",
+      "businessTypePlaceholder": "選擇企業類型",
+      "businessTypes": {
+        "sole_proprietorship": "獨資企業",
+        "partnership": "合夥企業",
+        "corporation": "股份有限公司",
+        "llc": "有限責任公司",
+        "nonprofit": "非牟利機構",
+        "cooperative": "合作社",
+        "franchise": "特許經營",
+        "other": "其他"
+      },
+      "industry": "行業",
+      "industryPlaceholder": "選擇行業",
+      "industries": {
+        "retail": "零售與電商",
+        "food": "餐飲",
+        "services": "專業服務",
+        "tech": "科技",
+        "health": "健康與保健",
+        "education": "教育",
+        "finance": "金融與保險",
+        "realestate": "房地產",
+        "entertainment": "娛樂與媒體",
+        "manufacturing": "製造業",
+        "logistics": "物流與運輸",
+        "agriculture": "農業",
+        "other": "其他"
+      },
+      "next": "繼續"
+    },
+    "step2": {
+      "title": "商業詳情",
+      "subtitle": "告訴我們更多關於您的企業。呢啲欄位為選填——您可以稍後完善。",
+      "registrationNumber": "商業登記號碼",
+      "registrationNumberPlaceholder": "例如：12345678",
+      "registrationNumberHint": "您的官方公司註冊或商業登記號碼。",
+      "taxId": "稅務編號",
+      "taxIdPlaceholder": "例如：12345678",
+      "foundedDate": "成立日期",
+      "employeeRange": "員工人數",
+      "employeeRangePlaceholder": "選擇範圍",
+      "employees": "人",
+      "website": "網站",
+      "optional": "此步驟所有欄位皆為選填。您可以稍後喺設定中更新。",
+      "next": "繼續"
+    },
+    "step3": {
+      "title": "地址與聯繫方式",
+      "subtitle": "客戶同合作夥伴點樣聯繫您的企業？",
+      "email": "商業電郵",
+      "emailPlaceholder": "hello@company.com",
+      "phone": "商業電話",
+      "phonePlaceholder": "+852 1234 5678",
+      "addressSection": "商業地址",
+      "addressLine1": "地址第一行",
+      "addressLine1Placeholder": "街道地址",
+      "addressLine2": "地址第二行",
+      "addressLine2Placeholder": "樓層、單位（選填）",
+      "city": "城市",
+      "cityPlaceholder": "城市",
+      "stateProvince": "地區",
+      "stateProvincePlaceholder": "地區",
+      "postalCode": "郵政編碼",
+      "postalCodePlaceholder": "郵政編碼",
+      "country": "國家",
+      "countryPlaceholder": "國家",
+      "next": "繼續"
+    },
+    "step4": {
+      "title": "選擇方案",
+      "subtitle": "選擇適合您業務需求的方案。您可以隨時升級。",
+      "free": {
+        "name": "入門版",
+        "price": "免費",
+        "period": "永久",
+        "features": [
+          "1 位團隊成員",
+          "基本模組",
+          "社群支援",
+          "每月 100 筆交易"
+        ]
+      },
+      "pro": {
+        "name": "專業版",
+        "price": "$29",
+        "period": "/月",
+        "features": [
+          "5 位團隊成員",
+          "所有模組",
+          "優先支援",
+          "無限交易",
+          "AI 助手"
+        ]
+      },
+      "enterprise": {
+        "name": "企業版",
+        "price": "自訂",
+        "period": "聯繫我們",
+        "features": [
+          "無限團隊",
+          "所有模組 + API",
+          "專屬支援",
+          "自訂整合",
+          "白標選項"
+        ]
+      },
+      "popular": "最受歡迎",
+      "next": "繼續"
+    },
+    "step5": {
+      "title": "確認並創建",
+      "subtitle": "確認您的資料並創建商業帳戶。",
+      "companySection": "公司資訊",
+      "companyNameLabel": "公司名稱",
+      "businessTypeLabel": "企業類型",
+      "industryLabel": "行業",
+      "contactSection": "聯繫方式與地址",
+      "addressLabel": "地址",
+      "planSection": "方案",
+      "planLabel": "方案",
+      "create": "創建商業帳戶",
+      "creating": "創建中...",
+      "terms": "創建帳戶即表示您同意 Cardlink 商業服務條款。",
+      "success": "商業帳戶已創建！正在跳轉...",
+      "error": "發生錯誤，請重試。"
+    }
+  },
+  "registerCompany": {
+    "pageTitle": "註冊您嘅公司",
+    "back": "返回",
+    "next": "下一步",
+    "stepOf": "第 {current} 步，共 {total} 步",
+    "step1": {
+      "title": "揀選方案",
+      "subtitle": "揀選最適合您企業嘅方案，隨時可升級或降級。",
+      "selectPlan": "揀選方案",
+      "selected": "已揀選",
+      "perMonth": "/月",
+      "perYear": "/年",
+      "plans": {
+        "free": { "name": "免費版", "emoji": "🆓" },
+        "professional": { "name": "專業版", "emoji": "💼" },
+        "business": { "name": "企業版", "emoji": "🏢" }
+      },
+      "features": {
+        "aiActions": "AI 操作",
+        "aiChat": "AI 聊天",
+        "companies": "公司數",
+        "users": "用戶數",
+        "storage": "儲存空間",
+        "modules": "模組",
+        "store": "商店",
+        "pdfExport": "PDF 匯出",
+        "docOcr": "文件 OCR",
+        "support": "支援"
+      },
+      "featureValues": {
+        "none": "無",
+        "unlimited": "無限",
+        "core": "基礎",
+        "allPlusAi": "全部 + AI",
+        "allPlusCustomAi": "全部 + 自訂 AI",
+        "basic": "基本",
+        "full": "完整",
+        "fullAnalytics": "完整 + 分析",
+        "community": "社群",
+        "email": "電子郵件",
+        "priority": "優先"
+      },
+      "aiCredits": {
+        "title": "需要更多 AI 能力？",
+        "subtitle": "隨時購買額外嘅 AI 操作點數。",
+        "pack100": "100 次 AI 操作",
+        "pack100Price": "$5",
+        "pack500": "500 次 AI 操作",
+        "pack500Price": "$20",
+        "pack500Save": "慳 20%",
+        "pack2000": "2,000 次 AI 操作",
+        "pack2000Price": "$60",
+        "pack2000Save": "慳 40%"
+      }
+    },
+    "step2a": {
+      "title": "基本資料",
+      "subtitle": "話畀我哋知關於您嘅公司。",
+      "companyName": "公司名稱",
+      "companyNamePlaceholder": "例如：香港科技有限公司",
+      "registrationNumber": "統一編號（SSM/BR）",
+      "registrationNumberPlaceholder": "例如：12345678",
+      "industry": "行業",
+      "industryPlaceholder": "揀選行業",
+      "industries": {
+        "retail": "零售",
+        "fnb": "餐飲",
+        "services": "服務",
+        "manufacturing": "製造",
+        "technology": "科技",
+        "healthcare": "醫療",
+        "education": "教育",
+        "construction": "建築",
+        "professional": "專業服務",
+        "other": "其他"
+      },
+      "companySize": "公司規模",
+      "companySizePlaceholder": "揀選規模",
+      "sizes": {
+        "1-5": "1–5 名員工",
+        "6-20": "6–20 名員工",
+        "21-50": "21–50 名員工",
+        "50+": "50+ 名員工"
+      },
+      "yearEstablished": "成立年份",
+      "yearEstablishedPlaceholder": "例如：2020"
+    },
+    "step2b": {
+      "title": "地址與聯絡方式",
+      "subtitle": "您嘅公司喺邊度？",
+      "addressLine1": "地址第一行",
+      "addressLine1Placeholder": "街道地址",
+      "addressLine2": "地址第二行",
+      "addressLine2Placeholder": "套房、單位、樓層（選填）",
+      "city": "城市",
+      "cityPlaceholder": "城市",
+      "stateRegion": "州 / 地區",
+      "stateRegionPlaceholder": "州或地區",
+      "postalCode": "郵遞區號",
+      "postalCodePlaceholder": "郵遞區號",
+      "country": "國家",
+      "countryPlaceholder": "揀選國家",
+      "countries": {
+        "MY": "馬來西亞",
+        "HK": "香港",
+        "SG": "新加坡",
+        "other": "其他"
+      },
+      "phone": "公司電話",
+      "phonePlaceholder": "+60 12-345 6789",
+      "email": "公司電子郵件",
+      "emailPlaceholder": "hello@company.com",
+      "website": "網站",
+      "websitePlaceholder": "https://company.com"
+    },
+    "step3": {
+      "title": "財務設定",
+      "subtitle": "設定您嘅會計預設值。",
+      "defaultCurrency": "預設貨幣",
+      "currencies": {
+        "MYR": "MYR — 馬來西亞令吉",
+        "HKD": "HKD — 港幣",
+        "SGD": "SGD — 新加坡元",
+        "USD": "USD — 美元"
+      },
+      "taxRegistrationNumber": "稅務登記號碼",
+      "taxRegistrationNumberPlaceholder": "例如：MY-12345678",
+      "taxRate": "稅率 (%)",
+      "taxRatePlaceholder": "例如：6",
+      "fiscalYearEnd": "財政年度結束月份",
+      "fiscalYearEndPlaceholder": "揀選月份",
+      "months": {
+        "january": "一月",
+        "february": "二月",
+        "march": "三月",
+        "april": "四月",
+        "may": "五月",
+        "june": "六月",
+        "july": "七月",
+        "august": "八月",
+        "september": "九月",
+        "october": "十月",
+        "november": "十一月",
+        "december": "十二月"
+      },
+      "accountingBasis": "會計基礎",
+      "accountingBasisPlaceholder": "揀選基礎",
+      "bases": {
+        "cash": "現金基礎",
+        "accrual": "權責發生制"
+      }
+    },
+    "step4": {
+      "title": "品牌與模組",
+      "subtitle": "上載您嘅標誌並揀選要啟用嘅模組。",
+      "companyLogo": "公司標誌",
+      "uploadLogo": "上載標誌",
+      "coverImage": "封面 / 橫幅圖片",
+      "uploadCover": "上載橫幅",
+      "changeImage": "更換",
+      "modules": "啟用模組",
+      "moduleNames": {
+        "accounting": "會計",
+        "hr": "人資與薪資",
+        "booking": "預約",
+        "inventory": "庫存",
+        "pos": "POS",
+        "crm": "CRM",
+        "procurement": "採購"
+      },
+      "alwaysOn": "永遠開啟",
+      "submit": "註冊公司",
+      "submitting": "註冊中...",
+      "success": "公司已註冊！正在跳轉...",
+      "error": "註冊失敗，請重試。"
+    },
+    "validation": {
+      "required": "此欄位為必填",
+      "companyNameMin": "公司名稱至少需要 2 個字元",
+      "invalidEmail": "電子郵件地址無效",
+      "invalidPhone": "電話號碼無效"
     }
   }
 }
