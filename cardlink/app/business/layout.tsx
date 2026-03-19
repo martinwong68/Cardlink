@@ -60,7 +60,7 @@ export default async function BusinessLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-10">
-      <BusinessHeader userId={user.id} activeCompanyName={activeCompanyName} />
+      <BusinessHeader userId={user.id} activeCompanyName={activeCompanyName} activeCompanyId={activeCompanyId} />
       <div className="mx-auto max-w-5xl flex gap-6 px-4 py-6">
         <BusinessNav
           isMasterUser={eligibility.isMasterUser}

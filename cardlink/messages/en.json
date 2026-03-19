@@ -1879,7 +1879,29 @@
     "brand": "Business Interface",
     "title": "Notifications",
     "subtitle": "Stay updated on your business activity.",
-    "empty": "No notifications yet."
+    "empty": "No notifications yet.",
+    "emptyDesc": "Business events like orders, stock alerts, and AI suggestions will appear here.",
+    "markAllRead": "Mark all read",
+    "filters": {
+      "all": "All",
+      "orders": "Orders",
+      "stock": "Stock",
+      "ai": "AI",
+      "system": "System"
+    },
+    "types": {
+      "new_order": "New Order",
+      "low_stock": "Low Stock",
+      "new_connection": "New Connection",
+      "invoice_overdue": "Invoice Overdue",
+      "payment_received": "Payment Received",
+      "booking_new": "New Booking",
+      "ai_suggestion": "AI Suggestion",
+      "system": "System"
+    },
+    "bell": {
+      "viewAll": "View all notifications"
+    }
   },
   "businessSettingsOverview": {
     "title": "Settings",

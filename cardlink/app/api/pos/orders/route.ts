@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
+import { notifyNewOrderServer } from "@/src/lib/business-notifications-server";
 
 export async function GET(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
@@ -64,6 +65,17 @@ export async function POST(request: Request) {
       subtotal: li.total,
     }));
     await supabase.from("pos_order_items").insert(items);
+  }
+
+  // Notify new order
+  if (order) {
+    void notifyNewOrderServer(
+      supabase,
+      guard.context.activeCompanyId,
+      guard.context.user.id,
+      order.id as string,
+      Number(order.total ?? 0)
+    );
   }
 
   return NextResponse.json({

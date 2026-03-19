@@ -1687,7 +1687,29 @@
     "brand": "商业界面",
     "title": "通知",
     "subtitle": "随时掌握您的业务动态。",
-    "empty": "暂无通知。"
+    "empty": "暂无通知。",
+    "emptyDesc": "订单、库存警报和 AI 建议等商业事件将显示在这里。",
+    "markAllRead": "全部标为已读",
+    "filters": {
+      "all": "全部",
+      "orders": "订单",
+      "stock": "库存",
+      "ai": "AI",
+      "system": "系统"
+    },
+    "types": {
+      "new_order": "新订单",
+      "low_stock": "库存不足",
+      "new_connection": "新连接",
+      "invoice_overdue": "发票逾期",
+      "payment_received": "收到付款",
+      "booking_new": "新预约",
+      "ai_suggestion": "AI 建议",
+      "system": "系统"
+    },
+    "bell": {
+      "viewAll": "查看所有通知"
+    }
   },
   "businessSettingsOverview": {
     "title": "设置",

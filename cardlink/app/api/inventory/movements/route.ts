@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
+import { notifyLowStockServer } from "@/src/lib/business-notifications-server";
 
 type MovementDraft = {
   company_id?: string;
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: productRow, error: productError } = await supabase
     .from("inv_products")
-    .select("id")
+    .select("id, name, reorder_level")
     .eq("id", body.product_id)
     .eq("company_id", guard.context.activeCompanyId)
     .maybeSingle();
@@ -90,6 +91,20 @@ export async function POST(request: Request) {
   const result = Array.isArray(data) ? data[0] : data;
   if (!result) {
     return NextResponse.json({ error: "movement write failed." }, { status: 500 });
+  }
+
+  // Low stock notification check
+  const balanceOnHand = Number(result.balance_on_hand ?? 0);
+  const reorderLevel = Number(productRow?.reorder_level ?? 5);
+  if (balanceOnHand <= reorderLevel && productRow) {
+    void notifyLowStockServer(
+      supabase,
+      guard.context.activeCompanyId,
+      guard.context.user.id,
+      body.product_id!,
+      String(productRow.name),
+      balanceOnHand
+    );
   }
 
   return NextResponse.json(

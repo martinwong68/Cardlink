@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, ChevronRight, Globe } from "lucide-react";
 
-import NotificationBell from "@/components/NotificationBell";
+import BusinessNotificationBell from "@/components/business/BusinessNotificationBell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const sectionLabels: Record<string, string> = {
@@ -27,9 +27,11 @@ const sectionLabels: Record<string, string> = {
 export default function BusinessHeader({
   userId,
   activeCompanyName,
+  activeCompanyId,
 }: {
   userId: string;
   activeCompanyName: string | null;
+  activeCompanyId: string | null;
 }) {
   const pathname = usePathname() ?? "";
 
@@ -52,7 +54,7 @@ export default function BusinessHeader({
         </div>
         <div className="flex items-center gap-2">
           <LanguageSwitcher compact />
-          <NotificationBell userId={userId} />
+          <BusinessNotificationBell userId={userId} companyId={activeCompanyId} />
           <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
             B
           </div>

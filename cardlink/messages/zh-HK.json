@@ -1687,7 +1687,29 @@
     "brand": "商業介面",
     "title": "通知",
     "subtitle": "隨時掌握您的業務動態。",
-    "empty": "暫無通知。"
+    "empty": "暫無通知。",
+    "emptyDesc": "訂單、庫存警報和 AI 建議等商業事件將顯示在這裡。",
+    "markAllRead": "全部標為已讀",
+    "filters": {
+      "all": "全部",
+      "orders": "訂單",
+      "stock": "庫存",
+      "ai": "AI",
+      "system": "系統"
+    },
+    "types": {
+      "new_order": "新訂單",
+      "low_stock": "庫存不足",
+      "new_connection": "新連結",
+      "invoice_overdue": "發票逾期",
+      "payment_received": "收到付款",
+      "booking_new": "新預約",
+      "ai_suggestion": "AI 建議",
+      "system": "系統"
+    },
+    "bell": {
+      "viewAll": "查看所有通知"
+    }
   },
   "businessSettingsOverview": {
     "title": "設定",
