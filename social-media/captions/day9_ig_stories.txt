@@ -1,0 +1,17 @@
+[IG Stories - Day 9]
+形式：手機直接拍
+需要 Martin 自己拍照
+
+---
+
+指引：
+拍住自己喺咖啡店（或者任何地方）寫 code 嘅真實畫面
+加文字：「POS 模組 Day 1 🔨」
+
+第二個 Story：
+拍住電腦螢幕上面 POS 嘅 wireframe 或者 code
+加文字：「由零開始。」
+
+可以加 Poll sticker：「你覺得一個 POS 系統最重要嘅係？」
+選項 A：快
+選項 B：簡單

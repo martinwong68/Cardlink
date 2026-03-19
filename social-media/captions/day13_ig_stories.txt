@@ -1,0 +1,13 @@
+[IG Stories - Day 13]
+形式：截圖
+需要 Martin 截圖
+
+---
+
+指引：
+截一張 code editor 嘅圖（VSCode 或者你用緊嘅 editor）
+加文字：「終於 fix 到尋日個 bug 了！」
+加一個慶祝嘅 GIF sticker
+
+第二個 Story：
+打一段文字：「14 個鐘搵 bug，改咗 3 行 code。創業日常。」
