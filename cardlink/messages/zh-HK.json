@@ -1640,7 +1640,11 @@
     "modules": "模組",
     "aiSuggestions": {
       "title": "AI 建議",
-      "empty": "暫無建議。您的 AI 助手將在此顯示待辦事項。"
+      "empty": "暫無建議。您的 AI 助手將在此顯示待辦事項。",
+      "viewAll": "查看全部",
+      "urgent": "緊急",
+      "review": "待審查",
+      "info": "資訊"
     },
     "moduleNames": {
       "accounting": "會計",
@@ -1681,7 +1685,133 @@
     "brand": "商業介面",
     "title": "AI 助手",
     "subtitle": "您的智能商業夥伴。",
-    "empty": "與您的 AI 助手開始對話。"
+    "chatTitle": "Cardlink AI",
+    "newChat": "新對話",
+    "conversations": "對話記錄",
+    "noConversations": "暫無對話。開始新的聊天！",
+    "confirmDelete": "刪除",
+    "cancel": "取消",
+    "emptyTitle": "嗨！我係您嘅 AI 商業助手。",
+    "emptyDesc": "話畀我聽今日發生咗咩，或者問任何關於您業務嘅問題。",
+    "emptyConvoHint": "輸入訊息開始對話。",
+    "inputPlaceholder": "輸入訊息...",
+    "attachmentComingSoon": "附件功能即將推出",
+    "mockResponse": "已收到您嘅訊息。AI 後端將喺第 6 階段連接。",
+    "quickActions": {
+      "recordSale": "記錄銷售",
+      "checkBalance": "查看餘額",
+      "whatsOverdue": "有咩逾期？"
+    },
+    "time": {
+      "justNow": "啱啱",
+      "minsAgo": "{count} 分鐘前",
+      "hoursAgo": "{count} 小時前",
+      "daysAgo": "{count} 日前"
+    }
+  },
+  "aiActionCard": {
+    "aiSuggestion": "AI 建議",
+    "module": "模組",
+    "general": "一般",
+    "suggestedData": "建議資料",
+    "confidence": "信心度",
+    "approve": "批准",
+    "reject": "拒絕",
+    "amend": "修改",
+    "cancel": "取消",
+    "confirmApprove": "確定批准此操作？",
+    "confirmReject": "確認拒絕",
+    "rejectReason": "拒絕原因：",
+    "rejectReasonPlaceholder": "點解拒絕？",
+    "saveAndApprove": "儲存並批准",
+    "collapse": "收合",
+    "rejectionReasons": {
+      "Incorrect amount": "金額不正確",
+      "Wrong account": "科目/類別錯誤",
+      "Not applicable": "不適用",
+      "Duplicate": "重複",
+      "Other": "其他"
+    },
+    "status": {
+      "approved": "已批准",
+      "amended": "已修改",
+      "rejected": "已拒絕"
+    }
+  },
+  "aiHistory": {
+    "title": "操作卡片歷史",
+    "subtitle": "查看所有 AI 建議嘅操作及其結果。",
+    "empty": "暫無操作卡片。AI 建議將在傾計後顯示於此。",
+    "filter": {
+      "all": "全部",
+      "pending": "待處理",
+      "approved": "已核准",
+      "amended": "已修改",
+      "rejected": "已拒絕"
+    }
+  },
+  "actionCardQueue": {
+    "title": "操作卡片",
+    "subtitle": "審查和管理 AI 為您嘅企業建議嘅操作。",
+    "empty": "未找到操作卡片。",
+    "emptyDesc": "隨著您嘅業務資料增長，AI 生成嘅操作項目將顯示在此處。",
+    "stats": {
+      "pending": "待處理",
+      "approvedWeek": "本週已核准",
+      "rejectedWeek": "本週已拒絕"
+    },
+    "filter": {
+      "all": "全部",
+      "pending": "⏳ 待處理",
+      "approved": "✅ 已核准",
+      "rejected": "❌ 已拒絕",
+      "amended": "✏️ 已修改"
+    },
+    "sort": {
+      "newest": "最新優先",
+      "oldest": "最舊優先",
+      "confidence": "最高信心度"
+    },
+    "group": {
+      "urgent": "🔴 緊急",
+      "review": "🟡 審查",
+      "info": "🟢 資訊"
+    },
+    "approveAll": "全部核准",
+    "dismissAll": "全部駁回",
+    "bulkApproveConfirm": "核准此組嘅所有 {count} 張卡片？",
+    "bulkDismissConfirm": "駁回此組嘅所有 {count} 張卡片？"
+  },
+  "aiSettings": {
+    "title": "AI 偏好設定",
+    "subtitle": "配置 AI 助理行為並審查效能。",
+    "model": {
+      "title": "預設模型",
+      "desc": "選擇用於生成建議和傾計回覆嘅 AI 模型。"
+    },
+    "language": {
+      "title": "AI 語言",
+      "desc": "設定 AI 回覆用嘅語言。"
+    },
+    "personality": {
+      "title": "AI 風格",
+      "desc": "選擇 AI 回覆嘅語氣。",
+      "formal": "正式",
+      "casual": "輕鬆"
+    },
+    "save": "儲存偏好設定",
+    "saving": "儲存中…",
+    "saved": "已儲存 ✓",
+    "performance": {
+      "title": "AI 效能統計",
+      "noData": "暫無回饋資料。審查操作卡片後，統計數據將顯示在此處。",
+      "totalCards": "總卡片數",
+      "approved": "已核准",
+      "rejected": "已拒絕",
+      "amended": "已修改",
+      "ratio": "核准 / 拒絕 / 修改比例",
+      "topReasons": "常見拒絕原因"
+    }
   },
   "businessNotifications": {
     "brand": "商業介面",
@@ -1885,7 +2015,8 @@
       "terms": "創建帳戶即表示您同意 Cardlink 商業服務條款。",
       "success": "商業帳戶已創建！正在跳轉...",
       "error": "發生錯誤，請重試。"
-    }
+    },
+    "companyLimitReached": "您已達到當前方案嘅 {limit} 間公司上限（已使用 {used} 間）。升級以創建更多公司。"
   },
   "registerCompany": {
     "pageTitle": "註冊您嘅公司",
@@ -2068,6 +2199,57 @@
       "companyNameMin": "公司名稱至少需要 2 個字元",
       "invalidEmail": "電子郵件地址無效",
       "invalidPhone": "電話號碼無效"
+    }
+  },
+  "upgradePrompt": {
+    "lockedTitle": "🔒 {feature}",
+    "defaultDescription": "此功能需要專業版或更高方案。",
+    "yourPlan": "你嘅方案",
+    "viewPlans": "睇方案",
+    "upgrade": "升級",
+    "inlineLabel": "{feature} — 專業版功能"
+  },
+  "aiLimitPrompt": {
+    "title": "AI 額度已用盡",
+    "description": "今個月已用咗 {used} / {limit} 次 AI 操作。",
+    "purchaseCredits": "購買額度"
+  },
+  "planBilling": {
+    "title": "方案同帳單",
+    "subtitle": "管理你嘅訂閱、用量同帳單記錄。",
+    "active": "啟用中",
+    "renewsOn": "續約日期：{date}",
+    "changePlan": "更改方案",
+    "currentPlan": "目前方案",
+    "upgrade": "升級",
+    "downgrade": "降級",
+    "downgradeWarning": "部分功能可能無法使用。",
+    "free": "免費",
+    "aiActionsMonth": "次 AI 操作/月",
+    "noAi": "無 AI 存取",
+    "teamMembers": "位團隊成員",
+    "storage": "儲存空間",
+    "pdfExport": "PDF 匯出",
+    "meters": {
+      "aiActions": "AI 操作",
+      "storage": "儲存空間",
+      "companies": "公司數",
+      "users": "團隊成員",
+      "ocr": "今個月 OCR"
+    },
+    "credits": {
+      "title": "AI 額度",
+      "balance": "剩餘 {count} 額度",
+      "purchase": "購買",
+      "save": "慳 {pct}"
+    },
+    "history": {
+      "title": "帳單記錄",
+      "empty": "未有帳單記錄。",
+      "date": "日期",
+      "description": "描述",
+      "amount": "金額",
+      "type": "類型"
     }
   }
 }

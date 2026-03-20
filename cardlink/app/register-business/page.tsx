@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -16,6 +16,10 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+
+import { createClient } from "@/src/lib/supabase/client";
+import { checkCompanyLimit, type PlanCheckResult } from "@/src/lib/plan-enforcement";
+import UpgradePrompt from "@/components/business/UpgradePrompt";
 
 const TOTAL_STEPS = 5;
 
@@ -74,8 +78,23 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 export default function RegisterBusinessPage() {
   const router = useRouter();
   const t = useTranslations("businessRegister");
+  const supabase = useMemo(() => createClient(), []);
 
   const [step, setStep] = useState(1);
+
+  /* ── Company limit enforcement ── */
+  const [companyLimitCheck, setCompanyLimitCheck] = useState<PlanCheckResult | null>(null);
+  const [checkingLimit, setCheckingLimit] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setCheckingLimit(false); return; }
+      const result = await checkCompanyLimit(supabase, user.id);
+      setCompanyLimitCheck(result);
+      setCheckingLimit(false);
+    })();
+  }, [supabase]);
 
   /* Step 1: Basic Info */
   const [companyName, setCompanyName] = useState("");
@@ -161,6 +180,24 @@ export default function RegisterBusinessPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6 px-4 py-8">
+      {/* Company limit check */}
+      {checkingLimit ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+        </div>
+      ) : companyLimitCheck && !companyLimitCheck.allowed ? (
+        <div className="flex flex-col items-center gap-6 py-12">
+          <UpgradePrompt
+            feature={t("step1.title")}
+            currentPlan={companyLimitCheck.currentPlan ?? "Free"}
+            description={t("companyLimitReached", {
+              limit: companyLimitCheck.limit ?? 1,
+              used: companyLimitCheck.used ?? 1,
+            })}
+          />
+        </div>
+      ) : (
+      <>
       {/* Back button */}
       <button
         type="button"
@@ -687,6 +724,8 @@ export default function RegisterBusinessPage() {
 
           <p className="text-center text-[11px] text-gray-400">{t("step5.terms")}</p>
         </div>
+      )}
+      </>
       )}
     </div>
   );

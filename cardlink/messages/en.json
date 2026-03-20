@@ -1640,7 +1640,11 @@
     "modules": "Modules",
     "aiSuggestions": {
       "title": "AI Suggestions",
-      "empty": "No suggestions yet. Your AI assistant will show action items here."
+      "empty": "No suggestions yet. Your AI assistant will show action items here.",
+      "viewAll": "View all",
+      "urgent": "Urgent",
+      "review": "Review",
+      "info": "Info"
     },
     "moduleNames": {
       "accounting": "Accounting",
@@ -1873,7 +1877,133 @@
     "brand": "Business Interface",
     "title": "AI Assistant",
     "subtitle": "Your intelligent business companion.",
-    "empty": "Start a conversation with your AI assistant."
+    "chatTitle": "Cardlink AI",
+    "newChat": "New Chat",
+    "conversations": "Conversations",
+    "noConversations": "No conversations yet. Start a new chat!",
+    "confirmDelete": "Delete",
+    "cancel": "Cancel",
+    "emptyTitle": "Hi! I'm your AI business assistant.",
+    "emptyDesc": "Tell me what happened today, or ask me anything about your business.",
+    "emptyConvoHint": "Type a message to get started.",
+    "inputPlaceholder": "Type a message...",
+    "attachmentComingSoon": "Attachments coming soon",
+    "mockResponse": "I received your message. AI backend will be connected in Phase 6.",
+    "quickActions": {
+      "recordSale": "Record a sale",
+      "checkBalance": "Check my balance",
+      "whatsOverdue": "What's overdue?"
+    },
+    "time": {
+      "justNow": "just now",
+      "minsAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
+    }
+  },
+  "aiActionCard": {
+    "aiSuggestion": "AI Suggestion",
+    "module": "Module",
+    "general": "General",
+    "suggestedData": "Suggested Data",
+    "confidence": "Confidence",
+    "approve": "Approve",
+    "reject": "Reject",
+    "amend": "Amend",
+    "cancel": "Cancel",
+    "confirmApprove": "Approve this action?",
+    "confirmReject": "Confirm Reject",
+    "rejectReason": "Reason for rejection:",
+    "rejectReasonPlaceholder": "Why are you rejecting this?",
+    "saveAndApprove": "Save & Approve",
+    "collapse": "Collapse",
+    "rejectionReasons": {
+      "Incorrect amount": "Incorrect amount",
+      "Wrong account": "Wrong account/category",
+      "Not applicable": "Not applicable",
+      "Duplicate": "Duplicate",
+      "Other": "Other"
+    },
+    "status": {
+      "approved": "Approved",
+      "amended": "Amended",
+      "rejected": "Rejected"
+    }
+  },
+  "aiHistory": {
+    "title": "Action Card History",
+    "subtitle": "Review all AI-suggested actions and their outcomes.",
+    "empty": "No action cards yet. AI suggestions will appear here after you chat.",
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "amended": "Amended",
+      "rejected": "Rejected"
+    }
+  },
+  "actionCardQueue": {
+    "title": "Action Cards",
+    "subtitle": "Review and manage AI-suggested actions for your business.",
+    "empty": "No action cards found.",
+    "emptyDesc": "AI-generated action items will appear here as your business data grows.",
+    "stats": {
+      "pending": "pending",
+      "approvedWeek": "approved this week",
+      "rejectedWeek": "rejected this week"
+    },
+    "filter": {
+      "all": "All",
+      "pending": "⏳ Pending",
+      "approved": "✅ Approved",
+      "rejected": "❌ Rejected",
+      "amended": "✏️ Amended"
+    },
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "confidence": "Highest confidence"
+    },
+    "group": {
+      "urgent": "🔴 Urgent",
+      "review": "🟡 Review",
+      "info": "🟢 Info"
+    },
+    "approveAll": "Approve All",
+    "dismissAll": "Dismiss All",
+    "bulkApproveConfirm": "Approve all {count} cards in this group?",
+    "bulkDismissConfirm": "Dismiss all {count} cards in this group?"
+  },
+  "aiSettings": {
+    "title": "AI Preferences",
+    "subtitle": "Configure your AI assistant behavior and review performance.",
+    "model": {
+      "title": "Default Model",
+      "desc": "Choose the AI model for generating suggestions and chat responses."
+    },
+    "language": {
+      "title": "AI Language",
+      "desc": "Set the language the AI will use for responses."
+    },
+    "personality": {
+      "title": "AI Personality",
+      "desc": "Choose the tone of AI responses.",
+      "formal": "Formal",
+      "casual": "Casual"
+    },
+    "save": "Save Preferences",
+    "saving": "Saving…",
+    "saved": "Saved ✓",
+    "performance": {
+      "title": "AI Performance Stats",
+      "noData": "No feedback data yet. Stats will appear after you review action cards.",
+      "totalCards": "Total Cards",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "amended": "Amended",
+      "ratio": "Approval / Rejection / Amended Ratio",
+      "topReasons": "Top Rejection Reasons"
+    }
   },
   "businessNotifications": {
     "brand": "Business Interface",
@@ -2077,7 +2207,8 @@
       "terms": "By creating an account, you agree to the Cardlink Business Terms of Service.",
       "success": "Business account created! Redirecting...",
       "error": "Something went wrong. Please try again."
-    }
+    },
+    "companyLimitReached": "You've reached the limit of {limit} companies on your current plan ({used} used). Upgrade to create more."
   },
   "registerCompany": {
     "pageTitle": "Register Your Company",
@@ -2269,6 +2400,265 @@
       "companyNameMin": "Company name must be at least 2 characters",
       "invalidEmail": "Invalid email address",
       "invalidPhone": "Invalid phone number"
+    }
+  },
+  "businessHr": {
+    "brand": "Business Interface",
+    "title": "Human Resources",
+    "subtitle": "Manage your team, leave, attendance & payroll.",
+    "stats": {
+      "activeEmployees": "Active Employees",
+      "pendingLeave": "Pending Leave",
+      "todayAttendance": "Today Present"
+    },
+    "quickLinks": {
+      "employees": "Employees",
+      "leave": "Leave Requests",
+      "attendance": "Attendance",
+      "payroll": "Payroll"
+    },
+    "employees": {
+      "title": "Employees",
+      "addTitle": "Add Employee",
+      "editTitle": "Edit Employee",
+      "add": "Add",
+      "step1": "Personal Information",
+      "step2": "Position Details",
+      "step3": "Salary & Compensation",
+      "fields": {
+        "fullName": "Full Name",
+        "fullNamePlaceholder": "e.g. John Doe",
+        "email": "Email",
+        "phone": "Phone",
+        "position": "Position",
+        "department": "Department",
+        "employmentType": "Employment Type",
+        "startDate": "Start Date",
+        "salary": "Salary",
+        "salaryPeriod": "Salary Period"
+      },
+      "salaryPeriods": {
+        "monthly": "Monthly",
+        "hourly": "Hourly"
+      },
+      "back": "Back",
+      "next": "Next",
+      "save": "Save Employee",
+      "saving": "Saving…",
+      "emptyTitle": "No employees yet",
+      "emptyDesc": "Add your first team member to get started.",
+      "toggleStatus": "Toggle status",
+      "confirmDelete": "Delete?"
+    },
+    "employmentTypes": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time",
+      "contract": "Contract"
+    },
+    "leave": {
+      "title": "Leave Requests",
+      "addTitle": "New Leave Request",
+      "add": "New Request",
+      "fields": {
+        "employee": "Employee",
+        "selectEmployee": "Select employee",
+        "leaveType": "Leave Type",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "daysCount": "{count} day(s)",
+        "reason": "Reason (optional)"
+      },
+      "submit": "Submit Request",
+      "saving": "Submitting…",
+      "approve": "Approve",
+      "reject": "Reject",
+      "empty": "No leave requests found.",
+      "unknownEmployee": "Unknown Employee",
+      "days": "days",
+      "tabs": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      }
+    },
+    "attendance": {
+      "title": "Attendance",
+      "present": "Present",
+      "absent": "Absent",
+      "late": "Late",
+      "clockIn": "In",
+      "clockOut": "Out",
+      "clockInBtn": "Clock In",
+      "clockOutBtn": "Clock Out",
+      "noEmployees": "No active employees to track."
+    },
+    "payroll": {
+      "title": "Payroll",
+      "generate": "Generate Payroll",
+      "bulkApprove": "Approve All Drafts",
+      "bulkPaid": "Mark All Paid",
+      "empty": "No payroll records for this period.",
+      "emptyHint": "Generate payroll from active employees above.",
+      "unknownEmployee": "Unknown Employee",
+      "basic": "Basic",
+      "overtime": "Overtime",
+      "deductions": "Deductions",
+      "allowances": "Allowances",
+      "netPay": "Net Pay",
+      "statuses": {
+        "draft": "Draft",
+        "approved": "Approved",
+        "paid": "Paid"
+      }
+    }
+  },
+  "businessBooking": {
+    "brand": "Business Interface",
+    "title": "Booking",
+    "subtitle": "Manage appointments, services & availability.",
+    "todaySchedule": "Today's Schedule",
+    "stats": {
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "completionRate": "Completion %"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No Show"
+    },
+    "quickLinks": {
+      "services": "Services",
+      "calendar": "Calendar",
+      "appointments": "Appointments",
+      "availability": "Availability"
+    },
+    "services": {
+      "title": "Services",
+      "addTitle": "Add Service",
+      "editTitle": "Edit Service",
+      "add": "Add Service",
+      "fields": {
+        "name": "Service Name",
+        "namePlaceholder": "e.g. Haircut",
+        "description": "Description",
+        "duration": "Duration (mins)",
+        "price": "Price ($)",
+        "category": "Category",
+        "maxConcurrent": "Max Concurrent"
+      },
+      "save": "Save Service",
+      "saving": "Saving…",
+      "mins": "mins",
+      "emptyTitle": "No services yet",
+      "emptyDesc": "Create your first service to start booking.",
+      "confirmDelete": "Delete?"
+    },
+    "calendar": {
+      "title": "Calendar",
+      "day": "Day",
+      "week": "Week",
+      "empty": "No appointments for this day.",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "addTitle": "New Appointment",
+      "add": "New",
+      "fields": {
+        "service": "Service",
+        "selectService": "Select a service",
+        "customerName": "Customer Name",
+        "email": "Email",
+        "phone": "Phone",
+        "date": "Date",
+        "time": "Start Time",
+        "notes": "Notes (optional)"
+      },
+      "save": "Book Appointment",
+      "saving": "Booking…",
+      "empty": "No appointments found.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "complete": "Complete",
+      "noShow": "No Show"
+    },
+    "availability": {
+      "title": "Weekly Availability",
+      "subtitle": "Set your standard weekly business hours.",
+      "days": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
+      },
+      "open": "Open",
+      "closed": "Closed",
+      "save": "Save Availability",
+      "saving": "Saving…",
+      "saved": "Saved ✓"
+    }
+  },
+  "upgradePrompt": {
+    "lockedTitle": "🔒 {feature}",
+    "defaultDescription": "This feature requires the Professional plan or higher.",
+    "yourPlan": "Your plan",
+    "viewPlans": "View Plans",
+    "upgrade": "Upgrade",
+    "inlineLabel": "{feature} — Pro feature"
+  },
+  "aiLimitPrompt": {
+    "title": "AI Limit Reached",
+    "description": "You have used {used} of {limit} AI actions this month.",
+    "purchaseCredits": "Purchase Credits"
+  },
+  "planBilling": {
+    "title": "Plan & Billing",
+    "subtitle": "Manage your subscription, usage, and billing history.",
+    "active": "Active",
+    "renewsOn": "Renews on {date}",
+    "changePlan": "Change Plan",
+    "currentPlan": "Current plan",
+    "upgrade": "Upgrade",
+    "downgrade": "Downgrade",
+    "downgradeWarning": "Some features may become unavailable.",
+    "free": "Free",
+    "aiActionsMonth": "AI actions/month",
+    "noAi": "No AI access",
+    "teamMembers": "team members",
+    "storage": "storage",
+    "pdfExport": "PDF Export",
+    "meters": {
+      "aiActions": "AI Actions",
+      "storage": "Storage",
+      "companies": "Companies",
+      "users": "Team Members",
+      "ocr": "OCR this month"
+    },
+    "credits": {
+      "title": "AI Credits",
+      "balance": "{count} credits remaining",
+      "purchase": "Purchase",
+      "save": "Save {pct}"
+    },
+    "history": {
+      "title": "Billing History",
+      "empty": "No billing history yet.",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "type": "Type"
     }
   }
 }

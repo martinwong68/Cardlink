@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -19,6 +20,7 @@ import {
   ClipboardList,
   CreditCard,
 } from "lucide-react";
+import { createClient } from "@/src/lib/supabase/client";
 
 /* ── 5-section nav items ── */
 const navItems = [
@@ -37,6 +39,8 @@ const moduleItems = [
   { href: "/business/inventory", label: "Inventory", icon: Package },
   { href: "/business/procurement", label: "Procurement", icon: ClipboardList },
   { href: "/business/cards", label: "Cards", icon: CreditCard },
+  { href: "/business/hr", label: "HR", icon: Users },
+  { href: "/business/booking", label: "Booking", icon: Calendar },
 ];
 
 export default function BusinessNav({
@@ -48,6 +52,30 @@ export default function BusinessNav({
 }) {
   const pathname = usePathname() ?? "";
   const t = useTranslations("businessNav");
+
+  /* ── Pending AI action cards badge ── */
+  const supabase = useMemo(() => createClient(), []);
+  const [aiPendingCount, setAiPendingCount] = useState(0);
+
+  const fetchPendingCount = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("business_active_company_id")
+      .eq("id", user.id)
+      .single();
+    const cid = profile?.business_active_company_id as string | null;
+    if (!cid) return;
+    const { count } = await supabase
+      .from("ai_action_cards")
+      .select("id", { count: "exact", head: true })
+      .eq("company_id", cid)
+      .eq("status", "pending");
+    setAiPendingCount(count ?? 0);
+  }, [supabase]);
+
+  useEffect(() => { void fetchPendingCount(); }, [fetchPendingCount]);
 
   const isActive = (href: string) => {
     if (href === "/business") {
@@ -104,11 +132,15 @@ export default function BusinessNav({
               >
                 <Icon className={`h-3.5 w-3.5 ${item.center && !active ? "text-indigo-400" : ""}`} />
                 {t(item.labelKey)}
-                {item.center && (
+                {item.center && aiPendingCount > 0 ? (
+                  <span className="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[8px] font-bold text-white">
+                    {aiPendingCount}
+                  </span>
+                ) : item.center ? (
                   <span className="ml-auto flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500/30 text-[8px] text-indigo-300">
                     ✦
                   </span>
-                )}
+                ) : null}
               </Link>
             );
           })}
@@ -161,13 +193,18 @@ export default function BusinessNav({
                   className="flex flex-col items-center gap-0.5 -mt-3"
                 >
                   <span
-                    className={`flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-transform active:scale-95 ${
+                    className={`relative flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-transform active:scale-95 ${
                       active
                         ? "bg-indigo-600 ring-2 ring-indigo-300"
                         : "bg-indigo-600 hover:bg-indigo-700"
                     }`}
                   >
                     <Icon className="h-5 w-5 text-white" />
+                    {aiPendingCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow">
+                        {aiPendingCount}
+                      </span>
+                    )}
                   </span>
                   <span
                     className={`text-[10px] ${

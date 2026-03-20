@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
@@ -14,15 +14,20 @@ import {
   CreditCard,
   Sparkles,
   ChevronRight,
+  AlertCircle,
+  Eye,
+  Info,
 } from "lucide-react";
 
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 import { notifyInvoiceOverdue } from "@/src/lib/business-notifications";
+import { runBusinessRules } from "@/src/lib/ai-rule-engine";
+import AiActionCard, { type AiActionCardData } from "@/components/business/AiActionCard";
 
 const modules = [
   { key: "accounting" as const, icon: BookOpen, color: "bg-blue-50 text-blue-600", route: "/business/accounting", exists: true },
-  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: false },
-  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: false },
+  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: true },
+  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: true },
   { key: "inventory" as const, icon: Package, color: "bg-orange-50 text-orange-600", route: "/business/inventory", exists: true },
   { key: "pos" as const, icon: ShoppingCart, color: "bg-green-50 text-green-600", route: "/business/pos", exists: true },
   { key: "crm" as const, icon: Handshake, color: "bg-indigo-50 text-indigo-600", route: "/business/crm", exists: true },
@@ -33,6 +38,138 @@ const modules = [
 export default function BusinessHandlePage() {
   const t = useTranslations("businessHandle");
   const { companyId, loading, supabase } = useActiveCompany();
+
+  /* ── AI Action Cards state ── */
+  const [actionCards, setActionCards] = useState<AiActionCardData[]>([]);
+  const [loadingCards, setLoadingCards] = useState(true);
+  const [moduleStats, setModuleStats] = useState<Record<string, number>>({});
+
+  const fetchActionCards = useCallback(async () => {
+    if (!companyId) return;
+    const { data } = await supabase
+      .from("ai_action_cards")
+      .select("id, card_type, title, description, suggested_data, status, confidence_score, source_module")
+      .eq("company_id", companyId)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+    setActionCards((data as AiActionCardData[]) ?? []);
+    setLoadingCards(false);
+  }, [companyId, supabase]);
+
+  useEffect(() => {
+    if (!loading && companyId) {
+      void fetchActionCards();
+      // Run business rules engine (throttled to once per hour)
+      void (async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const newCards = await runBusinessRules(companyId, user.id);
+          if (newCards > 0) void fetchActionCards();
+        }
+      })();
+    }
+  }, [loading, companyId, fetchActionCards, supabase]);
+
+  /* ── Module stats ── */
+  useEffect(() => {
+    if (loading || !companyId) return;
+    (async () => {
+      const stats: Record<string, number> = {};
+
+      // Accounting: pending transactions
+      const { count: pendingTxns } = await supabase
+        .from("transactions")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", companyId)
+        .eq("status", "pending");
+      if (pendingTxns) stats.accounting = pendingTxns;
+
+      // HR: pending leave requests
+      const { count: pendingLeave } = await supabase
+        .from("hr_leave_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("company_id", companyId)
+        .eq("status", "pending");
+      if (pendingLeave) stats.hr = pendingLeave;
+
+      // Booking: today's appointments
+      const today = new Date().toISOString().slice(0, 10);
+      const { count: todayAppts } = await supabase
+        .from("booking_appointments")
+        .select("id", { count: "exact", head: true })
+        .eq("company_id", companyId)
+        .eq("appointment_date", today)
+        .in("status", ["pending", "confirmed"]);
+      if (todayAppts) stats.booking = todayAppts;
+
+      // Inventory: low stock items
+      const { data: products } = await supabase
+        .from("inv_products")
+        .select("id, reorder_level")
+        .eq("company_id", companyId)
+        .eq("is_active", true);
+      if (products && products.length > 0) {
+        const pIds = (products as { id: string }[]).map((p) => p.id);
+        const { data: balances } = await supabase
+          .from("inv_stock_balances")
+          .select("product_id, on_hand")
+          .in("product_id", pIds);
+        const balMap = new Map(
+          ((balances ?? []) as { product_id: string; on_hand: number }[]).map((b) => [b.product_id, b.on_hand])
+        );
+        const lowCount = (products as { id: string; reorder_level: number }[])
+          .filter((p) => (balMap.get(p.id) ?? 0) <= p.reorder_level).length;
+        if (lowCount > 0) stats.inventory = lowCount;
+      }
+
+      setModuleStats(stats);
+    })();
+  }, [loading, companyId, supabase]);
+
+  /* ── Action handlers (via execution API) ── */
+  const handleApprove = async (cardId: string) => {
+    const res = await fetch("/api/business/ai/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId, action: "approve" }),
+    });
+    if (res.ok) {
+      setActionCards((prev) => prev.filter((c) => c.id !== cardId));
+    }
+  };
+
+  const handleReject = async (cardId: string, reason?: string) => {
+    const res = await fetch("/api/business/ai/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId, action: "reject", reason }),
+    });
+    if (res.ok) {
+      setActionCards((prev) => prev.filter((c) => c.id !== cardId));
+    }
+  };
+
+  const handleAmend = async (cardId: string, amendedData: Record<string, unknown>) => {
+    const res = await fetch("/api/business/ai/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId, action: "amend", amendedData }),
+    });
+    if (res.ok) {
+      setActionCards((prev) => prev.filter((c) => c.id !== cardId));
+    }
+  };
+
+  /* ── Group cards by priority ── */
+  const urgentCards = actionCards.filter(
+    (c) => (c.confidence_score ?? 0) > 0.9 && ["journal_entry", "invoice", "expense"].includes(c.card_type),
+  );
+  const infoCards = actionCards.filter(
+    (c) => ["navigation", "report", "general"].includes(c.card_type),
+  );
+  const reviewCards = actionCards.filter(
+    (c) => !urgentCards.includes(c) && !infoCards.includes(c),
+  );
 
   // Check for overdue invoices and plan renewal on dashboard load
   useEffect(() => {
@@ -133,13 +270,82 @@ export default function BusinessHandlePage() {
 
       {/* AI Action Queue */}
       <div className="app-card p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="h-4 w-4 text-indigo-500" />
-          <h2 className="text-sm font-semibold text-gray-800">{t("aiSuggestions.title")}</h2>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-indigo-500" />
+            <h2 className="text-sm font-semibold text-gray-800">{t("aiSuggestions.title")}</h2>
+            {actionCards.length > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[10px] font-bold text-white">
+                {actionCards.length}
+              </span>
+            )}
+          </div>
+          {actionCards.length > 0 && (
+            <Link href="/business/action-cards" className="text-[10px] text-indigo-600 font-medium hover:underline">
+              {t("aiSuggestions.viewAll")} →
+            </Link>
+          )}
         </div>
-        <div className="flex items-center justify-center rounded-xl bg-gray-50 py-8 px-4 text-center">
-          <p className="text-xs text-gray-400">{t("aiSuggestions.empty")}</p>
-        </div>
+        {loadingCards ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+          </div>
+        ) : actionCards.length === 0 ? (
+          <div className="flex items-center justify-center rounded-xl bg-gray-50 py-8 px-4 text-center">
+            <p className="text-xs text-gray-400">{t("aiSuggestions.empty")}</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Urgent group */}
+            {urgentCards.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                  <span className="text-[10px] font-semibold text-red-600 uppercase tracking-wider">
+                    {t("aiSuggestions.urgent")} ({urgentCards.length})
+                  </span>
+                </div>
+                <div className="space-y-1 rounded-xl border border-red-100 bg-red-50/30 p-2">
+                  {urgentCards.map((card) => (
+                    <AiActionCard key={card.id} card={card} onApprove={handleApprove} onReject={handleReject} onAmend={handleAmend} compact />
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Review group */}
+            {reviewCards.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Eye className="h-3.5 w-3.5 text-amber-500" />
+                  <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider">
+                    {t("aiSuggestions.review")} ({reviewCards.length})
+                  </span>
+                </div>
+                <div className="space-y-1 rounded-xl border border-amber-100 bg-amber-50/30 p-2">
+                  {reviewCards.map((card) => (
+                    <AiActionCard key={card.id} card={card} onApprove={handleApprove} onReject={handleReject} onAmend={handleAmend} compact />
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Info group */}
+            {infoCards.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Info className="h-3.5 w-3.5 text-green-500" />
+                  <span className="text-[10px] font-semibold text-green-600 uppercase tracking-wider">
+                    {t("aiSuggestions.info")} ({infoCards.length})
+                  </span>
+                </div>
+                <div className="space-y-1 rounded-xl border border-green-100 bg-green-50/30 p-2">
+                  {infoCards.map((card) => (
+                    <AiActionCard key={card.id} card={card} onApprove={handleApprove} onReject={handleReject} onAmend={handleAmend} compact />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Module Grid */}
@@ -164,6 +370,11 @@ export default function BusinessHandlePage() {
                   </span>
                   <ChevronRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-indigo-400 transition" />
                 </div>
+                {moduleStats[mod.key] != null && moduleStats[mod.key] > 0 && (
+                  <span className="inline-flex self-start rounded-full bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 text-[10px] font-medium">
+                    {t("moduleStats.pending", { count: moduleStats[mod.key] })}
+                  </span>
+                )}
                 {!mod.exists && (
                   <span className="inline-flex self-start rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
                     {t("comingSoon")}
