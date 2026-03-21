@@ -67,9 +67,9 @@ export default function PosLandingPage() {
           fetch("/api/pos/shifts", { headers: HEADERS, cache: "no-store" }),
         ]);
         const [od, pd, sd] = await Promise.all([
-          ordRes.ok ? ordRes.json() : {},
-          prodRes.ok ? prodRes.json() : {},
-          shiftRes.ok ? shiftRes.json() : {},
+          ordRes.ok ? ordRes.json() : ({} as Record<string, unknown>),
+          prodRes.ok ? prodRes.json() : ({} as Record<string, unknown>),
+          shiftRes.ok ? shiftRes.json() : ({} as Record<string, unknown>),
         ]);
         setData({ orders: od.orders ?? [], products: pd.products ?? [], shifts: sd.shifts ?? [] });
       } catch { /* silent */ } finally { setLoading(false); }

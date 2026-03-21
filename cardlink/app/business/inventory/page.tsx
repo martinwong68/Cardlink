@@ -64,8 +64,8 @@ export default function BusinessInventoryPage() {
           fetch("/api/inventory/balances", { headers: HEADERS, cache: "no-store" }),
         ]);
         const [pd, bd] = await Promise.all([
-          prodRes.ok ? prodRes.json() : {},
-          balRes.ok ? balRes.json() : {},
+          prodRes.ok ? prodRes.json() : ({} as Record<string, unknown>),
+          balRes.ok ? balRes.json() : ({} as Record<string, unknown>),
         ]);
         setData({ products: pd.products ?? [], balances: bd.balances ?? [] });
       } catch { /* silent */ } finally { setLoading(false); }

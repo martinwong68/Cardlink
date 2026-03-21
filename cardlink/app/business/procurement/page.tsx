@@ -77,10 +77,10 @@ export default function BusinessProcurementPage() {
           fetch("/api/procurement/contracts", { headers: HEADERS, cache: "no-store" }),
         ]);
         const [vd, rd, pod, cd] = await Promise.all([
-          vRes.ok ? vRes.json() : {},
-          rRes.ok ? rRes.json() : {},
-          poRes.ok ? poRes.json() : {},
-          cRes.ok ? cRes.json() : {},
+          vRes.ok ? vRes.json() : ({} as Record<string, unknown>),
+          rRes.ok ? rRes.json() : ({} as Record<string, unknown>),
+          poRes.ok ? poRes.json() : ({} as Record<string, unknown>),
+          cRes.ok ? cRes.json() : ({} as Record<string, unknown>),
         ]);
         setData({
           vendors: vd.vendors ?? [],
