@@ -29,8 +29,6 @@ export async function runBusinessRules(
     cardsCreated += await ruleLowStock(supabase, companyId);
     cardsCreated += await ruleMonthEndClosing(supabase, companyId);
     cardsCreated += await ruleUnlinkedDocuments(supabase, companyId);
-    cardsCreated += await rulePayrollJournalEntry(supabase, companyId);
-    cardsCreated += await ruleUpcomingBooking(supabase, companyId);
   } catch (err) {
     console.error("[RuleEngine] Error running business rules:", err);
   }
@@ -367,79 +365,4 @@ async function ruleUnlinkedDocuments(
   }
 
   return created;
-}
-
-/* ── Rule 6: Payroll → Accounting journal entry ── */
-async function rulePayrollJournalEntry(
-  supabase: SupabaseClient,
-  companyId: string
-): Promise<number> {
-  let created = 0;
-
-  // Find payroll records that were just marked paid (no matching action card yet)
-  const { data: paidPayroll } = await supabase
-    .from("hr_payroll")
-    .select("id, period_start, period_end, net_pay, paid_at")
-    .eq("company_id", companyId)
-    .eq("status", "paid")
-    .not("paid_at", "is", null)
-    .order("paid_at", { ascending: false })
-    .limit(20);
-
-  if (!paidPayroll || paidPayroll.length === 0) return 0;
-
-  // Group by period to create one card per pay period
-  const periods = new Map<string, number>();
-  for (const rec of paidPayroll) {
-    const key = `${rec.period_start}_${rec.period_end}`;
-    periods.set(key, (periods.get(key) ?? 0) + Number(rec.net_pay ?? 0));
-  }
-
-  for (const [key, totalPay] of periods) {
-    const [pStart, pEnd] = key.split("_");
-    const monthLabel = new Date(pStart as string).toLocaleDateString(undefined, {
-      month: "long",
-      year: "numeric",
-    });
-
-    // Check if a card already exists for this period (any status)
-    const { count: anyCount } = await supabase
-      .from("ai_action_cards")
-      .select("id", { count: "exact", head: true })
-      .eq("company_id", companyId)
-      .ilike("title", `%Payroll journal%${monthLabel}%`);
-    if ((anyCount ?? 0) > 0) continue;
-
-    const { error } = await supabase.from("ai_action_cards").insert({
-      company_id: companyId,
-      card_type: "journal_entry",
-      title: `Payroll journal entry for ${monthLabel}`,
-      description: `Payroll for ${monthLabel} totalling $${totalPay.toLocaleString(undefined, { minimumFractionDigits: 2 })} has been paid. Record journal entry: DR Salary Expense, CR Cash/Bank.`,
-      suggested_data: {
-        entries: [
-          { account: "Salary Expense", debit: totalPay, credit: 0 },
-          { account: "Cash / Bank", debit: 0, credit: totalPay },
-        ],
-        period_start: pStart,
-        period_end: pEnd,
-        total_pay: totalPay,
-      },
-      confidence_score: 1.0,
-      source_module: "rule_engine",
-      status: "pending",
-    });
-    if (!error) created++;
-  }
-
-  return created;
-}
-
-/* ── Rule 7: Upcoming booking reminder (placeholder for future AI reminders) ── */
-async function ruleUpcomingBooking(
-  supabase: SupabaseClient,
-  companyId: string
-): Promise<number> {
-  // Notifications for upcoming bookings are handled in the booking API route.
-  // This placeholder allows future expansion (e.g. AI-driven rescheduling).
-  return 0;
 }

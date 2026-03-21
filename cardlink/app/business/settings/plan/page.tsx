@@ -204,34 +204,62 @@ export default function PlanBillingSettingsPage() {
     if (!companyLoading && companyId) void loadData();
   }, [companyLoading, companyId, loadData]);
 
+  const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">("monthly");
+
   /* ── Change Plan ── */
   const handleChangePlan = async (newPlan: Plan) => {
     if (!companyId || !subscription) return;
     setChangingPlan(true);
 
-    // Update subscription
-    await supabase
-      .from("company_subscriptions")
-      .update({
-        plan_id: newPlan.id,
-        ai_actions_limit: newPlan.ai_actions_monthly,
-        storage_limit_mb: newPlan.storage_mb,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("company_id", companyId);
+    // Free plan → direct DB downgrade (no payment needed)
+    if (newPlan.price_monthly === 0) {
+      await supabase
+        .from("company_subscriptions")
+        .update({
+          plan_id: newPlan.id,
+          ai_actions_limit: newPlan.ai_actions_monthly,
+          storage_limit_mb: newPlan.storage_mb,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("company_id", companyId);
 
-    // Log billing
-    await supabase.from("billing_history").insert({
-      company_id: companyId,
-      description: `Plan changed to ${newPlan.name}`,
-      amount: newPlan.price_monthly,
-      currency: "USD",
-      type: "subscription",
-    });
+      await supabase.from("billing_history").insert({
+        company_id: companyId,
+        description: `Plan changed to ${newPlan.name}`,
+        amount: 0,
+        currency: "USD",
+        type: "subscription",
+      });
+
+      setChangingPlan(false);
+      setShowPlanPicker(false);
+      void loadData();
+      return;
+    }
+
+    // Paid plan → redirect to Stripe checkout
+    try {
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planSlug: newPlan.slug, interval: billingInterval }),
+      });
+
+      if (!response.ok) {
+        setChangingPlan(false);
+        return;
+      }
+
+      const data = (await response.json()) as { url?: string };
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch {
+      // Stripe checkout failed
+    }
 
     setChangingPlan(false);
-    setShowPlanPicker(false);
-    void loadData();
   };
 
   /* ── Purchase Credits ── */
@@ -239,22 +267,34 @@ export default function PlanBillingSettingsPage() {
     if (!companyId) return;
     setPurchasingCredits(option.credits);
 
-    await supabase.from("ai_credits").insert({
-      company_id: companyId,
-      credits_remaining: option.credits,
-      credits_purchased: option.credits,
-    });
+    try {
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "payment",
+          amount: option.price,
+          description: `${option.credits} AI Credits`,
+          credits: option.credits,
+          companyId,
+        }),
+      });
 
-    await supabase.from("billing_history").insert({
-      company_id: companyId,
-      description: `Purchased ${option.credits} AI credits`,
-      amount: option.price,
-      currency: "USD",
-      type: "credits",
-    });
+      if (!response.ok) {
+        setPurchasingCredits(null);
+        return;
+      }
+
+      const data = (await response.json()) as { url?: string };
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch {
+      // Stripe checkout failed
+    }
 
     setPurchasingCredits(null);
-    void loadData();
   };
 
   if (companyLoading || loading) {
@@ -350,6 +390,33 @@ export default function PlanBillingSettingsPage() {
 
       {/* ── Plan Picker ── */}
       {showPlanPicker && (
+        <div className="space-y-4">
+          {/* Billing interval toggle */}
+          <div className="flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => setBillingInterval("monthly")}
+              className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                billingInterval === "monthly"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {t("monthly")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingInterval("yearly")}
+              className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                billingInterval === "yearly"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {t("yearly")}
+            </button>
+          </div>
+
         <div className="grid gap-4 sm:grid-cols-3">
           {plans.map((plan) => {
             const slug = plan.slug;
@@ -358,6 +425,7 @@ export default function PlanBillingSettingsPage() {
             const isCurrent = plan.id === currentPlan?.id;
             const isDowngrade =
               currentPlan && plan.sort_order < currentPlan.sort_order;
+            const displayPrice = billingInterval === "yearly" ? plan.price_yearly : plan.price_monthly;
 
             return (
               <div
@@ -373,8 +441,8 @@ export default function PlanBillingSettingsPage() {
                   <div>
                     <p className="text-sm font-semibold text-gray-800">{plan.name}</p>
                     <p className="text-xs text-gray-500">
-                      {plan.price_monthly > 0
-                        ? `$${plan.price_monthly}/mo`
+                      {displayPrice > 0
+                        ? `$${displayPrice}/${billingInterval === "yearly" ? "yr" : "mo"}`
                         : t("free")}
                     </p>
                   </div>
@@ -436,10 +504,11 @@ export default function PlanBillingSettingsPage() {
             );
           })}
         </div>
+        </div>
       )}
 
-      {/* ── AI Credits Section ── */}
-      <div className="app-card p-6 space-y-4" id="credits">
+      {/* ── AI Credits Section (hidden for free plan) ── */}
+      {planSlug !== "free" && <div className="app-card p-6 space-y-4" id="credits">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50">
             <Zap className="h-5 w-5 text-violet-600" />
@@ -477,7 +546,7 @@ export default function PlanBillingSettingsPage() {
             </button>
           ))}
         </div>
-      </div>
+      </div>}
 
       {/* ── Billing History ── */}
       <div className="app-card p-6 space-y-4">

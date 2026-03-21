@@ -59,15 +59,12 @@ export default async function BusinessLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 md:pb-10">
+    <div className="min-h-screen bg-gray-50 pb-24">
       <BusinessHeader userId={user.id} activeCompanyName={activeCompanyName} activeCompanyId={activeCompanyId} />
-      <div className="mx-auto max-w-5xl flex gap-6 px-4 py-6">
-        <BusinessNav
-          isMasterUser={eligibility.isMasterUser}
-          activeCompanyName={activeCompanyName}
-        />
-        <main className="flex-1 min-w-0">{children}</main>
-      </div>
+      <main className="mx-auto max-w-2xl px-4 py-6">
+        {children}
+      </main>
+      <BusinessNav />
     </div>
   );
 }

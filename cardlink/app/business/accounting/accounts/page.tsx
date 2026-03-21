@@ -60,7 +60,7 @@ export default function AccountingAccountsPage() {
   };
 
   return (
-    <div className="space-y-4 pb-28 md:pb-2">
+    <div className="space-y-4 pb-28">
       <section className="app-card p-4 md:p-5">
         <h2 className="text-sm font-semibold text-gray-800">Create Account</h2>
         <div className="mt-3 grid gap-2 md:grid-cols-4">

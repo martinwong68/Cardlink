@@ -39,7 +39,7 @@ export default function AccountingPayrollPage() {
   }, [records]);
 
   return (
-    <div className="space-y-4 pb-28 md:pb-2">
+    <div className="space-y-4 pb-28">
       <section className="grid gap-3 md:grid-cols-4">
         <article className="app-card p-4"><p className="text-xs text-gray-500">Employees</p><p className="mt-1 text-2xl font-bold">{summary.count}</p></article>
         <article className="app-card p-4"><p className="text-xs text-gray-500">Gross</p><p className="mt-1 text-2xl font-bold">{asCurrency(summary.gross)}</p></article>

@@ -3,60 +3,67 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Check, Crown, Rocket, Zap, Loader2 } from "lucide-react";
 
 import { createClient } from "@/src/lib/supabase/client";
 import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 
 type Interval = "monthly" | "yearly";
 
-type BillingDisplaySettings = {
-  monthlyDisplayPrice: string;
-  yearlyDisplayPrice: string;
-  currencySymbol: string;
+type Plan = {
+  id: string;
+  name: string;
+  slug: string;
+  price_monthly: number;
+  price_yearly: number;
+  ai_actions_monthly: number;
+  max_companies: number;
+  max_users: number;
+  storage_mb: number;
+  pdf_export: boolean;
+  document_ocr_monthly: number;
+  sort_order: number;
 };
 
-const defaultBillingDisplaySettings: BillingDisplaySettings = {
-  monthlyDisplayPrice: "9.99",
-  yearlyDisplayPrice: "99",
-  currencySymbol: "$",
+const PLAN_ACCENT: Record<string, { border: string; badge: string; btn: string; icon: typeof Rocket }> = {
+  free: { border: "border-neutral-200", badge: "", btn: "", icon: Rocket },
+  professional: {
+    border: "border-primary-600 border-2",
+    badge: "bg-primary-600",
+    btn: "bg-primary-600 text-white hover:bg-primary-700",
+    icon: Zap,
+  },
+  business: {
+    border: "border-amber-500 border-2",
+    badge: "bg-amber-500",
+    btn: "bg-amber-500 text-white hover:bg-amber-600",
+    icon: Crown,
+  },
 };
 
 export default function UpgradePage() {
   const supabase = useMemo(() => createClient(), []);
-  const [isLoading, setIsLoading] = useState<Interval | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [interval, setInterval] = useState<Interval>("monthly");
+  const [isLoading, setIsLoading] = useState<string | null>(null);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
-  const [billingDisplay, setBillingDisplay] = useState<BillingDisplaySettings>(
-    defaultBillingDisplaySettings
-  );
   const t = useTranslations("upgrade");
 
   useEffect(() => {
     const loadState = async () => {
-      const [{ data: userData }, billingRes] = await Promise.all([
+      const [{ data: userData }, { data: plansData }] = await Promise.all([
         supabase.auth.getUser(),
         supabase
-          .from("app_billing_settings")
-          .select("monthly_display_price, yearly_display_price, currency_symbol")
-          .eq("id", 1)
-          .maybeSingle(),
+          .from("subscription_plans")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order"),
       ]);
 
-      if (billingRes.data) {
-        setBillingDisplay({
-          monthlyDisplayPrice:
-            billingRes.data.monthly_display_price ??
-            defaultBillingDisplaySettings.monthlyDisplayPrice,
-          yearlyDisplayPrice:
-            billingRes.data.yearly_display_price ??
-            defaultBillingDisplaySettings.yearlyDisplayPrice,
-          currencySymbol:
-            billingRes.data.currency_symbol ??
-            defaultBillingDisplaySettings.currencySymbol,
-        });
-      }
+      if (plansData) setPlans(plansData as Plan[]);
 
       if (!userData?.user) {
         setViewerPlan("free");
@@ -75,14 +82,14 @@ export default function UpgradePage() {
     void loadState();
   }, [supabase]);
 
-  const handleCheckout = async (interval: Interval) => {
+  const handleCheckout = async (planSlug: string, billingInterval: Interval) => {
     setMessage(null);
-    setIsLoading(interval);
+    setIsLoading(`${planSlug}-${billingInterval}`);
 
     const response = await fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interval }),
+      body: JSON.stringify({ planSlug, interval: billingInterval }),
     });
 
     if (!response.ok) {
@@ -101,7 +108,7 @@ export default function UpgradePage() {
     window.location.href = data.url;
   };
 
-  const handleDowngrade = async () => {
+  const handleManageBilling = async () => {
     setMessage(null);
     setIsPortalLoading(true);
 
@@ -122,131 +129,188 @@ export default function UpgradePage() {
     window.location.href = data.url;
   };
 
-  const premiumUntilDateLabel = premiumUntil
-    ? premiumUntil.slice(0, 10)
-    : null;
+  const premiumUntilLabel = premiumUntil ? premiumUntil.slice(0, 10) : null;
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary-600">
           {t("brand")}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-gray-900">
-          {t("title")}
-        </h1>
-        <p className="mt-2 text-sm text-gray-500">
-          {t("subtitle")}
-        </p>
+        <h1 className="mt-2 text-2xl font-semibold text-neutral-900">{t("title")}</h1>
+        <p className="mt-2 text-sm text-neutral-500">{t("subtitle")}</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {t("free.title")}
-            </h2>
-            <span className="text-xs font-semibold text-gray-500">
-              {t("free.badge")}
-            </span>
-          </div>
-          <p className="mt-4 text-3xl font-semibold text-gray-900">$0</p>
-          <ul className="mt-6 space-y-3 text-sm text-gray-600">
-            <li>{t("free.features.cards")}</li>
-            <li>{t("free.features.fields")}</li>
-            <li>{t("free.features.public")}</li>
-            <li>{t("free.features.connect")}</li>
-            <li>{t("free.features.feed")}</li>
-          </ul>
-        </div>
+      {/* Billing toggle */}
+      <div className="flex items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => setInterval("monthly")}
+          className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+            interval === "monthly"
+              ? "bg-primary-600 text-white"
+              : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+          }`}
+        >
+          {t("toggle.monthly")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setInterval("yearly")}
+          className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+            interval === "yearly"
+              ? "bg-primary-600 text-white"
+              : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+          }`}
+        >
+          {t("toggle.yearly")}
+          <span className="ml-1.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
+            {t("toggle.save")}
+          </span>
+        </button>
+      </div>
 
-        <div className="relative rounded-3xl border-2 border-indigo-600 bg-white p-6 shadow-lg">
-          <div className="absolute -top-4 left-6 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white">
-            {t("premium.badge")}
-          </div>
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {t("premium.title")}
-            </h2>
-            <span className="text-xs font-semibold text-gray-500">
-              {t("premium.monthlyLabel")}
-            </span>
-          </div>
-          <p className="mt-2 text-sm text-gray-500">
-            {billingDisplay.currencySymbol}
-            {billingDisplay.yearlyDisplayPrice} {t("premium.yearlyLabel")}
-          </p>
-          <p className="mt-4 text-3xl font-semibold text-gray-900">
-            {billingDisplay.currencySymbol}
-            {billingDisplay.monthlyDisplayPrice}
-          </p>
-          <ul className="mt-6 space-y-3 text-sm text-gray-600">
-            <li>{t("premium.features.unlimitedCards")}</li>
-            <li>{t("premium.features.unlimitedFields")}</li>
-            <li>{t("premium.features.fullDetails")}</li>
-            <li>{t("premium.features.crm")}</li>
-            <li>{t("premium.features.analytics")}</li>
-            <li>{t("premium.features.export")}</li>
-            <li>{t("premium.features.themes")}</li>
-            <li>{t("premium.features.support")}</li>
-          </ul>
-          <div className="mt-6">
-            {viewerPlan === "premium" ? (
-              <div className="space-y-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                <p>{t("premium.status")}</p>
-                {premiumUntilDateLabel ? (
-                  <p className="text-xs font-medium text-gray-500">
-                    {t("premium.until", { date: premiumUntilDateLabel })}
+      {/* Plan cards */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {plans.map((plan) => {
+          const accent = PLAN_ACCENT[plan.slug] ?? PLAN_ACCENT.free;
+          const Icon = accent.icon;
+          const price = interval === "yearly" ? plan.price_yearly : plan.price_monthly;
+          const isFree = plan.slug === "free";
+          const isCurrentPlan = isFree && viewerPlan === "free";
+          const isPremium = viewerPlan === "premium";
+          const loadingKey = `${plan.slug}-${interval}`;
+
+          return (
+            <div
+              key={plan.id}
+              className={`relative rounded-3xl ${accent.border} bg-white p-6 shadow-sm`}
+            >
+              {/* Badge */}
+              {accent.badge && (
+                <div
+                  className={`absolute -top-3.5 left-6 rounded-full ${accent.badge} px-3 py-1 text-xs font-semibold text-white`}
+                >
+                  {plan.slug === "professional" ? t("premium.badge") : t("business.badge")}
+                </div>
+              )}
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100">
+                  <Icon className="h-5 w-5 text-neutral-600" />
+                </div>
+                <h2 className="text-lg font-semibold text-neutral-900">{plan.name}</h2>
+              </div>
+
+              {/* Price */}
+              <div className="mt-4">
+                {isFree ? (
+                  <p className="text-3xl font-semibold text-neutral-900">$0</p>
+                ) : (
+                  <>
+                    <p className="text-3xl font-semibold text-neutral-900">
+                      ${price}
+                      <span className="text-base font-normal text-neutral-400">
+                        /{interval === "yearly" ? t("toggle.yr") : t("toggle.mo")}
+                      </span>
+                    </p>
+                    {interval === "yearly" && (
+                      <p className="mt-1 text-xs text-neutral-400">
+                        ${(price / 12).toFixed(2)}/{t("toggle.mo")}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Features */}
+              <ul className="mt-6 space-y-2.5 text-sm text-neutral-600">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                  {plan.max_companies >= 999 ? t("features.unlimitedCompanies") : `${plan.max_companies} ${t("features.companies")}`}
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                  {plan.max_users} {t("features.users")}
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                  {plan.storage_mb >= 1024
+                    ? `${(plan.storage_mb / 1024).toFixed(0)} GB`
+                    : `${plan.storage_mb} MB`}{" "}
+                  {t("features.storage")}
+                </li>
+                {plan.ai_actions_monthly > 0 && (
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                    {plan.ai_actions_monthly} {t("features.aiActions")}
+                  </li>
+                )}
+                {plan.pdf_export && (
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                    {t("features.pdfExport")}
+                  </li>
+                )}
+                {plan.document_ocr_monthly > 0 && (
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                    {plan.document_ocr_monthly} {t("features.ocrDocs")}
+                  </li>
+                )}
+              </ul>
+
+              {/* Action */}
+              <div className="mt-6">
+                {isFree ? (
+                  <p className="text-center text-sm font-medium text-neutral-400">
+                    {isCurrentPlan ? t("actions.currentPlan") : t("free.badge")}
                   </p>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={handleDowngrade}
-                  disabled={isPortalLoading}
-                  className="w-full rounded-full border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isPortalLoading ? t("actions.redirecting") : t("actions.downgrade")}
-                </button>
-                <Link
-                  href="/dashboard/settings/support"
-                  className="inline-block text-xs font-medium text-gray-500 underline-offset-2 hover:underline"
-                >
-                  {t("actions.manageBilling")}
-                </Link>
+                ) : isPremium ? (
+                  <div className="space-y-2 text-center">
+                    <p className="text-sm font-semibold text-neutral-600">
+                      {t("premium.status")}
+                    </p>
+                    {premiumUntilLabel && (
+                      <p className="text-xs text-neutral-400">
+                        {t("premium.until", { date: premiumUntilLabel })}
+                      </p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleManageBilling}
+                      disabled={isPortalLoading}
+                      className="w-full rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-semibold text-neutral-700 transition hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {isPortalLoading ? t("actions.redirecting") : t("actions.manageBilling")}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleCheckout(plan.slug, interval)}
+                    disabled={isLoading !== null}
+                    className={`w-full rounded-full px-4 py-3 text-sm font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-70 ${accent.btn}`}
+                  >
+                    {isLoading === loadingKey ? (
+                      <Loader2 className="mx-auto h-5 w-5 animate-spin" />
+                    ) : (
+                      t("actions.subscribe")
+                    )}
+                  </button>
+                )}
               </div>
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => handleCheckout("monthly")}
-                  disabled={isLoading !== null}
-                  className="rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isLoading === "monthly"
-                    ? t("actions.redirecting")
-                    : t("actions.upgradeMonthly")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleCheckout("yearly")}
-                  disabled={isLoading !== null}
-                  className="rounded-full border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-600 shadow-sm transition hover:border-indigo-300 disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isLoading === "yearly"
-                    ? t("actions.redirecting")
-                    : t("actions.upgradeYearly")}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+            </div>
+          );
+        })}
       </div>
 
-      {message ? (
+      {message && (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
           {message}
         </p>
-      ) : null}
+      )}
     </div>
   );
 }

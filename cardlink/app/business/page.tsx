@@ -26,8 +26,8 @@ import AiActionCard, { type AiActionCardData } from "@/components/business/AiAct
 
 const modules = [
   { key: "accounting" as const, icon: BookOpen, color: "bg-blue-50 text-blue-600", route: "/business/accounting", exists: true },
-  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: true },
-  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: true },
+  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: false },
+  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: false },
   { key: "inventory" as const, icon: Package, color: "bg-orange-50 text-orange-600", route: "/business/inventory", exists: true },
   { key: "pos" as const, icon: ShoppingCart, color: "bg-green-50 text-green-600", route: "/business/pos", exists: true },
   { key: "crm" as const, icon: Handshake, color: "bg-indigo-50 text-indigo-600", route: "/business/crm", exists: true },
@@ -83,24 +83,6 @@ export default function BusinessHandlePage() {
         .eq("org_id", companyId)
         .eq("status", "pending");
       if (pendingTxns) stats.accounting = pendingTxns;
-
-      // HR: pending leave requests
-      const { count: pendingLeave } = await supabase
-        .from("hr_leave_requests")
-        .select("id", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .eq("status", "pending");
-      if (pendingLeave) stats.hr = pendingLeave;
-
-      // Booking: today's appointments
-      const today = new Date().toISOString().slice(0, 10);
-      const { count: todayAppts } = await supabase
-        .from("booking_appointments")
-        .select("id", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .eq("appointment_date", today)
-        .in("status", ["pending", "confirmed"]);
-      if (todayAppts) stats.booking = todayAppts;
 
       // Inventory: low stock items
       const { data: products } = await supabase

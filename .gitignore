@@ -1,0 +1,8 @@
+# Sensitive scripts with credentials
+scripts/dump-schema.js
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/tasks.json

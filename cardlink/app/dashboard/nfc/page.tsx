@@ -4,8 +4,7 @@ import { useMemo, useState } from "react";
 import { CheckCircle2, CreditCard, ShieldCheck, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-const STRIPE_PRICE_ID = process.env.NEXT_PUBLIC_NFC_CARD_PRICE_ID;
-const DISPLAY_PRICE = process.env.NEXT_PUBLIC_NFC_CARD_PRICE_DISPLAY;
+const DISPLAY_PRICE = process.env.NEXT_PUBLIC_NFC_CARD_PRICE_DISPLAY ?? "58";
 
 export default function DashboardNfcPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -59,16 +58,14 @@ export default function DashboardNfcPage() {
     setError(null);
     setIsLoading(true);
 
-    if (!STRIPE_PRICE_ID) {
-      setError(t("errors.missingPrice"));
-      setIsLoading(false);
-      return;
-    }
-
     const response = await fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId: STRIPE_PRICE_ID }),
+      body: JSON.stringify({
+        mode: "payment",
+        amount: Number(DISPLAY_PRICE),
+        description: "CardLink NFC Card — 36 months premium",
+      }),
     });
 
     if (!response.ok) {

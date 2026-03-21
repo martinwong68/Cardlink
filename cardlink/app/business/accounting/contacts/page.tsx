@@ -38,7 +38,7 @@ export default function AccountingContactsPage() {
   }, [contacts, filter]);
 
   return (
-    <div className="space-y-4 pb-28 md:pb-2">
+    <div className="space-y-4 pb-28">
       <section className="app-card p-4 md:p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-semibold text-gray-800">Contacts</h2>

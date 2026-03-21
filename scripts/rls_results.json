@@ -1,0 +1,695 @@
+{
+  "profiles": {
+    "svc_ok": true,
+    "svc_count": 10,
+    "anon_ok": true,
+    "anon_count": 10,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "companies": {
+    "svc_ok": true,
+    "svc_count": 5,
+    "anon_ok": true,
+    "anon_count": 5,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "company_members": {
+    "svc_ok": true,
+    "svc_count": 13,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "company_addresses": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_key_contacts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_documents": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_bank_accounts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_social_profiles": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_operating_hours": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_offers": {
+    "svc_ok": true,
+    "svc_count": 2,
+    "anon_ok": true,
+    "anon_count": 2,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "business_cards": {
+    "svc_ok": true,
+    "svc_count": 11,
+    "anon_ok": true,
+    "anon_count": 11,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "card_fields": {
+    "svc_ok": true,
+    "svc_count": 10,
+    "anon_ok": true,
+    "anon_count": 10,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "card_links": {
+    "svc_ok": true,
+    "svc_count": 4,
+    "anon_ok": true,
+    "anon_count": 4,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "card_experiences": {
+    "svc_ok": true,
+    "svc_count": 3,
+    "anon_ok": true,
+    "anon_count": 3,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "card_shares": {
+    "svc_ok": true,
+    "svc_count": 252,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "nfc_cards": {
+    "svc_ok": true,
+    "svc_count": 101,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "nfc_card_intake_batches": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "nfc_tap_logs": {
+    "svc_ok": true,
+    "svc_count": 38,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "boards": {
+    "svc_ok": true,
+    "svc_count": 5,
+    "anon_ok": true,
+    "anon_count": 5,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "sub_boards": {
+    "svc_ok": true,
+    "svc_count": 22,
+    "anon_ok": true,
+    "anon_count": 22,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "forum_posts": {
+    "svc_ok": true,
+    "svc_count": 6,
+    "anon_ok": true,
+    "anon_count": 6,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "forum_replies": {
+    "svc_ok": true,
+    "svc_count": 2,
+    "anon_ok": true,
+    "anon_count": 2,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "posts": {
+    "svc_ok": true,
+    "svc_count": 2,
+    "anon_ok": true,
+    "anon_count": 2,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "connections": {
+    "svc_ok": true,
+    "svc_count": 1,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "membership_programs": {
+    "svc_ok": true,
+    "svc_count": 3,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "membership_tiers": {
+    "svc_ok": true,
+    "svc_count": 3,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "membership_accounts": {
+    "svc_ok": true,
+    "svc_count": 8,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "membership_transactions": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "membership_points_ledger": {
+    "svc_ok": true,
+    "svc_count": 2,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "membership_bobo_point_ledger": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "membership_spend_transactions": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "offer_redemptions": {
+    "svc_ok": true,
+    "svc_count": 3,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "inv_products": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "inv_stock_balances": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "inv_stock_movements": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "proc_suppliers": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "proc_purchase_orders": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "proc_purchase_order_items": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "proc_purchase_requests": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "proc_receipts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "proc_receipt_items": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "proc_contracts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "pos_registers": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "pos_products": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "pos_shifts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "pos_orders": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "pos_order_items": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "pos_payment_operations": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "pos_payment_webhook_events": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "crm_leads": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "crm_deals": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "crm_contacts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "crm_activities": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "crm_campaigns": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "crm_notes": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "organizations": {
+    "svc_ok": true,
+    "svc_count": 1,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "accounts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "transactions": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "transaction_lines": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "contacts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "invoices": {
+    "svc_ok": true,
+    "svc_count": 1,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "invoice_items": {
+    "svc_ok": true,
+    "svc_count": 1,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "tax_rates": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "currencies": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "documents": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "payroll_records": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "inventory_items": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "audit_log": {
+    "svc_ok": true,
+    "svc_count": 1,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "company_modules": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_security_settings": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_api_keys": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "company_audit_logs": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "admin_users": {
+    "svc_ok": true,
+    "svc_count": 1,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "admin_audit_logs": {
+    "svc_ok": true,
+    "svc_count": 13,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "admin_reports": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "admin_action_approvals": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "notifications": {
+    "svc_ok": true,
+    "svc_count": 2,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "user_roles": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "app_billing_settings": {
+    "svc_ok": true,
+    "svc_count": 1,
+    "anon_ok": true,
+    "anon_count": 1,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "billing_payment_events": {
+    "svc_ok": true,
+    "svc_count": 5,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "RLS_FILTERING"
+  },
+  "subscription_plans": {
+    "svc_ok": true,
+    "svc_count": 3,
+    "anon_ok": true,
+    "anon_count": 3,
+    "rls_status": "OPEN_OR_SELECT_ALLOWED"
+  },
+  "company_subscriptions": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "ai_credits": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "ai_conversations": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "ai_messages": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "ai_action_cards": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "ai_card_feedback": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "store_settings": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "store_categories": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "store_products": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "store_discounts": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "billing_history": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "hr_employees": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "hr_leave_requests": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "hr_attendance": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "hr_payroll": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "booking_services": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "booking_availability": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  },
+  "booking_appointments": {
+    "svc_ok": true,
+    "svc_count": 0,
+    "anon_ok": true,
+    "anon_count": 0,
+    "rls_status": "EMPTY_TABLE"
+  }
+}

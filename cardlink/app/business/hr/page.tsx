@@ -1,25 +1,61 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { Users, CalendarDays, Clock, DollarSign, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  Users,
-  CalendarDays,
-  Clock,
-  DollarSign,
-  ChevronRight,
-  Loader2,
-} from "lucide-react";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
+
+import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
+import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
+import type { ModuleFunctionDefinition } from "@/src/lib/module-functions";
+
+const hrFunctions: ModuleFunctionDefinition[] = [
+  {
+    id: "employees",
+    title: "Employees",
+    description: "Browse and manage employee records",
+    icon: Users,
+    color: "bg-purple-50 text-purple-600",
+    ctaLabel: "View Employees",
+    ctaHref: "/business/hr/employees",
+  },
+  {
+    id: "leave",
+    title: "Leave",
+    description: "Review and approve leave requests",
+    icon: CalendarDays,
+    color: "bg-amber-50 text-amber-600",
+    ctaLabel: "View Leave",
+    ctaHref: "/business/hr/leave",
+  },
+  {
+    id: "attendance",
+    title: "Attendance",
+    description: "Track daily check-in and presence",
+    icon: Clock,
+    color: "bg-green-50 text-green-600",
+    ctaLabel: "View Attendance",
+    ctaHref: "/business/hr/attendance",
+  },
+  {
+    id: "payroll",
+    title: "Payroll",
+    description: "Process salary and compensation",
+    icon: DollarSign,
+    color: "bg-blue-50 text-blue-600",
+    ctaLabel: "View Payroll",
+    ctaHref: "/business/hr/payroll",
+  },
+];
+
+type HrData = { activeCount: number; pendingLeave: number; todayPresent: number };
 
 export default function BusinessHrPage() {
   const t = useTranslations("businessHr");
   const { companyId, loading: companyLoading, supabase } = useActiveCompany();
 
-  const [activeCount, setActiveCount] = useState(0);
-  const [pendingLeave, setPendingLeave] = useState(0);
-  const [todayPresent, setTodayPresent] = useState(0);
+  const [activeId, setActiveId] = useState<string>(hrFunctions[0].id);
+  const [data, setData] = useState<HrData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadStats = useCallback(async () => {
@@ -28,29 +64,12 @@ export default function BusinessHrPage() {
     try {
       const today = new Date().toISOString().slice(0, 10);
       const [empRes, leaveRes, attendRes] = await Promise.all([
-        supabase
-          .from("hr_employees")
-          .select("id", { count: "exact", head: true })
-          .eq("company_id", companyId)
-          .eq("status", "active"),
-        supabase
-          .from("hr_leave_requests")
-          .select("id", { count: "exact", head: true })
-          .eq("company_id", companyId)
-          .eq("status", "pending"),
-        supabase
-          .from("hr_attendance")
-          .select("id", { count: "exact", head: true })
-          .eq("company_id", companyId)
-          .eq("date", today)
-          .eq("status", "present"),
+        supabase.from("hr_employees").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "active"),
+        supabase.from("hr_leave_requests").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "pending"),
+        supabase.from("hr_attendance").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("date", today).eq("status", "present"),
       ]);
-      setActiveCount(empRes.count ?? 0);
-      setPendingLeave(leaveRes.count ?? 0);
-      setTodayPresent(attendRes.count ?? 0);
-    } catch {
-      // Tables may not exist yet
-    }
+      setData({ activeCount: empRes.count ?? 0, pendingLeave: leaveRes.count ?? 0, todayPresent: attendRes.count ?? 0 });
+    } catch { /* tables may not exist */ }
     setLoading(false);
   }, [companyId, supabase]);
 
@@ -59,7 +78,22 @@ export default function BusinessHrPage() {
     if (companyId) void loadStats();
   }, [companyId, companyLoading, loadStats]);
 
-  if (companyLoading || loading) {
+  const activeFunc = useMemo(
+    () => hrFunctions.find((f) => f.id === activeId) ?? hrFunctions[0],
+    [activeId],
+  );
+
+  const functionsWithBadges = useMemo(() => {
+    if (!data) return hrFunctions;
+    return hrFunctions.map((fn) => {
+      if (fn.id === "leave" && data.pendingLeave > 0) {
+        return { ...fn, badgeText: `${data.pendingLeave} pending` };
+      }
+      return fn;
+    });
+  }, [data]);
+
+  if (companyLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
@@ -67,64 +101,53 @@ export default function BusinessHrPage() {
     );
   }
 
-  const stats = [
-    { label: t("stats.activeEmployees"), value: activeCount, color: "bg-purple-50 text-purple-600", icon: Users },
-    { label: t("stats.pendingLeave"), value: pendingLeave, color: "bg-amber-50 text-amber-600", icon: CalendarDays },
-    { label: t("stats.todayAttendance"), value: todayPresent, color: "bg-green-50 text-green-600", icon: Clock },
-  ];
-
-  const quickLinks = [
-    { key: "employees" as const, icon: Users, color: "bg-purple-50 text-purple-600", href: "/business/hr/employees" },
-    { key: "leave" as const, icon: CalendarDays, color: "bg-amber-50 text-amber-600", href: "/business/hr/leave" },
-    { key: "attendance" as const, icon: Clock, color: "bg-green-50 text-green-600", href: "/business/hr/attendance" },
-    { key: "payroll" as const, icon: DollarSign, color: "bg-blue-50 text-blue-600", href: "/business/hr/payroll" },
-  ];
-
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="app-kicker">{t("brand")}</p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">{t("title")}</h1>
-        <p className="app-subtitle mt-2 text-sm">{t("subtitle")}</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        {stats.map((s) => {
-          const Icon = s.icon;
-          return (
-            <div key={s.label} className="app-card flex flex-col items-center gap-2 p-4">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${s.color}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <span className="text-xl font-bold text-gray-800">{s.value}</span>
-              <span className="text-[10px] text-gray-500 text-center">{s.label}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Quick Links */}
-      <div className="grid grid-cols-2 gap-3">
-        {quickLinks.map((link) => {
-          const Icon = link.icon;
-          return (
-            <Link
-              key={link.key}
-              href={link.href}
-              className="app-card group flex items-center gap-3 px-4 py-4 transition hover:-translate-y-0.5 hover:border-indigo-200"
-            >
-              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${link.color}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800">{t(`quickLinks.${link.key}`)}</p>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-gray-300 group-hover:text-indigo-400 transition" />
-            </Link>
-          );
-        })}
-      </div>
+    <div className="space-y-4 pb-28">
+      <ModuleFunctionSlider items={functionsWithBadges} activeId={activeId} onSelect={setActiveId} />
+      <ModuleFunctionDetailCard
+        title={activeFunc.title}
+        description={activeFunc.description}
+        ctaLabel={activeFunc.ctaLabel}
+        ctaHref={activeFunc.ctaHref}
+        loading={loading}
+        empty={false}
+        emptyMessage=""
+      >
+        <DetailContent activeId={activeId} data={data} t={t} />
+      </ModuleFunctionDetailCard>
     </div>
   );
+}
+
+function DetailContent({ activeId, data, t }: { activeId: string; data: HrData | null; t: ReturnType<typeof useTranslations> }) {
+  if (!data) return null;
+
+  switch (activeId) {
+    case "employees":
+      return (
+        <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+          <p className="text-lg font-bold text-gray-900">{data.activeCount}</p>
+          <p className="text-[10px] text-gray-500">{t("stats.activeEmployees")}</p>
+        </div>
+      );
+    case "leave":
+      return (
+        <div className="rounded-xl bg-amber-50 px-3 py-2 text-center">
+          <p className="text-lg font-bold text-amber-700">{data.pendingLeave}</p>
+          <p className="text-[10px] text-amber-600">{t("stats.pendingLeave")}</p>
+        </div>
+      );
+    case "attendance":
+      return (
+        <div className="rounded-xl bg-green-50 px-3 py-2 text-center">
+          <p className="text-lg font-bold text-green-700">{data.todayPresent}</p>
+          <p className="text-[10px] text-green-600">{t("stats.todayAttendance")}</p>
+        </div>
+      );
+    case "payroll":
+      return (
+        <p className="text-sm text-gray-500">Manage salary runs, deductions, and compensation reports.</p>
+      );
+    default: return null;
+  }
 }

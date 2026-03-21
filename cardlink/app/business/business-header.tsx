@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ChevronRight, Globe } from "lucide-react";
+import { ChevronRight, Zap } from "lucide-react";
 
 import BusinessNotificationBell from "@/components/business/BusinessNotificationBell";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const sectionLabels: Record<string, string> = {
   "/business/store": "Store",
@@ -41,9 +40,18 @@ export default function BusinessHeader({
     )?.[1] ?? "Dashboard";
 
   return (
-    <header className="sticky top-0 z-10 bg-white border-b border-gray-100 md:hidden">
-      <div className="flex items-center justify-between px-4 py-3">
+    <header className="sticky top-0 z-10 bg-white border-b border-gray-100">
+      <div className="flex items-center justify-between px-4 py-3 mx-auto max-w-5xl">
+        {/* Left: breadcrumb (mobile) / branding + breadcrumb (desktop) */}
         <div className="flex items-center gap-2">
+          {/* Desktop branding — hidden on mobile since sidebar provides it */}
+          <Link href="/business" className="hidden md:flex items-center gap-1.5 mr-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-600">
+              <Zap className="h-3 w-3 text-white" />
+            </div>
+            <span className="text-sm font-bold text-gray-900">Cardlink</span>
+          </Link>
+
           <span className="text-xs text-gray-400">
             {activeCompanyName ?? "Business"}
           </span>
@@ -52,8 +60,9 @@ export default function BusinessHeader({
             {sectionLabel}
           </span>
         </div>
+
+        {/* Right: controls */}
         <div className="flex items-center gap-2">
-          <LanguageSwitcher compact />
           <BusinessNotificationBell userId={userId} companyId={activeCompanyId} />
           <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
             B

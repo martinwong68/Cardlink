@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BriefcaseBusiness, ChevronRight, CreditCard, Download, HelpCircle, Lock, LogOut, Mail, Shield, User } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, CreditCard, Download, Globe, HelpCircle, Lock, LogOut, Mail, Shield, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import { canAccessCRM, resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 import { getFriends } from "@/src/lib/connections";
 import { trackInterfaceEvent } from "@/src/lib/business/interface-events";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type BusinessEligibilityState = {
   eligible: boolean;
@@ -310,6 +311,23 @@ export default function SettingsPage() {
             </div>
             <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
           </Link>
+        </div>
+      </div>
+
+      {/* Preferences Section */}
+      <div>
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+          Preferences
+        </span>
+        <div className="mt-1 space-y-1">
+          <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
+            <Globe className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">{t("links.language")}</div>
+              <div className="text-xs text-gray-500">Select display language</div>
+            </div>
+            <LanguageSwitcher compact />
+          </div>
         </div>
       </div>
 

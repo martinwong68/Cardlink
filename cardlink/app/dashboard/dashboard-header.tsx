@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 
 import NotificationBell from "@/components/NotificationBell";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const pageTitles: Record<string, string> = {
   "/dashboard/explore": "Explore",
@@ -44,21 +43,20 @@ export default function DashboardHeader({
   const isExplore = pathname.startsWith("/dashboard/explore");
 
   return (
-    <header className="sticky top-0 z-10 bg-indigo-600">
-      <div className="mx-auto max-w-5xl px-4 pt-3 pb-4">
+    <header className="sticky top-0 z-10 border-b border-gray-100 bg-white">
+      <div className="mx-auto max-w-5xl px-4 pt-3 pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-lg font-bold text-white">{title}</div>
-            <div className="text-xs text-indigo-200">
+            <div className="text-lg font-bold text-gray-900">{title}</div>
+            <div className="text-xs text-gray-400">
               Welcome back, {firstName}
             </div>
           </div>
           <div className="dashboard-header-controls flex items-center gap-2">
-            <LanguageSwitcher compact />
             <NotificationBell userId={userId} />
             <Link
               href="/dashboard/settings/profile"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-400 text-xs font-bold text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white"
               aria-label="Profile"
             >
               {avatarUrl ? (
@@ -75,9 +73,9 @@ export default function DashboardHeader({
           </div>
         </div>
         {isExplore && (
-          <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/20 px-3 py-2">
-            <Search className="h-3.5 w-3.5 text-indigo-200" />
-            <span className="text-xs text-indigo-200">
+          <div className="mt-3 flex items-center gap-2 rounded-xl bg-gray-100 px-3 py-2">
+            <Search className="h-3.5 w-3.5 text-gray-400" />
+            <span className="text-xs text-gray-400">
               Search discounts &amp; offers...
             </span>
           </div>

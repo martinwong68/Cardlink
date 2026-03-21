@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { notifyNewOrderServer } from "@/src/lib/business-notifications-server";
+import { createPosOrderJournalEntry } from "@/src/lib/cross-module-integration";
 
 export async function GET(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
@@ -76,6 +77,39 @@ export async function POST(request: Request) {
       order.id as string,
       Number(order.total ?? 0)
     );
+
+    // Cross-module: create accounting journal entry for POS sale
+    void createPosOrderJournalEntry(
+      supabase,
+      guard.context.activeCompanyId,
+      guard.context.user.id,
+      order.id as string,
+      Number(order.total ?? 0),
+      String(order.order_number ?? order.id),
+    );
+
+    // Cross-module: deduct inventory for items linked to inv_products
+    if (body.line_items?.length) {
+      for (const li of body.line_items as Array<{ productId?: string; inv_product_id?: string; quantity: number }>) {
+        const invProductId = li.inv_product_id || li.productId;
+        if (invProductId && li.quantity > 0) {
+          void supabase.rpc("record_inventory_movement", {
+            p_company_id: guard.context.activeCompanyId,
+            p_product_id: invProductId,
+            p_movement_type: "out",
+            p_qty: li.quantity,
+            p_reason: `POS sale: ${order.order_number}`,
+            p_reference_type: "pos_order",
+            p_reference_id: order.id,
+            p_created_by: guard.context.user.id,
+            p_idempotency_key: `pos-inv-${order.id}-${invProductId}`,
+            p_operation_id: null,
+            p_correlation_id: null,
+            p_occurred_at: null,
+          });
+        }
+      }
+    }
   }
 
   return NextResponse.json({

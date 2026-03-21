@@ -1,254 +1,173 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Package, ArrowRightLeft, BarChart3, FileText } from "lucide-react";
 
-type ProductRow = {
-  id: string;
-  sku: string;
-  name: string;
-  unit: string;
-  is_active: boolean;
-};
+import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
+import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
+import type { ModuleFunctionDefinition } from "@/src/lib/module-functions";
 
-type BalanceRow = {
-  product_id: string;
-  on_hand: number;
-  updated_at: string;
-};
+const inventoryFunctions: ModuleFunctionDefinition[] = [
+  {
+    id: "products",
+    title: "Products",
+    description: "Manage your inventory product catalogue",
+    icon: Package,
+    color: "bg-indigo-50 text-indigo-600",
+    ctaLabel: "View Products",
+    ctaHref: "/business/inventory/products",
+  },
+  {
+    id: "movements",
+    title: "Stock Movements",
+    description: "Record stock in, out, and adjustments",
+    icon: ArrowRightLeft,
+    color: "bg-teal-50 text-teal-600",
+    ctaLabel: "View Movements",
+    ctaHref: "/business/inventory/movements",
+  },
+  {
+    id: "balances",
+    title: "Balances",
+    description: "View live on-hand quantities per product",
+    icon: BarChart3,
+    color: "bg-amber-50 text-amber-600",
+    ctaLabel: "View Balances",
+    ctaHref: "/business/inventory/balances",
+  },
+  {
+    id: "rfq",
+    title: "Purchase Requests",
+    description: "Create and manage purchase requests (RFQ)",
+    icon: FileText,
+    color: "bg-purple-50 text-purple-600",
+    ctaLabel: "View Requests",
+    ctaHref: "/business/procurement/requests",
+  },
+];
+
+type ProductRow = { id: string; sku: string; name: string; unit: string; is_active: boolean };
+type BalanceRow = { product_id: string; on_hand: number; updated_at: string };
+type InvData = { products: ProductRow[]; balances: BalanceRow[] };
+const HEADERS = { "x-cardlink-app-scope": "business" };
 
 export default function BusinessInventoryPage() {
-  const [products, setProducts] = useState<ProductRow[]>([]);
-  const [balances, setBalances] = useState<BalanceRow[]>([]);
-  const [message, setMessage] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [sku, setSku] = useState("");
-  const [name, setName] = useState("");
-  const [unit, setUnit] = useState("pcs");
-
-  const [movementProductId, setMovementProductId] = useState("");
-  const [movementType, setMovementType] = useState<"in" | "out" | "adjust">("in");
-  const [movementQty, setMovementQty] = useState("1");
-  const [movementReason, setMovementReason] = useState("");
-
-  const scopeHeaders = {
-    "content-type": "application/json",
-    "x-cardlink-app-scope": "business",
-  };
-
-  const loadData = async () => {
-    setIsLoading(true);
-    setMessage("");
-
-    const [productsRes, balancesRes] = await Promise.all([
-      fetch("/api/inventory/products", {
-        method: "GET",
-        headers: {
-          "x-cardlink-app-scope": "business",
-        },
-        cache: "no-store",
-      }),
-      fetch("/api/inventory/balances", {
-        method: "GET",
-        headers: {
-          "x-cardlink-app-scope": "business",
-        },
-        cache: "no-store",
-      }),
-    ]);
-
-    const productsBody = (await productsRes.json()) as { error?: string; products?: ProductRow[] };
-    const balancesBody = (await balancesRes.json()) as { error?: string; balances?: BalanceRow[] };
-
-    if (!productsRes.ok) {
-      setMessage(productsBody.error ?? "Failed to load products.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!balancesRes.ok) {
-      setMessage(balancesBody.error ?? "Failed to load balances.");
-      setIsLoading(false);
-      return;
-    }
-
-    const nextProducts = productsBody.products ?? [];
-    setProducts(nextProducts);
-    setBalances(balancesBody.balances ?? []);
-    if (!movementProductId && nextProducts.length > 0) {
-      setMovementProductId(nextProducts[0].id);
-    }
-    setIsLoading(false);
-  };
+  const [activeId, setActiveId] = useState<string>(inventoryFunctions[0].id);
+  const [data, setData] = useState<InvData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void loadData();
+    (async () => {
+      try {
+        const [prodRes, balRes] = await Promise.all([
+          fetch("/api/inventory/products", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/inventory/balances", { headers: HEADERS, cache: "no-store" }),
+        ]);
+        const [pd, bd] = await Promise.all([
+          prodRes.ok ? prodRes.json() : {},
+          balRes.ok ? balRes.json() : {},
+        ]);
+        setData({ products: pd.products ?? [], balances: bd.balances ?? [] });
+      } catch { /* silent */ } finally { setLoading(false); }
+    })();
   }, []);
 
-  const createProduct = async () => {
-    setMessage("");
-    const response = await fetch("/api/inventory/products", {
-      method: "POST",
-      headers: scopeHeaders,
-      body: JSON.stringify({ sku, name, unit }),
+  const activeFunc = useMemo(
+    () => inventoryFunctions.find((f) => f.id === activeId) ?? inventoryFunctions[0],
+    [activeId],
+  );
+
+  const functionsWithBadges = useMemo(() => {
+    if (!data) return inventoryFunctions;
+    return inventoryFunctions.map((fn) => {
+      if (fn.id === "products") {
+        const inactive = data.products.filter((p) => !p.is_active).length;
+        return inactive > 0 ? { ...fn, badgeText: `${inactive} inactive` } : fn;
+      }
+      return fn;
     });
-    const body = (await response.json()) as { error?: string };
-
-    if (!response.ok) {
-      setMessage(body.error ?? "Create product failed.");
-      return;
-    }
-
-    setMessage("Product created.");
-    setSku("");
-    setName("");
-    setUnit("pcs");
-    await loadData();
-  };
-
-  const createMovement = async () => {
-    setMessage("");
-    const qty = Number(movementQty);
-    const response = await fetch("/api/inventory/movements", {
-      method: "POST",
-      headers: scopeHeaders,
-      body: JSON.stringify({
-        product_id: movementProductId,
-        movement_type: movementType,
-        qty,
-        reason: movementReason || null,
-      }),
-    });
-    const body = (await response.json()) as { error?: string; status?: string };
-
-    if (!response.ok) {
-      setMessage(body.error ?? "Create movement failed.");
-      return;
-    }
-
-    setMessage(`Movement ${body.status ?? "created"}.`);
-    setMovementReason("");
-    await loadData();
-  };
+  }, [data]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="app-kicker">Business App</p>
-        <h1 className="app-title mt-2 text-2xl font-semibold">Inventory</h1>
-        <p className="app-subtitle mt-1 text-sm">
-          Create products, post stock movements, and view live balances.
-        </p>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section className="app-card space-y-3 p-5">
-          <h2 className="text-sm font-semibold text-gray-800">Create Product</h2>
-          <input
-            value={sku}
-            onChange={(event) => setSku(event.target.value)}
-            placeholder="SKU"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-          />
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Name"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-          />
-          <input
-            value={unit}
-            onChange={(event) => setUnit(event.target.value)}
-            placeholder="Unit"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-          />
-          <button
-            type="button"
-            onClick={() => void createProduct()}
-            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"
-          >
-            POST /api/inventory/products
-          </button>
-        </section>
-
-        <section className="app-card space-y-3 p-5">
-          <h2 className="text-sm font-semibold text-gray-800">Create Movement</h2>
-          <select
-            value={movementProductId}
-            onChange={(event) => setMovementProductId(event.target.value)}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-          >
-            <option value="">Select Product</option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name} ({product.sku})
-              </option>
-            ))}
-          </select>
-          <select
-            value={movementType}
-            onChange={(event) => setMovementType(event.target.value as "in" | "out" | "adjust")}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-          >
-            <option value="in">in</option>
-            <option value="out">out</option>
-            <option value="adjust">adjust</option>
-          </select>
-          <input
-            value={movementQty}
-            onChange={(event) => setMovementQty(event.target.value)}
-            placeholder="Qty"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-          />
-          <input
-            value={movementReason}
-            onChange={(event) => setMovementReason(event.target.value)}
-            placeholder="Reason (optional)"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-          />
-          <button
-            type="button"
-            onClick={() => void createMovement()}
-            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"
-          >
-            POST /api/inventory/movements
-          </button>
-        </section>
-      </div>
-
-      <section className="app-card p-5">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-800">Products & Balances</h2>
-          <button
-            type="button"
-            onClick={() => void loadData()}
-            className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700"
-          >
-            Refresh
-          </button>
-        </div>
-        {isLoading ? <p className="text-sm text-gray-500">Loading...</p> : null}
-        {!isLoading ? (
-          <div className="space-y-2 text-sm">
-            {products.map((product) => {
-              const balance = balances.find((item) => item.product_id === product.id);
-              return (
-                <div key={product.id} className="rounded-xl border border-gray-100 px-3 py-2">
-                  <p className="font-semibold text-gray-800">
-                    {product.name} ({product.sku})
-                  </p>
-                  <p className="text-gray-600">
-                    on_hand: {balance?.on_hand ?? 0} {product.unit}
-                  </p>
-                </div>
-              );
-            })}
-            {products.length === 0 ? <p className="text-gray-500">No products yet.</p> : null}
-          </div>
-        ) : null}
-      </section>
-
-      {message ? <p className="app-error px-3 py-2 text-sm">{message}</p> : null}
+    <div className="space-y-4 pb-28">
+      <ModuleFunctionSlider items={functionsWithBadges} activeId={activeId} onSelect={setActiveId} />
+      <ModuleFunctionDetailCard
+        title={activeFunc.title}
+        description={activeFunc.description}
+        ctaLabel={activeFunc.ctaLabel}
+        ctaHref={activeFunc.ctaHref}
+        loading={loading}
+        empty={!loading && !hasContent(activeId, data)}
+        emptyMessage={`No ${activeFunc.title.toLowerCase()} data yet`}
+      >
+        <DetailContent activeId={activeId} data={data} />
+      </ModuleFunctionDetailCard>
     </div>
   );
+}
+
+function hasContent(id: string, data: InvData | null): boolean {
+  if (!data) return false;
+  switch (id) {
+    case "products": return data.products.length > 0;
+    case "balances": return data.balances.length > 0;
+    default: return false;
+  }
+}
+
+function DetailContent({ activeId, data }: { activeId: string; data: InvData | null }) {
+  if (!data) return null;
+
+  switch (activeId) {
+    case "products": {
+      const active = data.products.filter((p) => p.is_active).length;
+      return (
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-gray-900">{data.products.length}</p>
+              <p className="text-[10px] text-gray-500">Total</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-gray-900">{active}</p>
+              <p className="text-[10px] text-gray-500">Active</p>
+            </div>
+          </div>
+          {data.products.slice(0, 4).map((p) => (
+            <div key={p.id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-2">
+              <div>
+                <p className="text-sm font-semibold text-gray-800">{p.name}</p>
+                <p className="text-xs text-gray-500">{p.sku} · {p.unit}</p>
+              </div>
+              <span className={`text-[10px] font-medium ${p.is_active ? "text-emerald-500" : "text-gray-400"}`}>
+                {p.is_active ? "Active" : "Inactive"}
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    case "movements":
+      return (
+        <p className="text-sm text-gray-500">View recent stock-in, stock-out, and adjustment records.</p>
+      );
+    case "balances": {
+      const enriched = data.balances.map((b) => {
+        const prod = data.products.find((p) => p.id === b.product_id);
+        return { ...b, name: prod?.name ?? b.product_id, unit: prod?.unit ?? "" };
+      });
+      return (
+        <div className="space-y-2">
+          {enriched.slice(0, 5).map((b) => (
+            <div key={b.product_id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-2">
+              <p className="text-sm font-semibold text-gray-800">{b.name}</p>
+              <p className="text-sm font-bold text-gray-900">{b.on_hand} {b.unit}</p>
+            </div>
+          ))}
+          {enriched.length === 0 && <p className="text-sm text-gray-400">No balances recorded yet.</p>}
+        </div>
+      );
+    }
+    default: return null;
+  }
 }

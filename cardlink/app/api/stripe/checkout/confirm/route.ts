@@ -165,6 +165,36 @@ export async function POST(request: Request) {
         .update({ last_payment_at: new Date().toISOString() })
         .eq("id", user.id);
       throwIfSupabaseError("update last_payment_at", paymentUpdateError);
+
+      // Fulfill credit purchases based on session metadata
+      const metadata = session.metadata ?? {};
+      const creditsStr = metadata.credits;
+      const companyIdMeta = metadata.company_id;
+
+      if (creditsStr && companyIdMeta) {
+        const creditAmount = parseInt(creditsStr, 10);
+        if (creditAmount > 0) {
+          const { error: creditError } = await supabaseAdmin
+            .from("ai_credits")
+            .insert({
+              company_id: companyIdMeta,
+              credits_remaining: creditAmount,
+              credits_purchased: creditAmount,
+            });
+          throwIfSupabaseError("insert ai_credits", creditError);
+
+          const { error: billingError } = await supabaseAdmin
+            .from("billing_history")
+            .insert({
+              company_id: companyIdMeta,
+              description: `Purchased ${creditAmount} AI credits`,
+              amount: (session.amount_total ?? 0) / 100,
+              currency: session.currency ?? "USD",
+              type: "credits",
+            });
+          throwIfSupabaseError("insert billing_history", billingError);
+        }
+      }
     }
 
     return NextResponse.json({ ok: true });

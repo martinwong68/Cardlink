@@ -69,7 +69,7 @@ export default function AccountingDashboardPage() {
   );
 
   return (
-    <div className="space-y-4 pb-28 md:pb-2">
+    <div className="space-y-4 pb-28">
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <article className="app-card p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Accounts</p>

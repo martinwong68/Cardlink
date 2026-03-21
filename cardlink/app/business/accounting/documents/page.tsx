@@ -28,7 +28,7 @@ export default function AccountingDocumentsPage() {
   }, []);
 
   return (
-    <section className="app-card p-4 md:p-5 pb-28 md:pb-5">
+    <section className="app-card p-4 md:p-5 pb-28">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-800">Documents</h2>
         <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>

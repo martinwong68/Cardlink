@@ -17,16 +17,13 @@ Create `.env.local` from `.env.example` and fill all values:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_PREMIUM_MONTHLY_PRICE_ID`
-- `STRIPE_PREMIUM_YEARLY_PRICE_ID`
-- `NEXT_PUBLIC_NFC_CARD_PRICE_ID`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (from Stripe Dashboard → API Keys)
 
-## 2) Stripe products/prices
-In Stripe Dashboard:
-- Create Premium Monthly recurring price
-- Create Premium Yearly recurring price
-- (Optional) Create NFC one-time price
-- Copy each `price_...` id into env vars
+## 2) Pricing — no Stripe products needed
+Prices are defined in the `subscription_plans` DB table and passed to Stripe
+Checkout as inline `price_data`. **No Products or Prices need to exist in the
+Stripe Dashboard.** The checkout route reads the plan slug + interval from the
+frontend and builds the line item dynamically.
 
 ## 3) Stripe webhook
 Create webhook endpoint in Stripe Dashboard:

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Pencil } from "lucide-react";
 
 import { accountingGet, accountingPatch } from "@/src/lib/accounting/client";
 import type { InvoiceRow } from "@/src/lib/accounting/types";
@@ -45,7 +47,7 @@ export default function AccountingInvoicesPage() {
   };
 
   return (
-    <div className="space-y-4 pb-28 md:pb-2">
+    <div className="space-y-4 pb-28">
       {message ? <p className="app-success px-3 py-2 text-sm">{message}</p> : null}
       <section className="app-card p-4 md:p-5">
         <div className="mb-3 flex items-center justify-between">
@@ -58,8 +60,18 @@ export default function AccountingInvoicesPage() {
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {invoices.map((invoice) => (
               <article key={invoice.id} className="rounded-xl border border-gray-100 p-4">
-                <p className="text-xs font-mono text-gray-500">{invoice.invoice_number}</p>
-                <p className="mt-1 text-base font-semibold text-gray-800">{invoice.client_name}</p>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-mono text-gray-500">{invoice.invoice_number}</p>
+                    <p className="mt-1 text-base font-semibold text-gray-800">{invoice.client_name}</p>
+                  </div>
+                  <Link
+                    href={`/business/accounting/invoices/${invoice.id}`}
+                    className="inline-flex items-center gap-1 rounded-lg bg-gray-50 px-2 py-1 text-xs font-semibold text-gray-600 hover:bg-primary-50 hover:text-primary-600"
+                  >
+                    <Pencil className="h-3 w-3" /> Edit
+                  </Link>
+                </div>
                 <p className="mt-2 text-xl font-bold text-gray-900">{formatAmount(invoice.total, invoice.currency)}</p>
                 <p className="mt-1 text-xs text-gray-500">Due {invoice.due_date}</p>
                 <div className="mt-3 flex items-center gap-2">

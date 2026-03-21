@@ -83,7 +83,7 @@ export default function LoggedInTopHeader() {
     return null;
   }
 
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/business")) {
     return null;
   }
 

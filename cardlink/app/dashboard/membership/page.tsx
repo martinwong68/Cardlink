@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
 import MembershipRedemptionsPanel from "@/components/MembershipRedemptionsPanel";
+import SliderWrapper from "@/components/SliderWrapper";
 
 type MembershipAccountRow = {
   id: string;
@@ -101,14 +102,15 @@ export default async function MembershipPage() {
         </section>
       ) : null}
 
-      <section className="space-y-3">
+      <section>
         {accounts.length ? (
-          accounts.map((account) => {
+          <SliderWrapper count={accounts.length}>
+          {accounts.map((account) => {
             const company = companyMap.get(account.company_id);
             const tier = account.tier_id ? tierMap.get(account.tier_id) : null;
             return (
+              <div key={account.id} className="w-full flex-shrink-0 snap-center px-4">
               <article
-                key={account.id}
                 className="app-card p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -166,8 +168,10 @@ export default async function MembershipPage() {
                   </div>
                 </div>
               </article>
+              </div>
             );
-          })
+          })}
+          </SliderWrapper>
         ) : (
           <article className="app-card p-5 text-sm text-gray-600">
             {t("empty.noMemberships")}

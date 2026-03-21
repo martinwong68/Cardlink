@@ -33,7 +33,7 @@ export default function AccountingSettingsPage() {
   }, []);
 
   return (
-    <div className="space-y-4 pb-28 md:pb-2">
+    <div className="space-y-4 pb-28">
       <section className="app-card p-4 md:p-5">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-gray-800">Currencies</h2>

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { requireAccountingContext } from "@/src/lib/accounting/context";
 import { writeAccountingAuditLog } from "@/src/lib/accounting/audit";
+import { createInvoicePaidJournalEntry } from "@/src/lib/cross-module-integration";
 
 type StatusUpdatePayload = {
   org_id?: string;
@@ -34,7 +35,7 @@ export async function PATCH(
   const supabase = await createClient();
   const { data: beforeRow } = await supabase
     .from("invoices")
-    .select("id, status")
+    .select("id, status, total, invoice_number")
     .eq("id", invoiceId)
     .eq("org_id", guard.context.organizationId)
     .maybeSingle();
@@ -53,6 +54,18 @@ export async function PATCH(
 
   if (error || !data) {
     return NextResponse.json({ error: error?.message ?? "Invoice status update failed." }, { status: 400 });
+  }
+
+  /* Cross-module: auto-create journal entry when invoice marked paid */
+  if (status === "paid" && beforeRow.status !== "paid") {
+    void createInvoicePaidJournalEntry(
+      supabase,
+      guard.context.organizationId,
+      guard.context.userId,
+      invoiceId,
+      Number(beforeRow.total) || 0,
+      beforeRow.invoice_number ?? invoiceId,
+    );
   }
 
   await writeAccountingAuditLog({

@@ -185,7 +185,7 @@ export default function BusinessAiPage() {
     }
   };
 
-  /* ── Send message (mock AI for now) ── */
+  /* ── Send message ── */
   const handleSend = async () => {
     const text = inputText.trim();
     if (!text || sending || !activeConvoId || !companyId) return;
@@ -229,25 +229,50 @@ export default function BusinessAiPage() {
       );
     }
 
-    // Update message count + updated_at
-    await supabase
-      .from("ai_conversations")
-      .update({
-        message_count: (activeConvo?.message_count ?? 0) + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", activeConvoId);
+    // Build message history for AI context
+    const chatHistory = [
+      ...messages.map((m) => ({ role: m.role, content: m.content })),
+      { role: "user" as const, content: text },
+    ];
 
-    // Show typing indicator, then insert mock response after 1s
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Call real AI API
+    let aiContent: string;
+    try {
+      const response = await fetch("/api/business/ai/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-cardlink-app-scope": "business",
+        },
+        body: JSON.stringify({
+          messages: chatHistory,
+          model,
+          includeBusinessContext: true,
+        }),
+      });
 
-    const mockContent = t("mockResponse");
+      if (!response.ok) {
+        const errBody = (await response.json().catch(() => ({}))) as { error?: string; reason?: string };
+        aiContent = errBody.error ?? t("aiError");
+        // If limit reached, update balance state
+        if (response.status === 429) {
+          setAiBalance({ allowed: false, reason: errBody.reason ?? "ai_limit_reached" });
+        }
+      } else {
+        const data = (await response.json()) as { content?: string };
+        aiContent = data.content ?? t("aiError");
+      }
+    } catch {
+      aiContent = t("aiError");
+    }
+
+    // Insert AI response
     const { data: aiMsg } = await supabase
       .from("ai_messages")
       .insert({
         conversation_id: activeConvoId,
         role: "assistant",
-        content: mockContent,
+        content: aiContent,
       })
       .select()
       .single();
@@ -256,7 +281,7 @@ export default function BusinessAiPage() {
       setMessages((prev) => [...prev, aiMsg as Message]);
     }
 
-    // Increment again for assistant message
+    // Update message count
     await supabase
       .from("ai_conversations")
       .update({

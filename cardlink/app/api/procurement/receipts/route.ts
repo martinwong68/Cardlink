@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { createClient } from "@/src/lib/supabase/server";
+import { createReceiptJournalEntry } from "@/src/lib/cross-module-integration";
 
 type ReceiptItemDraft = {
   po_item_id?: string;
@@ -92,6 +93,29 @@ export async function POST(request: Request) {
   const result = Array.isArray(data) ? data[0] : data;
   if (!result) {
     return NextResponse.json({ error: "receipt processing failed." }, { status: 500 });
+  }
+
+  /* Cross-module: create accounting journal entry for goods received */
+  if (result.status !== "idempotent_replay") {
+    /* Calculate total from PO items */
+    const { data: poItems } = await supabase
+      .from("proc_purchase_order_items")
+      .select("qty, unit_cost")
+      .eq("po_id", body.po_id);
+    const totalCost = (poItems ?? []).reduce(
+      (sum, item) => sum + (Number(item.qty) * Number(item.unit_cost)),
+      0,
+    );
+    if (totalCost > 0) {
+      void createReceiptJournalEntry(
+        supabase,
+        guard.context.activeCompanyId,
+        guard.context.user.id,
+        result.receipt_id,
+        totalCost,
+        `PO receipt ${body.po_id?.slice(0, 8)}`,
+      );
+    }
   }
 
   return NextResponse.json(

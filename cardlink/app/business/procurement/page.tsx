@@ -1,104 +1,219 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
-import { Building2, FileText, Package, CheckCircle, FileSignature, Truck, ClipboardCheck } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Truck, ClipboardCheck, Package, CheckCircle, FileSignature } from "lucide-react";
 
+import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
+import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
+import type { ModuleFunctionDefinition } from "@/src/lib/module-functions";
+
+const procurementFunctions: ModuleFunctionDefinition[] = [
+  {
+    id: "vendors",
+    title: "Vendors",
+    description: "Manage your supplier list and contacts",
+    icon: Truck,
+    color: "bg-indigo-50 text-indigo-600",
+    ctaLabel: "View Vendors",
+    ctaHref: "/business/procurement/vendors",
+  },
+  {
+    id: "requests",
+    title: "Purchase Requests",
+    description: "Submit and track internal purchase requests",
+    icon: ClipboardCheck,
+    color: "bg-amber-50 text-amber-600",
+    ctaLabel: "View Requests",
+    ctaHref: "/business/procurement/requests",
+  },
+  {
+    id: "orders",
+    title: "Purchase Orders",
+    description: "Create and manage purchase orders",
+    icon: Package,
+    color: "bg-teal-50 text-teal-600",
+    ctaLabel: "View Orders",
+    ctaHref: "/business/procurement/orders",
+  },
+  {
+    id: "goods-receipt",
+    title: "Goods Receipt",
+    description: "Record received goods against purchase orders",
+    icon: CheckCircle,
+    color: "bg-green-50 text-green-600",
+    ctaLabel: "View Receipts",
+    ctaHref: "/business/procurement/goods-receipt",
+  },
+  {
+    id: "contracts",
+    title: "Contracts",
+    description: "Track vendor contracts and renewals",
+    icon: FileSignature,
+    color: "bg-purple-50 text-purple-600",
+    ctaLabel: "View Contracts",
+    ctaHref: "/business/procurement/contracts",
+  },
+];
+
+type Vendor = { id: string; name: string; status: string };
+type PR = { id: string; status: string };
 type PO = { id: string; po_number: string; status: string; total: number };
+type Contract = { id: string; status: string };
+type ProcData = { vendors: Vendor[]; requests: PR[]; purchaseOrders: PO[]; contracts: Contract[] };
+const HEADERS = { "x-cardlink-app-scope": "business" };
 
 export default function BusinessProcurementPage() {
-  const [activeVendors, setActiveVendors] = useState(0);
-  const [pendingPRs, setPendingPRs] = useState(0);
-  const [activePOs, setActivePOs] = useState(0);
-  const [activeContracts, setActiveContracts] = useState(0);
-  const [recentPOs, setRecentPOs] = useState<PO[]>([]);
+  const [activeId, setActiveId] = useState<string>(procurementFunctions[0].id);
+  const [data, setData] = useState<ProcData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const headers = { "x-cardlink-app-scope": "business" };
-
-  const load = useCallback(async () => {
-    try {
-      const [vendorRes, prRes, poRes, contractRes] = await Promise.all([
-        fetch("/api/procurement/vendors", { headers, cache: "no-store" }),
-        fetch("/api/procurement/requests", { headers, cache: "no-store" }),
-        fetch("/api/procurement/purchase-orders", { headers, cache: "no-store" }),
-        fetch("/api/procurement/contracts", { headers, cache: "no-store" }),
-      ]);
-      if (vendorRes.ok) { const d = await vendorRes.json(); setActiveVendors((d.vendors ?? []).filter((v: any) => v.status === "active").length); }
-      if (prRes.ok) { const d = await prRes.json(); setPendingPRs((d.requests ?? []).filter((r: any) => r.status === "submitted").length); }
-      if (poRes.ok) { const d = await poRes.json(); const pos = d.purchase_orders ?? []; setActivePOs(pos.filter((o: any) => o.status === "ordered" || o.status === "shipped").length); setRecentPOs(pos.slice(0, 5)); }
-      if (contractRes.ok) { const d = await contractRes.json(); setActiveContracts((d.contracts ?? []).filter((c: any) => c.status === "active").length); }
-    } catch { /* silent */ } finally { setLoading(false); }
+  useEffect(() => {
+    (async () => {
+      try {
+        const [vRes, rRes, poRes, cRes] = await Promise.all([
+          fetch("/api/procurement/vendors", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/procurement/requests", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/procurement/purchase-orders", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/procurement/contracts", { headers: HEADERS, cache: "no-store" }),
+        ]);
+        const [vd, rd, pod, cd] = await Promise.all([
+          vRes.ok ? vRes.json() : {},
+          rRes.ok ? rRes.json() : {},
+          poRes.ok ? poRes.json() : {},
+          cRes.ok ? cRes.json() : {},
+        ]);
+        setData({
+          vendors: vd.vendors ?? [],
+          requests: rd.requests ?? [],
+          purchaseOrders: pod.purchase_orders ?? [],
+          contracts: cd.contracts ?? [],
+        });
+      } catch { /* silent */ } finally { setLoading(false); }
+    })();
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const activeFunc = useMemo(
+    () => procurementFunctions.find((f) => f.id === activeId) ?? procurementFunctions[0],
+    [activeId],
+  );
 
-  const statCards = [
-    { label: "Active Vendors", value: activeVendors, Icon: Building2, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
-    { label: "Pending PRs", value: pendingPRs, Icon: FileText, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
-    { label: "Active POs", value: activePOs, Icon: Package, iconBg: "bg-teal-50", iconColor: "text-teal-600" },
-    { label: "Active Contracts", value: activeContracts, Icon: FileSignature, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
-  ];
-
-  const navItems = [
-    { label: "Vendors", href: "/business/procurement/vendors", Icon: Truck },
-    { label: "Purchase Requests", href: "/business/procurement/requests", Icon: ClipboardCheck },
-    { label: "Purchase Orders", href: "/business/procurement/orders", Icon: Package },
-    { label: "Goods Receipt", href: "/business/procurement/goods-receipt", Icon: CheckCircle },
-    { label: "Contracts", href: "/business/procurement/contracts", Icon: FileSignature },
-  ];
-
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading procurement data…</p></div>;
+  const functionsWithBadges = useMemo(() => {
+    if (!data) return procurementFunctions;
+    return procurementFunctions.map((fn) => {
+      if (fn.id === "requests") {
+        const pending = data.requests.filter((r) => r.status === "submitted").length;
+        return pending > 0 ? { ...fn, badgeText: `${pending} pending` } : fn;
+      }
+      if (fn.id === "orders") {
+        const active = data.purchaseOrders.filter((o) => o.status === "ordered" || o.status === "shipped").length;
+        return active > 0 ? { ...fn, badgeText: `${active} active` } : fn;
+      }
+      return fn;
+    });
+  }, [data]);
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-xl font-bold text-gray-900">Procurement</h1>
-
-      {/* Metrics */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {statCards.map((m) => (
-          <div key={m.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-            <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg ${m.iconBg}`}>
-              <m.Icon className={`h-4 w-4 ${m.iconColor}`} />
-            </div>
-            <p className="text-2xl font-bold text-gray-900">{m.value}</p>
-            <p className="text-[10px] text-gray-500">{m.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Quick Nav */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Modules</h2>
-        <div className="space-y-2">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:border-indigo-100 hover:bg-indigo-50/30">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
-                <item.Icon className="h-4 w-4 text-indigo-600" />
-              </span>
-              <span className="text-sm font-medium text-gray-700">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent POs */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Recent Purchase Orders</h2>
-        {recentPOs.length > 0 ? (
-          <div className="space-y-2">
-            {recentPOs.map((po) => (
-              <div key={po.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{po.po_number}</p>
-                  <p className="text-xs text-gray-500">{po.status}</p>
-                </div>
-                <p className="text-sm font-bold text-gray-900">${Number(po.total ?? 0).toFixed(2)}</p>
-              </div>
-            ))}
-          </div>
-        ) : <p className="text-xs text-gray-400">No purchase orders yet.</p>}
-      </div>
+    <div className="space-y-4 pb-28">
+      <ModuleFunctionSlider items={functionsWithBadges} activeId={activeId} onSelect={setActiveId} />
+      <ModuleFunctionDetailCard
+        title={activeFunc.title}
+        description={activeFunc.description}
+        ctaLabel={activeFunc.ctaLabel}
+        ctaHref={activeFunc.ctaHref}
+        loading={loading}
+        empty={!loading && !hasContent(activeId, data)}
+        emptyMessage={`No ${activeFunc.title.toLowerCase()} data yet`}
+      >
+        <DetailContent activeId={activeId} data={data} />
+      </ModuleFunctionDetailCard>
     </div>
   );
+}
+
+function hasContent(id: string, data: ProcData | null): boolean {
+  if (!data) return false;
+  switch (id) {
+    case "vendors": return data.vendors.length > 0;
+    case "requests": return data.requests.length > 0;
+    case "orders": return data.purchaseOrders.length > 0;
+    case "contracts": return data.contracts.length > 0;
+    default: return false;
+  }
+}
+
+function DetailContent({ activeId, data }: { activeId: string; data: ProcData | null }) {
+  if (!data) return null;
+
+  switch (activeId) {
+    case "vendors": {
+      const active = data.vendors.filter((v) => v.status === "active").length;
+      return (
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{data.vendors.length}</p>
+            <p className="text-[10px] text-gray-500">Total Vendors</p>
+          </div>
+          <div className="rounded-xl bg-indigo-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-indigo-700">{active}</p>
+            <p className="text-[10px] text-indigo-600">Active</p>
+          </div>
+        </div>
+      );
+    }
+    case "requests": {
+      const submitted = data.requests.filter((r) => r.status === "submitted").length;
+      const approved = data.requests.filter((r) => r.status === "approved").length;
+      return (
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{data.requests.length}</p>
+            <p className="text-[10px] text-gray-500">Total</p>
+          </div>
+          <div className="rounded-xl bg-amber-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-amber-700">{submitted}</p>
+            <p className="text-[10px] text-amber-600">Pending</p>
+          </div>
+          <div className="rounded-xl bg-green-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-green-700">{approved}</p>
+            <p className="text-[10px] text-green-600">Approved</p>
+          </div>
+        </div>
+      );
+    }
+    case "orders": {
+      const recent = data.purchaseOrders.slice(0, 5);
+      return (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recent POs</p>
+          {recent.map((po) => (
+            <div key={po.id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-2">
+              <div>
+                <p className="text-sm font-semibold text-gray-800">{po.po_number}</p>
+                <span className={`text-[10px] font-medium ${po.status === "completed" ? "text-emerald-500" : "text-amber-500"}`}>{po.status}</span>
+              </div>
+              <p className="text-sm font-bold text-gray-900">${Number(po.total ?? 0).toLocaleString()}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    case "goods-receipt":
+      return <p className="text-sm text-gray-500">Record and verify received goods against your purchase orders.</p>;
+    case "contracts": {
+      const active = data.contracts.filter((c) => c.status === "active").length;
+      return (
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{data.contracts.length}</p>
+            <p className="text-[10px] text-gray-500">Total Contracts</p>
+          </div>
+          <div className="rounded-xl bg-purple-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-purple-700">{active}</p>
+            <p className="text-[10px] text-purple-600">Active</p>
+          </div>
+        </div>
+      );
+    }
+    default: return null;
+  }
 }

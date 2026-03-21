@@ -204,6 +204,11 @@ body {
   border-radius: 1rem;
 }
 
+/* ── Module tile dimension system (single source of truth) ── */
+.module-tile {
+  min-height: 120px;
+}
+
 .app-kicker {
   font-size: 0.68rem;
   font-weight: 700;

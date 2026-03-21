@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -90,6 +90,8 @@ export default function ExplorePanel() {
   const [busyJoinCompanyId, setBusyJoinCompanyId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activePromoIndex, setActivePromoIndex] = useState(0);
+  const promoSliderRef = useRef<HTMLDivElement>(null);
 
   const formatOffer = (offer: Offer) => {
     if (offer.points_cost && offer.points_cost > 0) {
@@ -360,6 +362,24 @@ export default function ExplorePanel() {
       .filter((item): item is { offer: Offer; company: Company } => Boolean(item));
   }, [offers, companyMap, offerTotalUsageMap, offerUserUsageMap, userId]);
 
+  const handlePromoScroll = useCallback(() => {
+    const el = promoSliderRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / el.offsetWidth);
+    setActivePromoIndex(Math.max(0, Math.min(idx, promoSlides.length - 1)));
+  }, [promoSlides.length]);
+
+  const scrollToPromo = useCallback(
+    (index: number) => {
+      const el = promoSliderRef.current;
+      if (!el) return;
+      const clamped = Math.max(0, Math.min(index, promoSlides.length - 1));
+      el.scrollTo({ left: clamped * el.offsetWidth, behavior: "smooth" });
+      setActivePromoIndex(clamped);
+    },
+    [promoSlides.length]
+  );
+
   const availableOffers = useMemo(() => {
     return offers.filter((offer) => {
       const totalUsage = offerTotalUsageMap[offer.id] ?? 0;
@@ -459,28 +479,53 @@ export default function ExplorePanel() {
           <span className="text-sm font-semibold text-gray-800">{t("sections.promotion")}</span>
           <span className="text-xs font-medium text-indigo-600">View All</span>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2">
-          {promoSlides.length ? (
-            promoSlides.map(({ offer, company }) => (
-              <Link
-                key={offer.id}
-                href={`/dashboard/explore?companyId=${company.id}`}
-                className="flex-shrink-0 w-40 rounded-xl bg-gradient-to-br from-indigo-500 to-teal-400 p-4 text-white shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="text-lg font-bold leading-tight">{formatOffer(offer)}</div>
-                <div className="mt-1 text-xs opacity-80 truncate">{company.name}</div>
-                <div className="mt-1 text-xs opacity-70 truncate">{offer.title}</div>
-                <div className="mt-3 rounded-lg bg-white/20 px-2 py-1 text-center text-xs font-medium">
-                  Claim Now
+        {promoSlides.length ? (
+          <>
+            <div
+              ref={promoSliderRef}
+              onScroll={handlePromoScroll}
+              className="flex snap-x snap-mandatory gap-0 overflow-x-auto scroll-smooth scrollbar-hide"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {promoSlides.map(({ offer, company }) => (
+                <div key={offer.id} className="w-full flex-shrink-0 snap-center px-0">
+                  <Link
+                    href={`/dashboard/explore?companyId=${company.id}`}
+                    className="block rounded-xl bg-gradient-to-br from-indigo-500 to-teal-400 p-4 text-white shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="text-lg font-bold leading-tight">{formatOffer(offer)}</div>
+                    <div className="mt-1 text-xs opacity-80 truncate">{company.name}</div>
+                    <div className="mt-1 text-xs opacity-70 truncate">{offer.title}</div>
+                    <div className="mt-3 rounded-lg bg-white/20 px-2 py-1 text-center text-xs font-medium">
+                      Claim Now
+                    </div>
+                  </Link>
                 </div>
-              </Link>
-            ))
-          ) : (
-            <div className="w-full rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
-              {t("empty.promotions")}
+              ))}
             </div>
-          )}
-        </div>
+            {promoSlides.length > 1 && (
+              <div className="mt-3 flex justify-center gap-1.5">
+                {promoSlides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => scrollToPromo(idx)}
+                    className={`h-1.5 rounded-full transition-all ${
+                      idx === activePromoIndex
+                        ? "w-4 bg-indigo-600"
+                        : "w-1.5 bg-gray-300"
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="w-full rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+            {t("empty.promotions")}
+          </div>
+        )}
       </section>
 
       {/* Categories grid */}

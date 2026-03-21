@@ -48,7 +48,7 @@ export default async function DashboardLayout({
   const initials = getInitials(profileName);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 md:pb-10">
+    <div className="min-h-screen bg-gray-50 pb-24">
       <DashboardHeader
         profileName={profileName}
         initials={initials}
@@ -56,10 +56,10 @@ export default async function DashboardLayout({
         userId={user.id}
       />
 
-      <div className="mx-auto max-w-5xl flex gap-6 px-4 py-6">
-        <DashboardNav />
-        <main className="flex-1 min-w-0">{children}</main>
-      </div>
+      <main className="mx-auto max-w-2xl px-4 py-6">
+        {children}
+      </main>
+      <DashboardNav />
     </div>
   );
 }

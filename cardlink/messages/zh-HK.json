@@ -803,7 +803,8 @@
       "switchToBusiness": "切換到 Business 介面",
       "orderNfc": "訂購 NFC 名片",
       "export": "匯出聯絡人",
-      "support": "協助與支援"
+      "support": "協助與支援",
+      "language": "語言"
     },
     "actions": {
       "logout": "登出"
@@ -1032,48 +1033,46 @@
   },
   "upgrade": {
     "brand": "CardLink",
-    "title": "升級",
-    "subtitle": "解鎖高級工具以擴展人脈。",
+    "title": "選擇方案",
+    "subtitle": "解鎖高級工具以擴展人脈。隨時升級或降級。",
     "errors": {
       "checkout": "無法開始結帳。",
       "unavailable": "結帳不可用。",
       "portal": "無法開啟帳單入口。"
     },
+    "toggle": {
+      "monthly": "月繳",
+      "yearly": "年繳",
+      "save": "省約17%",
+      "mo": "月",
+      "yr": "年"
+    },
     "free": {
       "title": "免費",
-      "badge": "永久免費",
-      "features": {
-        "cards": "1 張名片",
-        "fields": "2 個聯絡方式 + 2 個連結",
-        "public": "只可查看公開資訊",
-        "connect": "與他人連結",
-        "feed": "基本動態"
-      }
+      "badge": "永久免費"
     },
     "premium": {
       "badge": "熱門",
-      "title": "高級版",
-      "monthlyLabel": "每月",
-      "yearlyLabel": "每年",
-      "status": "你已是高級版用戶。",
-      "until": "Premium 到期日：{date}",
-      "features": {
-        "unlimitedCards": "無限名片",
-        "unlimitedFields": "無限聯絡欄位",
-        "fullDetails": "查看好友完整資料",
-        "crm": "CRM 記錄、標籤與提醒",
-        "analytics": "名片掃描分析",
-        "export": "匯出聯絡人（CSV/vCard）",
-        "themes": "自訂名片主題",
-        "support": "優先支援"
-      }
+      "status": "你已訂閱。",
+      "until": "有效至 {date}"
+    },
+    "business": {
+      "badge": "最超值"
+    },
+    "features": {
+      "companies": "公司",
+      "unlimitedCompanies": "無限公司",
+      "users": "位用戶",
+      "storage": "儲存空間",
+      "aiActions": "AI 操作/月",
+      "pdfExport": "PDF 匯出",
+      "ocrDocs": "OCR 文件/月"
     },
     "actions": {
       "redirecting": "正在跳轉...",
-      "upgradeMonthly": "按月升級",
-      "upgradeYearly": "按年升級",
-      "downgrade": "降級為免費方案",
-      "manageBilling": "管理帳單與訂閱"
+      "subscribe": "訂閱",
+      "currentPlan": "目前方案",
+      "manageBilling": "管理帳單"
     }
   },
   "upgradeSuccess": {
@@ -1662,6 +1661,222 @@
     "comingSoon": "即將推出",
     "comingSoonDesc": "此模組正在開發中，即將推出。"
   },
+  "businessBooking": {
+    "brand": "商業介面",
+    "stats": {
+      "today": "今日",
+      "upcoming": "即將來臨",
+      "completionRate": "完成率"
+    },
+    "todaySchedule": "今日日程",
+    "services": {
+      "title": "服務",
+      "add": "新增",
+      "addTitle": "新增服務",
+      "editTitle": "編輯服務",
+      "fields": {
+        "name": "服務名稱",
+        "namePlaceholder": "例如：剪髮",
+        "description": "描述",
+        "duration": "時長（分鐘）",
+        "price": "價格",
+        "category": "分類",
+        "maxConcurrent": "最大同時預約數"
+      },
+      "saving": "儲存中...",
+      "save": "儲存",
+      "emptyTitle": "尚無服務",
+      "emptyDesc": "新增您嘅第一個可預約服務。",
+      "mins": "分鐘",
+      "confirmDelete": "確認刪除"
+    },
+    "appointments": {
+      "title": "預約",
+      "add": "新增",
+      "addTitle": "新預約",
+      "fields": {
+        "service": "服務",
+        "selectService": "選擇服務",
+        "customerName": "客戶名稱",
+        "email": "電郵",
+        "phone": "電話",
+        "date": "日期",
+        "time": "時間",
+        "notes": "備註"
+      },
+      "saving": "儲存中...",
+      "save": "儲存",
+      "tabs": {
+        "all": "全部",
+        "today": "今日",
+        "upcoming": "即將來臨",
+        "past": "過往"
+      },
+      "empty": "暫無預約。",
+      "confirm": "確認",
+      "cancel": "取消",
+      "complete": "完成",
+      "noShow": "未到"
+    },
+    "statuses": {
+      "pending": "待確認",
+      "confirmed": "已確認",
+      "completed": "已完成",
+      "cancelled": "已取消",
+      "no_show": "未到"
+    },
+    "calendar": {
+      "title": "日曆",
+      "day": "日",
+      "week": "週",
+      "empty": "此期間暫無預約。",
+      "mon": "週一",
+      "tue": "週二",
+      "wed": "週三",
+      "thu": "週四",
+      "fri": "週五",
+      "sat": "週六",
+      "sun": "週日"
+    },
+    "availability": {
+      "title": "可預約時間",
+      "subtitle": "設定每日嘅營業時間。",
+      "days": {
+        "mon": "週一",
+        "tue": "週二",
+        "wed": "週三",
+        "thu": "週四",
+        "fri": "週五",
+        "sat": "週六",
+        "sun": "週日"
+      },
+      "open": "營業",
+      "closed": "休息",
+      "saving": "儲存中...",
+      "saved": "已儲存！",
+      "save": "儲存"
+    }
+  },
+  "businessHr": {
+    "brand": "商業介面",
+    "stats": {
+      "activeEmployees": "在職員工",
+      "pendingLeave": "待批假期申請",
+      "todayAttendance": "今日出勤"
+    },
+    "employmentTypes": {
+      "fullTime": "全職",
+      "partTime": "兼職",
+      "contract": "合約"
+    },
+    "employees": {
+      "title": "員工",
+      "add": "新增",
+      "addTitle": "新增員工",
+      "editTitle": "編輯員工",
+      "step1": "個人資料",
+      "step2": "職位詳情",
+      "step3": "薪酬",
+      "fields": {
+        "fullName": "全名",
+        "fullNamePlaceholder": "例如：陳大文",
+        "email": "電郵",
+        "phone": "電話",
+        "position": "職位",
+        "department": "部門",
+        "employmentType": "僱傭類型",
+        "startDate": "入職日期",
+        "salary": "薪金",
+        "salaryPeriod": "薪金週期"
+      },
+      "salaryPeriods": {
+        "monthly": "月薪",
+        "hourly": "時薪"
+      },
+      "back": "返回",
+      "next": "下一步",
+      "saving": "儲存中...",
+      "save": "儲存",
+      "emptyTitle": "尚無員工",
+      "emptyDesc": "新增您嘅第一位員工開始使用。",
+      "statuses": {
+        "active": "在職",
+        "inactive": "離職",
+        "terminated": "已解僱"
+      },
+      "toggleStatus": "切換狀態",
+      "confirmDelete": "確認刪除"
+    },
+    "leave": {
+      "title": "假期申請",
+      "add": "新增",
+      "addTitle": "新假期申請",
+      "fields": {
+        "employee": "員工",
+        "selectEmployee": "選擇員工",
+        "leaveType": "假期類型",
+        "startDate": "開始日期",
+        "endDate": "結束日期",
+        "daysCount": "{count} 日",
+        "reason": "原因"
+      },
+      "types": {
+        "annual": "年假",
+        "sick": "病假",
+        "unpaid": "無薪假",
+        "maternity": "產假",
+        "other": "其他"
+      },
+      "tabs": {
+        "pending": "待批",
+        "approved": "已批准",
+        "rejected": "已拒絕"
+      },
+      "saving": "提交中...",
+      "submit": "提交",
+      "empty": "暫無假期申請。",
+      "unknownEmployee": "未知員工",
+      "days": "日",
+      "approve": "批准",
+      "reject": "拒絕"
+    },
+    "attendance": {
+      "title": "出勤",
+      "present": "出勤",
+      "absent": "缺勤",
+      "late": "遲到",
+      "noEmployees": "未搵到員工。請先新增員工。",
+      "clockIn": "簽到",
+      "clockOut": "簽退",
+      "clockInBtn": "簽到",
+      "clockOutBtn": "簽退",
+      "statuses": {
+        "present": "出勤",
+        "absent": "缺勤",
+        "late": "遲到",
+        "half_day": "半日"
+      }
+    },
+    "payroll": {
+      "title": "薪酬",
+      "generate": "生成",
+      "statuses": {
+        "draft": "草稿",
+        "approved": "已批准",
+        "paid": "已支付"
+      },
+      "bulkApprove": "全部批准",
+      "bulkPaid": "標記已付",
+      "empty": "此期間暫無薪酬記錄。",
+      "emptyHint": "生成薪酬以建立記錄。",
+      "unknownEmployee": "未知員工",
+      "basic": "底薪",
+      "overtime": "加班",
+      "deductions": "扣款",
+      "allowances": "津貼",
+      "netPay": "淨薪"
+    }
+  },
   "businessStore": {
     "brand": "商業介面",
     "title": "商店",
@@ -1697,6 +1912,7 @@
     "inputPlaceholder": "輸入訊息...",
     "attachmentComingSoon": "附件功能即將推出",
     "mockResponse": "已收到您嘅訊息。AI 後端將喺第 6 階段連接。",
+    "aiError": "唔好意思，無法處理您嘅請求。請重試。",
     "quickActions": {
       "recordSale": "記錄銷售",
       "checkBalance": "查看餘額",
@@ -1736,6 +1952,46 @@
       "approved": "已批准",
       "amended": "已修改",
       "rejected": "已拒絕"
+    }
+  },
+  "planBilling": {
+    "title": "方案與帳單",
+    "subtitle": "管理您嘅訂閱方案同帳單詳情。",
+    "active": "啟用中",
+    "renewsOn": "續約日期：{date}",
+    "changePlan": "變更方案",
+    "monthly": "月繳",
+    "yearly": "年繳",
+    "free": "免費",
+    "aiActionsMonth": "AI 操作/月",
+    "noAi": "無 AI 操作",
+    "teamMembers": "團隊成員",
+    "storage": "儲存空間",
+    "pdfExport": "PDF 匯出",
+    "currentPlan": "目前方案",
+    "upgrade": "升級",
+    "downgrade": "降級",
+    "downgradeWarning": "部分功能可能會丟失。",
+    "meters": {
+      "aiActions": "AI 操作",
+      "storage": "儲存空間",
+      "companies": "公司",
+      "users": "團隊成員",
+      "ocr": "OCR 文件"
+    },
+    "credits": {
+      "title": "AI 點數",
+      "balance": "剩餘 {count} 點",
+      "save": "省 {pct}",
+      "purchase": "購買"
+    },
+    "history": {
+      "title": "帳單紀錄",
+      "empty": "暫無帳單紀錄。",
+      "date": "日期",
+      "description": "說明",
+      "amount": "金額",
+      "type": "類型"
     }
   },
   "aiHistory": {
@@ -2015,8 +2271,7 @@
       "terms": "創建帳戶即表示您同意 Cardlink 商業服務條款。",
       "success": "商業帳戶已創建！正在跳轉...",
       "error": "發生錯誤，請重試。"
-    },
-    "companyLimitReached": "您已達到當前方案嘅 {limit} 間公司上限（已使用 {used} 間）。升級以創建更多公司。"
+    }
   },
   "registerCompany": {
     "pageTitle": "註冊您嘅公司",
@@ -2199,57 +2454,6 @@
       "companyNameMin": "公司名稱至少需要 2 個字元",
       "invalidEmail": "電子郵件地址無效",
       "invalidPhone": "電話號碼無效"
-    }
-  },
-  "upgradePrompt": {
-    "lockedTitle": "🔒 {feature}",
-    "defaultDescription": "此功能需要專業版或更高方案。",
-    "yourPlan": "你嘅方案",
-    "viewPlans": "睇方案",
-    "upgrade": "升級",
-    "inlineLabel": "{feature} — 專業版功能"
-  },
-  "aiLimitPrompt": {
-    "title": "AI 額度已用盡",
-    "description": "今個月已用咗 {used} / {limit} 次 AI 操作。",
-    "purchaseCredits": "購買額度"
-  },
-  "planBilling": {
-    "title": "方案同帳單",
-    "subtitle": "管理你嘅訂閱、用量同帳單記錄。",
-    "active": "啟用中",
-    "renewsOn": "續約日期：{date}",
-    "changePlan": "更改方案",
-    "currentPlan": "目前方案",
-    "upgrade": "升級",
-    "downgrade": "降級",
-    "downgradeWarning": "部分功能可能無法使用。",
-    "free": "免費",
-    "aiActionsMonth": "次 AI 操作/月",
-    "noAi": "無 AI 存取",
-    "teamMembers": "位團隊成員",
-    "storage": "儲存空間",
-    "pdfExport": "PDF 匯出",
-    "meters": {
-      "aiActions": "AI 操作",
-      "storage": "儲存空間",
-      "companies": "公司數",
-      "users": "團隊成員",
-      "ocr": "今個月 OCR"
-    },
-    "credits": {
-      "title": "AI 額度",
-      "balance": "剩餘 {count} 額度",
-      "purchase": "購買",
-      "save": "慳 {pct}"
-    },
-    "history": {
-      "title": "帳單記錄",
-      "empty": "未有帳單記錄。",
-      "date": "日期",
-      "description": "描述",
-      "amount": "金額",
-      "type": "類型"
     }
   }
 }

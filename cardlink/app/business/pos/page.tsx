@@ -1,124 +1,205 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
-import { Monitor, ClipboardList, Package, Clock, DollarSign, AlertTriangle, ShoppingBag, BarChart3 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Monitor, ClipboardList, Package, Clock } from "lucide-react";
+
+import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
+import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
+import type { ModuleFunctionDefinition } from "@/src/lib/module-functions";
+
+const posFunctions: ModuleFunctionDefinition[] = [
+  {
+    id: "terminal",
+    title: "Terminal",
+    description: "Open the POS terminal to process sales",
+    icon: Monitor,
+    color: "bg-indigo-50 text-indigo-600",
+    ctaLabel: "Open Terminal",
+    ctaHref: "/business/pos/terminal",
+  },
+  {
+    id: "products",
+    title: "Products",
+    description: "Manage your product catalogue and pricing",
+    icon: Package,
+    color: "bg-teal-50 text-teal-600",
+    ctaLabel: "View Products",
+    ctaHref: "/business/pos/products",
+  },
+  {
+    id: "orders",
+    title: "Orders",
+    description: "Review receipts, refunds, and order history",
+    icon: ClipboardList,
+    color: "bg-amber-50 text-amber-600",
+    ctaLabel: "View Orders",
+    ctaHref: "/business/pos/orders",
+  },
+  {
+    id: "shifts",
+    title: "Shifts",
+    description: "Open, close, and review register shifts",
+    icon: Clock,
+    color: "bg-purple-50 text-purple-600",
+    ctaLabel: "View Shifts",
+    ctaHref: "/business/pos/shifts",
+  },
+];
 
 type Order = { id: string; receipt_number: string; status: string; total: number; payment_method: string | null; created_at: string };
 type Product = { id: string; name: string; stock: number; is_active: boolean };
 type Shift = { id: string; status: string };
 
-export default function BusinessPosPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [shifts, setShifts] = useState<Shift[]>([]);
+type PosData = { orders: Order[]; products: Product[]; shifts: Shift[] };
+const HEADERS = { "x-cardlink-app-scope": "business" };
+
+export default function PosLandingPage() {
+  const [activeId, setActiveId] = useState<string>(posFunctions[0].id);
+  const [data, setData] = useState<PosData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const headers = { "x-cardlink-app-scope": "business" };
-
-  const load = useCallback(async () => {
-    try {
-      const [ordRes, prodRes, shiftRes] = await Promise.all([
-        fetch("/api/pos/orders", { headers, cache: "no-store" }),
-        fetch("/api/pos/products", { headers, cache: "no-store" }),
-        fetch("/api/pos/shifts", { headers, cache: "no-store" }),
-      ]);
-      if (ordRes.ok) { const d = await ordRes.json(); setOrders(d.orders ?? []); }
-      if (prodRes.ok) { const d = await prodRes.json(); setProducts(d.products ?? []); }
-      if (shiftRes.ok) { const d = await shiftRes.json(); setShifts(d.shifts ?? []); }
-    } catch { /* silent */ } finally { setLoading(false); }
+  useEffect(() => {
+    (async () => {
+      try {
+        const [ordRes, prodRes, shiftRes] = await Promise.all([
+          fetch("/api/pos/orders", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/pos/products", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/pos/shifts", { headers: HEADERS, cache: "no-store" }),
+        ]);
+        const [od, pd, sd] = await Promise.all([
+          ordRes.ok ? ordRes.json() : {},
+          prodRes.ok ? prodRes.json() : {},
+          shiftRes.ok ? shiftRes.json() : {},
+        ]);
+        setData({ orders: od.orders ?? [], products: pd.products ?? [], shifts: sd.shifts ?? [] });
+      } catch { /* silent */ } finally { setLoading(false); }
+    })();
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const activeFunc = useMemo(
+    () => posFunctions.find((f) => f.id === activeId) ?? posFunctions[0],
+    [activeId],
+  );
 
-  const today = new Date().toDateString();
-  const todayOrders = orders.filter((o) => new Date(o.created_at).toDateString() === today);
-  const todaySales = todayOrders.filter((o) => o.status === "completed").reduce((s, o) => s + Number(o.total), 0);
-  const openShifts = shifts.filter((s) => s.status === "open");
-  const lowStock = products.filter((p) => p.stock < 10 && p.is_active);
-
-  if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading POS data…</p></div>;
+  const functionsWithBadges = useMemo(() => {
+    if (!data) return posFunctions;
+    return posFunctions.map((fn) => {
+      if (fn.id === "shifts") {
+        const open = data.shifts.filter((s) => s.status === "open").length;
+        return open > 0 ? { ...fn, badgeText: `${open} open` } : fn;
+      }
+      if (fn.id === "products") {
+        const low = data.products.filter((p) => p.stock < 10 && p.is_active).length;
+        return low > 0 ? { ...fn, badgeText: `${low} low stock` } : fn;
+      }
+      return fn;
+    });
+  }, [data]);
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">Point of Sale</h1>
-        <p className="text-xs text-gray-500">POS overview and quick actions</p>
-      </div>
-
-      {/* Quick Nav */}
-      <div className="flex flex-wrap gap-2">
-        <Link href="/business/pos/terminal" className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
-          <Monitor className="h-3.5 w-3.5" /> Terminal
-        </Link>
-        <Link href="/business/pos/orders" className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200">
-          <ClipboardList className="h-3.5 w-3.5" /> Orders
-        </Link>
-        <Link href="/business/pos/products" className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200">
-          <Package className="h-3.5 w-3.5" /> Products
-        </Link>
-        <Link href="/business/pos/shifts" className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200">
-          <Clock className="h-3.5 w-3.5" /> Shifts
-        </Link>
-      </div>
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50">
-            <DollarSign className="h-4 w-4 text-teal-600" />
-          </div>
-          <p className="text-xl font-bold text-gray-900">${todaySales.toLocaleString()}</p>
-          <p className="text-xs text-gray-500">Today&apos;s Sales · {todayOrders.length} orders</p>
-        </div>
-        <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
-            <BarChart3 className="h-4 w-4 text-indigo-600" />
-          </div>
-          <p className="text-xl font-bold text-gray-900">{openShifts.length}</p>
-          <p className="text-xs text-gray-500">Open Shifts</p>
-        </div>
-        <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
-            <ShoppingBag className="h-4 w-4 text-indigo-600" />
-          </div>
-          <p className="text-xl font-bold text-gray-900">{products.length}</p>
-          <p className="text-xs text-gray-500">Total Products</p>
-        </div>
-        <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-          </div>
-          <p className="text-xl font-bold text-gray-900">{lowStock.length}</p>
-          <p className="text-xs text-gray-500">Low Stock Items</p>
-        </div>
-      </div>
-
-      {/* Recent Orders */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Recent Orders</h2>
-        {todayOrders.length > 0 ? (
-          <div className="space-y-2">
-            {todayOrders.slice(0, 5).map((o) => (
-              <div key={o.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{o.receipt_number}</p>
-                  <p className="text-xs text-gray-500">{o.payment_method ?? "N/A"} · {new Date(o.created_at).toLocaleTimeString()}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-gray-900">${Number(o.total).toLocaleString()}</p>
-                  <p className={`text-xs font-medium ${o.status === "completed" ? "text-emerald-500" : "text-amber-500"}`}>{o.status.toUpperCase()}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-xl border border-dashed border-gray-200 p-8 text-center">
-            <p className="text-sm font-medium text-gray-500">No orders today</p>
-            <p className="text-xs text-gray-400">Start a shift and process your first sale.</p>
-          </div>
-        )}
-      </div>
+    <div className="space-y-4 pb-28">
+      <ModuleFunctionSlider items={functionsWithBadges} activeId={activeId} onSelect={setActiveId} />
+      <ModuleFunctionDetailCard
+        title={activeFunc.title}
+        description={activeFunc.description}
+        ctaLabel={activeFunc.ctaLabel}
+        ctaHref={activeFunc.ctaHref}
+        loading={loading}
+        empty={!loading && !hasContent(activeId, data)}
+        emptyMessage={`No ${activeFunc.title.toLowerCase()} data yet`}
+      >
+        <DetailContent activeId={activeId} data={data} />
+      </ModuleFunctionDetailCard>
     </div>
   );
+}
+
+function hasContent(id: string, data: PosData | null): boolean {
+  if (!data) return false;
+  switch (id) {
+    case "orders": return data.orders.length > 0;
+    case "products": return data.products.length > 0;
+    case "shifts": return data.shifts.length > 0;
+    default: return false;
+  }
+}
+
+function DetailContent({ activeId, data }: { activeId: string; data: PosData | null }) {
+  if (!data) return null;
+
+  switch (activeId) {
+    case "terminal": {
+      const today = new Date().toDateString();
+      const todayOrders = data.orders.filter((o) => new Date(o.created_at).toDateString() === today);
+      const todaySales = todayOrders.filter((o) => o.status === "completed").reduce((s, o) => s + Number(o.total), 0);
+      return (
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">${todaySales.toLocaleString()}</p>
+            <p className="text-[10px] text-gray-500">Today&apos;s Sales</p>
+          </div>
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{todayOrders.length}</p>
+            <p className="text-[10px] text-gray-500">Today&apos;s Orders</p>
+          </div>
+        </div>
+      );
+    }
+    case "orders": {
+      const recent = data.orders.slice(0, 5);
+      return (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recent orders</p>
+          {recent.map((o) => (
+            <div key={o.id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-2">
+              <div>
+                <p className="text-sm font-semibold text-gray-800">{o.receipt_number}</p>
+                <p className="text-xs text-gray-500">{o.payment_method ?? "N/A"}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-gray-900">${Number(o.total).toLocaleString()}</p>
+                <span className={`text-[10px] font-medium ${o.status === "completed" ? "text-emerald-500" : "text-amber-500"}`}>{o.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    case "products": {
+      const active = data.products.filter((p) => p.is_active).length;
+      const low = data.products.filter((p) => p.stock < 10 && p.is_active).length;
+      return (
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{data.products.length}</p>
+            <p className="text-[10px] text-gray-500">Total</p>
+          </div>
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{active}</p>
+            <p className="text-[10px] text-gray-500">Active</p>
+          </div>
+          <div className="rounded-xl bg-amber-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-amber-700">{low}</p>
+            <p className="text-[10px] text-amber-600">Low Stock</p>
+          </div>
+        </div>
+      );
+    }
+    case "shifts": {
+      const open = data.shifts.filter((s) => s.status === "open").length;
+      return (
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{data.shifts.length}</p>
+            <p className="text-[10px] text-gray-500">Total Shifts</p>
+          </div>
+          <div className="rounded-xl bg-indigo-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-indigo-700">{open}</p>
+            <p className="text-[10px] text-indigo-600">Open Now</p>
+          </div>
+        </div>
+      );
+    }
+    default: return null;
+  }
 }
