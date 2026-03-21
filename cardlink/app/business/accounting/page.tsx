@@ -145,8 +145,8 @@ export default function AccountingLandingPage() {
         return overdue > 0 ? { ...fn, badgeText: `${overdue} overdue` } : fn;
       }
       if (fn.id === "transactions") {
-        const pending = data.transactions.filter((t) => t.status === "pending").length;
-        return pending > 0 ? { ...fn, badgeText: `${pending} pending` } : fn;
+        const draft = data.transactions.filter((t) => t.status === "draft").length;
+        return draft > 0 ? { ...fn, badgeText: `${draft} draft` } : fn;
       }
       return fn;
     });
