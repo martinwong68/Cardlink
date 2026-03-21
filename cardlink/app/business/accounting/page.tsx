@@ -196,7 +196,7 @@ function DetailContent({ activeId, data }: { activeId: string; data: SummaryData
   switch (activeId) {
     case "invoices": {
       const recent = [...data.invoices]
-        .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""))
+        .sort((a, b) => (b.issue_date ?? "").localeCompare(a.issue_date ?? ""))
         .slice(0, 5);
       if (recent.length === 0) return null;
       return (
