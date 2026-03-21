@@ -86,10 +86,10 @@ export default function CrmLandingPage() {
           fetch("/api/crm/campaigns", { headers: HEADERS, cache: "no-store" }),
         ]);
         const [ld, dd, ad, cd] = await Promise.all([
-          leadsRes.ok ? leadsRes.json() : {},
-          dealsRes.ok ? dealsRes.json() : {},
-          actRes.ok ? actRes.json() : {},
-          campRes.ok ? campRes.json() : {},
+          leadsRes.ok ? leadsRes.json() : ({} as Record<string, unknown>),
+          dealsRes.ok ? dealsRes.json() : ({} as Record<string, unknown>),
+          actRes.ok ? actRes.json() : ({} as Record<string, unknown>),
+          campRes.ok ? campRes.json() : ({} as Record<string, unknown>),
         ]);
         setData({
           leads: ld.leads ?? [],
