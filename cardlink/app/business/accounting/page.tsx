@@ -10,10 +10,16 @@ import {
   Wallet,
   Users,
   FolderOpen,
+  ClipboardList,
 } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
 import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
+import {
+  accountingCoverageSummary,
+  accountingCoverageVerdict,
+  accountingHighPriorityGaps,
+} from "@/src/lib/accounting/coverage";
 import type { ModuleFunctionDefinition } from "@/src/lib/module-functions";
 import { accountingGet } from "@/src/lib/accounting/client";
 import type { InvoiceRow, TransactionRow, AccountRow } from "@/src/lib/accounting/types";
@@ -91,6 +97,16 @@ const accountingFunctions: ModuleFunctionDefinition[] = [
     color: "bg-red-50 text-red-600",
     ctaLabel: "Record Expense",
     ctaHref: "/business/accounting/transactions/new",
+  },
+  {
+    id: "coverage",
+    title: "Coverage Review",
+    description: "Compare Cardlink against a professional SMC accounting benchmark",
+    icon: ClipboardList,
+    color: "bg-slate-50 text-slate-700",
+    ctaLabel: "Review Coverage",
+    ctaHref: "/business/accounting/coverage",
+    badgeText: `${accountingCoverageSummary.missing} gaps`,
   },
 ];
 
@@ -179,6 +195,7 @@ export default function AccountingLandingPage() {
 
 /* ── Helper: does the active function have content to show? ── */
 function detailHasContent(activeId: string, data: SummaryData | null): boolean {
+  if (activeId === "coverage") return true;
   if (!data) return false;
   switch (activeId) {
     case "invoices": return data.invoices.length > 0;
@@ -191,6 +208,38 @@ function detailHasContent(activeId: string, data: SummaryData | null): boolean {
 
 /* ── Detail content renderer per function ── */
 function DetailContent({ activeId, data }: { activeId: string; data: SummaryData | null }) {
+  if (activeId === "coverage") {
+    return (
+      <div className="space-y-3">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-xl bg-emerald-50 px-3 py-2">
+            <p className="text-xs text-emerald-700">Done</p>
+            <p className="text-lg font-bold text-emerald-900">{accountingCoverageSummary.implemented}</p>
+          </div>
+          <div className="rounded-xl bg-amber-50 px-3 py-2">
+            <p className="text-xs text-amber-700">Partial</p>
+            <p className="text-lg font-bold text-amber-900">{accountingCoverageSummary.partial}</p>
+          </div>
+          <div className="rounded-xl bg-rose-50 px-3 py-2">
+            <p className="text-xs text-rose-700">Missing</p>
+            <p className="text-lg font-bold text-rose-900">{accountingCoverageSummary.missing}</p>
+          </div>
+        </div>
+        <p className="rounded-xl bg-indigo-50 px-3 py-2 text-sm text-indigo-900">
+          {accountingCoverageVerdict}
+        </p>
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Priority gaps</p>
+          {accountingHighPriorityGaps.slice(0, 3).map((gap) => (
+            <div key={gap} className="rounded-xl border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-900">
+              {gap}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   switch (activeId) {

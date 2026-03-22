@@ -11,6 +11,7 @@ export const accountingNavItems: AccountingNavItem[] = [
   { id: "transactions", href: "/business/accounting/transactions", label: "Transactions", shortLabel: "Txns" },
   { id: "invoices", href: "/business/accounting/invoices", label: "Invoices", shortLabel: "Invoices" },
   { id: "reports", href: "/business/accounting/reports", label: "Reports", shortLabel: "Reports" },
+  { id: "coverage", href: "/business/accounting/coverage", label: "Coverage Review", shortLabel: "Coverage" },
   { id: "contacts", href: "/business/accounting/contacts", label: "Contacts", shortLabel: "Contacts" },
   { id: "payroll", href: "/business/accounting/payroll", label: "Payroll", shortLabel: "Payroll" },
   { id: "inventory", href: "/business/accounting/inventory", label: "Inventory", shortLabel: "Inventory" },
