@@ -292,3 +292,74 @@ async function ensureAccount(
 
   return created.id;
 }
+
+/**
+ * When a stock adjustment is approved (e.g., from stock-take),
+ * create an accounting journal entry:
+ *   Debit/Credit: Inventory (asset)
+ *   Credit/Debit: Inventory Adjustment (expense)
+ */
+export async function createStockAdjustmentJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  referenceId: string,
+  totalAdjustmentValue: number,
+  description: string,
+) {
+  if (totalAdjustmentValue === 0) return null;
+
+  const inventoryAccount = await ensureAccount(supabase, orgId, "1400", "Inventory", "asset");
+  const adjustmentAccount = await ensureAccount(supabase, orgId, "5300", "Inventory Adjustment", "expense");
+
+  if (!inventoryAccount || !adjustmentAccount) return null;
+
+  const idempotencyKey = `inv-adjust-${referenceId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `Inventory Adjustment: ${description}`,
+      reference_number: `ADJ-${referenceId.slice(0, 8)}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null;
+    console.error("[cross-module] adjustment journal error:", txErr.message);
+    return null;
+  }
+
+  /* Positive adjustment = increase inventory, negative = decrease */
+  const isIncrease = totalAdjustmentValue > 0;
+  const absValue = Math.abs(totalAdjustmentValue);
+
+  const { error: lineErr } = await supabase.from("transaction_lines").insert([
+    {
+      transaction_id: tx.id,
+      account_id: isIncrease ? inventoryAccount : adjustmentAccount,
+      debit: absValue,
+      credit: 0,
+      description: isIncrease ? "Inventory increase" : "Adjustment expense",
+    },
+    {
+      transaction_id: tx.id,
+      account_id: isIncrease ? adjustmentAccount : inventoryAccount,
+      debit: 0,
+      credit: absValue,
+      description: isIncrease ? "Adjustment credit" : "Inventory decrease",
+    },
+  ]);
+
+  if (lineErr) {
+    console.error("[cross-module] adjustment lines error:", lineErr.message);
+  }
+
+  return tx.id;
+}
