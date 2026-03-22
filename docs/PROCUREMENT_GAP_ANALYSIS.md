@@ -24,14 +24,14 @@ the current state of the Cardlink app.
 | **A. Supplier / Vendor Management** | | | | |
 | A1 | Create supplier record | ERPNext, Odoo, Procuman | ✅ Implemented | `POST /api/procurement/suppliers` |
 | A2 | List / search suppliers | ERPNext, Odoo, Procuman | ✅ Implemented | `GET /api/procurement/suppliers` |
-| A3 | Edit supplier details | ERPNext, Odoo | ⚠️ UI exists, API missing | `PATCH /api/procurement/suppliers/[id]` not implemented |
-| A4 | Supplier address & multi-contact | ERPNext, Odoo | ❌ Missing | Only single `contact_name` + `contact_phone` stored |
-| A5 | Supplier categorisation / tags | ERPNext, Odoo, Procuman | ❌ Missing | No category, industry, or tag fields |
+| A3 | Edit supplier details | ERPNext, Odoo | ✅ Implemented | `PATCH /api/procurement/suppliers/[id]` |
+| A4 | Supplier address & multi-contact | ERPNext, Odoo | ✅ Implemented | `address`, `city`, `country`, `email` fields added |
+| A5 | Supplier categorisation / tags | ERPNext, Odoo, Procuman | ✅ Implemented | `category` field on supplier |
 | A6 | Supplier performance rating / scorecard | ERPNext, Odoo | ❌ Missing | No rating, on-time %, quality score |
 | A7 | Supplier compliance documents | ERPNext, Procuman | ❌ Missing | No document attachment on supplier record |
 | A8 | Supplier portal (self-service) | ERPNext, Odoo | ❌ Missing | Suppliers cannot log in or submit quotations |
-| A9 | Supplier payment terms | Odoo | ❌ Missing | No payment terms (Net 30, etc.) on supplier record |
-| A10 | Multi-currency supplier pricing | Odoo, ERPNext | ❌ Missing | No currency field on supplier or PO |
+| A9 | Supplier payment terms | Odoo | ✅ Implemented | `payment_terms` field with 7 options (immediate to net_90) |
+| A10 | Multi-currency supplier pricing | Odoo, ERPNext | ⚠️ Schema only | `currency` field added to supplier; PO-level currency pending |
 | **B. Purchase Requisition / Request** | | | | |
 | B1 | Create purchase request | ERPNext, Odoo | ✅ Implemented | `POST /api/procurement/requests` |
 | B2 | List / filter requests by status | ERPNext, Odoo | ✅ Implemented | Filter: draft, pending, approved, rejected |
@@ -41,7 +41,7 @@ the current state of the Cardlink app.
 | B6 | Link request line items to products | ERPNext, Odoo | ❌ Missing | Request has only title + total_estimated; no item lines |
 | B7 | Auto-generate request from low stock (reorder) | Odoo, ERPNext | ❌ Missing | No automatic reorder trigger |
 | B8 | Budget check on requisition | ERPNext, Procuman | ❌ Missing | No budget module or spend-limit validation |
-| B9 | Convert approved request → RFQ or PO | ERPNext, Odoo | ❌ Missing | No link between request and PO creation |
+| B9 | Convert approved request → RFQ or PO | ERPNext, Odoo | ✅ Implemented | `POST /api/procurement/requests/[id]/convert-to-po` |
 | **C. Request for Quotation (RFQ)** | | | | |
 | C1 | Create RFQ and send to multiple suppliers | ERPNext, Odoo, Procuman | ❌ Missing | No RFQ entity; PR serves as internal request only |
 | C2 | Receive supplier quotations | ERPNext, Odoo | ❌ Missing | No quotation response tracking |
@@ -51,19 +51,19 @@ the current state of the Cardlink app.
 | D1 | Create PO with line items | ERPNext, Odoo | ✅ Implemented | `POST /api/procurement/purchase-orders` with items[] |
 | D2 | List / filter POs by status | ERPNext, Odoo | ✅ Implemented | Filter: draft, submitted, received, cancelled |
 | D3 | PO status workflow | ERPNext, Odoo | ✅ Implemented | draft → submitted → received → cancelled |
-| D4 | Update / amend PO | ERPNext, Odoo | ⚠️ UI exists, API missing | `PATCH /api/procurement/purchase-orders/[id]` not implemented |
+| D4 | Update / amend PO | ERPNext, Odoo | ✅ Implemented | `PATCH /api/procurement/purchase-orders/[id]` |
 | D5 | PO approval workflow | Odoo, ERPNext | ❌ Missing | POs created directly in "submitted" status |
 | D6 | PO versioning / amendment history | ERPNext | ❌ Missing | No revision tracking |
 | D7 | Expected delivery date tracking | Odoo, ERPNext | ✅ Implemented | `expected_at` field on PO |
 | D8 | Partial delivery / backorder tracking | Odoo, ERPNext | ⚠️ Partial | DB supports "partial" status but API only marks "received" |
 | D9 | PO print / PDF export | ERPNext, Odoo | ❌ Missing | No print or PDF generation |
-| D10 | PO terms & conditions | Odoo, ERPNext | ❌ Missing | No terms field on PO |
-| D11 | Link PO to purchase request | ERPNext, Odoo | ❌ Missing | No `request_id` FK on PO |
+| D10 | PO terms & conditions | Odoo, ERPNext | ✅ Implemented | `terms` and `notes` fields on PO |
+| D11 | Link PO to purchase request | ERPNext, Odoo | ✅ Implemented | `request_id` FK on PO, convert-to-po endpoint |
 | D12 | Idempotency protection | — (best practice) | ✅ Implemented | `idempotency_key` prevents duplicate POs |
-| D13 | PO-level discount / tax | Odoo, ERPNext | ❌ Missing | No discount or tax fields |
+| D13 | PO-level discount / tax | Odoo, ERPNext | ✅ Implemented | `discount_percent`, `tax_percent`, `shipping_cost` fields |
 | **E. Goods Receipt / Receiving** | | | | |
 | E1 | Record goods received against PO | ERPNext, Odoo | ✅ Implemented | `POST /api/procurement/receipts` |
-| E2 | List receipts | ERPNext, Odoo | ⚠️ UI exists, API missing | `GET /api/procurement/receipts` not implemented |
+| E2 | List receipts | ERPNext, Odoo | ✅ Implemented | `GET /api/procurement/receipts` with nested items |
 | E3 | Item-level receipt with quantities | ERPNext, Odoo | ✅ Implemented | `proc_receipt_items` with qty per product |
 | E4 | Over-receive prevention | ERPNext | ✅ Implemented | DB function validates qty ≤ ordered |
 | E5 | Auto-update inventory on receipt | Odoo, ERPNext | ✅ Implemented | Triggers `inv_stock_movements` |
@@ -72,17 +72,17 @@ the current state of the Cardlink app.
 | E8 | Partial receipt / backorder | Odoo, ERPNext | ⚠️ Partial | DB supports it; API doesn't update PO to "partial" |
 | E9 | Return to supplier (debit note) | ERPNext, Odoo | ❌ Missing | No return or debit note functionality |
 | **F. Vendor Contracts** | | | | |
-| F1 | Create vendor contract | ERPNext, Odoo | ⚠️ DB & UI exist, API missing | `proc_contracts` table exists; no API endpoints |
-| F2 | Contract status lifecycle | ERPNext, Odoo | ⚠️ Schema only | draft → active → expired → terminated (DB only) |
-| F3 | Contract value & term tracking | ERPNext, Odoo | ⚠️ Schema only | Fields exist in DB; not accessible via API |
+| F1 | Create vendor contract | ERPNext, Odoo | ✅ Implemented | `POST /api/procurement/contracts` |
+| F2 | Contract status lifecycle | ERPNext, Odoo | ✅ Implemented | `PATCH /api/procurement/contracts/[id]` — draft → active → expired/terminated |
+| F3 | Contract value & term tracking | ERPNext, Odoo | ✅ Implemented | value, terms, start_date, end_date via API |
 | F4 | Blanket orders / framework agreements | Odoo | ❌ Missing | No blanket order concept |
 | F5 | Contract renewal alerts | Odoo, ERPNext | ❌ Missing | No notification on expiry |
 | **G. Invoice & Payment (Procure-to-Pay)** | | | | |
-| G1 | Vendor invoice creation | ERPNext, Odoo | ❌ Missing | Only customer invoices exist in accounting module |
-| G2 | 3-way matching (PO ↔ receipt ↔ invoice) | ERPNext, Odoo | ❌ Missing | No matching engine |
+| G1 | Vendor invoice creation | ERPNext, Odoo | ✅ Implemented | `POST /api/procurement/vendor-bills` with line items |
+| G2 | 3-way matching (PO ↔ receipt ↔ invoice) | ERPNext, Odoo | ⚠️ Partial | Bill can link to PO + receipt; automated matching not yet built |
 | G3 | Invoice approval workflow | ERPNext, Odoo | ❌ Missing | No vendor invoice concept |
-| G4 | Payment scheduling & tracking | ERPNext, Odoo | ❌ Missing | No AP payment tracking |
-| G5 | Payment term management | Odoo, ERPNext | ❌ Missing | No payment terms on suppliers or POs |
+| G4 | Payment scheduling & tracking | ERPNext, Odoo | ⚠️ Partial | Bill paid triggers journal entry; no aging report yet |
+| G5 | Payment term management | Odoo, ERPNext | ✅ Implemented | `payment_terms` on supplier + PO + bill records |
 | **H. Reporting & Analytics** | | | | |
 | H1 | Procurement spend report | ERPNext, Odoo, Procuman | ❌ Missing | No procurement-specific reports |
 | H2 | Supplier performance analytics | ERPNext, Odoo | ❌ Missing | No rating or metrics tracking |
@@ -161,12 +161,12 @@ the current state of the Cardlink app.
 
 | # | Missing Function | Impact |
 |---|-----------------|--------|
-| 1 | **Contracts API** (`GET/POST/PATCH /api/procurement/contracts`) | Contracts page is non-functional |
-| 2 | **Receipts GET API** (`GET /api/procurement/receipts`) | Cannot view past goods receipts |
-| 3 | **Suppliers PATCH API** (`PATCH /api/procurement/suppliers/[id]`) | Cannot edit vendor details |
-| 4 | **Purchase Orders PATCH API** (`PATCH /api/procurement/purchase-orders/[id]`) | Cannot update PO status from UI |
-| 5 | **Vendor invoice / bill** | Cannot complete procure-to-pay cycle |
-| 6 | **3-way matching** (PO ↔ receipt ↔ invoice) | No fraud/error prevention |
+| 1 | ~~Contracts API~~ | ✅ **Fixed in Phase 1** |
+| 2 | ~~Receipts GET API~~ | ✅ **Fixed in Phase 1** |
+| 3 | ~~Suppliers PATCH API~~ | ✅ **Fixed in Phase 1** |
+| 4 | ~~Purchase Orders PATCH API~~ | ✅ **Fixed in Phase 1** |
+| 5 | ~~Vendor invoice / bill~~ | ✅ **Fixed in Phase 1** — vendor bills with AP journal entries |
+| 6 | **3-way matching** (PO ↔ receipt ↔ invoice) | ⚠️ Partial — manual linking exists; automated engine pending |
 
 ### 4.2 Important Missing (expected by professional users)
 
@@ -175,9 +175,9 @@ the current state of the Cardlink app.
 | 7 | RFQ to multiple suppliers | Cannot solicit competitive bids |
 | 8 | Quotation comparison | Cannot evaluate best-price sourcing |
 | 9 | Multi-level PO approval | No spend controls above single approver |
-| 10 | Purchase request → PO conversion | Manual re-entry required |
+| 10 | ~~Purchase request → PO conversion~~ | ✅ **Fixed in Phase 1** — `convert-to-po` endpoint |
 | 11 | Supplier performance tracking | No vendor quality accountability |
-| 12 | Payment terms on supplier / PO | No AP aging or due-date tracking |
+| 12 | ~~Payment terms on supplier / PO~~ | ✅ **Fixed in Phase 1** — `payment_terms` field on all records |
 | 13 | Procurement reports & spend analytics | No data-driven decision support |
 | 14 | PO print / PDF export | Cannot send formal POs to suppliers |
 
@@ -217,50 +217,43 @@ Despite the gaps, Cardlink has strong foundations:
 
 ## 6. SMC Readiness Assessment
 
-### Verdict: ⚠️ **Not Yet Production-Ready for SMC Procurement**
+### Verdict: ✅ **Phase 1 Complete — Approaching SMC-Ready**
 
-The Cardlink procurement module has a **solid architectural foundation** (database
-schema, cross-module integration, idempotency) that surpasses many SMC tools.
-However, it is currently at **MVP stage** with several broken API endpoints and
-missing core workflows.
+After the Phase 1 rebuild (2026-03-22), the Cardlink procurement module now covers
+the core procure-to-pay cycle. All previously broken APIs are fixed, vendor bills
+(AP invoices) are implemented with accounting integration, and the PR→PO conversion
+workflow is operational.
 
-### Readiness Scorecard
+### Readiness Scorecard (Post Phase 1)
 
-| Area | Score | Status |
-|------|-------|--------|
-| Supplier management | 40% | Create/list works; edit, rating, terms missing |
-| Purchase requisitions | 70% | Good workflow; no item lines or PO linkage |
-| Purchase orders | 55% | Create works; update/amend, approval, print missing |
-| Goods receipt | 60% | Core receipt works; list API, inspection, partial missing |
-| Vendor contracts | 10% | DB schema only; API completely missing |
-| Vendor invoicing / AP | 0% | Not started |
-| 3-way matching | 0% | Not started |
-| RFQ / quotation | 0% | Not started |
-| Reporting / analytics | 10% | Dashboard stats only |
-| **Overall** | **≈ 35%** | **MVP foundation; not SMC-ready** |
+| Area | Before | After | Status |
+|------|--------|-------|--------|
+| Supplier management | 40% | **75%** | CRUD + address + payment terms + category + rating schema |
+| Purchase requisitions | 70% | **80%** | Workflow + PR→PO conversion |
+| Purchase orders | 55% | **75%** | CRUD + line items + status update + PR linkage |
+| Goods receipt | 60% | **80%** | CRUD + item-level receipt + inventory + accounting |
+| Vendor contracts | 10% | **70%** | Full CRUD with status lifecycle |
+| Vendor invoicing / AP | 0% | **60%** | Bills CRUD + paid journal entry; 3-way matching still manual |
+| 3-way matching | 0% | **20%** | Bill links to PO + receipt; automated matching not yet built |
+| RFQ / quotation | 0% | 0% | Not started |
+| Reporting / analytics | 10% | 10% | Dashboard stats only |
+| **Overall** | **≈ 35%** | **≈ 60%** | **Core P2P cycle functional; approaching SMC-ready** |
 
-### To Reach SMC-Ready (≈ 80%), Prioritise:
+### Remaining to Reach ≈ 80%:
 
-**Phase 1 — Fix broken endpoints (1–2 days)**
-1. Implement `PATCH /api/procurement/suppliers/[id]`
-2. Implement `PATCH /api/procurement/purchase-orders/[id]`
-3. Implement `GET /api/procurement/receipts`
-4. Implement `GET/POST/PATCH /api/procurement/contracts`
+**Phase 2 — Professional features**
+1. RFQ and quotation comparison
+2. Multi-level PO approval workflow (threshold-based)
+3. Procurement spend reports
+4. PO PDF/print export
+5. Automated 3-way matching engine
 
-**Phase 2 — Complete procure-to-pay (1–2 weeks)**
-5. Add vendor invoice / bill entity and matching
-6. Add purchase request → PO conversion
-7. Add supplier payment term fields
-8. Add PO approval workflow (threshold-based)
-9. Add procurement spend reports
-
-**Phase 3 — Professional features (2–4 weeks)**
-10. Add RFQ and quotation comparison
-11. Add supplier performance rating
-12. Add PO PDF/print export
-13. Add email notifications
-14. Add document attachments
-15. Add auto-reorder from inventory levels
+**Phase 3 — Advanced features**
+6. Supplier performance rating UI
+7. Email notifications on status changes
+8. Document attachments on records
+9. Auto-reorder from inventory levels
+10. Budget vs. actual spend tracking
 
 ---
 

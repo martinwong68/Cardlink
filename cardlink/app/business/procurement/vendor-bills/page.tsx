@@ -2,7 +2,18 @@
 
 import { useEffect, useState, useCallback } from "react";
 
-type Bill = { id: string; bill_number: string; supplier_id: string; po_id: string | null; status: string; bill_date: string; due_date: string | null; total_amount: number; notes: string | null; created_at: string };
+type Bill = {
+  id: string;
+  bill_number: string;
+  supplier_id: string;
+  po_id: string | null;
+  status: string;
+  bill_date: string;
+  due_date: string | null;
+  total_amount: number;
+  notes: string | null;
+  created_at: string;
+};
 type Supplier = { id: string; name: string };
 type PO = { id: string; po_number: string };
 

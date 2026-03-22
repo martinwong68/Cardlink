@@ -51,7 +51,7 @@ export default function ProcurementOrdersPage() {
 
   const handleCreate = async () => {
     if (!supplierId) return;
-    const validItems = lineItems.filter((item) => item.product_id && Number(item.qty) > 0);
+    const validItems = lineItems.filter((item) => item.product_id && Number(item.qty) > 0 && !isNaN(Number(item.unit_cost)));
     if (validItems.length === 0) return;
     setSaving(true);
     const poNumber = `PO-${Date.now().toString(36).toUpperCase()}`;

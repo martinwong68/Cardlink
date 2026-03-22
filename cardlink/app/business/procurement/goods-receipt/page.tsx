@@ -6,10 +6,12 @@ type ReceiptItem = { id: string; product_id: string; qty: number };
 type GoodsReceipt = { id: string; po_id: string; received_at: string; received_by: string | null; note: string | null; created_at: string; items: ReceiptItem[] };
 type POItem = { id: string; product_id: string; qty: number; unit_cost: number };
 type PO = { id: string; po_number: string; status: string; items: POItem[] };
+type Product = { id: string; name: string; sku: string };
 
 export default function ProcurementGoodsReceiptPage() {
   const [receipts, setReceipts] = useState<GoodsReceipt[]>([]);
   const [purchaseOrders, setPurchaseOrders] = useState<PO[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -21,12 +23,14 @@ export default function ProcurementGoodsReceiptPage() {
 
   const load = useCallback(async () => {
     try {
-      const [recRes, poRes] = await Promise.all([
+      const [recRes, poRes, prodRes] = await Promise.all([
         fetch("/api/procurement/receipts", { headers: { "x-cardlink-app-scope": "business" }, cache: "no-store" }),
         fetch("/api/procurement/purchase-orders", { headers: { "x-cardlink-app-scope": "business" }, cache: "no-store" }),
+        fetch("/api/inventory/products", { headers: { "x-cardlink-app-scope": "business" }, cache: "no-store" }),
       ]);
       if (recRes.ok) { const d = await recRes.json(); setReceipts(d.receipts ?? []); }
       if (poRes.ok) { const d = await poRes.json(); setPurchaseOrders(d.purchase_orders ?? d.orders ?? []); }
+      if (prodRes.ok) { const d = await prodRes.json(); setProducts(d.products ?? []); }
     } catch { /* silent */ } finally { setLoading(false); }
   }, []);
 
@@ -34,6 +38,7 @@ export default function ProcurementGoodsReceiptPage() {
 
   const receivablePOs = purchaseOrders.filter((p) => p.status === "submitted" || p.status === "ordered" || p.status === "partial");
   const poMap = Object.fromEntries(purchaseOrders.map((p) => [p.id, p.po_number]));
+  const productMap = Object.fromEntries(products.map((p) => [p.id, p.name]));
 
   const handlePoSelect = (selectedPoId: string) => {
     setPoId(selectedPoId);
@@ -90,7 +95,7 @@ export default function ProcurementGoodsReceiptPage() {
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Items to Receive</p>
               {receiveItems.map((item, idx) => (
                 <div key={item.po_item_id} className="flex items-center gap-3 rounded-lg border border-gray-50 bg-gray-50 px-3 py-2">
-                  <p className="flex-1 text-xs text-gray-600 truncate">{item.product_id.slice(0, 8)}…</p>
+                  <p className="flex-1 text-xs text-gray-600 truncate">{productMap[item.product_id] ?? item.product_id.slice(0, 8)}</p>
                   <label className="text-[10px] text-gray-500">Qty:</label>
                   <input type="number" min="0" value={item.qty} onChange={(e) => updateItemQty(idx, Number(e.target.value))} className="w-20 rounded border border-gray-200 px-2 py-1 text-sm" />
                 </div>

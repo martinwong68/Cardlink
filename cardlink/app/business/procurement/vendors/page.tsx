@@ -2,7 +2,23 @@
 
 import { useEffect, useState, useCallback } from "react";
 
-type Vendor = { id: string; name: string; contact_name: string | null; contact_phone: string | null; email: string | null; address: string | null; city: string | null; country: string | null; payment_terms: string | null; currency: string | null; category: string | null; notes: string | null; is_active: boolean; rating: number; created_at: string };
+type Vendor = {
+  id: string;
+  name: string;
+  contact_name: string | null;
+  contact_phone: string | null;
+  email: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  payment_terms: string | null;
+  currency: string | null;
+  category: string | null;
+  notes: string | null;
+  is_active: boolean;
+  rating: number;
+  created_at: string;
+};
 
 const paymentTermOptions = ["immediate", "net_7", "net_15", "net_30", "net_45", "net_60", "net_90"];
 
