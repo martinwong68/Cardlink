@@ -1762,7 +1762,12 @@
     "stats": {
       "activeEmployees": "在职员工",
       "pendingLeave": "待批假期申请",
-      "todayAttendance": "今日出勤"
+      "todayAttendance": "今日出勤",
+      "payrollDesc": "管理工资发放、扣款和津贴报告。",
+      "departmentsDesc": "通过部门和职位整理公司架构。",
+      "holidaysDesc": "追踪公共假期和公司日历活动。",
+      "documentsDesc": "安全存储员工合同、证件和证书。",
+      "reportsDesc": "生成人力分析和人事洞察报告。"
     },
     "employmentTypes": {
       "fullTime": "全职",
@@ -1787,7 +1792,15 @@
         "employmentType": "雇佣类型",
         "startDate": "入职日期",
         "salary": "薪资",
-        "salaryPeriod": "薪资周期"
+        "salaryPeriod": "薪资周期",
+        "address": "地址",
+        "nationalId": "身份证号码 / 税务编号",
+        "bankName": "银行名称",
+        "bankAccount": "银行账号",
+        "emergencyContact": "紧急联系人",
+        "emergencyName": "联系人姓名",
+        "emergencyPhone": "联系人电话",
+        "emergencyRelation": "关系"
       },
       "salaryPeriods": {
         "monthly": "月薪",
@@ -1805,7 +1818,8 @@
         "terminated": "已解雇"
       },
       "toggleStatus": "切换状态",
-      "confirmDelete": "确认删除"
+      "confirmDelete": "确认删除",
+      "step4": "附加信息"
     },
     "leave": {
       "title": "假期申请",
@@ -1825,12 +1839,14 @@
         "sick": "病假",
         "unpaid": "无薪假",
         "maternity": "产假",
-        "other": "其他"
+        "other": "其他",
+        "paternity": "陪产假"
       },
       "tabs": {
         "pending": "待批",
         "approved": "已批准",
-        "rejected": "已拒绝"
+        "rejected": "已拒绝",
+        "balances": "余额"
       },
       "saving": "提交中...",
       "submit": "提交",
@@ -1838,7 +1854,10 @@
       "unknownEmployee": "未知员工",
       "days": "天",
       "approve": "批准",
-      "reject": "拒绝"
+      "reject": "拒绝",
+      "balancesEmpty": "今年尚未初始化假期配额。",
+      "initBalances": "初始化配额",
+      "balanceLeft": "剩余"
     },
     "attendance": {
       "title": "出勤",
@@ -1875,6 +1894,96 @@
       "deductions": "扣款",
       "allowances": "津贴",
       "netPay": "净薪"
+    },
+    "departments": {
+      "title": "部门",
+      "add": "新增",
+      "addTitle": "新增部门",
+      "editTitle": "编辑部门",
+      "fields": {
+        "name": "部门名称",
+        "namePlaceholder": "例如：工程部",
+        "description": "描述"
+      },
+      "saving": "保存中...",
+      "save": "保存",
+      "emptyTitle": "暂无部门",
+      "emptyDesc": "新增您的第一个部门开始整理团队。",
+      "confirmDelete": "确认删除"
+    },
+    "holidays": {
+      "title": "公共假期",
+      "add": "新增",
+      "addTitle": "新增假期",
+      "editTitle": "编辑假期",
+      "fields": {
+        "name": "假期名称",
+        "namePlaceholder": "例如：春节",
+        "date": "日期",
+        "recurring": "每年重复"
+      },
+      "saving": "保存中...",
+      "save": "保存",
+      "emptyTitle": "暂无假期",
+      "emptyDesc": "为公司新增公共假期。",
+      "confirmDelete": "确认删除",
+      "recurring": "每年"
+    },
+    "documents": {
+      "title": "文件",
+      "add": "上传",
+      "addTitle": "上传文件",
+      "fields": {
+        "employee": "员工",
+        "name": "文件名称",
+        "namePlaceholder": "例如：劳动合同",
+        "docType": "文件类型",
+        "fileUrl": "文件链接"
+      },
+      "types": {
+        "contract": "合同",
+        "id_document": "身份证明",
+        "certificate": "证书",
+        "payslip": "工资单",
+        "other": "其他"
+      },
+      "saving": "保存中...",
+      "save": "上传",
+      "emptyTitle": "暂无文件",
+      "emptyDesc": "上传员工文件以安全存储。",
+      "confirmDelete": "确认删除",
+      "allEmployees": "所有员工"
+    },
+    "reports": {
+      "title": "人事报告",
+      "tabs": {
+        "headcount": "人数",
+        "attendance": "出勤",
+        "leave": "假期",
+        "payroll": "薪酬"
+      },
+      "headcount": {
+        "total": "员工总数",
+        "active": "在职",
+        "byDepartment": "按部门",
+        "byType": "按雇佣类型"
+      },
+      "attendance": {
+        "presentDays": "出勤天数",
+        "absentDays": "缺勤天数",
+        "lateDays": "迟到天数",
+        "totalHours": "总工时"
+      },
+      "leave": {
+        "entitlement": "配额",
+        "used": "已用",
+        "remaining": "剩余",
+        "empty": "暂无假期余额数据。请先初始化假期配额。"
+      },
+      "payroll": {
+        "totalNetPay": "净薪总额",
+        "records": "记录数"
+      }
     }
   },
   "businessStore": {
@@ -1887,14 +1996,206 @@
     "publishStore": "发布商店",
     "unpublishStore": "取消发布",
     "publishing": "更新中...",
-    "stats": { "products": "商品", "categories": "分类", "discounts": "优惠" },
-    "quickActions": { "setup": "商店设置", "setupDesc": "横幅、名称与营业时间", "categories": "分类", "categoriesDesc": "组织商品", "products": "商品", "productsDesc": "管理目录", "discounts": "优惠", "discountsDesc": "促销与折扣", "settings": "配送与付款", "settingsDesc": "运费与付款选项" },
-    "preview": { "title": "商店预览", "noProducts": "暂无商品。", "noCategories": "暂无分类。", "allCategories": "全部", "discountBadge": "{value}% 折扣", "discountFixedBadge": "减 ${value}" },
-    "setup": { "title": "商店设置", "subtitle": "设置您的店面外观与营业时间。", "step1Title": "品牌形象", "step2Title": "时间与主题", "bannerLabel": "商店横幅", "bannerHint": "建议：1200×400px", "uploadBanner": "上传横幅", "changeBanner": "更换横幅", "removeBanner": "移除", "storeNameLabel": "商店名称", "storeNamePlaceholder": "我的商店", "descriptionLabel": "描述", "descriptionPlaceholder": "向顾客介绍您的商店...", "themeColorLabel": "主题色", "operatingHoursLabel": "营业时间", "days": { "monday": "周一", "tuesday": "周二", "wednesday": "周三", "thursday": "周四", "friday": "周五", "saturday": "周六", "sunday": "周日" }, "closed": "休息", "open": "营业", "openTime": "开始", "closeTime": "结束", "save": "保存", "saving": "保存中...", "saved": "已保存！", "error": "保存失败，请重试。", "back": "返回", "next": "下一步" },
-    "categories": { "title": "分类", "subtitle": "将商品组织到分类中。", "addCategory": "添加分类", "editCategory": "编辑分类", "nameLabel": "名称", "namePlaceholder": "例如：电子产品", "descriptionLabel": "描述", "descriptionPlaceholder": "简短分类描述...", "iconLabel": "图标（表情符号）", "iconPlaceholder": "📦", "save": "保存", "saving": "保存中...", "cancel": "取消", "delete": "删除", "deleteConfirm": "确定删除此分类？", "deleteWarning": "此分类有 {count} 个商品，将变为未分类。", "confirmDelete": "确定删除", "cancelDelete": "取消", "empty": "暂无分类。添加您的第一个分类。", "productCount": "{count} 个商品", "active": "启用", "inactive": "停用", "saved": "分类已保存！", "deleted": "分类已删除！", "error": "发生错误，请重试。" },
-    "products": { "title": "商品", "subtitle": "管理您的商品目录。", "addProduct": "添加商品", "editProduct": "编辑商品", "allCategories": "全部", "step1Title": "类型与基本信息", "step2Title": "详细信息", "step3Title": "图片与分类", "typePhysical": "实物商品", "typePhysicalDesc": "需要配送的商品", "typeService": "服务", "typeServiceDesc": "按时间计费", "typeDigital": "数字商品", "typeDigitalDesc": "可下载内容", "nameLabel": "商品名称", "namePlaceholder": "例如：无线耳机", "descriptionLabel": "描述", "descriptionPlaceholder": "描述您的商品...", "priceLabel": "价格", "compareAtPriceLabel": "原价", "compareAtPriceHint": "折扣前原价", "skuLabel": "SKU", "skuPlaceholder": "例如：WEB-001", "stockLabel": "库存数量", "weightLabel": "重量（公斤）", "durationLabel": "时长（分钟）", "availabilityNotesLabel": "可用性说明", "availabilityNotesPlaceholder": "例如：周一至周五 9am-5pm", "fileUrlLabel": "文件网址或上传", "fileUrlPlaceholder": "https://...", "imagesLabel": "商品图片", "uploadImages": "上传图片", "categoryLabel": "分类", "noCategory": "无分类", "save": "保存", "saving": "保存中...", "cancel": "取消", "delete": "删除", "deleteConfirm": "确定删除此商品？", "confirmDelete": "确定删除", "cancelDelete": "取消", "empty": "暂无商品。添加您的第一个商品。", "inStock": "库存 {count}", "lowStock": "低库存：{count}", "active": "启用", "inactive": "停用", "saved": "商品已保存！", "deleted": "商品已删除！", "error": "发生错误，请重试。", "back": "返回", "next": "下一步" },
-    "discounts": { "title": "优惠", "subtitle": "创建促销与折扣。", "addDiscount": "添加优惠", "editDiscount": "编辑优惠", "nameLabel": "优惠名称", "namePlaceholder": "例如：夏季特卖", "typeLabel": "优惠类型", "typePercentage": "百分比", "typeFixed": "固定金额", "valueLabel": "数值", "appliesToLabel": "适用范围", "appliesToAll": "所有商品", "appliesToCategory": "特定分类", "appliesToProduct": "特定商品", "selectCategory": "选择分类", "selectProduct": "选择商品", "startDateLabel": "开始日期", "endDateLabel": "结束日期（选填）", "noExpiry": "无期限", "save": "保存", "saving": "保存中...", "cancel": "取消", "delete": "删除", "deleteConfirm": "确定删除此优惠？", "confirmDelete": "确定删除", "cancelDelete": "取消", "empty": "暂无优惠。创建您的第一个优惠。", "percentOff": "{value}% 折扣", "fixedOff": "减 ${value}", "allProducts": "所有商品", "categoryTarget": "分类：{name}", "productTarget": "商品：{name}", "active": "启用", "expired": "已过期", "scheduled": "已排程", "saved": "优惠已保存！", "deleted": "优惠已删除！", "error": "发生错误，请重试。" },
-    "storeSettings": { "title": "配送与付款", "subtitle": "设置配送与付款选项。", "deliveryTitle": "配送", "enableDelivery": "启用配送", "deliveryFeeLabel": "配送费", "freeThresholdLabel": "免运门槛", "freeThresholdHint": "超过此金额免运费", "paymentTitle": "付款方式", "cash": "现金", "bankTransfer": "银行转账", "onlinePayment": "在线付款", "policiesTitle": "商店政策", "policiesPlaceholder": "退换货政策、条款...", "save": "保存", "saving": "保存中...", "saved": "设置已保存！", "error": "保存失败，请重试。" }
+    "stats": {
+      "products": "商品",
+      "categories": "分类",
+      "discounts": "优惠"
+    },
+    "quickActions": {
+      "setup": "商店设置",
+      "setupDesc": "横幅、名称与营业时间",
+      "categories": "分类",
+      "categoriesDesc": "组织商品",
+      "products": "商品",
+      "productsDesc": "管理目录",
+      "discounts": "优惠",
+      "discountsDesc": "促销与折扣",
+      "settings": "配送与付款",
+      "settingsDesc": "运费与付款选项"
+    },
+    "preview": {
+      "title": "商店预览",
+      "noProducts": "暂无商品。",
+      "noCategories": "暂无分类。",
+      "allCategories": "全部",
+      "discountBadge": "{value}% 折扣",
+      "discountFixedBadge": "减 ${value}"
+    },
+    "setup": {
+      "title": "商店设置",
+      "subtitle": "设置您的店面外观与营业时间。",
+      "step1Title": "品牌形象",
+      "step2Title": "时间与主题",
+      "bannerLabel": "商店横幅",
+      "bannerHint": "建议：1200×400px",
+      "uploadBanner": "上传横幅",
+      "changeBanner": "更换横幅",
+      "removeBanner": "移除",
+      "storeNameLabel": "商店名称",
+      "storeNamePlaceholder": "我的商店",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "向顾客介绍您的商店...",
+      "themeColorLabel": "主题色",
+      "operatingHoursLabel": "营业时间",
+      "days": {
+        "monday": "周一",
+        "tuesday": "周二",
+        "wednesday": "周三",
+        "thursday": "周四",
+        "friday": "周五",
+        "saturday": "周六",
+        "sunday": "周日"
+      },
+      "closed": "休息",
+      "open": "营业",
+      "openTime": "开始",
+      "closeTime": "结束",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "已保存！",
+      "error": "保存失败，请重试。",
+      "back": "返回",
+      "next": "下一步"
+    },
+    "categories": {
+      "title": "分类",
+      "subtitle": "将商品组织到分类中。",
+      "addCategory": "添加分类",
+      "editCategory": "编辑分类",
+      "nameLabel": "名称",
+      "namePlaceholder": "例如：电子产品",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "简短分类描述...",
+      "iconLabel": "图标（表情符号）",
+      "iconPlaceholder": "📦",
+      "save": "保存",
+      "saving": "保存中...",
+      "cancel": "取消",
+      "delete": "删除",
+      "deleteConfirm": "确定删除此分类？",
+      "deleteWarning": "此分类有 {count} 个商品，将变为未分类。",
+      "confirmDelete": "确定删除",
+      "cancelDelete": "取消",
+      "empty": "暂无分类。添加您的第一个分类。",
+      "productCount": "{count} 个商品",
+      "active": "启用",
+      "inactive": "停用",
+      "saved": "分类已保存！",
+      "deleted": "分类已删除！",
+      "error": "发生错误，请重试。"
+    },
+    "products": {
+      "title": "商品",
+      "subtitle": "管理您的商品目录。",
+      "addProduct": "添加商品",
+      "editProduct": "编辑商品",
+      "allCategories": "全部",
+      "step1Title": "类型与基本信息",
+      "step2Title": "详细信息",
+      "step3Title": "图片与分类",
+      "typePhysical": "实物商品",
+      "typePhysicalDesc": "需要配送的商品",
+      "typeService": "服务",
+      "typeServiceDesc": "按时间计费",
+      "typeDigital": "数字商品",
+      "typeDigitalDesc": "可下载内容",
+      "nameLabel": "商品名称",
+      "namePlaceholder": "例如：无线耳机",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "描述您的商品...",
+      "priceLabel": "价格",
+      "compareAtPriceLabel": "原价",
+      "compareAtPriceHint": "折扣前原价",
+      "skuLabel": "SKU",
+      "skuPlaceholder": "例如：WEB-001",
+      "stockLabel": "库存数量",
+      "weightLabel": "重量（公斤）",
+      "durationLabel": "时长（分钟）",
+      "availabilityNotesLabel": "可用性说明",
+      "availabilityNotesPlaceholder": "例如：周一至周五 9am-5pm",
+      "fileUrlLabel": "文件网址或上传",
+      "fileUrlPlaceholder": "https://...",
+      "imagesLabel": "商品图片",
+      "uploadImages": "上传图片",
+      "categoryLabel": "分类",
+      "noCategory": "无分类",
+      "save": "保存",
+      "saving": "保存中...",
+      "cancel": "取消",
+      "delete": "删除",
+      "deleteConfirm": "确定删除此商品？",
+      "confirmDelete": "确定删除",
+      "cancelDelete": "取消",
+      "empty": "暂无商品。添加您的第一个商品。",
+      "inStock": "库存 {count}",
+      "lowStock": "低库存：{count}",
+      "active": "启用",
+      "inactive": "停用",
+      "saved": "商品已保存！",
+      "deleted": "商品已删除！",
+      "error": "发生错误，请重试。",
+      "back": "返回",
+      "next": "下一步"
+    },
+    "discounts": {
+      "title": "优惠",
+      "subtitle": "创建促销与折扣。",
+      "addDiscount": "添加优惠",
+      "editDiscount": "编辑优惠",
+      "nameLabel": "优惠名称",
+      "namePlaceholder": "例如：夏季特卖",
+      "typeLabel": "优惠类型",
+      "typePercentage": "百分比",
+      "typeFixed": "固定金额",
+      "valueLabel": "数值",
+      "appliesToLabel": "适用范围",
+      "appliesToAll": "所有商品",
+      "appliesToCategory": "特定分类",
+      "appliesToProduct": "特定商品",
+      "selectCategory": "选择分类",
+      "selectProduct": "选择商品",
+      "startDateLabel": "开始日期",
+      "endDateLabel": "结束日期（选填）",
+      "noExpiry": "无期限",
+      "save": "保存",
+      "saving": "保存中...",
+      "cancel": "取消",
+      "delete": "删除",
+      "deleteConfirm": "确定删除此优惠？",
+      "confirmDelete": "确定删除",
+      "cancelDelete": "取消",
+      "empty": "暂无优惠。创建您的第一个优惠。",
+      "percentOff": "{value}% 折扣",
+      "fixedOff": "减 ${value}",
+      "allProducts": "所有商品",
+      "categoryTarget": "分类：{name}",
+      "productTarget": "商品：{name}",
+      "active": "启用",
+      "expired": "已过期",
+      "scheduled": "已排程",
+      "saved": "优惠已保存！",
+      "deleted": "优惠已删除！",
+      "error": "发生错误，请重试。"
+    },
+    "storeSettings": {
+      "title": "配送与付款",
+      "subtitle": "设置配送与付款选项。",
+      "deliveryTitle": "配送",
+      "enableDelivery": "启用配送",
+      "deliveryFeeLabel": "配送费",
+      "freeThresholdLabel": "免运门槛",
+      "freeThresholdHint": "超过此金额免运费",
+      "paymentTitle": "付款方式",
+      "cash": "现金",
+      "bankTransfer": "银行转账",
+      "onlinePayment": "在线付款",
+      "policiesTitle": "商店政策",
+      "policiesPlaceholder": "退换货政策、条款...",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "设置已保存！",
+      "error": "保存失败，请重试。"
+    }
   },
   "businessAi": {
     "brand": "商业界面",
@@ -2286,9 +2587,18 @@
       "perMonth": "/月",
       "perYear": "/年",
       "plans": {
-        "free": { "name": "免费版", "emoji": "🆓" },
-        "professional": { "name": "专业版", "emoji": "💼" },
-        "business": { "name": "企业版", "emoji": "🏢" }
+        "free": {
+          "name": "免费版",
+          "emoji": "🆓"
+        },
+        "professional": {
+          "name": "专业版",
+          "emoji": "💼"
+        },
+        "business": {
+          "name": "企业版",
+          "emoji": "🏢"
+        }
       },
       "features": {
         "aiActions": "AI 操作",

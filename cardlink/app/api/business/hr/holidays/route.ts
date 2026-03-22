@@ -8,15 +8,22 @@ export async function GET(request: Request) {
 
   const supabase = await createClient();
   const companyId = guard.context.activeCompanyId;
+  const { searchParams } = new URL(request.url);
+  const year = searchParams.get("year");
 
-  const { data, error } = await supabase
-    .from("hr_employees")
+  let query = supabase
+    .from("hr_holidays")
     .select("*")
     .eq("company_id", companyId)
-    .order("full_name");
+    .order("date");
 
+  if (year) {
+    query = query.gte("date", `${year}-01-01`).lte("date", `${year}-12-31`);
+  }
+
+  const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ employees: data });
+  return NextResponse.json({ holidays: data });
 }
 
 export async function POST(request: Request) {
@@ -27,34 +34,23 @@ export async function POST(request: Request) {
   const companyId = guard.context.activeCompanyId;
   const body = await request.json();
 
+  if (!body.name?.trim() || !body.date) {
+    return NextResponse.json({ error: "name and date are required" }, { status: 400 });
+  }
+
   const { data, error } = await supabase
-    .from("hr_employees")
+    .from("hr_holidays")
     .insert({
       company_id: companyId,
-      full_name: body.full_name,
-      email: body.email || null,
-      phone: body.phone || null,
-      position: body.position || null,
-      department: body.department || null,
-      employment_type: body.employment_type || "full_time",
-      start_date: body.start_date || null,
-      salary: body.salary ?? 0,
-      salary_period: body.salary_period || "monthly",
-      avatar_url: body.avatar_url || null,
-      address: body.address || null,
-      national_id: body.national_id || null,
-      bank_name: body.bank_name || null,
-      bank_account: body.bank_account || null,
-      emergency_contact_name: body.emergency_contact_name || null,
-      emergency_contact_phone: body.emergency_contact_phone || null,
-      emergency_contact_relation: body.emergency_contact_relation || null,
-      reporting_manager_id: body.reporting_manager_id || null,
+      name: body.name.trim(),
+      date: body.date,
+      recurring: body.recurring ?? false,
     })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ employee: data }, { status: 201 });
+  return NextResponse.json({ holiday: data }, { status: 201 });
 }
 
 export async function PUT(request: Request) {
@@ -67,38 +63,21 @@ export async function PUT(request: Request) {
 
   if (!body.id) return NextResponse.json({ error: "id is required" }, { status: 400 });
 
+  const updateData: Record<string, unknown> = {};
+  if (body.name !== undefined) updateData.name = body.name.trim();
+  if (body.date !== undefined) updateData.date = body.date;
+  if (body.recurring !== undefined) updateData.recurring = body.recurring;
+
   const { data, error } = await supabase
-    .from("hr_employees")
-    .update({
-      full_name: body.full_name,
-      email: body.email || null,
-      phone: body.phone || null,
-      position: body.position || null,
-      department: body.department || null,
-      employment_type: body.employment_type,
-      start_date: body.start_date || null,
-      end_date: body.end_date || null,
-      salary: body.salary ?? 0,
-      salary_period: body.salary_period,
-      status: body.status,
-      avatar_url: body.avatar_url || null,
-      address: body.address || null,
-      national_id: body.national_id || null,
-      bank_name: body.bank_name || null,
-      bank_account: body.bank_account || null,
-      emergency_contact_name: body.emergency_contact_name || null,
-      emergency_contact_phone: body.emergency_contact_phone || null,
-      emergency_contact_relation: body.emergency_contact_relation || null,
-      reporting_manager_id: body.reporting_manager_id || null,
-      updated_at: new Date().toISOString(),
-    })
+    .from("hr_holidays")
+    .update(updateData)
     .eq("id", body.id)
     .eq("company_id", companyId)
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ employee: data });
+  return NextResponse.json({ holiday: data });
 }
 
 export async function DELETE(request: Request) {
@@ -113,7 +92,7 @@ export async function DELETE(request: Request) {
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
 
   const { error } = await supabase
-    .from("hr_employees")
+    .from("hr_holidays")
     .delete()
     .eq("id", id)
     .eq("company_id", companyId);
