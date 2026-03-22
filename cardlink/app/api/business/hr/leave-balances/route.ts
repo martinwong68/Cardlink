@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { createClient } from "@/src/lib/supabase/server";
+import { LEAVE_TYPES } from "@/src/lib/hr/constants";
 
 export async function GET(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
@@ -48,9 +49,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No active employees found" }, { status: 400 });
     }
 
-    const leaveTypes = ["annual", "sick", "unpaid", "maternity", "paternity", "other"];
     const rows = employees.flatMap((emp) =>
-      leaveTypes.map((lt) => ({
+      LEAVE_TYPES.map((lt) => ({
         company_id: companyId,
         employee_id: emp.id as string,
         leave_type: lt,

@@ -57,9 +57,12 @@ export default function ReportsPage() {
   const [leave, setLeave] = useState<LeaveData | null>(null);
   const [payroll, setPayroll] = useState<PayrollData | null>(null);
 
+  const [error, setError] = useState<string | null>(null);
+
   const loadReport = useCallback(async () => {
     if (!companyId) return;
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch(`/api/business/hr/reports?type=${tab}`);
       const json = await res.json();
@@ -67,7 +70,9 @@ export default function ReportsPage() {
       if (tab === "attendance") setAttendance(json.data as AttendanceData);
       if (tab === "leave") setLeave(json.data as LeaveData);
       if (tab === "payroll") setPayroll(json.data as PayrollData);
-    } catch { /* silently handle */ }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load report");
+    }
     setLoading(false);
   }, [companyId, tab]);
 
@@ -122,6 +127,10 @@ export default function ReportsPage() {
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        </div>
+      ) : error ? (
+        <div className="app-card flex flex-col items-center justify-center py-12 px-6 text-center">
+          <p className="text-sm text-red-500">{error}</p>
         </div>
       ) : (
         <>

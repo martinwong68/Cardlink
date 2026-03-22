@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { Users, CalendarDays, Clock, DollarSign, Loader2, Building2, CalendarHeart, FileText, BarChart3 } from "lucide-react";
+import {
+  Users, CalendarDays, Clock, DollarSign, Loader2,
+  Building2, CalendarHeart, FileText, BarChart3,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 

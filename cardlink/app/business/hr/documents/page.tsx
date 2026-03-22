@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
+import { DOC_TYPES } from "@/src/lib/hr/constants";
 
 type Document = {
   id: string;
@@ -156,7 +157,7 @@ export default function DocumentsPage() {
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">{t("documents.fields.docType")}</label>
             <select value={docType} onChange={(e) => setDocType(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm">
-              {["contract", "id_document", "certificate", "payslip", "other"].map((dt) => (
+              {DOC_TYPES.map((dt) => (
                 <option key={dt} value={dt}>{t(`documents.types.${dt}`)}</option>
               ))}
             </select>

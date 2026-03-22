@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
+import { LEAVE_TYPES } from "@/src/lib/hr/constants";
 
 type LeaveRequest = {
   id: string;
@@ -189,7 +190,7 @@ export default function LeavePage() {
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">{t("leave.fields.leaveType")}</label>
             <select value={leaveType} onChange={(e) => setLeaveType(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm">
-              {["annual", "sick", "unpaid", "maternity", "paternity", "other"].map((lt) => (
+              {LEAVE_TYPES.map((lt) => (
                 <option key={lt} value={lt}>{t(`leave.types.${lt}`)}</option>
               ))}
             </select>
