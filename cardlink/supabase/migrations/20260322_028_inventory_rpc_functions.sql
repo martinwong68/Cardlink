@@ -37,18 +37,34 @@ BEGIN
     v_adjust_qty := v_item.counted_qty - v_item.system_qty;
 
     -- Use record_inventory_movement for atomic balance update
-    PERFORM record_inventory_movement(
-      v_stock_take.company_id,
-      v_item.product_id,
-      'adjust',
-      ABS(v_adjust_qty),
-      'Stock take adjustment: ' || v_item.product_name || ' (' || v_adjust_qty::text || ')',
-      'stock_take',
-      p_stock_take_id::text,
-      p_completed_by,
-      'st-adj-' || p_stock_take_id::text || '-' || v_item.product_id::text,
-      NULL, NULL, NULL
-    );
+    -- Positive variance = stock-in, Negative variance = stock-out
+    IF v_adjust_qty > 0 THEN
+      PERFORM record_inventory_movement(
+        v_stock_take.company_id,
+        v_item.product_id,
+        'in',
+        v_adjust_qty,
+        'Stock take adjustment: ' || v_item.product_name || ' (found +' || v_adjust_qty::text || ')',
+        'stock_take',
+        p_stock_take_id::text,
+        p_completed_by,
+        'st-adj-' || p_stock_take_id::text || '-' || v_item.product_id::text,
+        NULL, NULL, NULL
+      );
+    ELSE
+      PERFORM record_inventory_movement(
+        v_stock_take.company_id,
+        v_item.product_id,
+        'out',
+        ABS(v_adjust_qty),
+        'Stock take adjustment: ' || v_item.product_name || ' (missing ' || v_adjust_qty::text || ')',
+        'stock_take',
+        p_stock_take_id::text,
+        p_completed_by,
+        'st-adj-' || p_stock_take_id::text || '-' || v_item.product_id::text,
+        NULL, NULL, NULL
+      );
+    END IF;
 
     v_movement_count := v_movement_count + 1;
   END LOOP;

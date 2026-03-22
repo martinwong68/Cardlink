@@ -78,7 +78,12 @@ export default function InventoryMovementsPage() {
 
       {/* Export */}
       <div className="flex justify-end">
-        <a href={`/api/inventory/reports/movement-history?format=csv${filterType ? `&movement_type=${filterType}` : ""}${filterProduct ? `&product_id=${filterProduct}` : ""}`}
+        <a href={(() => {
+          const p = new URLSearchParams({ format: "csv" });
+          if (filterType) p.set("movement_type", filterType);
+          if (filterProduct) p.set("product_id", filterProduct);
+          return `/api/inventory/reports/movement-history?${p}`;
+        })()}
           className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50"
           download>Export CSV</a>
       </div>

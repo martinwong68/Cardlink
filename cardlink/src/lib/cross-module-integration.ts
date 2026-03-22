@@ -279,7 +279,7 @@ export async function createStockAdjustmentJournalEntry(
   const isIncrease = totalAdjustmentValue > 0;
   const absValue = Math.abs(totalAdjustmentValue);
 
-  await supabase.from("transaction_lines").insert([
+  const { error: lineErr } = await supabase.from("transaction_lines").insert([
     {
       transaction_id: tx.id,
       account_id: isIncrease ? inventoryAccount : adjustmentAccount,
@@ -295,6 +295,10 @@ export async function createStockAdjustmentJournalEntry(
       description: isIncrease ? "Adjustment credit" : "Inventory decrease",
     },
   ]);
+
+  if (lineErr) {
+    console.error("[cross-module] adjustment lines error:", lineErr.message);
+  }
 
   return tx.id;
 }

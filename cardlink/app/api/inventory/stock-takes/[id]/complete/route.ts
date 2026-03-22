@@ -35,6 +35,5 @@ export async function POST(
     company_id: guard.context.activeCompanyId,
     stock_take_id: result?.stock_take_id ?? id,
     adjustment_count: result?.adjustment_count ?? 0,
-    emitted_events: ["inventory.stock_take.completed", "inventory.stock.moved"],
   });
 }

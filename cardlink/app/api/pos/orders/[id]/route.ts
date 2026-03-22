@@ -36,7 +36,7 @@ export async function PATCH(
     if (orderItems?.length) {
       for (const item of orderItems) {
         if (item.product_id && Number(item.qty) > 0) {
-          void supabase.rpc("record_inventory_movement", {
+          supabase.rpc("record_inventory_movement", {
             p_company_id: guard.context.activeCompanyId,
             p_product_id: item.product_id,
             p_movement_type: "in",
@@ -49,6 +49,8 @@ export async function PATCH(
             p_operation_id: null,
             p_correlation_id: null,
             p_occurred_at: null,
+          }).then(({ error: rpcErr }) => {
+            if (rpcErr) console.error("[pos-refund] restock error:", rpcErr.message);
           });
         }
       }

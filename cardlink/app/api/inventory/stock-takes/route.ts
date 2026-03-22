@@ -78,8 +78,9 @@ export async function POST(request: Request) {
 
   const { error: itemErr } = await supabase.from("inv_stock_take_items").insert(items);
   if (itemErr) {
-    /* Rollback stock take */
-    await supabase.from("inv_stock_takes").delete().eq("id", st.id);
+    /* Rollback: delete the parent stock_take (items cascade via FK ON DELETE CASCADE) */
+    const { error: delErr } = await supabase.from("inv_stock_takes").delete().eq("id", st.id);
+    if (delErr) console.error("[stock-take] rollback failed:", delErr.message);
     return NextResponse.json({ error: itemErr.message }, { status: 400 });
   }
 

@@ -55,10 +55,14 @@ export default function InventoryStockTakesPage() {
     if (!refNumber.trim() || selectedProducts.length === 0) return;
     setSaving(true);
     try {
-      const items = selectedProducts.map((pid) => ({
-        product_id: pid,
-        counted_qty: countedQtys[pid] !== undefined && countedQtys[pid] !== "" ? Number(countedQtys[pid]) : null,
-      }));
+      const items = selectedProducts.map((pid) => {
+        const raw = countedQtys[pid];
+        const counted = raw !== undefined && raw !== "" ? Number(raw) : null;
+        return {
+          product_id: pid,
+          counted_qty: counted !== null && !isNaN(counted) && counted >= 0 ? counted : null,
+        };
+      });
       const res = await fetch("/api/inventory/stock-takes", {
         method: "POST", headers: { ...HEADERS, "content-type": "application/json" },
         body: JSON.stringify({ reference_number: refNumber.trim(), notes: notes.trim() || null, items }),
