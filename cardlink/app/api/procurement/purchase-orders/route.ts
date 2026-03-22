@@ -30,7 +30,7 @@ export async function GET(request: Request) {
   const supabase = await createClient();
   const { data: poRows, error: poError } = await supabase
     .from("proc_purchase_orders")
-    .select("id, company_id, supplier_id, po_number, status, ordered_at, expected_at, idempotency_key, created_at")
+    .select("id, company_id, supplier_id, po_number, status, ordered_at, expected_at, request_id, terms, notes, discount_percent, tax_percent, shipping_cost, payment_terms, idempotency_key, created_by, created_at, updated_at")
     .eq("company_id", guard.context.activeCompanyId)
     .order("created_at", { ascending: false });
 

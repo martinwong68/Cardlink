@@ -191,6 +191,67 @@ export async function createPosOrderJournalEntry(
   return tx.id;
 }
 
+/**
+ * When a vendor bill is paid (AP payment),
+ * create an accounting journal entry:
+ *   Debit: Accounts Payable (liability)
+ *   Credit: Cash/Bank (asset)
+ */
+export async function createVendorBillPaidJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  billId: string,
+  totalAmount: number,
+  billNumber: string,
+) {
+  const payableAccount = await ensureAccount(supabase, orgId, "2100", "Accounts Payable", "liability");
+  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
+
+  if (!payableAccount || !cashAccount) return null;
+
+  const idempotencyKey = `vendor-bill-paid-${billId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `Vendor Bill Payment: ${billNumber}`,
+      reference_number: `BILL-PAID-${billNumber}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null;
+    console.error("[cross-module] vendor bill paid journal error:", txErr.message);
+    return null;
+  }
+
+  await supabase.from("transaction_lines").insert([
+    {
+      transaction_id: tx.id,
+      account_id: payableAccount,
+      debit: totalAmount,
+      credit: 0,
+      description: `AP Payment: Bill ${billNumber}`,
+    },
+    {
+      transaction_id: tx.id,
+      account_id: cashAccount,
+      debit: 0,
+      credit: totalAmount,
+      description: `Cash Payment: Bill ${billNumber}`,
+    },
+  ]);
+
+  return tx.id;
+}
+
 /* ── Helper: ensure a default chart-of-accounts entry exists ── */
 async function ensureAccount(
   supabase: SupabaseClient,
