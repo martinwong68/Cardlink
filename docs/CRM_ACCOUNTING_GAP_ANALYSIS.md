@@ -6,6 +6,34 @@
 
 ---
 
+## Objective
+
+Audit Cardlink's CRM and Accounting modules against professional open-source reference systems to produce a complete function inventory, identify gaps, and determine whether the platform is comprehensive enough for SMC accounting and sales operations.
+
+## Scope
+
+**In scope**: CRM functions, Accounting functions, supporting module functions (Inventory, Procurement, HR, POS), cross-module workflows, and SMC readiness assessment.
+
+**Out of scope**: UI/UX quality assessment, performance benchmarks, security penetration testing, mobile-specific features, and pricing/licensing comparison.
+
+## Risks & Assumptions
+
+- **Assumption**: Feature presence is verified by schema, API route, and page existence — runtime behavior was not tested.
+- **Assumption**: SMC requirements are based on industry-standard expectations from ERPNext, QuickBooks, Xero, and Sage.
+- **Risk**: Some features marked "Exists" may be partial stubs or placeholders (e.g., bank-feed API returns placeholder data).
+- **Risk**: Feature gaps may require schema migrations that could affect existing data.
+
+## Acceptance Checklist
+
+- [x] Every CRM function in reference systems is cataloged with status
+- [x] Every Accounting function in reference systems is cataloged with status
+- [x] All critical workflows are mapped with step-by-step status
+- [x] Missing features are prioritized by impact
+- [x] SMC readiness verdict is provided with clear reasoning
+- [x] Implementation roadmap is phased with time estimates
+
+---
+
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
