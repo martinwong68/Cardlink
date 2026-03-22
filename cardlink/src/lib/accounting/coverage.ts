@@ -4,6 +4,7 @@ export type AccountingBenchmarkSource = {
   name: string;
   focusArea: string;
   note: string;
+  benchmarkSnapshot: string;
   url: string;
 };
 
@@ -30,18 +31,21 @@ export const accountingBenchmarkSources: AccountingBenchmarkSource[] = [
     name: "ERPNext",
     focusArea: "Broad SMB accounting + ERP workflow coverage",
     note: "Used as the benchmark for integrated ledgers, inventory, payables, payroll, and period-close controls.",
+    benchmarkSnapshot: "Reviewed against publicly documented 2026 product pages",
     url: "https://frappe.io/erpnext/open-source-accounting",
   },
   {
     name: "Odoo Accounting",
     focusArea: "Professional accounting operations for growing companies",
     note: "Used as the benchmark for bank reconciliation, taxes, reporting, approvals, and multi-company readiness.",
+    benchmarkSnapshot: "Reviewed against publicly documented 2026 product pages",
     url: "https://www.odoo.com/",
   },
   {
     name: "Akaunting",
     focusArea: "Small-business accounting essentials",
     note: "Used as the benchmark for lightweight invoicing, bills, expense capture, and recurring accounting tasks.",
+    benchmarkSnapshot: "Reviewed against publicly documented 2026 product pages",
     url: "https://akaunting.com/",
   },
 ];
@@ -269,5 +273,23 @@ export const accountingHighPriorityGaps = [
   "Tax settlement and filing workflow",
 ];
 
+const readinessLabel =
+  accountingCoverageSummary.missing === 0 && accountingCoverageSummary.partial <= 2
+    ? "already covers most of the professional accounting scope expected for an SMC"
+    : "already covers the accounting foundation for an SMC";
+
+const completenessLabel =
+  accountingCoverageSummary.missing === 0
+    ? "It is close to being comprehensive, but still has a few partial workflows to complete."
+    : "It is not yet fully comprehensive for a professional SMC accounting operation because critical control workflows are still missing or partial.";
+
+const workflowGapLabel =
+  accountingCoverageSummary.workflowsMissing === 1 ? "missing workflow" : "missing workflows";
+
 export const accountingCoverageVerdict =
-  "Cardlink already covers the accounting foundation for an SMC: ledger, invoices, journals, reports, contacts, documents, payroll records, and inventory-linked posting. It is not yet fully comprehensive for a professional SMC accounting operation because critical control workflows are still missing or partial, especially payables, receivables aging, bank reconciliation, tax filing, and month-end close.";
+  `Cardlink ${readinessLabel}: ledger, invoices, journals, reports, contacts, documents, payroll records, and inventory-linked posting. ${completenessLabel} ` +
+  `Current benchmark result: ${accountingCoverageSummary.implemented} implemented functions, ` +
+  `${accountingCoverageSummary.partial} partial functions, ${accountingCoverageSummary.missing} missing functions, ` +
+  `${accountingCoverageSummary.workflowsImplemented} implemented workflows, ` +
+  `${accountingCoverageSummary.workflowsPartial} partial workflows, and ` +
+  `${accountingCoverageSummary.workflowsMissing} ${workflowGapLabel}.`;

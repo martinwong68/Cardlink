@@ -24,6 +24,8 @@ import type { ModuleFunctionDefinition } from "@/src/lib/module-functions";
 import { accountingGet } from "@/src/lib/accounting/client";
 import type { InvoiceRow, TransactionRow, AccountRow } from "@/src/lib/accounting/types";
 
+const coverageGapLabel = accountingCoverageSummary.missing === 1 ? "gap" : "gaps";
+
 /* ── Accounting function tile definitions ── */
 const accountingFunctions: ModuleFunctionDefinition[] = [
   {
@@ -106,7 +108,7 @@ const accountingFunctions: ModuleFunctionDefinition[] = [
     color: "bg-slate-50 text-slate-700",
     ctaLabel: "Review Coverage",
     ctaHref: "/business/accounting/coverage",
-    badgeText: `${accountingCoverageSummary.missing} gaps`,
+    badgeText: `${accountingCoverageSummary.missing} ${coverageGapLabel}`,
   },
 ];
 

@@ -104,6 +104,7 @@ export default function AccountingCoveragePage() {
                 {source.focusArea}
               </p>
               <p className="mt-2 text-sm text-gray-600">{source.note}</p>
+              <p className="mt-2 text-xs text-gray-500">{source.benchmarkSnapshot}</p>
             </article>
           ))}
         </div>
