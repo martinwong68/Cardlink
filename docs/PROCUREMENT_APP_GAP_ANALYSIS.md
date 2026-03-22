@@ -76,7 +76,7 @@
 | 10 | PO terms and conditions | ❌ | No terms field on PO (exists on contracts) |
 | 11 | Tax calculation on PO | ❌ | No tax fields on PO or PO items |
 | 12 | Discount on PO line items | ❌ | No discount field |
-| 13 | PO approval workflow | ❌ | No approval fields on PO (auto-submittable) |
+| 13 | PO approval workflow | ❌ | No approval fields on PO — orders can be submitted without approval gates |
 | 14 | PO cancellation with reason | ⚠️ | Cancelled status exists but no cancellation reason field |
 | 15 | Partial receipt against PO | ⚠️ | `partial` status exists but tracking per-line partial qty unclear |
 | 16 | PO printing / PDF export | ❌ | No print/export feature |
@@ -225,7 +225,7 @@
 | 3 | Payroll period tracking | ✅ | `period_start`, `period_end` fields |
 | 4 | Payroll approval workflow (draft → approved → paid) | ✅ | Full status workflow |
 | 5 | Bank details for salary transfer | ⚠️ | `bank_details` field exists with encryption support |
-| 6 | Payroll → accounting journal entry | ⚠️ | Salary expense entries mentioned but integration not fully automated |
+| 6 | Payroll → accounting journal entry | ⚠️ | Salary expense journal entries require manual posting; no auto-creation on payroll approval |
 | 7 | Statutory deductions (EPF, SOCSO, tax) | ❌ | No statutory deduction breakdown |
 | 8 | Payslip generation / printing | ❌ | No payslip template or PDF generation |
 | 9 | Year-end tax forms (EA, CP8D equivalent) | ❌ | No tax form generation |
