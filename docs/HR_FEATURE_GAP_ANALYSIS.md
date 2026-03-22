@@ -302,7 +302,7 @@ These features are considered essential by all major open-source HR systems and 
 | Priority | Feature | Why It's Critical |
 |----------|---------|-------------------|
 | 🔴 P0 | **Leave balance / quota management** (B7-B10) | Without leave balances, there's no way to enforce entitlements. Admins must manually track how many days each employee has remaining. This is unsustainable beyond 10 employees. |
-| 🔴 P0 | **Payslip generation (PDF)** (D8) | Employees need documented proof of salary payments. This is a legal requirement in most jurisdictions. |
+| 🔴 P0 | **Payslip generation (PDF)** (D8) | Employees need documented proof of salary payments. Commonly required by labor regulations in many countries (e.g., Malaysia Employment Act, UK, EU member states). |
 | 🔴 P0 | **Tax / statutory deductions** (D9, D11) | Payroll without tax calculation is incomplete. SMEs are legally required to withhold and remit taxes (e.g., PCB, EPF, SOCSO in Malaysia). |
 | 🔴 P0 | **Employee self-service portal** (I1-I6) | HR staff cannot clock in/out and submit leave for every employee. Employees need a self-service portal to manage their own requests. |
 | 🔴 P1 | **Employee documents storage** (A13) | Employment contracts, IDs, certifications need to be stored alongside employee records for compliance and reference. |
@@ -351,6 +351,9 @@ These features are typically found in enterprise HR systems and can be deferred 
 3. **Tax & statutory deductions** — Configurable tax rules, auto-deduction in payroll
 4. **Payslip PDF generation** — Generate and download payslip per employee per period
 
+**Acceptance criteria**: Employee can log in, view leave balance, submit leave that deducts from quota; payslip PDF downloadable; payroll includes at least one configurable tax rule.
+**Test checkpoint**: End-to-end test — generate payroll with tax → approve → mark paid → employee downloads payslip PDF with correct net pay.
+
 ### Phase 2 — Important Enhancements (P1) — Weeks 4-6
 > Round out employee data and enable management reporting
 
@@ -358,6 +361,9 @@ These features are typically found in enterprise HR systems and can be deferred 
 6. **Document management** — Upload/download employee documents (contracts, IDs, certs)
 7. **HR reports dashboard** — Headcount, attendance summary, payroll cost, leave utilization
 8. **Public holidays calendar** — Company-level holiday management
+
+**Acceptance criteria**: Employee record shows all extended fields; at least 3 document types uploadable per employee; HR reports page shows 4 core reports; holidays auto-excluded from leave day calculations.
+**Test checkpoint**: Create employee with full profile → upload 2 documents → generate attendance report for a month → verify holidays are reflected correctly.
 
 ### Phase 3 — Operational Excellence (P2) — Weeks 7-10
 > Streamline HR operations and improve compliance
@@ -368,6 +374,9 @@ These features are typically found in enterprise HR systems and can be deferred 
 12. **Overtime tracking** — Rules engine for overtime threshold and auto-flagging
 13. **Audit trail** — Change history log for all HR record modifications
 
+**Acceptance criteria**: Departments and positions are selectable from managed lists; leave approval routes to reporting manager; onboarding checklist tracks completion %; overtime hours auto-flagged when exceeding threshold; all HR record changes logged with timestamp and user.
+**Test checkpoint**: Create department → assign employee → set reporting manager → submit leave → verify approval routes correctly → check audit log entries.
+
 ### Phase 4 — Advanced Features (P3) — Weeks 11+
 > Enterprise-grade features for scaling companies
 
@@ -376,6 +385,28 @@ These features are typically found in enterprise HR systems and can be deferred 
 16. Training & LMS
 17. Benefits administration
 18. Organization chart
+
+**Acceptance criteria**: Each module has CRUD operations, list views, and at least one workflow (e.g., recruitment pipeline, review cycle).
+**Test checkpoint**: Post job → receive application → move through pipeline → hire → auto-create employee record.
+
+### Risks & Mitigations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Tax rules vary by country/region | Payroll calculations could be incorrect | Start with one country (e.g., Malaysia) and make tax rules configurable per company |
+| Self-service portal increases attack surface | Unauthorized access to HR data | Leverage existing Supabase RLS; add employee-specific policies; rate-limit sensitive endpoints |
+| Document storage increases infrastructure costs | Higher storage and bandwidth usage | Use Supabase Storage with size limits; implement file type validation |
+| Payslip PDF generation adds server load | Slow response times during bulk generation | Generate payslips asynchronously; cache generated PDFs |
+| Scope creep across phases | Delayed delivery | Strictly prioritize P0 features; defer P2/P3 until P0/P1 are production-tested |
+
+### Scope Exclusions (Out of Scope for All Phases)
+
+- Biometric device or hardware integrations
+- Multi-company consolidated HR reporting
+- Third-party payroll provider integrations (e.g., ADP, Gusto)
+- AI-powered HR analytics or predictions
+- Immigration / visa tracking
+- Union management or collective bargaining features
 
 ---
 
