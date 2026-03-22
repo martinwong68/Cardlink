@@ -35,6 +35,18 @@ the application is comprehensive enough to handle all POS requirements for an SM
 - Hardware firmware / driver development
 - Payment gateway provider-side implementation
 
+**Rationale:** These are excluded because the analysis targets general retail / service
+SMC operations. Restaurant-specific and enterprise logistics features serve different
+market segments. Hardware and gateway provider-side work is vendor-dependent.
+
+## 3a. Assumptions
+
+- The benchmark is general retail / service SMC (1–50 employees, 1–5 locations)
+- Feature parity with mid-tier POS products (Square Free–Plus, Loyverse Pro) is the target
+- Cardlink's multi-tenant SaaS architecture (Next.js + Supabase) is the deployment model
+- Existing cross-module integration contracts (POS → Inventory → Accounting) are stable
+- Database schema columns referenced in this analysis exist in the live Supabase instance
+
 ---
 
 ## 4. Comprehensive Function List & Current Status
@@ -595,13 +607,13 @@ The following are **must-have** features for a professional SMC POS, ranked by b
 
 ## 9. Risks and Mitigations
 
-| Risk | Likelihood | Mitigation |
-|------|-----------|------------|
-| Tax non-compliance due to hardcoded rate | High | Wire `tax_rates` table to POS terminal (Priority 1) |
-| Inventory drift from unprocessed refunds | High | Implement refund → stock reversal |
-| GL imbalance from refunds without reversal | High | Implement refund → accounting reversal |
-| Poor customer retention without loyalty | Medium | Connect membership earn/redeem to POS |
-| Inability to troubleshoot with no reports | High | Build daily sales summary as first report |
+| Risk | Likelihood | Mitigation | Done Condition |
+|------|-----------|------------|----------------|
+| Tax non-compliance due to hardcoded rate | High | Wire `tax_rates` table to POS terminal (Priority 1) | Tax calculation matches `tax_rates` table for 100 % of transactions; hardcoded 8 % removed |
+| Inventory drift from unprocessed refunds | High | Implement refund → stock reversal | Refund of order N creates `inv_stock_movements` record with `movement_type='in'` and balance incremented |
+| GL imbalance from refunds without reversal | High | Implement refund → accounting reversal | Reverse journal entry created (Dr Revenue / Cr Cash) with idempotency key; GL net-zero for refunded orders |
+| Poor customer retention without loyalty | Medium | Connect membership earn/redeem to POS | Points awarded on order completion; redeemable at terminal; validated with 10+ test transactions in staging |
+| Inability to troubleshoot with no reports | High | Build daily sales summary as first report | `/api/pos/reports/daily` returns totals by payment method, tax collected, and order count for any date range |
 
 ---
 
