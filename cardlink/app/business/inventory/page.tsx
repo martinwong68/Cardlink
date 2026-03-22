@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Package, ArrowRightLeft, BarChart3, FileText } from "lucide-react";
+import { Package, ArrowRightLeft, BarChart3, FileText, Warehouse, ClipboardCheck, FolderTree, FileBarChart } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
 import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
@@ -34,6 +34,42 @@ const inventoryFunctions: ModuleFunctionDefinition[] = [
     color: "bg-amber-50 text-amber-600",
     ctaLabel: "View Balances",
     ctaHref: "/business/inventory/balances",
+  },
+  {
+    id: "warehouses",
+    title: "Warehouses",
+    description: "Manage warehouse locations",
+    icon: Warehouse,
+    color: "bg-blue-50 text-blue-600",
+    ctaLabel: "View Warehouses",
+    ctaHref: "/business/inventory/warehouses",
+  },
+  {
+    id: "stock-takes",
+    title: "Stock Takes",
+    description: "Physical inventory counting and reconciliation",
+    icon: ClipboardCheck,
+    color: "bg-rose-50 text-rose-600",
+    ctaLabel: "View Stock Takes",
+    ctaHref: "/business/inventory/stock-takes",
+  },
+  {
+    id: "categories",
+    title: "Categories",
+    description: "Organize products into categories",
+    icon: FolderTree,
+    color: "bg-violet-50 text-violet-600",
+    ctaLabel: "View Categories",
+    ctaHref: "/business/inventory/categories",
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    description: "Stock balance, low stock, and valuation reports",
+    icon: FileBarChart,
+    color: "bg-emerald-50 text-emerald-600",
+    ctaLabel: "View Reports",
+    ctaHref: "/business/inventory/reports",
   },
   {
     id: "rfq",
@@ -111,6 +147,13 @@ function hasContent(id: string, data: InvData | null): boolean {
   switch (id) {
     case "products": return data.products.length > 0;
     case "balances": return data.balances.length > 0;
+    case "warehouses":
+    case "stock-takes":
+    case "categories":
+    case "reports":
+    case "movements":
+    case "rfq":
+      return true;
     default: return false;
   }
 }
@@ -149,7 +192,7 @@ function DetailContent({ activeId, data }: { activeId: string; data: InvData | n
     }
     case "movements":
       return (
-        <p className="text-sm text-gray-500">View recent stock-in, stock-out, and adjustment records.</p>
+        <p className="text-sm text-gray-500">View recent stock-in, stock-out, and adjustment records with filters and CSV export.</p>
       );
     case "balances": {
       const enriched = data.balances.map((b) => {
@@ -168,6 +211,22 @@ function DetailContent({ activeId, data }: { activeId: string; data: InvData | n
         </div>
       );
     }
+    case "warehouses":
+      return (
+        <p className="text-sm text-gray-500">Configure warehouses and storage locations. Track stock across multiple sites.</p>
+      );
+    case "stock-takes":
+      return (
+        <p className="text-sm text-gray-500">Perform physical inventory counts. Compare system quantities with actual counts and auto-adjust.</p>
+      );
+    case "categories":
+      return (
+        <p className="text-sm text-gray-500">Organize products into hierarchical categories for easier browsing and reporting.</p>
+      );
+    case "reports":
+      return (
+        <p className="text-sm text-gray-500">View stock balance, low stock alerts, and inventory valuation reports. Export to CSV.</p>
+      );
     default: return null;
   }
 }
