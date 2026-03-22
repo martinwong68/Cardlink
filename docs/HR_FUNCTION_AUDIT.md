@@ -480,7 +480,7 @@ These are **must-have** for any SMC operating in Malaysia/Singapore/Hong Kong:
 | 🔴 P0 | Tax Calculation (PCB/Income Tax) | Legal compliance; penalties for incorrect deductions |
 | 🔴 P0 | Leave Balance & Entitlement | Labour law requires tracking; dispute risk |
 | 🔴 P0 | Employment Contract Management | Legal requirement in all 3 jurisdictions |
-| 🟠 P1 | Payslip Generation | Employee right to itemized payslip (mandatory in SG) |
+| 🟠 P1 | Payslip Generation | Employee right to itemised payslip (mandatory in SG) |
 | 🟠 P1 | Salary Structure & Components | Proper salary breakdown needed for tax reporting |
 | 🟠 P1 | Payroll-Accounting Integration | Manual re-entry is error-prone and audit risk |
 | 🟠 P1 | Holiday Calendar | Needed for correct leave & overtime calculation |
