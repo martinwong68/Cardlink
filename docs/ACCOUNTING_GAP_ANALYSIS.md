@@ -359,11 +359,11 @@ Create Budget → Allocate to Departments → Track Actuals → Generate Varianc
 | **P2** | F-AR-04 | **Estimates / Quotes** | Cannot create quotes that convert to invoices |
 | **P2** | F-AR-05 | **Credit notes** | Cannot issue corrections against invoices |
 | **P2** | F-AR-07 | **Payment terms** | No structured terms (Net 30, etc.) |
-| **P2** | F-AR-08 | **AR aging report** | Already listed in P1 |
+| **P2** | F-AR-08 | ~~AR aging report~~ | *(See P1 above)* |
 | **P2** | F-AR-12 | **Invoice email delivery** | Must send invoices outside the system |
 | **P2** | F-AR-13 | **Invoice PDF generation** | Cannot export professional invoice documents |
 | **P2** | F-AP-03 | **Purchase order matching** | No 3-way match validation |
-| **P2** | F-AP-06 | **AP aging report** | Already listed in P1 |
+| **P2** | F-AP-06 | ~~AP aging report~~ | *(See P1 above)* |
 | **P2** | F-AP-09 | **Expense claims** | No employee expense reimbursement tracking |
 | **P2** | F-BK-02 | **Bank feed integration** | Manual-only bank data (once import exists) |
 | **P2** | F-BK-06 | **Bank transfers** | Cannot record inter-account transfers |
@@ -501,44 +501,97 @@ Create Budget → Allocate to Departments → Track Actuals → Generate Varianc
 
 ## 6. Prioritised Roadmap Recommendations
 
+### Objective
+
+Close the critical gaps so that Cardlink's accounting module can serve as the **primary accounting system** for an SMC, eliminating the need for external spreadsheets or third-party tools for core bookkeeping, reporting, and compliance.
+
+### Scope Out
+
+The following are explicitly **out of scope** for the recommended phases and should be deferred:
+- ERP-grade features (multi-entity consolidation, inter-company transactions)
+- Industry-specific modules (construction, manufacturing, non-profit)
+- Government e-filing integration (varies by jurisdiction)
+- Advanced AI-driven forecasting beyond basic budgeting
+
+### Risks and Mitigations
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| Database migration complexity for AP tables | Medium | High | Design AP schema to mirror existing AR pattern; reuse contacts table |
+| Bank reconciliation matching accuracy | Medium | Medium | Start with manual matching; add auto-match rules incrementally |
+| Breaking existing invoice workflow | Low | High | Additive changes only; payment recording extends, not replaces, existing status flow |
+| Period closing blocks active users | Medium | Medium | Implement soft-lock with admin override; warn before locking |
+
 ### Phase 1 — Core Accounting Completeness (Critical for SMC)
 
-Target: Make the accounting module functional enough for an SMC to rely on it as their primary accounting system.
+**Target**: Make the accounting module functional enough for an SMC to rely on as their primary system.
+**Estimated duration**: 3–4 weeks (3 one-week sprints + 1 week testing/stabilisation).
 
-| # | Feature | Effort | Business Value |
-|---|---------|--------|----------------|
-| 1 | **Vendor Bills (AP)** — Bill entry, approval, payment, auto-journal | High | Critical — completes the payables side |
-| 2 | **Payment Recording** — Partial payments, payment methods on invoices | Medium | Critical — enables proper AR tracking |
-| 3 | **Bank Reconciliation** — Manual statement import + matching | High | Critical — compliance requirement |
-| 4 | **Fiscal Year & Period Management** — Setup, closing, locking | Medium | Critical — enables proper period-end close |
-| 5 | **AR/AP Aging Reports** — 30/60/90/120+ day aging | Medium | Critical — cash flow visibility |
-| 6 | **Payroll → GL Posting** — Auto-create journal entries from payroll | Low | Critical — completes payroll integration |
+| # | Feature | Effort | Business Value | Acceptance Criteria |
+|---|---------|--------|----------------|---------------------|
+| 1 | **Vendor Bills (AP)** — Bill entry, approval, payment, auto-journal | High | Critical | Bills can be created from vendor contacts; status transitions (draft→approved→paid) work; payment auto-creates GL journal entry |
+| 2 | **Payment Recording** — Partial payments, payment methods on invoices | Medium | Critical | Invoices support multiple payment records; partial payment updates outstanding balance; overpayment prevented |
+| 3 | **Bank Reconciliation** — Manual statement import + matching | High | Critical | CSV bank statement can be imported; transactions matched manually to ledger entries; reconciliation summary shows matched/unmatched counts |
+| 4 | **Fiscal Year & Period Management** — Setup, closing, locking | Medium | Critical | Fiscal year can be defined; periods can be closed; closed period rejects new journal entries; admin can reopen |
+| 5 | **AR/AP Aging Reports** — 30/60/90/120+ day aging | Medium | Critical | AR aging groups outstanding invoices by days overdue; AP aging groups outstanding bills; export to PDF/CSV |
+| 6 | **Payroll → GL Posting** — Auto-create journal entries from payroll | Low | Critical | When payroll status changes to "processed", a journal entry is created debiting expense / crediting cash |
+
+**Test checkpoints (end of each sprint)**:
+- Sprint 1: AP bills + payment recording pass end-to-end tests
+- Sprint 2: Bank reconciliation + period management pass integration tests
+- Sprint 3: Aging reports + payroll GL posting verified; full regression pass
 
 ### Phase 2 — Professional Features
 
-| # | Feature | Effort | Business Value |
-|---|---------|--------|----------------|
-| 7 | **Recurring Invoices** — Scheduled auto-generation | Medium | High — reduces manual work |
-| 8 | **Estimates/Quotes** — Quote-to-invoice conversion | Medium | High — complete sales workflow |
-| 9 | **Credit Notes** — Issue credits against invoices | Medium | High — handles returns/corrections |
-| 10 | **Invoice PDF & Email** — Generate and send professional invoices | Medium | High — replaces external tools |
-| 11 | **Report Export** — Actual PDF/Excel generation for reports | Medium | High — enables sharing with accountants |
-| 12 | **GL Detail Report** — Transaction-level account report | Low | High — audit and review essential |
-| 13 | **Tax Summary Report** — Aggregate tax for filing | Low | High — tax compliance |
-| 14 | **Data Import/Export** — CSV import for transactions and contacts | Medium | High — enables migration |
-| 15 | **Default Accounts Configuration** — Set default cash, AR, AP accounts | Low | High — reduces entry errors |
+**Target**: Bring feature parity with Akaunting / Manager.io for standard SMC workflows.
+**Estimated duration**: 4–5 weeks (4 one-week sprints + 1 week testing).
+
+| # | Feature | Effort | Business Value | Acceptance Criteria |
+|---|---------|--------|----------------|---------------------|
+| 7 | **Recurring Invoices** — Scheduled auto-generation | Medium | High | Invoices can be marked recurring with frequency; system auto-creates next invoice on schedule |
+| 8 | **Estimates/Quotes** — Quote-to-invoice conversion | Medium | High | Quotes can be created; accepted quote converts to invoice preserving line items |
+| 9 | **Credit Notes** — Issue credits against invoices | Medium | High | Credit note links to original invoice; reduces outstanding balance; creates reversal journal entry |
+| 10 | **Invoice PDF & Email** — Generate and send professional invoices | Medium | High | PDF generated from invoice data; email sent via configured SMTP/provider; delivery status tracked |
+| 11 | **Report Export** — Actual PDF/Excel generation for reports | Medium | High | All 4 report types generate downloadable PDF and Excel files |
+| 12 | **GL Detail Report** — Transaction-level account report | Low | High | Report shows all transactions for a selected account with running balance |
+| 13 | **Tax Summary Report** — Aggregate tax for filing | Low | High | Report aggregates tax collected and paid by rate/region for a date range |
+| 14 | **Data Import/Export** — CSV import for transactions and contacts | Medium | High | CSV upload creates validated transactions/contacts; error rows reported |
+| 15 | **Default Accounts Configuration** — Set default cash, AR, AP accounts | Low | High | Settings page allows selecting default accounts; defaults used in auto-journal generation |
+
+**Test checkpoints**:
+- Sprint 1: Recurring invoices + estimates pass unit tests
+- Sprint 2: Credit notes + PDF generation verified
+- Sprint 3: Report export + GL detail report pass
+- Sprint 4: Import/export + default accounts; full regression
 
 ### Phase 3 — Advanced Features
 
-| # | Feature | Effort | Business Value |
-|---|---------|--------|----------------|
-| 16 | **Fixed Asset Register & Depreciation** | High | Medium — needed for asset-heavy SMCs |
-| 17 | **Budgeting & Variance Reports** | High | Medium — financial planning |
-| 18 | **Comparative Reports** | Medium | Medium — trend analysis |
-| 19 | **Bank Feed Integration (Plaid)** | High | Medium — automation |
-| 20 | **Expense Claims Workflow** | Medium | Medium — employee reimbursements |
-| 21 | **FX Gain/Loss Calculation** | Medium | Medium — multi-currency accuracy |
-| 22 | **Advanced Tax Features** | Medium | Medium — compound tax, exemptions |
+**Target**: Differentiate from basic tools; support growing SMCs with complex needs.
+**Estimated duration**: 6–8 weeks (ongoing, feature-flag gated).
+
+| # | Feature | Effort | Business Value | Acceptance Criteria |
+|---|---------|--------|----------------|---------------------|
+| 16 | **Fixed Asset Register & Depreciation** | High | Medium | Assets recorded with purchase cost and useful life; monthly depreciation auto-calculated and posted to GL |
+| 17 | **Budgeting & Variance Reports** | High | Medium | Budgets created by account/period; variance report compares actual vs budget with % deviation |
+| 18 | **Comparative Reports** | Medium | Medium | P&L and Balance Sheet show current vs prior period side-by-side |
+| 19 | **Bank Feed Integration (Plaid)** | High | Medium | Bank transactions auto-imported daily; suggested matches presented for approval |
+| 20 | **Expense Claims Workflow** | Medium | Medium | Employees submit expenses; manager approves; approved claims create AP entries |
+| 21 | **FX Gain/Loss Calculation** | Medium | Medium | Settlement of FX transactions calculates realised gain/loss; period-end revaluation calculates unrealised |
+| 22 | **Advanced Tax Features** | Medium | Medium | Compound tax supported; tax exemption rules by product/customer; withholding tax tracking |
+
+**Test checkpoints**: Each feature gated behind feature flag; integration test suite per feature before flag enabled.
+
+---
+
+### Acceptance Checklist (Overall)
+
+- [ ] Phase 1 complete: All 6 critical functions implemented and tested
+- [ ] Phase 2 complete: All 9 professional features implemented and tested
+- [ ] Phase 3 complete: At least 4 of 7 advanced features implemented
+- [ ] Full regression suite passes after each phase
+- [ ] Audit trail covers all new transaction types
+- [ ] RBAC enforced on all new API endpoints
+- [ ] Documentation updated for each new feature
 
 ---
 
