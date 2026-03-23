@@ -1681,7 +1681,11 @@
         "duration": "时长（分钟）",
         "price": "价格",
         "category": "分类",
-        "maxConcurrent": "最大同时预约数"
+        "maxConcurrent": "最大同时预约数",
+        "bufferBefore": "前置缓冲（分钟）",
+        "bufferAfter": "后置缓冲（分钟）",
+        "minNotice": "最短提前通知（小时）",
+        "maxAdvance": "最长预约天数"
       },
       "saving": "保存中...",
       "save": "保存",
@@ -1716,7 +1720,15 @@
       "confirm": "确认",
       "cancel": "取消",
       "complete": "完成",
-      "noShow": "未到"
+      "noShow": "未到",
+      "reschedule": "改期",
+      "rescheduleTitle": "改期预约",
+      "confirmReschedule": "确认改期",
+      "cancelTitle": "取消预约",
+      "cancelReasonPlaceholder": "取消原因（可选）",
+      "confirmCancel": "确认取消",
+      "back": "返回",
+      "cancelReason": "原因"
     },
     "statuses": {
       "pending": "待确认",
@@ -1736,7 +1748,8 @@
       "thu": "周四",
       "fri": "周五",
       "sat": "周六",
-      "sun": "周日"
+      "sun": "周日",
+      "month": "月"
     },
     "availability": {
       "title": "可预约时间",
@@ -1754,7 +1767,70 @@
       "closed": "休息",
       "saving": "保存中...",
       "saved": "已保存！",
-      "save": "保存"
+      "save": "保存",
+      "dateOverrides": "特定日期调整",
+      "addOverride": "添加",
+      "overrideDate": "日期",
+      "closedAllDay": "全天关闭",
+      "reason": "原因",
+      "reasonPlaceholder": "例如：公共假期、装修",
+      "saveOverride": "添加调整",
+      "noOverrides": "暂未配置日期调整。"
+    },
+    "settings": {
+      "title": "预约设置",
+      "behavior": "预约行为",
+      "autoConfirm": "自动确认预约",
+      "autoConfirmDesc": "新预约无需人工审批自动确认",
+      "timezone": "时区",
+      "slotInterval": "时段间隔",
+      "cancellationNotice": "取消通知",
+      "noLimit": "无限制",
+      "requiredFields": "必填客户字段",
+      "requireEmail": "要求电子邮件",
+      "requirePhone": "要求电话号码",
+      "bookingPage": "公开预约页面",
+      "pageTitle": "页面标题",
+      "pageTitlePlaceholder": "例如：预约服务",
+      "pageDescription": "页面描述",
+      "cancellationPolicy": "取消政策",
+      "cancellationPolicyPlaceholder": "例如：预约前24小时可免费取消",
+      "saving": "保存中...",
+      "saved": "已保存！",
+      "save": "保存设置"
+    },
+    "customers": {
+      "title": "客户",
+      "add": "添加",
+      "addTitle": "添加客户",
+      "editTitle": "编辑客户",
+      "fields": {
+        "name": "姓名",
+        "email": "邮箱",
+        "phone": "电话",
+        "notes": "备注"
+      },
+      "saving": "保存中...",
+      "save": "保存",
+      "emptyTitle": "暂无客户",
+      "emptyDesc": "客户在预约时自动创建。",
+      "searchPlaceholder": "搜索客户...",
+      "bookings": "次预约",
+      "spent": "消费",
+      "lastVisit": "最后到访",
+      "confirmDelete": "确认删除"
+    },
+    "reports": {
+      "title": "预约报告",
+      "empty": "所选时段无数据。",
+      "totalAppointments": "总预约数",
+      "revenue": "收入",
+      "completionRate": "完成率",
+      "noShowRate": "缺席率",
+      "statusBreakdown": "状态分布",
+      "byService": "按服务",
+      "dailyBreakdown": "每日明细",
+      "bookings": "次预约"
     }
   },
   "businessHr": {

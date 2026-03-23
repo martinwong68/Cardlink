@@ -1681,7 +1681,11 @@
         "duration": "Duration (mins)",
         "price": "Price",
         "category": "Category",
-        "maxConcurrent": "Max Concurrent"
+        "maxConcurrent": "Max Concurrent",
+        "bufferBefore": "Buffer Before (mins)",
+        "bufferAfter": "Buffer After (mins)",
+        "minNotice": "Min Notice (hours)",
+        "maxAdvance": "Max Advance (days)"
       },
       "saving": "Saving...",
       "save": "Save",
@@ -1716,7 +1720,15 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "complete": "Complete",
-      "noShow": "No Show"
+      "noShow": "No Show",
+      "reschedule": "Reschedule",
+      "rescheduleTitle": "Reschedule Appointment",
+      "confirmReschedule": "Confirm Reschedule",
+      "cancelTitle": "Cancel Appointment",
+      "cancelReasonPlaceholder": "Reason for cancellation (optional)",
+      "confirmCancel": "Confirm Cancel",
+      "back": "Back",
+      "cancelReason": "Reason"
     },
     "statuses": {
       "pending": "Pending",
@@ -1736,7 +1748,8 @@
       "thu": "Thu",
       "fri": "Fri",
       "sat": "Sat",
-      "sun": "Sun"
+      "sun": "Sun",
+      "month": "Month"
     },
     "availability": {
       "title": "Availability",
@@ -1754,7 +1767,70 @@
       "closed": "Closed",
       "saving": "Saving...",
       "saved": "Saved!",
-      "save": "Save"
+      "save": "Save",
+      "dateOverrides": "Date-Specific Overrides",
+      "addOverride": "Add",
+      "overrideDate": "Date",
+      "closedAllDay": "Closed all day",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Public holiday, renovation",
+      "saveOverride": "Add Override",
+      "noOverrides": "No date overrides configured."
+    },
+    "settings": {
+      "title": "Booking Settings",
+      "behavior": "Booking Behavior",
+      "autoConfirm": "Auto-confirm appointments",
+      "autoConfirmDesc": "Automatically confirm new bookings without manual approval",
+      "timezone": "Timezone",
+      "slotInterval": "Slot Interval",
+      "cancellationNotice": "Cancellation Notice",
+      "noLimit": "No limit",
+      "requiredFields": "Required Customer Fields",
+      "requireEmail": "Require email address",
+      "requirePhone": "Require phone number",
+      "bookingPage": "Public Booking Page",
+      "pageTitle": "Page Title",
+      "pageTitlePlaceholder": "e.g. Book an Appointment",
+      "pageDescription": "Page Description",
+      "cancellationPolicy": "Cancellation Policy",
+      "cancellationPolicyPlaceholder": "e.g. Free cancellation up to 24 hours before",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "save": "Save Settings"
+    },
+    "customers": {
+      "title": "Customers",
+      "add": "Add",
+      "addTitle": "Add Customer",
+      "editTitle": "Edit Customer",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "notes": "Notes"
+      },
+      "saving": "Saving...",
+      "save": "Save",
+      "emptyTitle": "No customers yet",
+      "emptyDesc": "Customers are automatically created when they book.",
+      "searchPlaceholder": "Search customers...",
+      "bookings": "bookings",
+      "spent": "spent",
+      "lastVisit": "Last visit",
+      "confirmDelete": "Confirm Delete"
+    },
+    "reports": {
+      "title": "Booking Reports",
+      "empty": "No data for the selected period.",
+      "totalAppointments": "Total Appointments",
+      "revenue": "Revenue",
+      "completionRate": "Completion Rate",
+      "noShowRate": "No-Show Rate",
+      "statusBreakdown": "Status Breakdown",
+      "byService": "By Service",
+      "dailyBreakdown": "Daily Breakdown",
+      "bookings": "bookings"
     }
   },
   "businessHr": {

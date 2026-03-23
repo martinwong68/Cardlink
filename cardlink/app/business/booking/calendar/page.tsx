@@ -28,7 +28,7 @@ export default function BookingCalendarPage() {
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"day" | "week">("day");
+  const [viewMode, setViewMode] = useState<"day" | "week" | "month">("day");
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const loadData = useCallback(async () => {
@@ -41,7 +41,7 @@ export default function BookingCalendarPage() {
     if (viewMode === "day") {
       dateFrom = currentDate.toISOString().slice(0, 10);
       dateTo = dateFrom;
-    } else {
+    } else if (viewMode === "week") {
       // Week view: get Monday of current week
       const d = new Date(currentDate);
       const day = d.getDay();
@@ -51,6 +51,12 @@ export default function BookingCalendarPage() {
       sunday.setDate(monday.getDate() + 6);
       dateFrom = monday.toISOString().slice(0, 10);
       dateTo = sunday.toISOString().slice(0, 10);
+    } else {
+      // Month view: first to last day of month
+      const y = currentDate.getFullYear();
+      const m = currentDate.getMonth();
+      dateFrom = new Date(y, m, 1).toISOString().slice(0, 10);
+      dateTo = new Date(y, m + 1, 0).toISOString().slice(0, 10);
     }
 
     const { data } = await supabase
@@ -74,7 +80,11 @@ export default function BookingCalendarPage() {
 
   const shiftDate = (delta: number) => {
     const d = new Date(currentDate);
-    d.setDate(d.getDate() + (viewMode === "week" ? delta * 7 : delta));
+    if (viewMode === "month") {
+      d.setMonth(d.getMonth() + delta);
+    } else {
+      d.setDate(d.getDate() + (viewMode === "week" ? delta * 7 : delta));
+    }
     setCurrentDate(d);
   };
 
@@ -191,6 +201,66 @@ export default function BookingCalendarPage() {
     );
   };
 
+  // Month view rendering
+  const renderMonthView = () => {
+    const y = currentDate.getFullYear();
+    const m = currentDate.getMonth();
+    const firstDay = new Date(y, m, 1);
+    const lastDay = new Date(y, m + 1, 0);
+    const startDow = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Monday=0
+
+    const dayNames = [t("calendar.mon"), t("calendar.tue"), t("calendar.wed"), t("calendar.thu"), t("calendar.fri"), t("calendar.sat"), t("calendar.sun")];
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    const cells: Array<{ date: Date | null }> = [];
+    for (let i = 0; i < startDow; i++) cells.push({ date: null });
+    for (let d = 1; d <= lastDay.getDate(); d++) cells.push({ date: new Date(y, m, d) });
+    while (cells.length % 7 !== 0) cells.push({ date: null });
+
+    return (
+      <div className="app-card p-4">
+        <div className="grid grid-cols-7 gap-1">
+          {dayNames.map((dn) => (
+            <div key={dn} className="text-center text-[10px] font-semibold text-gray-500 pb-2">
+              {dn}
+            </div>
+          ))}
+          {cells.map((cell, i) => {
+            if (!cell.date) {
+              return <div key={i} className="min-h-[48px]" />;
+            }
+            const dateStr = cell.date.toISOString().slice(0, 10);
+            const dayAppts = appointments.filter((a) => a.appointment_date === dateStr);
+            const isToday = dateStr === todayStr;
+
+            return (
+              <div
+                key={i}
+                className={`min-h-[48px] rounded-lg p-1 text-center ${isToday ? "bg-indigo-50 ring-1 ring-indigo-200" : ""}`}
+              >
+                <p className={`text-xs font-bold ${isToday ? "text-indigo-600" : "text-gray-700"}`}>
+                  {cell.date.getDate()}
+                </p>
+                {dayAppts.length > 0 && (
+                  <div className="mt-0.5 space-y-0.5">
+                    {dayAppts.slice(0, 2).map((a) => (
+                      <div key={a.id} className={`rounded px-0.5 text-[7px] leading-tight truncate ${statusColors[a.status] ?? "bg-gray-100"}`}>
+                        {a.start_time?.slice(0, 5)}
+                      </div>
+                    ))}
+                    {dayAppts.length > 2 && (
+                      <p className="text-[7px] text-gray-400">+{dayAppts.length - 2}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -218,6 +288,12 @@ export default function BookingCalendarPage() {
           >
             {t("calendar.week")}
           </button>
+          <button
+            onClick={() => setViewMode("month")}
+            className={`rounded-md px-3 py-1.5 text-xs font-semibold ${viewMode === "month" ? "bg-white text-gray-800 shadow-sm" : "text-gray-500"}`}
+          >
+            {t("calendar.month")}
+          </button>
         </div>
         <div className="flex items-center gap-2 ml-auto">
           <button onClick={() => shiftDate(-1)} className="p-1.5 rounded-lg hover:bg-gray-100">
@@ -232,7 +308,7 @@ export default function BookingCalendarPage() {
         </div>
       </div>
 
-      {viewMode === "day" ? renderDayView() : renderWeekView()}
+      {viewMode === "day" ? renderDayView() : viewMode === "week" ? renderWeekView() : renderMonthView()}
 
       {appointments.length === 0 && (
         <div className="flex flex-col items-center py-8 text-center">

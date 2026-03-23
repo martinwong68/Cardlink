@@ -11,6 +11,7 @@ import {
   X,
   Ban,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
@@ -27,6 +28,9 @@ type Appointment = {
   status: string;
   notes: string | null;
   total_price: number;
+  cancellation_reason: string | null;
+  source: string | null;
+  rescheduled_from_id: string | null;
   booking_services: { name: string; duration_minutes: number } | null;
 };
 
@@ -47,6 +51,11 @@ export default function AppointmentsPage() {
   const [tab, setTab] = useState<"all" | "today" | "upcoming" | "past">("all");
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [cancelId, setCancelId] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [rescheduleId, setRescheduleId] = useState<string | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleTime, setRescheduleTime] = useState("");
 
   // Form
   const [serviceId, setServiceId] = useState("");
@@ -91,6 +100,43 @@ export default function AppointmentsPage() {
       .update({ status, updated_at: new Date().toISOString() })
       .eq("id", id).eq("company_id", companyId);
     void loadData();
+  };
+
+  const handleCancelWithReason = async () => {
+    if (!cancelId) return;
+    await supabase.from("booking_appointments")
+      .update({
+        status: "cancelled",
+        cancellation_reason: cancelReason || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", cancelId).eq("company_id", companyId);
+    setCancelId(null);
+    setCancelReason("");
+    void loadData();
+  };
+
+  const handleReschedule = async () => {
+    if (!rescheduleId || !rescheduleDate || !rescheduleTime) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/business/booking/appointments", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: rescheduleId,
+          reschedule_date: rescheduleDate,
+          reschedule_time: rescheduleTime,
+        }),
+      });
+      if (res.ok) {
+        setRescheduleId(null);
+        setRescheduleDate("");
+        setRescheduleTime("");
+        void loadData();
+      }
+    } catch { /* ignore */ }
+    setSaving(false);
   };
 
   const handleSubmit = async () => {
@@ -261,7 +307,15 @@ export default function AppointmentsPage() {
                 <span>{appt.start_time?.slice(0, 5)} – {appt.end_time?.slice(0, 5)}</span>
               </div>
               {appt.notes && <p className="text-xs text-gray-500">{appt.notes}</p>}
-              <div className="flex gap-2 pt-1">
+              {appt.cancellation_reason && (
+                <p className="text-xs text-red-500">{t("appointments.cancelReason")}: {appt.cancellation_reason}</p>
+              )}
+              {appt.source && appt.source !== "admin" && (
+                <span className="inline-block rounded-full bg-purple-50 text-purple-600 px-2 py-0.5 text-[10px] font-medium">
+                  {appt.source}
+                </span>
+              )}
+              <div className="flex gap-2 pt-1 flex-wrap">
                 {appt.status === "pending" && (
                   <button onClick={() => updateStatus(appt.id, "confirmed")} className="app-primary-btn flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold">
                     <Check className="h-3 w-3" /> {t("appointments.confirm")}
@@ -269,8 +323,11 @@ export default function AppointmentsPage() {
                 )}
                 {(appt.status === "pending" || appt.status === "confirmed") && (
                   <>
-                    <button onClick={() => updateStatus(appt.id, "cancelled")} className="app-secondary-btn flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold">
+                    <button onClick={() => setCancelId(appt.id)} className="app-secondary-btn flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold">
                       <X className="h-3 w-3" /> {t("appointments.cancel")}
+                    </button>
+                    <button onClick={() => { setRescheduleId(appt.id); setRescheduleDate(appt.appointment_date); }} className="flex items-center gap-1 rounded-lg bg-indigo-50 text-indigo-700 px-3 py-1.5 text-xs font-semibold hover:bg-indigo-100">
+                      <RefreshCw className="h-3 w-3" /> {t("appointments.reschedule")}
                     </button>
                     <button onClick={() => updateStatus(appt.id, "completed")} className="flex items-center gap-1 rounded-lg bg-green-50 text-green-700 px-3 py-1.5 text-xs font-semibold hover:bg-green-100">
                       <Check className="h-3 w-3" /> {t("appointments.complete")}
@@ -283,6 +340,59 @@ export default function AppointmentsPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Cancel Reason Modal */}
+      {cancelId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4">
+            <h3 className="text-base font-semibold text-gray-800">{t("appointments.cancelTitle")}</h3>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder={t("appointments.cancelReasonPlaceholder")}
+              rows={3}
+              className="app-input w-full rounded-lg border px-3 py-2 text-sm"
+            />
+            <div className="flex gap-2">
+              <button onClick={() => { setCancelId(null); setCancelReason(""); }} className="app-secondary-btn flex-1 rounded-lg py-2 text-sm font-semibold">
+                {t("appointments.back")}
+              </button>
+              <button onClick={handleCancelWithReason} className="flex-1 rounded-lg bg-red-500 text-white py-2 text-sm font-semibold hover:bg-red-600">
+                {t("appointments.confirmCancel")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reschedule Modal */}
+      {rescheduleId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4">
+            <h3 className="text-base font-semibold text-gray-800">{t("appointments.rescheduleTitle")}</h3>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("appointments.fields.date")}</label>
+              <input type="date" value={rescheduleDate} onChange={(e) => setRescheduleDate(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("appointments.fields.time")}</label>
+              <input type="time" value={rescheduleTime} onChange={(e) => setRescheduleTime(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => { setRescheduleId(null); setRescheduleDate(""); setRescheduleTime(""); }} className="app-secondary-btn flex-1 rounded-lg py-2 text-sm font-semibold">
+                {t("appointments.back")}
+              </button>
+              <button
+                onClick={handleReschedule}
+                disabled={saving || !rescheduleDate || !rescheduleTime}
+                className="flex-1 rounded-lg bg-indigo-500 text-white py-2 text-sm font-semibold hover:bg-indigo-600 disabled:opacity-40"
+              >
+                {saving ? t("appointments.saving") : t("appointments.confirmReschedule")}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

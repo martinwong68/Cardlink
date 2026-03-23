@@ -8,15 +8,22 @@ export async function GET(request: Request) {
 
   const supabase = await createClient();
   const companyId = guard.context.activeCompanyId;
+  const { searchParams } = new URL(request.url);
+  const search = searchParams.get("search");
 
-  const { data, error } = await supabase
-    .from("booking_services")
+  let query = supabase
+    .from("booking_customers")
     .select("*")
     .eq("company_id", companyId)
     .order("name");
 
+  if (search) {
+    query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+  }
+
+  const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ services: data });
+  return NextResponse.json({ customers: data });
 }
 
 export async function POST(request: Request) {
@@ -27,28 +34,24 @@ export async function POST(request: Request) {
   const companyId = guard.context.activeCompanyId;
   const body = await request.json();
 
+  if (!body.name?.trim()) {
+    return NextResponse.json({ error: "name is required" }, { status: 400 });
+  }
+
   const { data, error } = await supabase
-    .from("booking_services")
+    .from("booking_customers")
     .insert({
       company_id: companyId,
-      name: body.name,
-      description: body.description || null,
-      duration_minutes: body.duration_minutes ?? 60,
-      price: body.price ?? 0,
-      category: body.category || null,
-      max_concurrent: body.max_concurrent ?? 1,
-      buffer_before_mins: body.buffer_before_mins ?? 0,
-      buffer_after_mins: body.buffer_after_mins ?? 0,
-      min_notice_hours: body.min_notice_hours ?? 0,
-      max_advance_days: body.max_advance_days ?? 90,
-      image_url: body.image_url || null,
-      sort_order: body.sort_order ?? 0,
+      name: body.name.trim(),
+      email: body.email || null,
+      phone: body.phone || null,
+      notes: body.notes || null,
     })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ service: data }, { status: 201 });
+  return NextResponse.json({ customer: data }, { status: 201 });
 }
 
 export async function PUT(request: Request) {
@@ -61,23 +64,14 @@ export async function PUT(request: Request) {
 
   if (!body.id) return NextResponse.json({ error: "id is required" }, { status: 400 });
 
-  const updateData: Record<string, unknown> = {};
+  const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (body.name !== undefined) updateData.name = body.name;
-  if (body.description !== undefined) updateData.description = body.description || null;
-  if (body.duration_minutes !== undefined) updateData.duration_minutes = body.duration_minutes;
-  if (body.price !== undefined) updateData.price = body.price;
-  if (body.category !== undefined) updateData.category = body.category || null;
-  if (body.is_active !== undefined) updateData.is_active = body.is_active;
-  if (body.max_concurrent !== undefined) updateData.max_concurrent = body.max_concurrent;
-  if (body.buffer_before_mins !== undefined) updateData.buffer_before_mins = body.buffer_before_mins;
-  if (body.buffer_after_mins !== undefined) updateData.buffer_after_mins = body.buffer_after_mins;
-  if (body.min_notice_hours !== undefined) updateData.min_notice_hours = body.min_notice_hours;
-  if (body.max_advance_days !== undefined) updateData.max_advance_days = body.max_advance_days;
-  if (body.image_url !== undefined) updateData.image_url = body.image_url || null;
-  if (body.sort_order !== undefined) updateData.sort_order = body.sort_order;
+  if (body.email !== undefined) updateData.email = body.email || null;
+  if (body.phone !== undefined) updateData.phone = body.phone || null;
+  if (body.notes !== undefined) updateData.notes = body.notes || null;
 
   const { data, error } = await supabase
-    .from("booking_services")
+    .from("booking_customers")
     .update(updateData)
     .eq("id", body.id)
     .eq("company_id", companyId)
@@ -85,7 +79,7 @@ export async function PUT(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ service: data });
+  return NextResponse.json({ customer: data });
 }
 
 export async function DELETE(request: Request) {
@@ -100,7 +94,7 @@ export async function DELETE(request: Request) {
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
 
   const { error } = await supabase
-    .from("booking_services")
+    .from("booking_customers")
     .delete()
     .eq("id", id)
     .eq("company_id", companyId);

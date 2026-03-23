@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { ClipboardList, CalendarDays, Calendar, Settings, Loader2 } from "lucide-react";
+import { ClipboardList, CalendarDays, Calendar, Settings, Loader2, BarChart3, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
@@ -45,6 +45,33 @@ const bookingFunctions: ModuleFunctionDefinition[] = [
     color: "bg-orange-50 text-orange-600",
     ctaLabel: "Set Availability",
     ctaHref: "/business/booking/availability",
+  },
+  {
+    id: "customers",
+    title: "Customers",
+    description: "Manage your booking customer directory",
+    icon: Users,
+    color: "bg-purple-50 text-purple-600",
+    ctaLabel: "View Customers",
+    ctaHref: "/business/booking/customers",
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    description: "Analytics, revenue tracking, and insights",
+    icon: BarChart3,
+    color: "bg-emerald-50 text-emerald-600",
+    ctaLabel: "View Reports",
+    ctaHref: "/business/booking/reports",
+  },
+  {
+    id: "settings",
+    title: "Settings",
+    description: "Configure booking behavior and public page",
+    icon: Settings,
+    color: "bg-gray-50 text-gray-600",
+    ctaLabel: "Configure",
+    ctaHref: "/business/booking/settings",
   },
 ];
 
