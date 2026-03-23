@@ -8,6 +8,17 @@ type SupplierDraft = {
   name?: string;
   contact_name?: string;
   contact_phone?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  payment_terms?: string;
+  currency?: string;
+  category?: string;
+  tax_id?: string;
+  website?: string;
+  notes?: string;
+  is_active?: boolean;
 };
 
 export async function GET(request: Request) {
@@ -19,7 +30,7 @@ export async function GET(request: Request) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("proc_suppliers")
-    .select("id, company_id, name, contact_name, contact_phone, created_at, updated_at")
+    .select("id, company_id, name, contact_name, contact_phone, email, address, city, country, payment_terms, currency, category, tax_id, website, notes, is_active, rating, created_at, updated_at")
     .eq("company_id", guard.context.activeCompanyId)
     .order("created_at", { ascending: false });
 
@@ -60,6 +71,17 @@ export async function POST(request: Request) {
       name,
       contact_name: body.contact_name?.trim() || null,
       contact_phone: body.contact_phone?.trim() || null,
+      email: body.email?.trim() || null,
+      address: body.address?.trim() || null,
+      city: body.city?.trim() || null,
+      country: body.country?.trim() || null,
+      payment_terms: body.payment_terms || "net_30",
+      currency: body.currency?.trim() || "USD",
+      category: body.category?.trim() || null,
+      tax_id: body.tax_id?.trim() || null,
+      website: body.website?.trim() || null,
+      notes: body.notes?.trim() || null,
+      is_active: body.is_active !== false,
     })
     .select("id")
     .single();

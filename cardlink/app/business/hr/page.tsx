@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { Users, CalendarDays, Clock, DollarSign, Loader2 } from "lucide-react";
+import {
+  Users, CalendarDays, Clock, DollarSign, Loader2,
+  Building2, CalendarHeart, FileText, BarChart3,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
@@ -45,6 +48,42 @@ const hrFunctions: ModuleFunctionDefinition[] = [
     color: "bg-blue-50 text-blue-600",
     ctaLabel: "View Payroll",
     ctaHref: "/business/hr/payroll",
+  },
+  {
+    id: "departments",
+    title: "Departments",
+    description: "Manage company departments and positions",
+    icon: Building2,
+    color: "bg-indigo-50 text-indigo-600",
+    ctaLabel: "View Departments",
+    ctaHref: "/business/hr/departments",
+  },
+  {
+    id: "holidays",
+    title: "Holidays",
+    description: "Manage public holidays and company calendar",
+    icon: CalendarHeart,
+    color: "bg-rose-50 text-rose-600",
+    ctaLabel: "View Holidays",
+    ctaHref: "/business/hr/holidays",
+  },
+  {
+    id: "documents",
+    title: "Documents",
+    description: "Store and manage employee documents",
+    icon: FileText,
+    color: "bg-slate-50 text-slate-600",
+    ctaLabel: "View Documents",
+    ctaHref: "/business/hr/documents",
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    description: "HR analytics and workforce reports",
+    icon: BarChart3,
+    color: "bg-cyan-50 text-cyan-600",
+    ctaLabel: "View Reports",
+    ctaHref: "/business/hr/reports",
   },
 ];
 
@@ -146,7 +185,23 @@ function DetailContent({ activeId, data, t }: { activeId: string; data: HrData |
       );
     case "payroll":
       return (
-        <p className="text-sm text-gray-500">Manage salary runs, deductions, and compensation reports.</p>
+        <p className="text-sm text-gray-500">{t("stats.payrollDesc")}</p>
+      );
+    case "departments":
+      return (
+        <p className="text-sm text-gray-500">{t("stats.departmentsDesc")}</p>
+      );
+    case "holidays":
+      return (
+        <p className="text-sm text-gray-500">{t("stats.holidaysDesc")}</p>
+      );
+    case "documents":
+      return (
+        <p className="text-sm text-gray-500">{t("stats.documentsDesc")}</p>
+      );
+    case "reports":
+      return (
+        <p className="text-sm text-gray-500">{t("stats.reportsDesc")}</p>
       );
     default: return null;
   }

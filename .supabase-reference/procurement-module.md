@@ -1,19 +1,22 @@
-# Procurement Module (Suppliers, POs, Receipts, RFQ)
+# Procurement Module (Suppliers, POs, Receipts, RFQ, Contracts, Vendor Bills)
 
-> Auto-generated from Supabase database on 2025-07-21
-> 7 tables | All verified ✅ in live DB (currently 0 rows)
+> Updated: 2026-03-22 (Phase 1 rebuild)
+> 10 tables | 7 original + 3 new (proc_purchase_request_items, proc_vendor_bills, proc_vendor_bill_items)
 
 ---
 
 ## Table of Contents
 
-- [proc_suppliers](#proc_suppliers) — 0 rows
-- [proc_purchase_orders](#proc_purchase_orders) — 0 rows
-- [proc_purchase_order_items](#proc_purchase_order_items) — 0 rows
-- [proc_purchase_requests](#proc_purchase_requests) — 0 rows (RFQ)
-- [proc_receipts](#proc_receipts) — 0 rows
-- [proc_receipt_items](#proc_receipt_items) — 0 rows
-- [proc_contracts](#proc_contracts) — 0 rows
+- [proc_suppliers](#proc_suppliers)
+- [proc_purchase_orders](#proc_purchase_orders)
+- [proc_purchase_order_items](#proc_purchase_order_items)
+- [proc_purchase_requests](#proc_purchase_requests) (RFQ)
+- [proc_purchase_request_items](#proc_purchase_request_items) — NEW
+- [proc_receipts](#proc_receipts)
+- [proc_receipt_items](#proc_receipt_items)
+- [proc_contracts](#proc_contracts)
+- [proc_vendor_bills](#proc_vendor_bills) — NEW
+- [proc_vendor_bill_items](#proc_vendor_bill_items) — NEW
 
 ---
 
@@ -22,7 +25,7 @@
 **Status:** ✅ Exists (0 rows)
 **FK:** company_id → companies.id
 
-### Columns (7)
+### Columns (18 — expanded in Phase 1)
 
 | Column | Type | Default | Notes |
 |--------|------|---------|-------|
@@ -31,6 +34,18 @@
 | name | text | | Supplier name |
 | contact_name | text | | |
 | contact_phone | text | | |
+| email | text | | NEW |
+| address | text | | NEW |
+| city | text | | NEW |
+| country | text | | NEW |
+| payment_terms | text | 'net_30' | NEW — immediate/net_7/net_15/net_30/net_45/net_60/net_90 |
+| currency | text | 'USD' | NEW |
+| category | text | | NEW — free-form categorisation |
+| tax_id | text | | NEW |
+| website | text | | NEW |
+| notes | text | | NEW |
+| is_active | boolean | true | NEW |
+| rating | smallint | 0 | NEW — 0-5 scale |
 | created_at | timestamptz | now() | |
 | updated_at | timestamptz | now() | |
 
@@ -52,7 +67,7 @@
 **Status:** ✅ Exists (0 rows)
 **FKs:** company_id → companies.id, supplier_id → proc_suppliers.id
 
-### Columns (13)
+### Columns (20 — expanded in Phase 1)
 
 | Column | Type | Default | Notes |
 |--------|------|---------|-------|
@@ -61,8 +76,15 @@
 | supplier_id | uuid | | FK → proc_suppliers.id |
 | po_number | text | | Human-readable PO number |
 | status | text | | draft, ordered, partial, received, cancelled |
+| request_id | uuid | | NEW — FK → proc_purchase_requests.id |
 | ordered_at | timestamptz | | |
 | expected_at | timestamptz | | Expected delivery date |
+| terms | text | | NEW — PO terms & conditions |
+| notes | text | | NEW |
+| discount_percent | numeric | 0 | NEW |
+| tax_percent | numeric | 0 | NEW |
+| shipping_cost | numeric | 0 | NEW |
+| payment_terms | text | | NEW |
 | idempotency_key | text | | |
 | operation_id | uuid | | |
 | correlation_id | uuid | | |
@@ -255,3 +277,73 @@ process_procurement_receipt(
   - **Debit:** Inventory Asset (1400)
   - **Credit:** Accounts Payable (2100)
 - Journal entry amount = sum of (qty × unit_cost) from PO items
+- When a vendor bill is paid, `createVendorBillPaidJournalEntry()` auto-creates:
+  - **Debit:** Accounts Payable (2100)
+  - **Credit:** Cash / Bank (1100)
+- Journal entry amount = total_amount from bill
+
+### Procurement → Purchase Requests
+- `proc_purchase_orders.request_id` → `proc_purchase_requests.id` (links PO to originating request)
+- `POST /api/procurement/requests/[id]/convert-to-po` converts approved PRs to POs
+
+---
+
+## New Tables (Phase 1)
+
+### proc_purchase_request_items
+
+**Status:** NEW
+**FKs:** request_id → proc_purchase_requests.id, company_id → companies.id, product_id → inv_products.id
+
+| Column | Type | Default | Notes |
+|--------|------|---------|-------|
+| id | uuid PK | | |
+| request_id | uuid | | FK → proc_purchase_requests.id |
+| company_id | uuid | | FK → companies.id |
+| product_id | uuid | | FK → inv_products.id (nullable) |
+| description | text | | |
+| qty | numeric | 1 | |
+| estimated_unit_cost | numeric | 0 | |
+| created_at | timestamptz | now() | |
+
+### proc_vendor_bills
+
+**Status:** NEW
+**FKs:** company_id → companies.id, supplier_id → proc_suppliers.id, po_id → proc_purchase_orders.id, receipt_id → proc_receipts.id
+
+| Column | Type | Default | Notes |
+|--------|------|---------|-------|
+| id | uuid PK | | |
+| company_id | uuid | | FK → companies.id |
+| supplier_id | uuid | | FK → proc_suppliers.id |
+| po_id | uuid | | FK → proc_purchase_orders.id (nullable) |
+| receipt_id | uuid | | FK → proc_receipts.id (nullable) |
+| bill_number | text | | UNIQUE(company_id, bill_number) |
+| status | text | 'draft' | draft, pending, approved, paid, cancelled |
+| bill_date | date | CURRENT_DATE | |
+| due_date | date | | |
+| subtotal | numeric | 0 | |
+| tax_amount | numeric | 0 | |
+| total_amount | numeric | 0 | |
+| payment_terms | text | | |
+| notes | text | | |
+| created_by | uuid | | |
+| created_at | timestamptz | now() | |
+| updated_at | timestamptz | now() | |
+
+### proc_vendor_bill_items
+
+**Status:** NEW
+**FKs:** bill_id → proc_vendor_bills.id, company_id → companies.id, product_id → inv_products.id
+
+| Column | Type | Default | Notes |
+|--------|------|---------|-------|
+| id | uuid PK | | |
+| bill_id | uuid | | FK → proc_vendor_bills.id |
+| company_id | uuid | | FK → companies.id |
+| product_id | uuid | | FK → inv_products.id (nullable) |
+| description | text | | |
+| qty | numeric | 1 | |
+| unit_cost | numeric | 0 | |
+| amount | numeric | 0 | |
+| created_at | timestamptz | now() | |

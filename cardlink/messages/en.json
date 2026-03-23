@@ -1762,7 +1762,12 @@
     "stats": {
       "activeEmployees": "Active Employees",
       "pendingLeave": "Pending Leave Requests",
-      "todayAttendance": "Present Today"
+      "todayAttendance": "Present Today",
+      "payrollDesc": "Manage salary runs, deductions, and compensation reports.",
+      "departmentsDesc": "Organize your company structure with departments and positions.",
+      "holidaysDesc": "Track public holidays and company calendar events.",
+      "documentsDesc": "Store employee contracts, IDs, and certificates securely.",
+      "reportsDesc": "Generate workforce analytics and HR insights."
     },
     "employmentTypes": {
       "fullTime": "Full-time",
@@ -1787,7 +1792,15 @@
         "employmentType": "Employment Type",
         "startDate": "Start Date",
         "salary": "Salary",
-        "salaryPeriod": "Salary Period"
+        "salaryPeriod": "Salary Period",
+        "address": "Address",
+        "nationalId": "National ID / Tax Number",
+        "bankName": "Bank Name",
+        "bankAccount": "Bank Account Number",
+        "emergencyContact": "Emergency Contact",
+        "emergencyName": "Contact Name",
+        "emergencyPhone": "Contact Phone",
+        "emergencyRelation": "Relationship"
       },
       "salaryPeriods": {
         "monthly": "Monthly",
@@ -1805,7 +1818,8 @@
         "terminated": "Terminated"
       },
       "toggleStatus": "Toggle Status",
-      "confirmDelete": "Confirm Delete"
+      "confirmDelete": "Confirm Delete",
+      "step4": "Additional Information"
     },
     "leave": {
       "title": "Leave Requests",
@@ -1825,12 +1839,14 @@
         "sick": "Sick",
         "unpaid": "Unpaid",
         "maternity": "Maternity",
-        "other": "Other"
+        "other": "Other",
+        "paternity": "Paternity"
       },
       "tabs": {
         "pending": "Pending",
         "approved": "Approved",
-        "rejected": "Rejected"
+        "rejected": "Rejected",
+        "balances": "Balances"
       },
       "saving": "Submitting...",
       "submit": "Submit",
@@ -1838,7 +1854,10 @@
       "unknownEmployee": "Unknown Employee",
       "days": "day(s)",
       "approve": "Approve",
-      "reject": "Reject"
+      "reject": "Reject",
+      "balancesEmpty": "No leave balances initialized for this year.",
+      "initBalances": "Initialize Balances",
+      "balanceLeft": "left"
     },
     "attendance": {
       "title": "Attendance",
@@ -1875,6 +1894,96 @@
       "deductions": "Deductions",
       "allowances": "Allowances",
       "netPay": "Net Pay"
+    },
+    "departments": {
+      "title": "Departments",
+      "add": "Add",
+      "addTitle": "Add Department",
+      "editTitle": "Edit Department",
+      "fields": {
+        "name": "Department Name",
+        "namePlaceholder": "e.g. Engineering",
+        "description": "Description"
+      },
+      "saving": "Saving...",
+      "save": "Save",
+      "emptyTitle": "No departments yet",
+      "emptyDesc": "Add your first department to organize your team.",
+      "confirmDelete": "Confirm Delete"
+    },
+    "holidays": {
+      "title": "Public Holidays",
+      "add": "Add",
+      "addTitle": "Add Holiday",
+      "editTitle": "Edit Holiday",
+      "fields": {
+        "name": "Holiday Name",
+        "namePlaceholder": "e.g. Chinese New Year",
+        "date": "Date",
+        "recurring": "Repeats every year"
+      },
+      "saving": "Saving...",
+      "save": "Save",
+      "emptyTitle": "No holidays yet",
+      "emptyDesc": "Add public holidays for your company.",
+      "confirmDelete": "Confirm Delete",
+      "recurring": "Yearly"
+    },
+    "documents": {
+      "title": "Documents",
+      "add": "Upload",
+      "addTitle": "Upload Document",
+      "fields": {
+        "employee": "Employee",
+        "name": "Document Name",
+        "namePlaceholder": "e.g. Employment Contract",
+        "docType": "Document Type",
+        "fileUrl": "File URL"
+      },
+      "types": {
+        "contract": "Contract",
+        "id_document": "ID Document",
+        "certificate": "Certificate",
+        "payslip": "Payslip",
+        "other": "Other"
+      },
+      "saving": "Saving...",
+      "save": "Upload",
+      "emptyTitle": "No documents yet",
+      "emptyDesc": "Upload employee documents to store them securely.",
+      "confirmDelete": "Confirm Delete",
+      "allEmployees": "All Employees"
+    },
+    "reports": {
+      "title": "HR Reports",
+      "tabs": {
+        "headcount": "Headcount",
+        "attendance": "Attendance",
+        "leave": "Leave",
+        "payroll": "Payroll"
+      },
+      "headcount": {
+        "total": "Total Employees",
+        "active": "Active",
+        "byDepartment": "By Department",
+        "byType": "By Employment Type"
+      },
+      "attendance": {
+        "presentDays": "Present Days",
+        "absentDays": "Absent Days",
+        "lateDays": "Late Days",
+        "totalHours": "Total Hours"
+      },
+      "leave": {
+        "entitlement": "Entitlement",
+        "used": "Used",
+        "remaining": "Remaining",
+        "empty": "No leave balance data. Initialize leave balances first."
+      },
+      "payroll": {
+        "totalNetPay": "Total Net Pay",
+        "records": "Records"
+      }
     }
   },
   "businessStore": {

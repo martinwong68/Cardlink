@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Truck, ClipboardCheck, Package, CheckCircle, FileSignature } from "lucide-react";
+import { Truck, ClipboardCheck, Package, CheckCircle, FileSignature, Receipt } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
 import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
@@ -53,13 +53,23 @@ const procurementFunctions: ModuleFunctionDefinition[] = [
     ctaLabel: "View Contracts",
     ctaHref: "/business/procurement/contracts",
   },
+  {
+    id: "vendor-bills",
+    title: "Vendor Bills",
+    description: "Manage AP invoices and payments",
+    icon: Receipt,
+    color: "bg-rose-50 text-rose-600",
+    ctaLabel: "View Bills",
+    ctaHref: "/business/procurement/vendor-bills",
+  },
 ];
 
-type Vendor = { id: string; name: string; status: string };
+type Vendor = { id: string; name: string; is_active: boolean };
 type PR = { id: string; status: string };
 type PO = { id: string; po_number: string; status: string; total: number };
 type Contract = { id: string; status: string };
-type ProcData = { vendors: Vendor[]; requests: PR[]; purchaseOrders: PO[]; contracts: Contract[] };
+type Bill = { id: string; status: string; total_amount: number };
+type ProcData = { vendors: Vendor[]; requests: PR[]; purchaseOrders: PO[]; contracts: Contract[]; bills: Bill[] };
 const HEADERS = { "x-cardlink-app-scope": "business" };
 
 export default function BusinessProcurementPage() {
@@ -70,23 +80,26 @@ export default function BusinessProcurementPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [vRes, rRes, poRes, cRes] = await Promise.all([
-          fetch("/api/procurement/vendors", { headers: HEADERS, cache: "no-store" }),
+        const [vRes, rRes, poRes, cRes, bRes] = await Promise.all([
+          fetch("/api/procurement/suppliers", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/procurement/requests", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/procurement/purchase-orders", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/procurement/contracts", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/procurement/vendor-bills", { headers: HEADERS, cache: "no-store" }),
         ]);
-        const [vd, rd, pod, cd] = await Promise.all([
+        const [vd, rd, pod, cd, bd] = await Promise.all([
           vRes.ok ? vRes.json() : ({} as Record<string, unknown>),
           rRes.ok ? rRes.json() : ({} as Record<string, unknown>),
           poRes.ok ? poRes.json() : ({} as Record<string, unknown>),
           cRes.ok ? cRes.json() : ({} as Record<string, unknown>),
+          bRes.ok ? bRes.json() : ({} as Record<string, unknown>),
         ]);
         setData({
-          vendors: vd.vendors ?? [],
-          requests: rd.requests ?? [],
-          purchaseOrders: pod.purchase_orders ?? [],
-          contracts: cd.contracts ?? [],
+          vendors: (vd.suppliers ?? []) as Vendor[],
+          requests: (rd.requests ?? []) as PR[],
+          purchaseOrders: (pod.purchase_orders ?? []) as PO[],
+          contracts: (cd.contracts ?? []) as Contract[],
+          bills: (bd.bills ?? []) as Bill[],
         });
       } catch { /* silent */ } finally { setLoading(false); }
     })();
@@ -137,6 +150,8 @@ function hasContent(id: string, data: ProcData | null): boolean {
     case "requests": return data.requests.length > 0;
     case "orders": return data.purchaseOrders.length > 0;
     case "contracts": return data.contracts.length > 0;
+    case "goods-receipt": return data.purchaseOrders.length > 0;
+    case "vendor-bills": return data.bills.length > 0;
     default: return false;
   }
 }
@@ -146,7 +161,7 @@ function DetailContent({ activeId, data }: { activeId: string; data: ProcData | 
 
   switch (activeId) {
     case "vendors": {
-      const active = data.vendors.filter((v) => v.status === "active").length;
+      const active = data.vendors.filter((v) => v.is_active !== false).length;
       return (
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
@@ -199,6 +214,26 @@ function DetailContent({ activeId, data }: { activeId: string; data: ProcData | 
     }
     case "goods-receipt":
       return <p className="text-sm text-gray-500">Record and verify received goods against your purchase orders.</p>;
+    case "vendor-bills": {
+      const pending = data.bills.filter((b) => b.status === "pending" || b.status === "approved").length;
+      const paid = data.bills.filter((b) => b.status === "paid").length;
+      return (
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{data.bills.length}</p>
+            <p className="text-[10px] text-gray-500">Total Bills</p>
+          </div>
+          <div className="rounded-xl bg-amber-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-amber-700">{pending}</p>
+            <p className="text-[10px] text-amber-600">Pending</p>
+          </div>
+          <div className="rounded-xl bg-green-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-green-700">{paid}</p>
+            <p className="text-[10px] text-green-600">Paid</p>
+          </div>
+        </div>
+      );
+    }
     case "contracts": {
       const active = data.contracts.filter((c) => c.status === "active").length;
       return (
