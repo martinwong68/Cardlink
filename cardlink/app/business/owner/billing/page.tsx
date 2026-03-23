@@ -20,6 +20,8 @@ export default function OwnerBillingPage() {
   const [stripeSubId, setStripeSubId] = useState<string | null>(null);
   const [orders, setOrders] = useState<PaymentOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgradeError, setUpgradeError] = useState<string | null>(null);
 
   const headers = { "x-cardlink-app-scope": "business" };
 
@@ -35,6 +37,39 @@ export default function OwnerBillingPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  const handleUpgrade = async () => {
+    const targetPlan = plan === "free" ? "professional" : "business";
+    setUpgrading(true);
+    setUpgradeError(null);
+
+    try {
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...headers },
+        body: JSON.stringify({ planSlug: targetPlan, interval: "monthly" }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        setUpgradeError((data as { error?: string }).error ?? "Failed to start checkout. Please check Stripe configuration.");
+        setUpgrading(false);
+        return;
+      }
+
+      const data = (await response.json()) as { url?: string };
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+
+      setUpgradeError("No checkout URL returned. Please check Stripe API keys.");
+    } catch {
+      setUpgradeError("Network error. Please try again.");
+    }
+
+    setUpgrading(false);
+  };
 
   const isActive = planStatus === "active" || plan === "free";
 
@@ -82,9 +117,18 @@ export default function OwnerBillingPage() {
           ))}
         </div>
         {plan !== "enterprise" && (
-          <button className="mt-3 w-full rounded-lg bg-purple-600 py-2 text-sm font-semibold text-white hover:bg-purple-700">
-            Upgrade to {plan === "free" ? "Pro" : "Enterprise"}
-          </button>
+          <div className="mt-3">
+            <button
+              onClick={handleUpgrade}
+              disabled={upgrading}
+              className="w-full rounded-lg bg-purple-600 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
+            >
+              {upgrading ? "Redirecting to checkout…" : `Upgrade to ${plan === "free" ? "Pro" : "Enterprise"}`}
+            </button>
+            {upgradeError && (
+              <p className="mt-2 text-xs text-red-600">{upgradeError}</p>
+            )}
+          </div>
         )}
       </div>
 

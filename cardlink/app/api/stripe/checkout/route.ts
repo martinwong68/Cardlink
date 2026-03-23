@@ -3,15 +3,11 @@ import Stripe from "stripe";
 
 import { createClient } from "@/src/lib/supabase/server";
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-
-if (!stripeSecretKey) {
-  throw new Error("Missing STRIPE_SECRET_KEY");
+function getStripe(): Stripe | null {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  return new Stripe(key, { apiVersion: "2026-01-28.clover" });
 }
-
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: "2026-01-28.clover",
-});
 
 type CheckoutBody = {
   planSlug?: string;
@@ -28,6 +24,14 @@ type CheckoutBody = {
 } | null;
 
 export async function POST(request: Request) {
+  const stripe = getStripe();
+  if (!stripe) {
+    return NextResponse.json(
+      { error: "Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables." },
+      { status: 503 },
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -147,8 +151,8 @@ export async function POST(request: Request) {
       credits: body?.credits ? String(body.credits) : "",
       company_id: body?.companyId ?? "",
     },
-    success_url: `${origin}/dashboard/settings/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/dashboard/settings/upgrade`,
+    success_url: `${origin}/business/settings/plan?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/business/settings/plan?checkout=cancelled`,
     allow_promotion_codes: true,
   });
 

@@ -6,14 +6,11 @@ import { createClient } from "@/src/lib/supabase/server";
 
 const ACTIVE_STRIPE_STATUSES = new Set(["active", "trialing", "past_due"]);
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-if (!stripeSecretKey) {
-  throw new Error("Missing STRIPE_SECRET_KEY");
+function getStripe(): Stripe | null {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  return new Stripe(key, { apiVersion: "2026-01-28.clover" });
 }
-
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: "2026-01-28.clover",
-});
 
 const toIsoFromUnix = (value?: number | null) => {
   if (!value) {
@@ -68,6 +65,14 @@ const throwIfSupabaseError = (context: string, error: { message: string } | null
 };
 
 export async function POST(request: Request) {
+  const stripe = getStripe();
+  if (!stripe) {
+    return NextResponse.json(
+      { error: "Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables." },
+      { status: 503 },
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
