@@ -97,6 +97,12 @@ END;
 $$;
 
 -- ─── 3. RPC: Get POS sales report (real-time, no cache) ────
+-- Purpose: Real-time aggregation of POS orders for reporting
+-- Params:  p_company_id — company scope
+--          p_start_date — report period start (default: today)
+--          p_end_date   — report period end   (default: today)
+-- Returns: Daily rows with order counts, revenue breakdown by payment
+--          method, discount/refund totals, and top 10 products by revenue
 CREATE OR REPLACE FUNCTION pos_sales_report(
   p_company_id uuid,
   p_start_date date DEFAULT CURRENT_DATE,

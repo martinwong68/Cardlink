@@ -6,6 +6,12 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+/* ── Standard Chart of Accounts codes ────────────────────────── */
+const ACCOUNT_CASH     = { code: "1100", name: "Cash / Bank",        type: "asset"     as const };
+const ACCOUNT_INVENTORY = { code: "1400", name: "Inventory",         type: "asset"     as const };
+const ACCOUNT_PAYABLE  = { code: "2100", name: "Accounts Payable",   type: "liability" as const };
+const ACCOUNT_REVENUE  = { code: "4100", name: "Sales Revenue",      type: "revenue"   as const };
+
 /**
  * When a procurement receipt is processed (goods received),
  * create an accounting journal entry:
@@ -21,8 +27,8 @@ export async function createReceiptJournalEntry(
   description: string,
 ) {
   /* Find or create default accounts */
-  const inventoryAccount = await ensureAccount(supabase, orgId, "1400", "Inventory", "asset");
-  const payableAccount = await ensureAccount(supabase, orgId, "2100", "Accounts Payable", "liability");
+  const inventoryAccount = await ensureAccount(supabase, orgId, ACCOUNT_INVENTORY.code, ACCOUNT_INVENTORY.name, ACCOUNT_INVENTORY.type);
+  const payableAccount = await ensureAccount(supabase, orgId, ACCOUNT_PAYABLE.code, ACCOUNT_PAYABLE.name, ACCOUNT_PAYABLE.type);
 
   if (!inventoryAccount || !payableAccount) return null;
 
@@ -83,8 +89,8 @@ export async function createInvoicePaidJournalEntry(
   totalAmount: number,
   invoiceNumber: string,
 ) {
-  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
-  const revenueAccount = await ensureAccount(supabase, orgId, "4100", "Sales Revenue", "revenue");
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
 
   if (!cashAccount || !revenueAccount) return null;
 
@@ -144,8 +150,8 @@ export async function createPosOrderJournalEntry(
   totalAmount: number,
   orderNumber: string,
 ) {
-  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
-  const revenueAccount = await ensureAccount(supabase, orgId, "4100", "Sales Revenue", "revenue");
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
 
   if (!cashAccount || !revenueAccount) return null;
 
@@ -205,8 +211,8 @@ export async function createPosRefundJournalEntry(
   refundAmount: number,
   orderNumber: string,
 ) {
-  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
-  const revenueAccount = await ensureAccount(supabase, orgId, "4100", "Sales Revenue", "revenue");
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
 
   if (!cashAccount || !revenueAccount) return null;
 
@@ -266,8 +272,8 @@ export async function createVendorBillPaidJournalEntry(
   totalAmount: number,
   billNumber: string,
 ) {
-  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
-  const payableAccount = await ensureAccount(supabase, orgId, "2100", "Accounts Payable", "liability");
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const payableAccount = await ensureAccount(supabase, orgId, ACCOUNT_PAYABLE.code, ACCOUNT_PAYABLE.name, ACCOUNT_PAYABLE.type);
 
   if (!cashAccount || !payableAccount) return null;
 

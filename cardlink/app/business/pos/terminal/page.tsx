@@ -7,6 +7,9 @@ type CartItem = { productId: string; name: string; price: number; quantity: numb
 type TaxConfig = { id: string; name: string; rate: number; is_default: boolean };
 type Discount = { id: string; name: string; discount_type: "percentage" | "fixed"; value: number; min_order: number; is_active: boolean };
 
+/** Fallback tax rate when no tax config is defined */
+const DEFAULT_TAX_RATE = 0.08;
+
 export default function PosTerminalPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -65,7 +68,7 @@ export default function PosTerminalPage() {
 
   // Tax calculation
   const activeTax = taxConfigs.find((t) => t.id === selectedTaxId);
-  const taxRate = activeTax ? Number(activeTax.rate) : 0.08; // fallback 8%
+  const taxRate = activeTax ? Number(activeTax.rate) : DEFAULT_TAX_RATE;
   const taxLabel = activeTax ? activeTax.name : "Tax (8%)";
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);

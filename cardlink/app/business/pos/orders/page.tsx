@@ -18,6 +18,7 @@ const STATUS_COLORS: Record<string, string> = {
   refunded: "bg-sky-100 text-sky-700",
 };
 const STATUSES = ["all", "completed", "pending", "cancelled", "refunded"] as const;
+const DEFAULT_REFUND_REASON = "Customer request";
 
 export default function PosOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -55,7 +56,7 @@ export default function PosOrdersPage() {
     try {
       await fetch(`/api/pos/orders/${id}`, {
         method: "PATCH", headers,
-        body: JSON.stringify({ status: "refunded", refund_reason: refundReason || "Customer request" }),
+        body: JSON.stringify({ status: "refunded", refund_reason: refundReason.trim() || DEFAULT_REFUND_REASON }),
       });
       setRefundOrderId(null);
       setRefundReason("");
