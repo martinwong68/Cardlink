@@ -24,6 +24,12 @@ type Service = {
   category: string | null;
   is_active: boolean;
   max_concurrent: number;
+  buffer_before_mins: number;
+  buffer_after_mins: number;
+  min_notice_hours: number;
+  max_advance_days: number;
+  image_url: string | null;
+  sort_order: number;
 };
 
 export default function BookingServicesPage() {
@@ -44,6 +50,10 @@ export default function BookingServicesPage() {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [maxConcurrent, setMaxConcurrent] = useState("1");
+  const [bufferBefore, setBufferBefore] = useState("0");
+  const [bufferAfter, setBufferAfter] = useState("0");
+  const [minNotice, setMinNotice] = useState("0");
+  const [maxAdvance, setMaxAdvance] = useState("90");
 
   const loadServices = useCallback(async () => {
     if (!companyId) return;
@@ -65,6 +75,7 @@ export default function BookingServicesPage() {
   const resetForm = () => {
     setName(""); setDescription(""); setDuration("60");
     setPrice(""); setCategory(""); setMaxConcurrent("1");
+    setBufferBefore("0"); setBufferAfter("0"); setMinNotice("0"); setMaxAdvance("90");
     setEditingId(null); setShowForm(false);
   };
 
@@ -73,6 +84,8 @@ export default function BookingServicesPage() {
     setName(s.name); setDescription(s.description ?? "");
     setDuration(String(s.duration_minutes)); setPrice(String(s.price));
     setCategory(s.category ?? ""); setMaxConcurrent(String(s.max_concurrent));
+    setBufferBefore(String(s.buffer_before_mins ?? 0)); setBufferAfter(String(s.buffer_after_mins ?? 0));
+    setMinNotice(String(s.min_notice_hours ?? 0)); setMaxAdvance(String(s.max_advance_days ?? 90));
     setShowForm(true);
   };
 
@@ -86,6 +99,10 @@ export default function BookingServicesPage() {
       price: Number(price) || 0,
       category: category || null,
       max_concurrent: Number(maxConcurrent) || 1,
+      buffer_before_mins: Number(bufferBefore) || 0,
+      buffer_after_mins: Number(bufferAfter) || 0,
+      min_notice_hours: Number(minNotice) || 0,
+      max_advance_days: Number(maxAdvance) || 90,
     };
 
     if (editingId) {
@@ -161,6 +178,26 @@ export default function BookingServicesPage() {
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">{t("services.fields.maxConcurrent")}</label>
             <input value={maxConcurrent} onChange={(e) => setMaxConcurrent(e.target.value)} type="number" min="1" className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("services.fields.bufferBefore")}</label>
+              <input value={bufferBefore} onChange={(e) => setBufferBefore(e.target.value)} type="number" min="0" className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("services.fields.bufferAfter")}</label>
+              <input value={bufferAfter} onChange={(e) => setBufferAfter(e.target.value)} type="number" min="0" className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("services.fields.minNotice")}</label>
+              <input value={minNotice} onChange={(e) => setMinNotice(e.target.value)} type="number" min="0" className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("services.fields.maxAdvance")}</label>
+              <input value={maxAdvance} onChange={(e) => setMaxAdvance(e.target.value)} type="number" min="1" className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+            </div>
           </div>
         </div>
 

@@ -1681,7 +1681,11 @@
         "duration": "時長（分鐘）",
         "price": "價格",
         "category": "分類",
-        "maxConcurrent": "最大同時預約數"
+        "maxConcurrent": "最大同時預約數",
+        "bufferBefore": "前置缓冲（分钟）",
+        "bufferAfter": "后置缓冲（分钟）",
+        "minNotice": "最短提前通知（小时）",
+        "maxAdvance": "最长预约天数"
       },
       "saving": "儲存中...",
       "save": "儲存",
@@ -1716,7 +1720,15 @@
       "confirm": "確認",
       "cancel": "取消",
       "complete": "完成",
-      "noShow": "未到"
+      "noShow": "未到",
+      "reschedule": "改期",
+      "rescheduleTitle": "改期預約",
+      "confirmReschedule": "確認改期",
+      "cancelTitle": "取消預約",
+      "cancelReasonPlaceholder": "取消原因（選填）",
+      "confirmCancel": "確認取消",
+      "back": "返回",
+      "cancelReason": "原因"
     },
     "statuses": {
       "pending": "待確認",
@@ -1736,7 +1748,8 @@
       "thu": "週四",
       "fri": "週五",
       "sat": "週六",
-      "sun": "週日"
+      "sun": "週日",
+      "month": "月"
     },
     "availability": {
       "title": "可預約時間",
@@ -1754,7 +1767,70 @@
       "closed": "休息",
       "saving": "儲存中...",
       "saved": "已儲存！",
-      "save": "儲存"
+      "save": "儲存",
+      "dateOverrides": "特定日期調整",
+      "addOverride": "新增",
+      "overrideDate": "日期",
+      "closedAllDay": "全天關閉",
+      "reason": "原因",
+      "reasonPlaceholder": "例如：公眾假期、裝修",
+      "saveOverride": "新增調整",
+      "noOverrides": "暫未設定日期調整。"
+    },
+    "settings": {
+      "title": "預約設定",
+      "behavior": "預約行為",
+      "autoConfirm": "自動確認預約",
+      "autoConfirmDesc": "新預約無需人工審批自動確認",
+      "timezone": "時區",
+      "slotInterval": "時段間隔",
+      "cancellationNotice": "取消通知",
+      "noLimit": "無限制",
+      "requiredFields": "必填客戶欄位",
+      "requireEmail": "要求電子郵件",
+      "requirePhone": "要求電話號碼",
+      "bookingPage": "公開預約頁面",
+      "pageTitle": "頁面標題",
+      "pageTitlePlaceholder": "例如：預約服務",
+      "pageDescription": "頁面描述",
+      "cancellationPolicy": "取消政策",
+      "cancellationPolicyPlaceholder": "例如：預約前24小時可免費取消",
+      "saving": "儲存中...",
+      "saved": "已儲存！",
+      "save": "儲存設定"
+    },
+    "customers": {
+      "title": "客戶",
+      "add": "新增",
+      "addTitle": "新增客戶",
+      "editTitle": "編輯客戶",
+      "fields": {
+        "name": "姓名",
+        "email": "電郵",
+        "phone": "電話",
+        "notes": "備註"
+      },
+      "saving": "儲存中...",
+      "save": "儲存",
+      "emptyTitle": "暫無客戶",
+      "emptyDesc": "客戶在預約時自動建立。",
+      "searchPlaceholder": "搜尋客戶...",
+      "bookings": "次預約",
+      "spent": "消費",
+      "lastVisit": "最後到訪",
+      "confirmDelete": "確認刪除"
+    },
+    "reports": {
+      "title": "預約報告",
+      "empty": "所選時段無資料。",
+      "totalAppointments": "總預約數",
+      "revenue": "收入",
+      "completionRate": "完成率",
+      "noShowRate": "缺席率",
+      "statusBreakdown": "狀態分佈",
+      "byService": "按服務",
+      "dailyBreakdown": "每日明細",
+      "bookings": "次預約"
     }
   },
   "businessHr": {
