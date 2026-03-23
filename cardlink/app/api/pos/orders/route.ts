@@ -8,12 +8,33 @@ export async function GET(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
   if (!guard.ok) return guard.response;
 
+  const url = new URL(request.url);
+  const status = url.searchParams.get("status");
+  const startDate = url.searchParams.get("start");
+  const endDate = url.searchParams.get("end");
+  const search = url.searchParams.get("search");
+
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("pos_orders")
-    .select("id, order_number, subtotal, tax, total, payment_method, status, created_at")
+    .select("id, order_number, subtotal, tax, tax_rate, total, discount_amount, discount_name, payment_method, status, customer_name, customer_id, cash_tendered, cash_change, refund_amount, refund_reason, created_at")
     .eq("company_id", guard.context.activeCompanyId)
     .order("created_at", { ascending: false });
+
+  if (status && status !== "all") {
+    query = query.eq("status", status);
+  }
+  if (startDate) {
+    query = query.gte("created_at", `${startDate}T00:00:00`);
+  }
+  if (endDate) {
+    query = query.lte("created_at", `${endDate}T23:59:59`);
+  }
+  if (search) {
+    query = query.ilike("order_number", `%${search}%`);
+  }
+
+  const { data, error } = await query;
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
@@ -22,9 +43,18 @@ export async function GET(request: Request) {
     receipt_number: o.order_number,
     subtotal: o.subtotal,
     tax_amount: o.tax,
+    tax_rate: o.tax_rate,
     total: o.total,
+    discount_amount: o.discount_amount,
+    discount_name: o.discount_name,
     payment_method: o.payment_method,
     status: o.status,
+    customer_name: o.customer_name,
+    customer_id: o.customer_id,
+    cash_tendered: o.cash_tendered,
+    cash_change: o.cash_change,
+    refund_amount: o.refund_amount,
+    refund_reason: o.refund_reason,
     created_at: o.created_at,
   }));
 
@@ -44,10 +74,20 @@ export async function POST(request: Request) {
       company_id: guard.context.activeCompanyId,
       order_number: body.receipt_number,
       subtotal: body.subtotal,
+      tax_rate: body.tax_rate ?? 0.08,
       tax: body.tax_amount,
       total: body.total,
+      discount_amount: body.discount_amount ?? 0,
+      discount_name: body.discount_name ?? null,
       payment_method: body.payment_method,
       status: body.status ?? "completed",
+      customer_name: body.customer_name ?? null,
+      customer_id: body.customer_id ?? null,
+      customer_email: body.customer_email ?? null,
+      customer_phone: body.customer_phone ?? null,
+      cash_tendered: body.cash_tendered ?? null,
+      cash_change: body.cash_change ?? null,
+      notes: body.notes ?? null,
       created_by: guard.context.user.id,
     })
     .select()
@@ -57,13 +97,14 @@ export async function POST(request: Request) {
 
   // Insert line items if provided
   if (body.line_items?.length && order) {
-    const items = body.line_items.map((li: { productId?: string; name: string; quantity: number; unitPrice: number; total: number }) => ({
+    const items = body.line_items.map((li: { productId?: string; name: string; quantity: number; unitPrice: number; total: number; discount_amount?: number }) => ({
       order_id: order.id,
       product_id: li.productId || null,
       product_name: li.name,
       qty: li.quantity,
       unit_price: li.unitPrice,
       subtotal: li.total,
+      discount_amount: li.discount_amount ?? 0,
     }));
     await supabase.from("pos_order_items").insert(items);
   }
@@ -118,9 +159,14 @@ export async function POST(request: Request) {
       receipt_number: order.order_number,
       subtotal: order.subtotal,
       tax_amount: order.tax,
+      tax_rate: order.tax_rate,
       total: order.total,
+      discount_amount: order.discount_amount,
       payment_method: order.payment_method,
       status: order.status,
+      customer_name: order.customer_name,
+      cash_tendered: order.cash_tendered,
+      cash_change: order.cash_change,
       created_at: order.created_at,
     },
   }, { status: 201 });

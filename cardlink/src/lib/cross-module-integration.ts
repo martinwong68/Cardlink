@@ -6,6 +6,13 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+/* ── Standard Chart of Accounts codes ────────────────────────── */
+const ACCOUNT_CASH       = { code: "1100", name: "Cash / Bank",            type: "asset"     as const };
+const ACCOUNT_INVENTORY  = { code: "1400", name: "Inventory",              type: "asset"     as const };
+const ACCOUNT_PAYABLE    = { code: "2100", name: "Accounts Payable",       type: "liability" as const };
+const ACCOUNT_REVENUE    = { code: "4100", name: "Sales Revenue",          type: "revenue"   as const };
+const ACCOUNT_ADJUSTMENT = { code: "5300", name: "Inventory Adjustment",   type: "expense"   as const };
+
 /**
  * When a procurement receipt is processed (goods received),
  * create an accounting journal entry:
@@ -21,8 +28,8 @@ export async function createReceiptJournalEntry(
   description: string,
 ) {
   /* Find or create default accounts */
-  const inventoryAccount = await ensureAccount(supabase, orgId, "1400", "Inventory", "asset");
-  const payableAccount = await ensureAccount(supabase, orgId, "2100", "Accounts Payable", "liability");
+  const inventoryAccount = await ensureAccount(supabase, orgId, ACCOUNT_INVENTORY.code, ACCOUNT_INVENTORY.name, ACCOUNT_INVENTORY.type);
+  const payableAccount = await ensureAccount(supabase, orgId, ACCOUNT_PAYABLE.code, ACCOUNT_PAYABLE.name, ACCOUNT_PAYABLE.type);
 
   if (!inventoryAccount || !payableAccount) return null;
 
@@ -83,8 +90,8 @@ export async function createInvoicePaidJournalEntry(
   totalAmount: number,
   invoiceNumber: string,
 ) {
-  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
-  const revenueAccount = await ensureAccount(supabase, orgId, "4100", "Sales Revenue", "revenue");
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
 
   if (!cashAccount || !revenueAccount) return null;
 
@@ -144,8 +151,8 @@ export async function createPosOrderJournalEntry(
   totalAmount: number,
   orderNumber: string,
 ) {
-  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
-  const revenueAccount = await ensureAccount(supabase, orgId, "4100", "Sales Revenue", "revenue");
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
 
   if (!cashAccount || !revenueAccount) return null;
 
@@ -192,6 +199,67 @@ export async function createPosOrderJournalEntry(
 }
 
 /**
+ * When a POS order is refunded,
+ * create a reversal journal entry:
+ *   Debit: Sales Revenue (revenue)
+ *   Credit: Cash / Bank (asset)
+ */
+export async function createPosRefundJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  orderId: string,
+  refundAmount: number,
+  orderNumber: string,
+) {
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
+
+  if (!cashAccount || !revenueAccount) return null;
+
+  const idempotencyKey = `pos-refund-${orderId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `POS Refund: Order ${orderNumber}`,
+      reference_number: `POS-REFUND-${orderNumber}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null;
+    console.error("[cross-module] pos refund journal error:", txErr.message);
+    return null;
+  }
+
+  await supabase.from("transaction_lines").insert([
+    {
+      transaction_id: tx.id,
+      account_id: revenueAccount,
+      debit: refundAmount,
+      credit: 0,
+      description: `POS Refund Revenue: ${orderNumber}`,
+    },
+    {
+      transaction_id: tx.id,
+      account_id: cashAccount,
+      debit: 0,
+      credit: refundAmount,
+      description: `POS Refund Cash: ${orderNumber}`,
+    },
+  ]);
+
+  return tx.id;
+}
+
+/**
  * When a vendor bill is paid (AP payment),
  * create an accounting journal entry:
  *   Debit: Accounts Payable (liability)
@@ -205,8 +273,8 @@ export async function createVendorBillPaidJournalEntry(
   totalAmount: number,
   billNumber: string,
 ) {
-  const payableAccount = await ensureAccount(supabase, orgId, "2100", "Accounts Payable", "liability");
-  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
+  const payableAccount = await ensureAccount(supabase, orgId, ACCOUNT_PAYABLE.code, ACCOUNT_PAYABLE.name, ACCOUNT_PAYABLE.type);
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
 
   if (!payableAccount || !cashAccount) return null;
 
@@ -252,47 +320,6 @@ export async function createVendorBillPaidJournalEntry(
   return tx.id;
 }
 
-/* ── Helper: ensure a default chart-of-accounts entry exists ── */
-async function ensureAccount(
-  supabase: SupabaseClient,
-  orgId: string,
-  code: string,
-  name: string,
-  type: "asset" | "liability" | "equity" | "revenue" | "expense",
-): Promise<string | null> {
-  const { data: existing } = await supabase
-    .from("accounts")
-    .select("id")
-    .eq("org_id", orgId)
-    .eq("code", code)
-    .maybeSingle();
-
-  if (existing) return existing.id;
-
-  const { data: created, error } = await supabase
-    .from("accounts")
-    .insert({ org_id: orgId, code, name, type, is_active: true })
-    .select("id")
-    .single();
-
-  if (error) {
-    /* Race condition — another request created it */
-    if (error.code === "23505") {
-      const { data: retry } = await supabase
-        .from("accounts")
-        .select("id")
-        .eq("org_id", orgId)
-        .eq("code", code)
-        .maybeSingle();
-      return retry?.id ?? null;
-    }
-    console.error("[cross-module] ensureAccount error:", error.message);
-    return null;
-  }
-
-  return created.id;
-}
-
 /**
  * When a stock adjustment is approved (e.g., from stock-take),
  * create an accounting journal entry:
@@ -309,8 +336,8 @@ export async function createStockAdjustmentJournalEntry(
 ) {
   if (totalAdjustmentValue === 0) return null;
 
-  const inventoryAccount = await ensureAccount(supabase, orgId, "1400", "Inventory", "asset");
-  const adjustmentAccount = await ensureAccount(supabase, orgId, "5300", "Inventory Adjustment", "expense");
+  const inventoryAccount = await ensureAccount(supabase, orgId, ACCOUNT_INVENTORY.code, ACCOUNT_INVENTORY.name, ACCOUNT_INVENTORY.type);
+  const adjustmentAccount = await ensureAccount(supabase, orgId, ACCOUNT_ADJUSTMENT.code, ACCOUNT_ADJUSTMENT.name, ACCOUNT_ADJUSTMENT.type);
 
   if (!inventoryAccount || !adjustmentAccount) return null;
 
@@ -362,4 +389,45 @@ export async function createStockAdjustmentJournalEntry(
   }
 
   return tx.id;
+}
+
+/* ── Helper: ensure a default chart-of-accounts entry exists ── */
+async function ensureAccount(
+  supabase: SupabaseClient,
+  orgId: string,
+  code: string,
+  name: string,
+  type: "asset" | "liability" | "equity" | "revenue" | "expense",
+): Promise<string | null> {
+  const { data: existing } = await supabase
+    .from("accounts")
+    .select("id")
+    .eq("org_id", orgId)
+    .eq("code", code)
+    .maybeSingle();
+
+  if (existing) return existing.id;
+
+  const { data: created, error } = await supabase
+    .from("accounts")
+    .insert({ org_id: orgId, code, name, type, is_active: true })
+    .select("id")
+    .single();
+
+  if (error) {
+    /* Race condition — another request created it */
+    if (error.code === "23505") {
+      const { data: retry } = await supabase
+        .from("accounts")
+        .select("id")
+        .eq("org_id", orgId)
+        .eq("code", code)
+        .maybeSingle();
+      return retry?.id ?? null;
+    }
+    console.error("[cross-module] ensureAccount error:", error.message);
+    return null;
+  }
+
+  return created.id;
 }
