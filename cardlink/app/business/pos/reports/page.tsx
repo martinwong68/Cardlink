@@ -27,12 +27,13 @@ export default function PosReportsPage() {
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
 
-  const headers = { "x-cardlink-app-scope": "business" };
-
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/pos/reports/daily-summary?start=${startDate}&end=${endDate}`, { headers, cache: "no-store" });
+      const res = await fetch(`/api/pos/reports/daily-summary?start=${startDate}&end=${endDate}`, {
+        headers: { "x-cardlink-app-scope": "business" },
+        cache: "no-store",
+      });
       if (res.ok) {
         const d = await res.json();
         setData(d);

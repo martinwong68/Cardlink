@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 
-type OrderItem = { id: string; product_id: string; product_name: string; qty: number; unit_price: number; subtotal: number; refunded_qty: number };
 type Order = {
   id: string; receipt_number: string; subtotal: number; tax_amount: number; tax_rate: number;
   total: number; discount_amount: number; discount_name: string | null;
@@ -34,7 +33,6 @@ export default function PosOrdersPage() {
   const [refunding, setRefunding] = useState(false);
   // Expandable detail
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [orderItems, setOrderItems] = useState<Record<string, OrderItem[]>>({});
 
   const headers = { "content-type": "application/json", "x-cardlink-app-scope": "business" };
 
@@ -65,16 +63,9 @@ export default function PosOrdersPage() {
     } catch { /* silent */ } finally { setRefunding(false); }
   };
 
-  const toggleExpand = async (orderId: string) => {
+  const toggleExpand = (orderId: string) => {
     if (expandedId === orderId) { setExpandedId(null); return; }
     setExpandedId(orderId);
-    // Fetch line items if not cached
-    if (!orderItems[orderId]) {
-      try {
-        // We don't have a dedicated line-items API, but the order detail is enough for now
-        // Items are embedded in the order detail view
-      } catch { /* silent */ }
-    }
   };
 
   if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading orders…</p></div>;
