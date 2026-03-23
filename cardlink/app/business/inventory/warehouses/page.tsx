@@ -76,7 +76,7 @@ export default function InventoryWarehousesPage() {
   const toggleActive = async (w: WarehouseT) => {
     setBusyId(w.id);
     try {
-      const res = await postWarehouse({ id: w.id, name: w.name, code: w.code, address: w.address, is_active: !w.is_active, is_default: w.is_default });
+      const res = await postWarehouse({ ...w, is_active: !w.is_active });
       if (res.ok) await load();
     } catch { /* silent */ } finally { setBusyId(null); }
   };
@@ -84,7 +84,7 @@ export default function InventoryWarehousesPage() {
   const setDefault = async (w: WarehouseT) => {
     setBusyId(w.id);
     try {
-      const res = await postWarehouse({ id: w.id, name: w.name, code: w.code, address: w.address, is_active: w.is_active, is_default: true });
+      const res = await postWarehouse({ ...w, is_default: true });
       if (res.ok) await load();
     } catch { /* silent */ } finally { setBusyId(null); }
   };
