@@ -7,6 +7,7 @@ import {
   Users,
   Activity,
   Megaphone,
+  BarChart3,
 } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
@@ -59,6 +60,15 @@ const crmFunctions: ModuleFunctionDefinition[] = [
     color: "bg-purple-50 text-purple-600",
     ctaLabel: "View Campaigns",
     ctaHref: "/business/crm/campaigns",
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    description: "Pipeline, conversion, forecast & activity analytics",
+    icon: BarChart3,
+    color: "bg-sky-50 text-sky-600",
+    ctaLabel: "View Reports",
+    ctaHref: "/business/crm/reports",
   },
 ];
 
@@ -146,6 +156,7 @@ function hasContent(id: string, data: CrmData | null): boolean {
     case "deals": return data.deals.length > 0;
     case "activities": return data.activities.length > 0;
     case "campaigns": return data.campaigns.length > 0;
+    case "reports": return data.deals.length > 0 || data.leads.length > 0;
     default: return false;
   }
 }
@@ -221,6 +232,30 @@ function DetailContent({ activeId, data }: { activeId: string; data: CrmData | n
             <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
               <p className="text-lg font-bold text-gray-900">{total}</p>
               <p className="text-[10px] text-gray-500">Total</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    case "reports": {
+      const openDeals = data.deals.filter((d) => d.stage !== "won" && d.stage !== "lost").length;
+      const pipelineValue = data.deals.filter((d) => d.stage !== "won" && d.stage !== "lost").reduce((s, d) => s + Number(d.value), 0);
+      const wonDeals = data.deals.filter((d) => d.stage === "won").length;
+      return (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Quick metrics</p>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-gray-900">{openDeals}</p>
+              <p className="text-[10px] text-gray-500">Open Deals</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-gray-900">${pipelineValue.toLocaleString()}</p>
+              <p className="text-[10px] text-gray-500">Pipeline</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-green-700">{wonDeals}</p>
+              <p className="text-[10px] text-gray-500">Won</p>
             </div>
           </div>
         </div>

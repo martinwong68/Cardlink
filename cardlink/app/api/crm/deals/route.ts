@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("crm_deals")
-    .select("id, title, value, stage, probability, expected_close_date, notes, created_at")
+    .select("id, title, value, stage, probability, expected_close_date, notes, contact_id, contact_name, lead_id, lost_reason, created_at")
     .eq("company_id", guard.context.activeCompanyId)
     .order("created_at", { ascending: false });
 
@@ -40,6 +40,10 @@ export async function GET(request: Request) {
     probability: row.probability,
     expected_close_date: row.expected_close_date,
     notes: row.notes,
+    contact_id: row.contact_id,
+    contact_name: row.contact_name,
+    lead_id: row.lead_id,
+    lost_reason: row.lost_reason,
     created_at: row.created_at,
   }));
 
@@ -67,6 +71,7 @@ export async function POST(request: Request) {
       probability: body.probability ?? 0,
       expected_close_date: body.expected_close_date ?? null,
       notes: body.notes ?? null,
+      contact_id: body.contact_id ?? null,
       created_by: guard.context.user.id,
     })
     .select("id")
