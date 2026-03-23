@@ -37,7 +37,7 @@ import { createClient } from "@supabase/supabase-js";
 /* ── Environment ── */
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const TARGET_EMAIL = process.argv[2] ?? "demo@cardlink.test";
+const TARGET_EMAIL = process.argv[2] ?? "martinwong58@gmail.com";
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
   console.error(
@@ -96,7 +96,7 @@ async function main() {
     await must("Create profile", supabase.from("profiles").insert({
       id: userId,
       email: TARGET_EMAIL,
-      full_name: "Demo User",
+      full_name: "Martin Wong",
       plan: "free",
     }));
   } else {
@@ -165,44 +165,45 @@ async function main() {
 
   const deptIds = [uuid(), uuid(), uuid()];
   await must("Create departments", supabase.from("hr_departments").insert([
-    { id: deptIds[0], company_id: companyId, name: "Engineering", head_name: "Alice Chen" },
-    { id: deptIds[1], company_id: companyId, name: "Sales", head_name: "Bob Smith" },
-    { id: deptIds[2], company_id: companyId, name: "Operations", head_name: "Carol Davis" },
+    { id: deptIds[0], company_id: companyId, name: "Engineering", description: "Software development & tech" },
+    { id: deptIds[1], company_id: companyId, name: "Sales", description: "Revenue & client acquisition" },
+    { id: deptIds[2], company_id: companyId, name: "Operations", description: "Business operations & logistics" },
   ]));
 
   const posIds = [uuid(), uuid(), uuid()];
   await must("Create positions", supabase.from("hr_positions").insert([
-    { id: posIds[0], company_id: companyId, department_id: deptIds[0], title: "Senior Developer", level: "senior" },
-    { id: posIds[1], company_id: companyId, department_id: deptIds[1], title: "Sales Manager", level: "manager" },
-    { id: posIds[2], company_id: companyId, department_id: deptIds[2], title: "Operations Lead", level: "lead" },
+    { id: posIds[0], company_id: companyId, department_id: deptIds[0], title: "Senior Developer", description: "Lead developer role" },
+    { id: posIds[1], company_id: companyId, department_id: deptIds[1], title: "Sales Manager", description: "Manages sales team" },
+    { id: posIds[2], company_id: companyId, department_id: deptIds[2], title: "Operations Lead", description: "Day-to-day ops management" },
   ]));
 
   const empIds = [uuid(), uuid(), uuid(), uuid(), uuid()];
   await must("Create employees", supabase.from("hr_employees").insert([
-    { id: empIds[0], company_id: companyId, first_name: "Alice", last_name: "Chen", email: "alice@demo.com", department: "Engineering", position: "Senior Developer", status: "active", hire_date: "2024-01-15", salary: 95000 },
-    { id: empIds[1], company_id: companyId, first_name: "Bob", last_name: "Smith", email: "bob@demo.com", department: "Sales", position: "Sales Manager", status: "active", hire_date: "2023-06-01", salary: 85000 },
-    { id: empIds[2], company_id: companyId, first_name: "Carol", last_name: "Davis", email: "carol@demo.com", department: "Operations", position: "Operations Lead", status: "active", hire_date: "2024-03-10", salary: 78000 },
-    { id: empIds[3], company_id: companyId, first_name: "David", last_name: "Lee", email: "david@demo.com", department: "Engineering", position: "Junior Developer", status: "active", hire_date: "2025-01-20", salary: 65000 },
-    { id: empIds[4], company_id: companyId, first_name: "Eva", last_name: "Martinez", email: "eva@demo.com", department: "Sales", position: "Sales Rep", status: "on_leave", hire_date: "2024-08-15", salary: 55000 },
+    { id: empIds[0], company_id: companyId, full_name: "Alice Chen", email: "alice@demo.com", department: "Engineering", position: "Senior Developer", status: "active", start_date: "2024-01-15", salary: 95000 },
+    { id: empIds[1], company_id: companyId, full_name: "Bob Smith", email: "bob@demo.com", department: "Sales", position: "Sales Manager", status: "active", start_date: "2023-06-01", salary: 85000 },
+    { id: empIds[2], company_id: companyId, full_name: "Carol Davis", email: "carol@demo.com", department: "Operations", position: "Operations Lead", status: "active", start_date: "2024-03-10", salary: 78000 },
+    { id: empIds[3], company_id: companyId, full_name: "David Lee", email: "david@demo.com", department: "Engineering", position: "Junior Developer", status: "active", start_date: "2025-01-20", salary: 65000 },
+    { id: empIds[4], company_id: companyId, full_name: "Eva Martinez", email: "eva@demo.com", department: "Sales", position: "Sales Rep", status: "inactive", start_date: "2024-08-15", salary: 55000 },
   ]));
 
   await must("Create leave requests", supabase.from("hr_leave_requests").insert([
-    { company_id: companyId, employee_id: empIds[0], leave_type: "annual", start_date: daysFromNow(5), end_date: daysFromNow(10), status: "pending", reason: "Family vacation" },
-    { company_id: companyId, employee_id: empIds[1], leave_type: "sick", start_date: daysAgo(3), end_date: daysAgo(1), status: "approved", reason: "Flu recovery" },
-    { company_id: companyId, employee_id: empIds[4], leave_type: "maternity", start_date: daysAgo(30), end_date: daysFromNow(60), status: "approved", reason: "Maternity leave" },
+    { company_id: companyId, employee_id: empIds[0], leave_type: "annual", start_date: daysFromNow(5).split("T")[0], end_date: daysFromNow(10).split("T")[0], days: 5, status: "pending", reason: "Family vacation" },
+    { company_id: companyId, employee_id: empIds[1], leave_type: "sick", start_date: daysAgo(3).split("T")[0], end_date: daysAgo(1).split("T")[0], days: 2, status: "approved", reason: "Flu recovery" },
+    { company_id: companyId, employee_id: empIds[4], leave_type: "maternity", start_date: daysAgo(30).split("T")[0], end_date: daysFromNow(60).split("T")[0], days: 90, status: "approved", reason: "Maternity leave" },
   ]));
 
+  const yesterday = daysAgo(1).split("T")[0];
   await must("Create attendance records", supabase.from("hr_attendance").insert([
-    { company_id: companyId, employee_id: empIds[0], date: daysAgo(1).split("T")[0], check_in: "09:02", check_out: "17:35", status: "present" },
-    { company_id: companyId, employee_id: empIds[1], date: daysAgo(1).split("T")[0], check_in: "08:55", check_out: "18:10", status: "present" },
-    { company_id: companyId, employee_id: empIds[2], date: daysAgo(1).split("T")[0], check_in: "09:15", check_out: "17:00", status: "late" },
-    { company_id: companyId, employee_id: empIds[3], date: daysAgo(1).split("T")[0], check_in: "09:00", check_out: "17:30", status: "present" },
+    { company_id: companyId, employee_id: empIds[0], date: yesterday, clock_in: `${yesterday}T09:02:00`, clock_out: `${yesterday}T17:35:00`, hours_worked: 8.55, status: "present" },
+    { company_id: companyId, employee_id: empIds[1], date: yesterday, clock_in: `${yesterday}T08:55:00`, clock_out: `${yesterday}T18:10:00`, hours_worked: 9.25, status: "present" },
+    { company_id: companyId, employee_id: empIds[2], date: yesterday, clock_in: `${yesterday}T09:15:00`, clock_out: `${yesterday}T17:00:00`, hours_worked: 7.75, status: "late" },
+    { company_id: companyId, employee_id: empIds[3], date: yesterday, clock_in: `${yesterday}T09:00:00`, clock_out: `${yesterday}T17:30:00`, hours_worked: 8.5, status: "present" },
   ]));
 
   await must("Create holidays", supabase.from("hr_holidays").insert([
-    { company_id: companyId, name: "New Year's Day", date: "2026-01-01", type: "public" },
-    { company_id: companyId, name: "Independence Day", date: "2026-07-04", type: "public" },
-    { company_id: companyId, name: "Christmas Day", date: "2026-12-25", type: "public" },
+    { company_id: companyId, name: "New Year's Day", date: "2026-01-01", recurring: true },
+    { company_id: companyId, name: "Independence Day", date: "2026-07-04", recurring: true },
+    { company_id: companyId, name: "Christmas Day", date: "2026-12-25", recurring: true },
   ]));
 
   /* ── Inventory Module ── */
@@ -225,9 +226,9 @@ async function main() {
 
   const svcIds = [uuid(), uuid(), uuid()];
   await must("Create booking services", supabase.from("booking_services").insert([
-    { id: svcIds[0], company_id: companyId, name: "Consultation", duration_minutes: 60, price: 150, currency: "USD", is_active: true },
-    { id: svcIds[1], company_id: companyId, name: "Quick Check-in", duration_minutes: 15, price: 0, currency: "USD", is_active: true },
-    { id: svcIds[2], company_id: companyId, name: "Workshop Session", duration_minutes: 120, price: 300, currency: "USD", is_active: true },
+    { id: svcIds[0], company_id: companyId, name: "Consultation", description: "One-on-one business consultation", duration_minutes: 60, price: 150, is_active: true },
+    { id: svcIds[1], company_id: companyId, name: "Quick Check-in", description: "Brief 15-minute status update", duration_minutes: 15, price: 0, is_active: true },
+    { id: svcIds[2], company_id: companyId, name: "Workshop Session", description: "Group workshop or training session", duration_minutes: 120, price: 300, is_active: true },
   ]));
 
   /* ── CRM Module ── */
@@ -243,20 +244,20 @@ async function main() {
   ]));
 
   await must("Create CRM contacts", supabase.from("crm_contacts").insert([
-    { id: contactIds[0], company_id: companyId, first_name: "John", last_name: "Doe", email: "john@acme.com", phone: "+1-555-0301", company_name: "Acme Corp" },
-    { id: contactIds[1], company_id: companyId, first_name: "Jane", last_name: "Wilson", email: "jane@widget.co", phone: "+1-555-0302", company_name: "Widget Co" },
-    { id: contactIds[2], company_id: companyId, first_name: "Mike", last_name: "Johnson", email: "mike@bigcorp.com", phone: "+1-555-0303", company_name: "BigCorp Ltd" },
+    { id: contactIds[0], company_id: companyId, name: "John Doe", email: "john@acme.com", phone: "+1-555-0301", company_name: "Acme Corp" },
+    { id: contactIds[1], company_id: companyId, name: "Jane Wilson", email: "jane@widget.co", phone: "+1-555-0302", company_name: "Widget Co" },
+    { id: contactIds[2], company_id: companyId, name: "Mike Johnson", email: "mike@bigcorp.com", phone: "+1-555-0303", company_name: "BigCorp Ltd" },
   ]));
 
   await must("Create CRM deals", supabase.from("crm_deals").insert([
-    { id: dealIds[0], company_id: companyId, name: "Acme Enterprise Deal", stage: "proposal", value: 25000, currency: "USD", contact_id: contactIds[0], expected_close_date: daysFromNow(30).split("T")[0] },
-    { id: dealIds[1], company_id: companyId, name: "Widget Annual Contract", stage: "negotiation", value: 12000, currency: "USD", contact_id: contactIds[1], expected_close_date: daysFromNow(15).split("T")[0] },
+    { id: dealIds[0], company_id: companyId, title: "Acme Enterprise Deal", stage: "proposal", value: 25000, probability: 30, contact_id: contactIds[0], contact_name: "John Doe", expected_close_date: daysFromNow(30).split("T")[0] },
+    { id: dealIds[1], company_id: companyId, title: "Widget Annual Contract", stage: "negotiation", value: 12000, probability: 50, contact_id: contactIds[1], contact_name: "Jane Wilson", expected_close_date: daysFromNow(15).split("T")[0] },
   ]));
 
   await must("Create CRM activities", supabase.from("crm_activities").insert([
-    { company_id: companyId, type: "call", subject: "Follow-up call with Acme", notes: "Discussed pricing options", deal_id: dealIds[0], contact_id: contactIds[0], scheduled_at: daysAgo(2) },
-    { company_id: companyId, type: "email", subject: "Proposal sent to Widget Co", notes: "Sent revised proposal v2", deal_id: dealIds[1], contact_id: contactIds[1], scheduled_at: daysAgo(1) },
-    { company_id: companyId, type: "meeting", subject: "BigCorp initial meeting", notes: "Discovery call scheduled", contact_id: contactIds[2], scheduled_at: daysFromNow(3) },
+    { company_id: companyId, type: "task", title: "Follow-up call with Acme", description: "Discuss pricing options and timeline", due_date: daysAgo(2).split("T")[0], status: "completed", related_type: "deal", related_id: dealIds[0] },
+    { company_id: companyId, type: "task", title: "Send proposal to Widget Co", description: "Prepare and send revised proposal v2", due_date: daysAgo(1).split("T")[0], status: "completed", related_type: "deal", related_id: dealIds[1] },
+    { company_id: companyId, type: "task", title: "BigCorp initial meeting", description: "Discovery call to assess requirements", due_date: daysFromNow(3).split("T")[0], status: "pending", related_type: "contact", related_id: contactIds[2] },
   ]));
 
   /* ── Store Module ── */
@@ -270,13 +271,13 @@ async function main() {
 
   const storeOrderIds = [uuid(), uuid()];
   await must("Create store orders", supabase.from("store_orders").insert([
-    { id: storeOrderIds[0], company_id: companyId, customer_id: storeCustIds[0], status: "delivered", payment_status: "paid", subtotal: 15999, tax: 1280, total: 17279, currency: "USD" },
-    { id: storeOrderIds[1], company_id: companyId, customer_id: storeCustIds[1], status: "processing", payment_status: "paid", subtotal: 4999, tax: 400, total: 5399, currency: "USD" },
+    { id: storeOrderIds[0], company_id: companyId, order_number: "ORD-2026-0001", customer_id: storeCustIds[0], status: "delivered", payment_status: "paid", subtotal: 159.99, tax_amount: 12.80, total: 172.79 },
+    { id: storeOrderIds[1], company_id: companyId, order_number: "ORD-2026-0002", customer_id: storeCustIds[1], status: "processing", payment_status: "paid", subtotal: 49.99, tax_amount: 4.00, total: 53.99 },
   ]));
 
   await must("Create store coupons", supabase.from("store_coupons").insert([
-    { company_id: companyId, code: "WELCOME10", discount_type: "percentage", discount_value: 10, is_active: true, usage_limit: 100, times_used: 5, valid_from: daysAgo(30), valid_until: daysFromNow(60) },
-    { company_id: companyId, code: "SAVE20", discount_type: "fixed", discount_value: 2000, is_active: true, usage_limit: 50, times_used: 0, valid_from: isoNow(), valid_until: daysFromNow(90) },
+    { company_id: companyId, code: "WELCOME10", name: "10% Welcome Discount", discount_type: "percentage", discount_value: 10, is_active: true, usage_limit: 100, usage_count: 5, valid_from: daysAgo(30), valid_until: daysFromNow(60) },
+    { company_id: companyId, code: "SAVE20", name: "$20 Off Order", discount_type: "fixed", discount_value: 20.00, is_active: true, usage_limit: 50, usage_count: 0, valid_from: isoNow(), valid_until: daysFromNow(90) },
   ]));
 
   /* ── Billing History ── */
@@ -298,8 +299,8 @@ async function main() {
   console.log("\n🔔 Notifications");
 
   await must("Create notifications", supabase.from("business_notifications").insert([
-    { company_id: companyId, type: "info", title: "Welcome to Cardlink!", message: "Your demo company is ready. Explore each module from the dashboard.", is_read: false },
-    { company_id: companyId, type: "warning", title: "Low Inventory Alert", message: "USB-C Cables are below reorder level (5 remaining).", is_read: false },
+    { company_id: companyId, user_id: userId, type: "system", title: "Welcome to Cardlink!", body: "Your demo company is ready. Explore each module from the dashboard.", is_read: false, priority: "info" },
+    { company_id: companyId, user_id: userId, type: "low_stock", title: "Low Inventory Alert", body: "USB-C Cables are below reorder level (5 remaining).", is_read: false, priority: "urgent" },
   ]));
 
   /* ── Done ── */

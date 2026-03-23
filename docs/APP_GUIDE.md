@@ -311,11 +311,22 @@ See `STRIPE_SETUP.md` for detailed instructions. Key steps:
 
 ### Seeding test data
 
+**Option A — SQL migration (recommended, paste directly into Supabase SQL Editor):**
+
+Run the file `supabase/migrations/20260323_034_seed_demo_data_martin.sql` in
+the Supabase SQL Editor. It will automatically find the user
+`martinwong58@gmail.com` and create a demo company with data across all modules.
+
+**Option B — Node.js script:**
+
 ```bash
 # Prerequisite: Create a user account first (sign up via the app UI or Supabase Auth)
 
-# Then seed demo data
+# Then seed demo data (defaults to martinwong58@gmail.com)
 cd cardlink
+node scripts/seed-trial-data.mjs
+
+# Or specify a different email
 node scripts/seed-trial-data.mjs your-email@example.com
 ```
 
