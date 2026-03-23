@@ -6,6 +6,11 @@
 -- business modules so the user can test every feature immediately.
 -- ================================================================
 
+-- Fix company_members role constraint first (allows 'owner' role)
+ALTER TABLE company_members DROP CONSTRAINT IF EXISTS company_members_role_check;
+ALTER TABLE company_members ADD CONSTRAINT company_members_role_check
+  CHECK (role IN ('owner', 'admin', 'manager', 'member', 'staff'));
+
 DO $$
 DECLARE
   v_user_id       uuid;
