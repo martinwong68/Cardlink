@@ -14,6 +14,27 @@ Evaluate whether the Cardlink CRM module is comprehensive enough to handle
 against industry-standard open-source CRM platforms (SuiteCRM, EspoCRM,
 Twenty CRM, Odoo CRM, ERPNext CRM).
 
+### Scope In
+- All CRM functions needed by an SMC sales, marketing, and support team
+- Comparison against 5 professional open-source CRM platforms
+- Feature coverage assessment with per-module scoring
+- Workflow completeness analysis (sales, campaign, support)
+- Prioritized roadmap with acceptance criteria
+
+### Scope Out
+- Implementation of missing features (analysis only)
+- Comparison against paid/enterprise CRM platforms (Salesforce, HubSpot, Dynamics)
+- Performance benchmarking or load testing
+- UI/UX design evaluation or wireframes
+
+### Deliverables
+1. Comprehensive function list (152 functions across 11 modules)
+2. Workflow coverage diagrams (3 workflows)
+3. Coverage summary with per-module percentages
+4. Prioritized missing feature list (P0 / P1 / P2)
+5. Implementation roadmap (3 phases with acceptance criteria)
+6. Cross-reference comparison matrix against 5 CRMs
+
 ---
 
 ## 2. Comprehensive Function List
