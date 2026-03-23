@@ -23,7 +23,7 @@ propose an implementation plan for the three core AI agent capabilities:
 
 ## 2  Professional AI App – Master Function List
 
-Below is a consolidated list of **154 functions** organised into 16 categories.
+Below is a consolidated list of **141 functions** organised into 16 categories.
 Each row is marked:
 
 - ✅ **Exists** – already implemented in Cardlink
@@ -275,7 +275,7 @@ Each row is marked:
 | Cross-Module | 8 | 8 | 0 | 0 |
 | **TOTAL** | **141** | **91** | **1** | **49** |
 
-**Overall coverage: 65 %** (91 / 141 functions exist).
+**Overall coverage: 65%** (91 / 141 functions exist).
 
 The **core business modules are comprehensive** for an SMC.
 The primary gap is the **AI agent layer** (31 functions across Setup / Ops / Review).

@@ -6,6 +6,8 @@ import { aiChat } from "@/src/lib/ai";
 import { buildReviewAgentPrompt } from "@/src/lib/ai/agent-prompts";
 import type { ReviewType } from "@/src/lib/ai/data-transformer";
 
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
+
 /**
  * POST /api/business/ai/review
  *
@@ -104,8 +106,7 @@ export async function POST(request: Request) {
 
 /* ── Gather business data for AI context ── */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function gatherBusinessData(supabase: any, companyId: string, reviewType: ReviewType): Promise<string> {
+async function gatherBusinessData(supabase: SupabaseClient, companyId: string, reviewType: ReviewType): Promise<string> {
   const now = new Date();
   const sections: string[] = [];
 

@@ -167,9 +167,15 @@ export function extractJSONFromResponse<T = unknown>(
   blockType?: string,
 ): T | null {
   // Try specific block type first, then generic json
-  const patterns = blockType
-    ? [`\`\`\`${blockType}\\s*\\n([\\s\\S]*?)\\n\\s*\`\`\``, "`\`\`json\\s*\\n([\\s\\S]*?)\\n\\s*\`\`\`"]
-    : ["`\`\`json\\s*\\n([\\s\\S]*?)\\n\\s*\`\`\`", "`\`\`\\s*\\n([\\s\\S]*?)\\n\\s*\`\`\`"];
+  const patterns: string[] = blockType
+    ? [
+        "```" + blockType + "\\s*\\n([\\s\\S]*?)\\n\\s*```",
+        "```json\\s*\\n([\\s\\S]*?)\\n\\s*```",
+      ]
+    : [
+        "```json\\s*\\n([\\s\\S]*?)\\n\\s*```",
+        "```\\s*\\n([\\s\\S]*?)\\n\\s*```",
+      ];
 
   for (const pattern of patterns) {
     const regex = new RegExp(pattern);

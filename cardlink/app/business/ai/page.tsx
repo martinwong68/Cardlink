@@ -265,8 +265,10 @@ export default function BusinessAiPage() {
     // Determine which endpoint to call based on agent mode
     const currentMode = activeConvo?.agent_mode ?? agentMode;
     let apiUrl = "/api/business/ai/chat";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let apiBody: any = {
+    type ChatApiBody = { messages: typeof chatHistory; model: string; includeBusinessContext: boolean };
+    type SetupApiBody = { messages: typeof chatHistory; model: string; fileContent?: string; fileName?: string };
+    type OpsApiBody = { messages: typeof chatHistory; model: string };
+    let apiBody: ChatApiBody | SetupApiBody | OpsApiBody = {
       messages: chatHistory,
       model,
       includeBusinessContext: true,
