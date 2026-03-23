@@ -33,8 +33,35 @@ export default function OwnerUsersPage() {
   const [editingMember, setEditingMember] = useState<string | null>(null);
   const [editRole, setEditRole] = useState("");
   const [updatingRole, setUpdatingRole] = useState(false);
+  const [roleError, setRoleError] = useState<string | null>(null);
 
   const headers: Record<string, string> = { "content-type": "application/json", "x-cardlink-app-scope": "business" };
+
+  /* ── Role update handler ── */
+  const handleUpdateRole = async (memberId: string) => {
+    if (!editRole) return;
+    setUpdatingRole(true);
+    setRoleError(null);
+    try {
+      const res = await fetch("/api/owner/users", {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ memberId, role: editRole }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEditingMember(null);
+        setEditRole("");
+        await load();
+      } else {
+        setRoleError(data.error ?? "Failed to update role.");
+      }
+    } catch {
+      setRoleError("Network error. Please try again.");
+    } finally {
+      setUpdatingRole(false);
+    }
+  };
 
   const load = useCallback(async () => {
     try {
@@ -84,25 +111,7 @@ export default function OwnerUsersPage() {
     }
   };
 
-  /* ── Role update handler ── */
-  const handleUpdateRole = async (memberId: string) => {
-    if (!editRole) return;
-    setUpdatingRole(true);
-    try {
-      const res = await fetch("/api/owner/users", {
-        method: "PATCH",
-        headers,
-        body: JSON.stringify({ memberId, role: editRole }),
-      });
-      if (res.ok) {
-        setEditingMember(null);
-        setEditRole("");
-        await load();
-      }
-    } catch { /* silent */ } finally {
-      setUpdatingRole(false);
-    }
-  };
+  /* ── Role update handler is defined above ── */
 
   if (loading) return <div className="flex items-center justify-center py-20"><p className="text-sm text-gray-500">Loading users…</p></div>;
 
@@ -192,29 +201,34 @@ export default function OwnerUsersPage() {
 
               {/* Inline role editor */}
               {editingMember === m.id && (
-                <div className="mt-3 flex items-center gap-2 border-t border-gray-50 pt-3">
-                  <select
-                    value={editRole}
-                    onChange={(e) => setEditRole(e.target.value)}
-                    className="rounded-lg border border-gray-200 px-2 py-1 text-xs"
-                  >
-                    {ASSIGNABLE_ROLES.map((r) => (
-                      <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
-                    ))}
-                  </select>
-                  <button
-                    onClick={() => handleUpdateRole(m.id)}
-                    disabled={updatingRole}
-                    className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-                  >
-                    {updatingRole ? "…" : "Save"}
-                  </button>
-                  <button
-                    onClick={() => setEditingMember(null)}
-                    className="rounded-lg px-3 py-1 text-xs font-semibold text-gray-500 hover:bg-gray-100"
-                  >
-                    Cancel
-                  </button>
+                <div className="mt-3 border-t border-gray-50 pt-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={editRole}
+                      onChange={(e) => setEditRole(e.target.value)}
+                      className="rounded-lg border border-gray-200 px-2 py-1 text-xs"
+                    >
+                      {ASSIGNABLE_ROLES.map((r) => (
+                        <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => handleUpdateRole(m.id)}
+                      disabled={updatingRole}
+                      className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                    >
+                      {updatingRole ? "…" : "Save"}
+                    </button>
+                    <button
+                      onClick={() => { setEditingMember(null); setRoleError(null); }}
+                      className="rounded-lg px-3 py-1 text-xs font-semibold text-gray-500 hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  {roleError && editingMember === m.id && (
+                    <p className="text-xs text-red-600">{roleError}</p>
+                  )}
                 </div>
               )}
             </div>

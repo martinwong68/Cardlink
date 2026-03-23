@@ -44,23 +44,24 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const companyId = guard.context.activeCompanyId;
 
-  /* Look up user by email in auth.users via admin */
-  const { data: usersData } = await admin.auth.admin.listUsers({ perPage: 1 });
+  /* Look up user by email — first try profiles table, then auth admin */
   let targetUserId: string | null = null;
 
-  if (usersData?.users) {
-    const match = usersData.users.find((u) => u.email === email);
-    if (match) targetUserId = match.id;
-  }
+  const { data: profileMatch } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+  if (profileMatch) targetUserId = profileMatch.id;
 
-  /* Also try looking up via profiles table */
+  /* Fallback: search auth.users by email if not found in profiles */
   if (!targetUserId) {
-    const { data: profileMatch } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-    if (profileMatch) targetUserId = profileMatch.id;
+    /* Use listUsers and filter — Supabase admin API supports this */
+    const { data: listData } = await admin.auth.admin.listUsers({ perPage: 1000 });
+    if (listData?.users) {
+      const match = listData.users.find((u) => u.email === email);
+      if (match) targetUserId = match.id;
+    }
   }
 
   if (!targetUserId) {

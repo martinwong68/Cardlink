@@ -123,11 +123,14 @@ export default function IntegrationsSettingsPage() {
   const [configs, setConfigs] = useState<Record<string, Record<string, string>>>({});
   const [connectedMap, setConnectedMap] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, { ok: boolean; message: string }>>({});
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   /* Load saved integrations */
   const loadIntegrations = useCallback(async () => {
+    setLoadError(null);
     try {
       const res = await fetch("/api/owner/integrations", {
         headers: { "x-cardlink-app-scope": "business" },
@@ -144,7 +147,9 @@ export default function IntegrationsSettingsPage() {
         setConfigs(savedConfigs);
         setConnectedMap(connected);
       }
-    } catch { /* silent */ }
+    } catch {
+      setLoadError("Failed to load integrations. Please refresh the page.");
+    }
   }, []);
 
   useEffect(() => { loadIntegrations(); }, [loadIntegrations]);
@@ -168,6 +173,7 @@ export default function IntegrationsSettingsPage() {
   /* Save / Connect */
   const handleSave = async (key: string, connect: boolean) => {
     setSaving(key);
+    setSaveError(null);
     try {
       const res = await fetch("/api/owner/integrations", {
         method: "POST",
@@ -180,9 +186,15 @@ export default function IntegrationsSettingsPage() {
       });
       if (res.ok) {
         setConnectedMap((prev) => ({ ...prev, [key]: connect }));
+        setSaveError(null);
         if (!connect) setTestResults((prev) => { const n = { ...prev }; delete n[key]; return n; });
+      } else {
+        const data = await res.json();
+        setSaveError(data.error ?? "Failed to save integration.");
       }
-    } catch { /* silent */ } finally {
+    } catch {
+      setSaveError("Network error. Please try again.");
+    } finally {
       setSaving(null);
     }
   };
@@ -214,6 +226,14 @@ export default function IntegrationsSettingsPage() {
         <h1 className="app-title mt-2 text-2xl font-semibold">{t("cards.integrations.title")}</h1>
         <p className="app-subtitle mt-2 text-sm">{t("cards.integrations.desc")}</p>
       </div>
+
+      {loadError && (
+        <div className="rounded-lg bg-red-50 p-3 text-xs text-red-700">{loadError}</div>
+      )}
+
+      {saveError && (
+        <div className="rounded-lg bg-red-50 p-3 text-xs text-red-700">{saveError}</div>
+      )}
 
       {categories.map((cat) => (
         <div key={cat}>
