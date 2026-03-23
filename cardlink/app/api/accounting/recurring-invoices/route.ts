@@ -4,14 +4,16 @@ import { createClient } from "@/src/lib/supabase/server";
 import { requireAccountingContext } from "@/src/lib/accounting/context";
 import { writeAccountingAuditLog } from "@/src/lib/accounting/audit";
 
-type BankAccountDraft = {
+type RecurringInvoiceDraft = {
   org_id?: string;
-  bank_name?: string;
-  account_name?: string;
-  account_number?: string;
-  routing_number?: string;
+  contact_id?: string;
+  title?: string;
+  frequency?: string;
+  next_issue_date?: string;
+  end_date?: string;
   currency?: string;
-  opening_balance?: number;
+  notes?: string;
+  items?: unknown;
 };
 
 export async function GET(request: Request) {
@@ -23,27 +25,29 @@ export async function GET(request: Request) {
 
   const supabase = await createClient();
   let query = supabase
-    .from("acct_bank_accounts")
-    .select("id, org_id, bank_name, account_name, account_number, routing_number, currency, opening_balance, current_balance, is_active, created_at")
+    .from("acct_recurring_invoices")
+    .select("id, org_id, contact_id, title, frequency, next_issue_date, end_date, is_active, items, currency, notes, created_at")
     .eq("org_id", guard.context.organizationId);
 
   if (isActiveParam === "true") query = query.eq("is_active", true);
   else if (isActiveParam === "false") query = query.eq("is_active", false);
 
-  const { data, error } = await query.order("account_name");
+  const { data, error } = await query
+    .order("next_issue_date", { ascending: true })
+    .limit(100);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({
-    contract: "accounting.bank_accounts.v1",
+    contract: "accounting.recurring_invoices.v1",
     status: "ok",
     organization_id: guard.context.organizationId,
-    bank_accounts: data ?? [],
+    recurring_invoices: data ?? [],
   });
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as BankAccountDraft;
+  const body = (await request.json()) as RecurringInvoiceDraft;
   const guard = await requireAccountingContext({
     request,
     expectedOrganizationId: body.org_id?.trim() ?? null,
@@ -51,37 +55,41 @@ export async function POST(request: Request) {
   });
   if (!guard.ok) return guard.response;
 
-  const bankName = body.bank_name?.trim();
-  const accountName = body.account_name?.trim();
-  if (!bankName || !accountName) {
+  const contactId = body.contact_id?.trim();
+  const title = body.title?.trim();
+  const frequency = body.frequency?.trim();
+  const nextIssueDate = body.next_issue_date?.trim();
+
+  if (!contactId || !title || !frequency || !nextIssueDate) {
     return NextResponse.json(
-      { error: "bank_name and account_name are required." },
+      { error: "contact_id, title, frequency, and next_issue_date are required." },
       { status: 400 },
     );
   }
 
-  const openingBalance = Number(body.opening_balance ?? 0);
-
   const supabase = await createClient();
+
   const { data, error } = await supabase
-    .from("acct_bank_accounts")
+    .from("acct_recurring_invoices")
     .insert({
       org_id: guard.context.organizationId,
-      bank_name: bankName,
-      account_name: accountName,
-      account_number: body.account_number?.trim() || null,
-      routing_number: body.routing_number?.trim() || null,
+      contact_id: contactId,
+      title,
+      frequency,
+      next_issue_date: nextIssueDate,
+      end_date: body.end_date?.trim() || null,
+      items: body.items ?? null,
       currency: body.currency?.trim() || "USD",
-      opening_balance: openingBalance,
-      current_balance: openingBalance,
+      notes: body.notes?.trim() || null,
+      created_by: guard.context.userId,
     })
-    .select("id, account_name, current_balance")
+    .select("id, title, frequency, next_issue_date")
     .single();
 
   if (error || !data) {
     const conflict = error?.code === "23505";
     return NextResponse.json(
-      { error: error?.message ?? "Bank account create failed." },
+      { error: error?.message ?? "Recurring invoice create failed." },
       { status: conflict ? 409 : 400 },
     );
   }
@@ -90,19 +98,19 @@ export async function POST(request: Request) {
     supabase,
     organizationId: guard.context.organizationId,
     userId: guard.context.userId,
-    action: "bank_account.created",
-    tableName: "acct_bank_accounts",
+    action: "recurring_invoice.created",
+    tableName: "acct_recurring_invoices",
     recordId: data.id,
     newValues: data,
   });
 
   return NextResponse.json(
     {
-      contract: "accounting.bank_accounts.v1",
+      contract: "accounting.recurring_invoices.v1",
       status: "created",
       organization_id: guard.context.organizationId,
-      bank_account_id: data.id,
-      emitted_events: ["accounting.bank_account.created"],
+      recurring_invoice_id: data.id,
+      emitted_events: ["accounting.recurring_invoice.created"],
     },
     { status: 201 },
   );
