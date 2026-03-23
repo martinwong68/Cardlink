@@ -100,26 +100,13 @@ export async function POST(request: Request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  /* Update bank account balance */
-  const totalAmount = rows.reduce((sum, r) => sum + r.amount, 0);
-  await supabase.rpc("", {}).catch(() => {
-    /* If RPC not available, update inline */
-  });
-  await supabase
-    .from("bank_accounts")
-    .update({
-      current_balance: supabase.rpc ? undefined : undefined,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", bankAccountId);
-
   await writeAccountingAuditLog({
     supabase,
     organizationId: guard.context.organizationId,
     userId: guard.context.userId,
     action: "bank_transactions.imported",
     tableName: "bank_transactions",
-    newValues: { count: rows.length, total_amount: totalAmount },
+    newValues: { count: rows.length, total_amount: rows.reduce((sum, r) => sum + r.amount, 0) },
   });
 
   return NextResponse.json(
