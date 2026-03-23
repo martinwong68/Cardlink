@@ -320,7 +320,7 @@ CREATE INDEX IF NOT EXISTS idx_hr_leave_requests_employee_dates
   ON hr_leave_requests(employee_id, start_date DESC);
 
 CREATE INDEX IF NOT EXISTS idx_hr_payroll_company_period
-  ON hr_payroll(company_id, pay_period_start DESC);
+  ON hr_payroll(company_id, period_start DESC);
 
 CREATE INDEX IF NOT EXISTS idx_inv_products_company_category
   ON inv_products(company_id, category_id);
