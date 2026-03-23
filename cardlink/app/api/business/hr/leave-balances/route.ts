@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { createClient } from "@/src/lib/supabase/server";
+import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { LEAVE_TYPES } from "@/src/lib/hr/constants";
 
 export async function GET(request: Request) {
@@ -22,8 +22,10 @@ export async function GET(request: Request) {
   if (employeeId) query = query.eq("employee_id", employeeId);
 
   const { data, error } = await query.order("leave_type");
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ balances: data });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ status: "ok", balances: data });
 }
 
 export async function POST(request: Request) {
@@ -46,7 +48,10 @@ export async function POST(request: Request) {
       .eq("status", "active");
 
     if (!employees || employees.length === 0) {
-      return NextResponse.json({ error: "No active employees found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No active employees found" },
+        { status: 400 },
+      );
     }
 
     const rows = employees.flatMap((emp) =>
@@ -55,24 +60,38 @@ export async function POST(request: Request) {
         employee_id: emp.id as string,
         leave_type: lt,
         year,
-        entitlement: entitlements?.[lt] ?? (lt === "annual" ? 14 : lt === "sick" ? 14 : 0),
+        entitlement:
+          entitlements?.[lt] ?? (lt === "annual" ? 14 : lt === "sick" ? 14 : 0),
         used: 0,
-        carried_over: 0,
-      }))
+        carried_forward: 0,
+      })),
     );
 
     const { data, error } = await supabase
       .from("hr_leave_balances")
-      .upsert(rows, { onConflict: "employee_id,leave_type,year" })
+      .upsert(rows, {
+        onConflict: "company_id,employee_id,leave_type,year",
+      })
       .select();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ balances: data }, { status: 201 });
+    if (error) {
+      if (error.code === "23505")
+        return NextResponse.json(
+          { error: "Duplicate leave balance record" },
+          { status: 409 },
+        );
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ status: "ok", balances: data }, { status: 201 });
   }
 
   // Single balance record
   if (!body.employee_id || !body.leave_type) {
-    return NextResponse.json({ error: "employee_id and leave_type are required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "employee_id and leave_type are required" },
+      { status: 400 },
+    );
   }
 
   const { data, error } = await supabase
@@ -85,15 +104,23 @@ export async function POST(request: Request) {
         year: body.year || new Date().getFullYear(),
         entitlement: body.entitlement ?? 0,
         used: body.used ?? 0,
-        carried_over: body.carried_over ?? 0,
+        carried_forward: body.carried_forward ?? 0,
       },
-      { onConflict: "employee_id,leave_type,year" }
+      { onConflict: "company_id,employee_id,leave_type,year" },
     )
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ balance: data }, { status: 201 });
+  if (error) {
+    if (error.code === "23505")
+      return NextResponse.json(
+        { error: "Duplicate leave balance record" },
+        { status: 409 },
+      );
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ status: "ok", balance: data }, { status: 201 });
 }
 
 export async function PUT(request: Request) {
@@ -104,12 +131,16 @@ export async function PUT(request: Request) {
   const companyId = guard.context.activeCompanyId;
   const body = await request.json();
 
-  if (!body.id) return NextResponse.json({ error: "id is required" }, { status: 400 });
+  if (!body.id)
+    return NextResponse.json({ error: "id is required" }, { status: 400 });
 
-  const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  const updateData: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+  };
   if (body.entitlement != null) updateData.entitlement = body.entitlement;
   if (body.used != null) updateData.used = body.used;
-  if (body.carried_over != null) updateData.carried_over = body.carried_over;
+  if (body.carried_forward != null)
+    updateData.carried_forward = body.carried_forward;
 
   const { data, error } = await supabase
     .from("hr_leave_balances")
@@ -119,6 +150,8 @@ export async function PUT(request: Request) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ balance: data });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ status: "ok", balance: data });
 }
