@@ -33,6 +33,7 @@ const navItems = [
 /* ── Module routes (used to detect active module state) ── */
 const moduleItems = [
   { href: "/business/accounting", label: "Accounting", icon: BookOpen },
+  { href: "/business/store-management", label: "Store Management", icon: Store },
   { href: "/business/crm", label: "CRM", icon: Handshake },
   { href: "/business/pos", label: "POS", icon: ShoppingCart },
   { href: "/business/inventory", label: "Inventory", icon: Package },

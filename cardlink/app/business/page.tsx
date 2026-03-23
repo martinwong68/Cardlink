@@ -12,6 +12,7 @@ import {
   Handshake,
   ClipboardList,
   CreditCard,
+  Store,
   Sparkles,
   ChevronRight,
   AlertCircle,
@@ -26,6 +27,7 @@ import AiActionCard, { type AiActionCardData } from "@/components/business/AiAct
 
 const modules = [
   { key: "accounting" as const, icon: BookOpen, color: "bg-blue-50 text-blue-600", route: "/business/accounting", exists: true },
+  { key: "store" as const, icon: Store, color: "bg-indigo-50 text-indigo-600", route: "/business/store-management", exists: true },
   { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: false },
   { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: false },
   { key: "inventory" as const, icon: Package, color: "bg-orange-50 text-orange-600", route: "/business/inventory", exists: true },

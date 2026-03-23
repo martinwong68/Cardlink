@@ -1647,6 +1647,7 @@
     },
     "moduleNames": {
       "accounting": "会计",
+      "store": "商店",
       "hr": "人力资源",
       "booking": "预约",
       "inventory": "库存",
@@ -2072,6 +2073,45 @@
     "publishStore": "发布商店",
     "unpublishStore": "取消发布",
     "publishing": "更新中...",
+    "dashboard": {
+      "title": "商店仪表盘",
+      "subtitle": "销售数据、指标和商店表现。",
+      "manage": "管理商店",
+      "totalProducts": "商品总数",
+      "inactive": "{count} 已下架",
+      "avgPrice": "平均价格",
+      "categories": "分类",
+      "uncategorized": "{count} 未分类",
+      "activeDiscounts": "活跃优惠",
+      "scheduled": "{count} 已排期",
+      "catalogValue": "商品目录价值",
+      "catalogValueDesc": "基于价格 × 库存的活跃商品总价值",
+      "productMix": "商品构成",
+      "physical": "实物商品",
+      "services": "服务",
+      "digital": "数字商品",
+      "inventoryHealth": "库存健康度",
+      "inStock": "有库存",
+      "lowStock": "库存不足",
+      "outOfStock": "缺货",
+      "lowStockItems": "库存不足的商品",
+      "left": "剩余",
+      "categoryDistribution": "分类分布",
+      "uncategorizedLabel": "未分类",
+      "discountSummary": "优惠摘要",
+      "active": "活跃",
+      "scheduledLabel": "已排期",
+      "expired": "已过期",
+      "discountedProducts": "{count} 件商品正在促销（平均 {avg}% 折扣）",
+      "storeReadiness": "商店就绪度",
+      "readiness": {
+        "hasName": "已设置商店名称",
+        "hasBanner": "已上传横幅图片",
+        "hasProducts": "已添加商品",
+        "hasCategories": "已创建分类",
+        "isPublished": "商店已发布"
+      }
+    },
     "stats": {
       "products": "商品",
       "categories": "分类",
@@ -2271,6 +2311,33 @@
       "saving": "保存中...",
       "saved": "设置已保存！",
       "error": "保存失败，请重试。"
+    }
+  },
+  "storeManagement": {
+    "brand": "商业界面",
+    "title": "商店管理",
+    "subtitle": "配置和管理您的店铺。",
+    "published": "已发布",
+    "draft": "草稿",
+    "publishStore": "发布商店",
+    "unpublishStore": "取消发布",
+    "publishing": "更新中...",
+    "stats": {
+      "products": "商品",
+      "categories": "分类",
+      "discounts": "优惠"
+    },
+    "quickActions": {
+      "setup": "商店设置",
+      "setupDesc": "横幅、名称和营业时间",
+      "categories": "分类",
+      "categoriesDesc": "整理商品",
+      "products": "商品",
+      "productsDesc": "管理商品目录",
+      "discounts": "优惠",
+      "discountsDesc": "促销和折扣",
+      "settings": "配送和支付",
+      "settingsDesc": "配送和支付选项"
     }
   },
   "businessAi": {

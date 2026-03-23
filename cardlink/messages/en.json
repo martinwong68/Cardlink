@@ -1647,6 +1647,7 @@
     },
     "moduleNames": {
       "accounting": "Accounting",
+      "store": "Store",
       "hr": "HR",
       "booking": "Booking",
       "inventory": "Inventory",
@@ -2072,6 +2073,45 @@
     "publishStore": "Publish Store",
     "unpublishStore": "Unpublish Store",
     "publishing": "Updating...",
+    "dashboard": {
+      "title": "Store Dashboard",
+      "subtitle": "Sales data, metrics, and store performance.",
+      "manage": "Manage Store",
+      "totalProducts": "Total Products",
+      "inactive": "{count} inactive",
+      "avgPrice": "Avg. Price",
+      "categories": "Categories",
+      "uncategorized": "{count} uncategorized",
+      "activeDiscounts": "Active Discounts",
+      "scheduled": "{count} scheduled",
+      "catalogValue": "Catalog Value",
+      "catalogValueDesc": "Total value of active products based on price × stock",
+      "productMix": "Product Mix",
+      "physical": "Physical",
+      "services": "Services",
+      "digital": "Digital",
+      "inventoryHealth": "Inventory Health",
+      "inStock": "In Stock",
+      "lowStock": "Low Stock",
+      "outOfStock": "Out of Stock",
+      "lowStockItems": "Low stock items",
+      "left": "left",
+      "categoryDistribution": "Category Distribution",
+      "uncategorizedLabel": "Uncategorized",
+      "discountSummary": "Discount Summary",
+      "active": "Active",
+      "scheduledLabel": "Scheduled",
+      "expired": "Expired",
+      "discountedProducts": "{count} products on sale (avg {avg}% off)",
+      "storeReadiness": "Store Readiness",
+      "readiness": {
+        "hasName": "Store name set",
+        "hasBanner": "Banner image uploaded",
+        "hasProducts": "Products added",
+        "hasCategories": "Categories created",
+        "isPublished": "Store published"
+      }
+    },
     "stats": {
       "products": "Products",
       "categories": "Categories",
@@ -2271,6 +2311,33 @@
       "saving": "Saving...",
       "saved": "Settings saved!",
       "error": "Failed to save. Please try again."
+    }
+  },
+  "storeManagement": {
+    "brand": "Business Interface",
+    "title": "Store Management",
+    "subtitle": "Configure and manage your storefront.",
+    "published": "Published",
+    "draft": "Draft",
+    "publishStore": "Publish Store",
+    "unpublishStore": "Unpublish Store",
+    "publishing": "Updating...",
+    "stats": {
+      "products": "Products",
+      "categories": "Categories",
+      "discounts": "Discounts"
+    },
+    "quickActions": {
+      "setup": "Store Setup",
+      "setupDesc": "Banner, name & hours",
+      "categories": "Categories",
+      "categoriesDesc": "Organize products",
+      "products": "Products",
+      "productsDesc": "Manage catalog",
+      "discounts": "Discounts",
+      "discountsDesc": "Promotions & deals",
+      "settings": "Delivery & Payments",
+      "settingsDesc": "Shipping & payment options"
     }
   },
   "businessAi": {

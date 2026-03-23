@@ -1647,6 +1647,7 @@
     },
     "moduleNames": {
       "accounting": "會計",
+      "store": "商店",
       "hr": "人力資源",
       "booking": "預約",
       "inventory": "庫存",
@@ -2072,6 +2073,45 @@
     "publishStore": "發佈商店",
     "unpublishStore": "取消發佈",
     "publishing": "更新中...",
+    "dashboard": {
+      "title": "商店儀表板",
+      "subtitle": "銷售數據、指標和商店表現。",
+      "manage": "管理商店",
+      "totalProducts": "商品總數",
+      "inactive": "{count} 已下架",
+      "avgPrice": "平均價格",
+      "categories": "分類",
+      "uncategorized": "{count} 未分類",
+      "activeDiscounts": "活躍優惠",
+      "scheduled": "{count} 已排期",
+      "catalogValue": "商品目錄價值",
+      "catalogValueDesc": "基於價格 × 庫存的活躍商品總價值",
+      "productMix": "商品組成",
+      "physical": "實體商品",
+      "services": "服務",
+      "digital": "數位商品",
+      "inventoryHealth": "庫存健康度",
+      "inStock": "有庫存",
+      "lowStock": "庫存不足",
+      "outOfStock": "缺貨",
+      "lowStockItems": "庫存不足的商品",
+      "left": "剩餘",
+      "categoryDistribution": "分類分佈",
+      "uncategorizedLabel": "未分類",
+      "discountSummary": "優惠摘要",
+      "active": "活躍",
+      "scheduledLabel": "已排期",
+      "expired": "已過期",
+      "discountedProducts": "{count} 件商品正在促銷（平均 {avg}% 折扣）",
+      "storeReadiness": "商店就緒度",
+      "readiness": {
+        "hasName": "已設定商店名稱",
+        "hasBanner": "已上傳橫幅圖片",
+        "hasProducts": "已新增商品",
+        "hasCategories": "已建立分類",
+        "isPublished": "商店已發佈"
+      }
+    },
     "stats": {
       "products": "商品",
       "categories": "分類",
@@ -2271,6 +2311,33 @@
       "saving": "儲存中...",
       "saved": "設定已儲存！",
       "error": "儲存失敗，請重試。"
+    }
+  },
+  "storeManagement": {
+    "brand": "商業介面",
+    "title": "商店管理",
+    "subtitle": "配置和管理您的店鋪。",
+    "published": "已發佈",
+    "draft": "草稿",
+    "publishStore": "發佈商店",
+    "unpublishStore": "取消發佈",
+    "publishing": "更新中...",
+    "stats": {
+      "products": "商品",
+      "categories": "分類",
+      "discounts": "優惠"
+    },
+    "quickActions": {
+      "setup": "商店設定",
+      "setupDesc": "橫幅、名稱和營業時間",
+      "categories": "分類",
+      "categoriesDesc": "整理商品",
+      "products": "商品",
+      "productsDesc": "管理商品目錄",
+      "discounts": "優惠",
+      "discountsDesc": "促銷和折扣",
+      "settings": "送貨和付款",
+      "settingsDesc": "送貨和付款選項"
     }
   },
   "businessAi": {
