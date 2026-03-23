@@ -191,6 +191,128 @@ export async function createPosOrderJournalEntry(
   return tx.id;
 }
 
+/**
+ * When a POS order is refunded,
+ * create a reversal journal entry:
+ *   Debit: Sales Revenue (revenue)
+ *   Credit: Cash / Bank (asset)
+ */
+export async function createPosRefundJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  orderId: string,
+  refundAmount: number,
+  orderNumber: string,
+) {
+  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
+  const revenueAccount = await ensureAccount(supabase, orgId, "4100", "Sales Revenue", "revenue");
+
+  if (!cashAccount || !revenueAccount) return null;
+
+  const idempotencyKey = `pos-refund-${orderId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `POS Refund: Order ${orderNumber}`,
+      reference_number: `POS-REFUND-${orderNumber}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null;
+    console.error("[cross-module] pos refund journal error:", txErr.message);
+    return null;
+  }
+
+  await supabase.from("transaction_lines").insert([
+    {
+      transaction_id: tx.id,
+      account_id: revenueAccount,
+      debit: refundAmount,
+      credit: 0,
+      description: `POS Refund Revenue: ${orderNumber}`,
+    },
+    {
+      transaction_id: tx.id,
+      account_id: cashAccount,
+      debit: 0,
+      credit: refundAmount,
+      description: `POS Refund Cash: ${orderNumber}`,
+    },
+  ]);
+
+  return tx.id;
+}
+
+/**
+ * When a vendor bill is paid,
+ * create an accounting journal entry:
+ *   Debit: Accounts Payable (liability)
+ *   Credit: Cash / Bank (asset)
+ */
+export async function createVendorBillPaidJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  billId: string,
+  totalAmount: number,
+  billNumber: string,
+) {
+  const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
+  const payableAccount = await ensureAccount(supabase, orgId, "2100", "Accounts Payable", "liability");
+
+  if (!cashAccount || !payableAccount) return null;
+
+  const idempotencyKey = `vendor-bill-paid-${billId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `Vendor Bill Payment: ${billNumber}`,
+      reference_number: `BILL-PAID-${billNumber}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null;
+    console.error("[cross-module] vendor bill paid journal error:", txErr.message);
+    return null;
+  }
+
+  await supabase.from("transaction_lines").insert([
+    {
+      transaction_id: tx.id,
+      account_id: payableAccount,
+      debit: totalAmount,
+      credit: 0,
+      description: `AP Payment: ${billNumber}`,
+    },
+    {
+      transaction_id: tx.id,
+      account_id: cashAccount,
+      debit: 0,
+      credit: totalAmount,
+      description: `Cash Payment: ${billNumber}`,
+    },
+  ]);
+
+  return tx.id;
+}
+
 /* ── Helper: ensure a default chart-of-accounts entry exists ── */
 async function ensureAccount(
   supabase: SupabaseClient,
