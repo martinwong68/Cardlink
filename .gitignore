@@ -6,3 +6,5 @@ scripts/dump-schema.js
 
 # IDE
 .vscode/tasks.json
+node_modules/
+

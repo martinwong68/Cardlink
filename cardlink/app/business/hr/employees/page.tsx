@@ -28,6 +28,14 @@ type Employee = {
   salary_period: string;
   status: string;
   avatar_url: string | null;
+  address: string | null;
+  national_id: string | null;
+  bank_name: string | null;
+  bank_account: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  emergency_contact_relation: string | null;
+  reporting_manager_id: string | null;
 };
 
 export default function EmployeesPage() {
@@ -52,6 +60,14 @@ export default function EmployeesPage() {
   const [startDate, setStartDate] = useState("");
   const [salary, setSalary] = useState("");
   const [salaryPeriod, setSalaryPeriod] = useState("monthly");
+  // Extended fields
+  const [address, setAddress] = useState("");
+  const [nationalId, setNationalId] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
+  const [emergencyName, setEmergencyName] = useState("");
+  const [emergencyPhone, setEmergencyPhone] = useState("");
+  const [emergencyRelation, setEmergencyRelation] = useState("");
 
   const loadEmployees = useCallback(async () => {
     if (!companyId) return;
@@ -74,6 +90,8 @@ export default function EmployeesPage() {
     setFullName(""); setEmail(""); setPhone("");
     setPosition(""); setDepartment(""); setEmploymentType("full_time");
     setStartDate(""); setSalary(""); setSalaryPeriod("monthly");
+    setAddress(""); setNationalId(""); setBankName(""); setBankAccount("");
+    setEmergencyName(""); setEmergencyPhone(""); setEmergencyRelation("");
     setFormStep(0); setEditingId(null); setShowForm(false);
   };
 
@@ -83,6 +101,11 @@ export default function EmployeesPage() {
     setPosition(e.position ?? ""); setDepartment(e.department ?? "");
     setEmploymentType(e.employment_type); setStartDate(e.start_date ?? "");
     setSalary(String(e.salary)); setSalaryPeriod(e.salary_period);
+    setAddress(e.address ?? ""); setNationalId(e.national_id ?? "");
+    setBankName(e.bank_name ?? ""); setBankAccount(e.bank_account ?? "");
+    setEmergencyName(e.emergency_contact_name ?? "");
+    setEmergencyPhone(e.emergency_contact_phone ?? "");
+    setEmergencyRelation(e.emergency_contact_relation ?? "");
     setFormStep(0); setShowForm(true);
   };
 
@@ -99,6 +122,13 @@ export default function EmployeesPage() {
       start_date: startDate || null,
       salary: Number(salary) || 0,
       salary_period: salaryPeriod,
+      address: address || null,
+      national_id: nationalId || null,
+      bank_name: bankName || null,
+      bank_account: bankAccount || null,
+      emergency_contact_name: emergencyName || null,
+      emergency_contact_phone: emergencyPhone || null,
+      emergency_contact_relation: emergencyRelation || null,
     };
 
     if (editingId) {
@@ -148,7 +178,7 @@ export default function EmployeesPage() {
     contract: t("employmentTypes.contract"),
   };
 
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   // Multi-step form
   if (showForm) {
@@ -232,6 +262,44 @@ export default function EmployeesPage() {
                   <option value="monthly">{t("employees.salaryPeriods.monthly")}</option>
                   <option value="hourly">{t("employees.salaryPeriods.hourly")}</option>
                 </select>
+              </div>
+            </>
+          )}
+          {formStep === 3 && (
+            <>
+              <h3 className="text-sm font-semibold text-gray-700">{t("employees.step4")}</h3>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">{t("employees.fields.address")}</label>
+                <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">{t("employees.fields.nationalId")}</label>
+                <input value={nationalId} onChange={(e) => setNationalId(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">{t("employees.fields.bankName")}</label>
+                  <input value={bankName} onChange={(e) => setBankName(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">{t("employees.fields.bankAccount")}</label>
+                  <input value={bankAccount} onChange={(e) => setBankAccount(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+                </div>
+              </div>
+              <h4 className="text-xs font-semibold text-gray-600 mt-2">{t("employees.fields.emergencyContact")}</h4>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">{t("employees.fields.emergencyName")}</label>
+                <input value={emergencyName} onChange={(e) => setEmergencyName(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">{t("employees.fields.emergencyPhone")}</label>
+                  <input value={emergencyPhone} onChange={(e) => setEmergencyPhone(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">{t("employees.fields.emergencyRelation")}</label>
+                  <input value={emergencyRelation} onChange={(e) => setEmergencyRelation(e.target.value)} className="app-input w-full rounded-lg border px-3 py-2 text-sm" />
+                </div>
               </div>
             </>
           )}
