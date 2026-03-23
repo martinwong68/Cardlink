@@ -24,7 +24,7 @@ ALTER TABLE ai_setup_uploads ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "ai_setup_uploads_company" ON ai_setup_uploads
   USING (company_id IN (
-    SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()
+    SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()
   ));
 
 -- Index
@@ -52,7 +52,7 @@ ALTER TABLE ai_business_reviews ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "ai_business_reviews_company" ON ai_business_reviews
   USING (company_id IN (
-    SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()
+    SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()
   ));
 
 -- Indexes

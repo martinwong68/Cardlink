@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS hr_leave_policies (
 
 ALTER TABLE hr_leave_policies ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "hr_leave_policies_company" ON hr_leave_policies
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 CREATE INDEX IF NOT EXISTS idx_hr_leave_policies_company ON hr_leave_policies(company_id);
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS hr_payroll_tax_brackets (
 
 ALTER TABLE hr_payroll_tax_brackets ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "hr_payroll_tax_brackets_company" ON hr_payroll_tax_brackets
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 CREATE INDEX IF NOT EXISTS idx_hr_payroll_tax_company ON hr_payroll_tax_brackets(company_id, is_active);
 
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS hr_payroll_deductions (
 
 ALTER TABLE hr_payroll_deductions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "hr_payroll_deductions_company" ON hr_payroll_deductions
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 -- Employee payroll detail (bank info, tax status)
 DO $$
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS hr_payslips (
 
 ALTER TABLE hr_payslips ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "hr_payslips_company" ON hr_payslips
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 CREATE INDEX IF NOT EXISTS idx_hr_payslips_employee ON hr_payslips(employee_id, pay_period_start DESC);
 CREATE INDEX IF NOT EXISTS idx_hr_payslips_company ON hr_payslips(company_id, pay_period_start DESC);
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS inv_batches (
 
 ALTER TABLE inv_batches ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "inv_batches_company" ON inv_batches
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 CREATE INDEX IF NOT EXISTS idx_inv_batches_product ON inv_batches(product_id, expiry_date);
 CREATE INDEX IF NOT EXISTS idx_inv_batches_company ON inv_batches(company_id);
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS inv_import_jobs (
 
 ALTER TABLE inv_import_jobs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "inv_import_jobs_company" ON inv_import_jobs
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 -- ────────────────────────────────────────────────────────────
 -- 3. PROCUREMENT PHASE 2 — RFQ & Approval Workflow
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS proc_rfqs (
 
 ALTER TABLE proc_rfqs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "proc_rfqs_company" ON proc_rfqs
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 -- RFQ line items
 CREATE TABLE IF NOT EXISTS proc_rfq_items (
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS proc_rfq_responses (
 ALTER TABLE proc_rfq_responses ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "proc_rfq_responses_company" ON proc_rfq_responses
   USING (rfq_id IN (SELECT r.id FROM proc_rfqs r WHERE r.company_id IN (
-    SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()
+    SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()
   )));
 
 -- Add approval workflow fields to purchase orders
@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS proc_supplier_ratings (
 
 ALTER TABLE proc_supplier_ratings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "proc_supplier_ratings_company" ON proc_supplier_ratings
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 -- ────────────────────────────────────────────────────────────
 -- 4. POS PHASE 2 — Receipt Templates & Customer Display
@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS pos_receipt_templates (
 
 ALTER TABLE pos_receipt_templates ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "pos_receipt_templates_company" ON pos_receipt_templates
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 -- Customer loyalty / rewards
 CREATE TABLE IF NOT EXISTS pos_loyalty_points (
@@ -298,7 +298,7 @@ CREATE TABLE IF NOT EXISTS pos_loyalty_points (
 
 ALTER TABLE pos_loyalty_points ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "pos_loyalty_points_company" ON pos_loyalty_points
-  USING (company_id IN (SELECT uc.company_id FROM user_companies uc WHERE uc.user_id = auth.uid()));
+  USING (company_id IN (SELECT cm.company_id FROM company_members cm WHERE cm.user_id = auth.uid()));
 
 CREATE INDEX IF NOT EXISTS idx_pos_loyalty_customer ON pos_loyalty_points(company_id, customer_id);
 
