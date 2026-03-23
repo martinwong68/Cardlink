@@ -3,17 +3,21 @@ import Stripe from "stripe";
 
 import { createClient } from "@/src/lib/supabase/server";
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-
-if (!stripeSecretKey) {
-  throw new Error("Missing STRIPE_SECRET_KEY");
+function getStripe(): Stripe | null {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  return new Stripe(key, { apiVersion: "2026-01-28.clover" });
 }
 
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: "2026-01-28.clover",
-});
-
 export async function POST(request: Request) {
+  const stripe = getStripe();
+  if (!stripe) {
+    return NextResponse.json(
+      { error: "Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables." },
+      { status: 503 },
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -62,7 +66,7 @@ export async function POST(request: Request) {
 
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${origin}/dashboard/settings/support`,
+    return_url: `${origin}/business/settings/plan`,
   });
 
   return NextResponse.json({ url: session.url });

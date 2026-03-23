@@ -48,9 +48,9 @@ It creates:
 
 ## 5) End-to-end test
 1. Start app and login
-2. Upgrade from `/dashboard/settings/upgrade`
-3. Complete Stripe checkout
-4. Return to `/dashboard/settings/upgrade/success`
+2. Navigate to `/business/settings/plan` and click "Change Plan"
+3. Select a paid plan and complete Stripe checkout
+4. Return to `/business/settings/plan?checkout=success`
 
 Expected result:
 - `profiles.stripe_subscription_status` updated
