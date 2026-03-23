@@ -217,8 +217,8 @@ async function main() {
 
   const whIds = [uuid(), uuid()];
   await must("Create warehouses", supabase.from("inv_warehouses").insert([
-    { id: whIds[0], company_id: companyId, name: "Main Warehouse", location: "Building A", is_active: true },
-    { id: whIds[1], company_id: companyId, name: "Overflow Storage", location: "Building B", is_active: true },
+    { id: whIds[0], company_id: companyId, name: "Main Warehouse", code: "WH-MAIN", address: "Building A", is_active: true },
+    { id: whIds[1], company_id: companyId, name: "Overflow Storage", code: "WH-OVER", address: "Building B", is_active: true },
   ]));
 
   /* ── Booking Module ── */

@@ -178,9 +178,9 @@ BEGIN
     (v_cat_elec,   v_company_id, 'Electronics'),
     (v_cat_office, v_company_id, 'Office Supplies');
 
-  INSERT INTO inv_warehouses (id, company_id, name, location, is_active) VALUES
-    (v_wh_main,     v_company_id, 'Main Warehouse',   'Building A', true),
-    (v_wh_overflow, v_company_id, 'Overflow Storage',  'Building B', true);
+  INSERT INTO inv_warehouses (id, company_id, name, code, address, is_active) VALUES
+    (v_wh_main,     v_company_id, 'Main Warehouse',  'WH-MAIN', 'Building A', true),
+    (v_wh_overflow, v_company_id, 'Overflow Storage', 'WH-OVER', 'Building B', true);
 
   -- ─────────────────────────────────────────────────────────────
   -- BOOKING MODULE
