@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { requireAccountingContext } from "@/src/lib/accounting/context";
 import { encryptSensitiveValue } from "@/src/lib/accounting/encryption";
+import { writeAccountingAuditLog } from "@/src/lib/accounting/audit";
+import { createPayrollJournalEntry } from "@/src/lib/cross-module-integration";
 
 type PayrollDraft = {
   org_id?: string;
@@ -14,6 +16,12 @@ type PayrollDraft = {
   status?: "draft" | "processed" | "paid";
   bank_details?: string;
   salary_note?: string;
+};
+
+type PayrollStatusUpdate = {
+  org_id?: string;
+  payroll_id?: string;
+  status?: "draft" | "processed" | "paid";
 };
 
 function round2(value: number): number {
@@ -128,4 +136,87 @@ export async function POST(request: Request) {
     },
     { status: 201 }
   );
+}
+
+/* PATCH: Update payroll status and auto-post to GL when "processed" */
+export async function PATCH(request: Request) {
+  const body = (await request.json()) as PayrollStatusUpdate;
+  const guard = await requireAccountingContext({
+    request,
+    expectedOrganizationId: body.org_id?.trim() ?? null,
+    write: true,
+  });
+  if (!guard.ok) return guard.response;
+
+  const payrollId = body.payroll_id?.trim();
+  const newStatus = body.status;
+
+  if (!payrollId || !newStatus) {
+    return NextResponse.json({ error: "payroll_id and status are required." }, { status: 400 });
+  }
+
+  if (!["draft", "processed", "paid"].includes(newStatus)) {
+    return NextResponse.json({ error: "status must be draft, processed, or paid." }, { status: 400 });
+  }
+
+  const supabase = await createClient();
+
+  const { data: beforeRow } = await supabase
+    .from("payroll_records")
+    .select("id, status, gross_salary, deductions, net_salary, period_start, period_end")
+    .eq("id", payrollId)
+    .eq("org_id", guard.context.organizationId)
+    .maybeSingle();
+
+  if (!beforeRow) {
+    return NextResponse.json({ error: "Payroll record not found." }, { status: 404 });
+  }
+
+  const { data, error } = await supabase
+    .from("payroll_records")
+    .update({ status: newStatus })
+    .eq("id", payrollId)
+    .eq("org_id", guard.context.organizationId)
+    .select("id, status")
+    .single();
+
+  if (error || !data) {
+    return NextResponse.json({ error: error?.message ?? "Payroll status update failed." }, { status: 400 });
+  }
+
+  /* Auto-post journal entry when payroll moves to "processed" */
+  let transactionId: string | null = null;
+  if (newStatus === "processed" && beforeRow.status !== "processed") {
+    const periodLabel = `${beforeRow.period_start} to ${beforeRow.period_end}`;
+    transactionId = await createPayrollJournalEntry(
+      supabase,
+      guard.context.organizationId,
+      guard.context.userId,
+      payrollId,
+      Number(beforeRow.gross_salary),
+      Number(beforeRow.net_salary),
+      periodLabel,
+    );
+  }
+
+  await writeAccountingAuditLog({
+    supabase,
+    organizationId: guard.context.organizationId,
+    userId: guard.context.userId,
+    action: "payroll.status.updated",
+    tableName: "payroll_records",
+    recordId: payrollId,
+    oldValues: beforeRow,
+    newValues: data,
+  });
+
+  return NextResponse.json({
+    contract: "accounting.payroll.v1",
+    status: "updated",
+    organization_id: guard.context.organizationId,
+    payroll_id: payrollId,
+    payroll_status: data.status,
+    transaction_id: transactionId,
+    emitted_events: ["accounting.payroll.status.changed"],
+  });
 }
