@@ -11,6 +11,36 @@ ALTER TABLE company_members DROP CONSTRAINT IF EXISTS company_members_role_check
 ALTER TABLE company_members ADD CONSTRAINT company_members_role_check
   CHECK (role IN ('owner', 'admin', 'manager', 'member', 'staff'));
 
+-- Ensure business_notifications table exists (migration 010 may not have been applied)
+CREATE TABLE IF NOT EXISTS business_notifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id uuid NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  type text NOT NULL CHECK (type IN ('new_order','low_stock','new_connection','invoice_overdue','payment_received','booking_new','ai_suggestion','system')),
+  title text NOT NULL,
+  body text,
+  metadata jsonb DEFAULT '{}',
+  is_read boolean NOT NULL DEFAULT false,
+  priority text NOT NULL DEFAULT 'normal' CHECK (priority IN ('urgent','normal','info')),
+  related_module text,
+  related_entity_id uuid,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_business_notifications_company ON business_notifications(company_id, user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_business_notifications_type ON business_notifications(type);
+ALTER TABLE business_notifications ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'business_notifications' AND policyname = 'Users can read own notifications') THEN
+    CREATE POLICY "Users can read own notifications" ON business_notifications FOR SELECT USING (user_id = auth.uid());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'business_notifications' AND policyname = 'Users can update own notifications') THEN
+    CREATE POLICY "Users can update own notifications" ON business_notifications FOR UPDATE USING (user_id = auth.uid());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'business_notifications' AND policyname = 'Service role can insert') THEN
+    CREATE POLICY "Service role can insert" ON business_notifications FOR INSERT WITH CHECK (true);
+  END IF;
+END $$;
+
 DO $$
 DECLARE
   v_user_id       uuid;
@@ -192,30 +222,46 @@ BEGIN
     (v_svc_workshop, v_company_id, 'Workshop Session',  'Group workshop or training session', 120, 300, true);
 
   -- ─────────────────────────────────────────────────────────────
-  -- CRM MODULE
+  -- CRM MODULE (tables created externally — skip if missing)
   -- ─────────────────────────────────────────────────────────────
 
-  -- Leads (uses: name, email, phone, source, status, notes)
-  INSERT INTO crm_leads (id, company_id, name, email, phone, source, status, notes) VALUES
-    (v_lead_1, v_company_id, 'TechStart Inc.',   'info@techstart.io',   '+1-555-0201', 'website',  'qualified', 'Interested in enterprise plan'),
-    (v_lead_2, v_company_id, 'GreenField Corp',  'sales@greenfield.co', '+1-555-0202', 'referral', 'new',       'Referred by existing customer');
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'crm_leads') THEN
+    -- Leads (uses: name, email, phone, source, status, notes)
+    INSERT INTO crm_leads (id, company_id, name, email, phone, source, status, notes) VALUES
+      (v_lead_1, v_company_id, 'TechStart Inc.',   'info@techstart.io',   '+1-555-0201', 'website',  'qualified', 'Interested in enterprise plan'),
+      (v_lead_2, v_company_id, 'GreenField Corp',  'sales@greenfield.co', '+1-555-0202', 'referral', 'new',       'Referred by existing customer');
+  ELSE
+    RAISE NOTICE 'Skipping CRM leads — table does not exist';
+  END IF;
 
-  -- Contacts (uses: name, email, phone, company_name)
-  INSERT INTO crm_contacts (id, company_id, name, email, phone, company_name) VALUES
-    (v_contact_1, v_company_id, 'John Doe',      'john@acme.com',       '+1-555-0301', 'Acme Corp'),
-    (v_contact_2, v_company_id, 'Jane Wilson',   'jane@widget.co',      '+1-555-0302', 'Widget Co'),
-    (v_contact_3, v_company_id, 'Mike Johnson',  'mike@bigcorp.com',    '+1-555-0303', 'BigCorp Ltd');
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'crm_contacts') THEN
+    -- Contacts (uses: name, email, phone, company_name)
+    INSERT INTO crm_contacts (id, company_id, name, email, phone, company_name) VALUES
+      (v_contact_1, v_company_id, 'John Doe',      'john@acme.com',       '+1-555-0301', 'Acme Corp'),
+      (v_contact_2, v_company_id, 'Jane Wilson',   'jane@widget.co',      '+1-555-0302', 'Widget Co'),
+      (v_contact_3, v_company_id, 'Mike Johnson',  'mike@bigcorp.com',    '+1-555-0303', 'BigCorp Ltd');
+  ELSE
+    RAISE NOTICE 'Skipping CRM contacts — table does not exist';
+  END IF;
 
-  -- Deals (uses: title, value, stage, probability, contact_id, contact_name, expected_close_date)
-  INSERT INTO crm_deals (id, company_id, title, value, stage, probability, contact_id, contact_name, expected_close_date) VALUES
-    (v_deal_1, v_company_id, 'Acme Enterprise Deal',    25000, 'proposal',    30, v_contact_1, 'John Doe',    (now() + interval '30 days')::date),
-    (v_deal_2, v_company_id, 'Widget Annual Contract',  12000, 'negotiation', 50, v_contact_2, 'Jane Wilson', (now() + interval '15 days')::date);
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'crm_deals') THEN
+    -- Deals (uses: title, value, stage, probability, contact_id, contact_name, expected_close_date)
+    INSERT INTO crm_deals (id, company_id, title, value, stage, probability, contact_id, contact_name, expected_close_date) VALUES
+      (v_deal_1, v_company_id, 'Acme Enterprise Deal',    25000, 'proposal',    30, v_contact_1, 'John Doe',    (now() + interval '30 days')::date),
+      (v_deal_2, v_company_id, 'Widget Annual Contract',  12000, 'negotiation', 50, v_contact_2, 'Jane Wilson', (now() + interval '15 days')::date);
+  ELSE
+    RAISE NOTICE 'Skipping CRM deals — table does not exist';
+  END IF;
 
-  -- Activities (uses: type, title, description, due_date, status, related_type, related_id)
-  INSERT INTO crm_activities (company_id, type, title, description, due_date, status, related_type, related_id) VALUES
-    (v_company_id, 'task', 'Follow-up call with Acme',    'Discuss pricing options and timeline',  (now() - interval '2 days')::date, 'completed', 'deal',    v_deal_1),
-    (v_company_id, 'task', 'Send proposal to Widget Co',  'Prepare and send revised proposal v2',  (now() - interval '1 day')::date,  'completed', 'deal',    v_deal_2),
-    (v_company_id, 'task', 'BigCorp initial meeting',     'Discovery call to assess requirements', (now() + interval '3 days')::date, 'pending',   'contact', v_contact_3);
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'crm_activities') THEN
+    -- Activities (uses: type, title, description, due_date, status, related_type, related_id)
+    INSERT INTO crm_activities (company_id, type, title, description, due_date, status, related_type, related_id) VALUES
+      (v_company_id, 'task', 'Follow-up call with Acme',    'Discuss pricing options and timeline',  (now() - interval '2 days')::date, 'completed', 'deal',    v_deal_1),
+      (v_company_id, 'task', 'Send proposal to Widget Co',  'Prepare and send revised proposal v2',  (now() - interval '1 day')::date,  'completed', 'deal',    v_deal_2),
+      (v_company_id, 'task', 'BigCorp initial meeting',     'Discovery call to assess requirements', (now() + interval '3 days')::date, 'pending',   'contact', v_contact_3);
+  ELSE
+    RAISE NOTICE 'Skipping CRM activities — table does not exist';
+  END IF;
 
   -- ─────────────────────────────────────────────────────────────
   -- STORE MODULE
