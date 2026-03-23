@@ -81,29 +81,29 @@ CardLink is a comprehensive, multi-module SaaS platform designed for small-to-me
 ### Installation
 
 ```bash
-# 1  Clone the repository
+# 1. Clone the repository
 git clone https://github.com/martinwong68/Cardlink.git
 cd Cardlink/cardlink
 
-# 2  Install dependencies
+# 2. Install dependencies
 npm install
 
-# 3  Configure environment
+# 3. Configure environment
 cp .env.example .env.local
 #    Fill in your Supabase and (optionally) Stripe / AI keys
 
-# 4  Apply database migrations
+# 4. Apply database migrations
 #    In Supabase Dashboard → SQL Editor, run each file in
 #    supabase/migrations/ in filename order.
 #    Or use Supabase CLI: supabase db push
 
-# 5  Seed subscription plans (required)
+# 5. Seed subscription plans (required)
 #    Run supabase/migrations/20260318_005_seed_subscription_plans.sql
 
-# 6  (Optional) Seed demo data
+# 6. (Optional) Seed demo data
 node scripts/seed-trial-data.mjs demo@cardlink.test
 
-# 7  Start the dev server
+# 7. Start the dev server
 npm run dev
 #    Open http://localhost:3000
 ```
