@@ -30,10 +30,13 @@ export type InvoiceRow = {
   client_email: string | null;
   issue_date: string;
   due_date: string;
-  status: "draft" | "sent" | "paid" | "overdue";
+  status: "draft" | "sent" | "paid" | "overdue" | "partially_paid";
   total: number;
   tax: number;
   currency: string;
+  payment_terms: string | null;
+  amount_paid: number;
+  balance_due: number;
 };
 
 export type ContactRow = {
@@ -87,4 +90,115 @@ export type CurrencyRow = {
   symbol: string;
   exchange_rate: number;
   last_updated: string;
+};
+
+/* ── Phase-1 new types ─────────────────────────────────────── */
+
+export type VendorBillRow = {
+  id: string;
+  bill_number: string;
+  vendor_id: string | null;
+  vendor_name: string;
+  vendor_email: string | null;
+  issue_date: string;
+  due_date: string;
+  status: "draft" | "approved" | "partially_paid" | "paid" | "overdue" | "voided";
+  subtotal: number;
+  tax: number;
+  total: number;
+  amount_paid: number;
+  balance_due: number;
+  currency: string;
+  payment_terms: string | null;
+  notes: string | null;
+  reference: string | null;
+};
+
+export type VendorBillItemRow = {
+  id: string;
+  bill_id: string;
+  description: string;
+  quantity: number;
+  unit_price: number;
+  tax_rate: number;
+  amount: number;
+  account_id: string | null;
+};
+
+export type PaymentRow = {
+  id: string;
+  payment_number: string;
+  payment_type: "received" | "made";
+  related_type: "invoice" | "vendor_bill";
+  related_id: string;
+  contact_id: string | null;
+  amount: number;
+  payment_method: "cash" | "bank_transfer" | "credit_card" | "cheque" | "other";
+  payment_date: string;
+  reference: string | null;
+  notes: string | null;
+  currency: string;
+  exchange_rate: number;
+  transaction_id: string | null;
+};
+
+export type BankAccountRow = {
+  id: string;
+  account_name: string;
+  account_number: string | null;
+  bank_name: string | null;
+  currency: string;
+  ledger_account_id: string | null;
+  opening_balance: number;
+  current_balance: number;
+  is_active: boolean;
+};
+
+export type BankTransactionRow = {
+  id: string;
+  bank_account_id: string;
+  transaction_date: string;
+  description: string;
+  amount: number;
+  reference: string | null;
+  source: "manual" | "import" | "feed";
+  is_reconciled: boolean;
+  matched_transaction_id: string | null;
+};
+
+export type BankReconciliationRow = {
+  id: string;
+  bank_account_id: string;
+  statement_date: string;
+  statement_balance: number;
+  ledger_balance: number;
+  difference: number;
+  status: "in_progress" | "completed";
+  matched_count: number;
+  unmatched_count: number;
+};
+
+export type FiscalYearRow = {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  status: "open" | "closed" | "locked";
+};
+
+export type FiscalPeriodRow = {
+  id: string;
+  fiscal_year_id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  status: "open" | "closed" | "locked";
+  closed_by: string | null;
+  closed_at: string | null;
+};
+
+export type AgingBucket = {
+  range: string;
+  amount: number;
+  count: number;
 };
