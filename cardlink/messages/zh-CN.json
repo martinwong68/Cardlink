@@ -2479,13 +2479,46 @@
     "quickActions": {
       "recordSale": "记录销售",
       "checkBalance": "查看余额",
-      "whatsOverdue": "有什么逾期？"
+      "whatsOverdue": "有什么逾期？",
+      "uploadAccounting": "上传会计数据",
+      "uploadInventory": "上传库存列表",
+      "uploadContacts": "上传联系人",
+      "createInvoice": "创建发票",
+      "checkInventory": "检查库存水平",
+      "dailyReview": "运行每日检查",
+      "monthlyAudit": "运行每月审计",
+      "annualReview": "运行年度审查"
     },
     "time": {
       "justNow": "刚刚",
       "minsAgo": "{count} 分钟前",
       "hoursAgo": "{count} 小时前",
       "daysAgo": "{count} 天前"
+    },
+    "agentModes": {
+      "chat": "聊天",
+      "setup": "设置",
+      "operations": "操作",
+      "review": "审查"
+    },
+    "emptyTitle_chat": "你好！我是你的AI商业助手。",
+    "emptyTitle_setup": "设置代理 — 导入你的业务数据",
+    "emptyTitle_operations": "操作代理 — 管理你的业务",
+    "emptyTitle_review": "审查代理 — 审计你的业务",
+    "emptyDesc_chat": "告诉我今天发生了什么，或者问我关于你业务的任何问题。",
+    "emptyDesc_setup": "上传你的业务文档（会计、库存、联系人），我会帮你设置你的商店。",
+    "emptyDesc_operations": "告诉我你需要做什么，我会跨所有业务模块处理。",
+    "emptyDesc_review": "我可以对你的业务进行每日、每月或每年的审查，并提供专业建议。",
+    "inputPlaceholder_chat": "输入消息...",
+    "inputPlaceholder_setup": "描述你上传的数据或在此粘贴...",
+    "inputPlaceholder_operations": "告诉我要执行什么操作...",
+    "inputPlaceholder_review": "询问你的业务表现...",
+    "uploadFile": "上传业务文档",
+    "reviewTrigger": "运行{type}业务审查",
+    "reviewButtons": {
+      "daily": "运行每日检查",
+      "monthly": "运行每月审计",
+      "annual": "运行年度审查"
     }
   },
   "aiActionCard": {

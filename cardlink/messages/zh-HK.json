@@ -2479,13 +2479,46 @@
     "quickActions": {
       "recordSale": "記錄銷售",
       "checkBalance": "查看餘額",
-      "whatsOverdue": "有咩逾期？"
+      "whatsOverdue": "有咩過期？",
+      "uploadAccounting": "上傳會計資料",
+      "uploadInventory": "上傳庫存列表",
+      "uploadContacts": "上傳聯絡人",
+      "createInvoice": "建立發票",
+      "checkInventory": "檢查庫存水平",
+      "dailyReview": "運行每日檢查",
+      "monthlyAudit": "運行每月審計",
+      "annualReview": "運行年度審查"
     },
     "time": {
       "justNow": "啱啱",
       "minsAgo": "{count} 分鐘前",
       "hoursAgo": "{count} 小時前",
       "daysAgo": "{count} 日前"
+    },
+    "agentModes": {
+      "chat": "對話",
+      "setup": "設定",
+      "operations": "操作",
+      "review": "審查"
+    },
+    "emptyTitle_chat": "你好！我係你嘅AI商業助手。",
+    "emptyTitle_setup": "設定代理 — 導入你嘅業務資料",
+    "emptyTitle_operations": "操作代理 — 管理你嘅業務",
+    "emptyTitle_review": "審查代理 — 審計你嘅業務",
+    "emptyDesc_chat": "話我知今日發生咗咩事，或者問我任何關於你業務嘅問題。",
+    "emptyDesc_setup": "上傳你嘅業務文件（會計、庫存、聯絡人），我會幫你設定你嘅商店。",
+    "emptyDesc_operations": "話我知你需要做咩，我會跨所有業務模組處理。",
+    "emptyDesc_review": "我可以對你嘅業務進行每日、每月或每年嘅審查，並提供專業建議。",
+    "inputPlaceholder_chat": "輸入訊息...",
+    "inputPlaceholder_setup": "描述你上傳嘅數據或喺度貼上...",
+    "inputPlaceholder_operations": "話我知要執行咩操作...",
+    "inputPlaceholder_review": "詢問你嘅業務表現...",
+    "uploadFile": "上傳業務文件",
+    "reviewTrigger": "運行{type}業務審查",
+    "reviewButtons": {
+      "daily": "運行每日檢查",
+      "monthly": "運行每月審計",
+      "annual": "運行年度審查"
     }
   },
   "aiActionCard": {

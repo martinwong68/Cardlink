@@ -12,6 +12,14 @@ import {
   Paperclip,
   Trash2,
   MessageSquare,
+  Upload,
+  Wrench,
+  CalendarCheck,
+  MessageCircle,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -25,11 +33,14 @@ import UpgradePrompt from "@/components/business/UpgradePrompt";
 import AiLimitPrompt from "@/components/business/AiLimitPrompt";
 
 /* ── Types ── */
+type AgentMode = "chat" | "setup" | "operations" | "review";
+
 type Conversation = {
   id: string;
   title: string;
   model_used: string;
   message_count: number;
+  agent_mode?: AgentMode;
   created_at: string;
   updated_at: string;
 };
@@ -44,11 +55,20 @@ type Message = {
   created_at: string;
 };
 
+type ReviewType = "daily" | "monthly" | "annual";
+
 const MODEL_OPTIONS = [
   { value: "gemini-flash", label: "Gemini Flash" },
   { value: "claude-sonnet", label: "Claude Sonnet" },
   { value: "gpt-4o", label: "GPT-4o" },
 ] as const;
+
+const AGENT_MODES: { value: AgentMode; icon: typeof Bot; labelKey: string }[] = [
+  { value: "chat", icon: MessageCircle, labelKey: "agentModes.chat" },
+  { value: "setup", icon: Upload, labelKey: "agentModes.setup" },
+  { value: "operations", icon: Wrench, labelKey: "agentModes.operations" },
+  { value: "review", icon: CalendarCheck, labelKey: "agentModes.review" },
+];
 
 export default function BusinessAiPage() {
   const t = useTranslations("businessAi");
@@ -65,6 +85,12 @@ export default function BusinessAiPage() {
   const [loadingConvos, setLoadingConvos] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  /* ── Agent mode state ── */
+  const [agentMode, setAgentMode] = useState<AgentMode>("chat");
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; content: string } | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   /* ── Plan enforcement ── */
   const [aiAccess, setAiAccess] = useState<PlanCheckResult | null>(null);
@@ -162,6 +188,7 @@ export default function BusinessAiPage() {
         user_id: user.user.id,
         title: t("newChat"),
         model_used: model,
+        agent_mode: agentMode,
       })
       .select()
       .single();
@@ -235,26 +262,45 @@ export default function BusinessAiPage() {
       { role: "user" as const, content: text },
     ];
 
-    // Call real AI API
+    // Determine which endpoint to call based on agent mode
+    const currentMode = activeConvo?.agent_mode ?? agentMode;
+    let apiUrl = "/api/business/ai/chat";
+    type ChatApiBody = { messages: typeof chatHistory; model: string; includeBusinessContext: boolean };
+    type SetupApiBody = { messages: typeof chatHistory; model: string; fileContent?: string; fileName?: string };
+    type OpsApiBody = { messages: typeof chatHistory; model: string };
+    let apiBody: ChatApiBody | SetupApiBody | OpsApiBody = {
+      messages: chatHistory,
+      model,
+      includeBusinessContext: true,
+    };
+
+    if (currentMode === "setup") {
+      apiUrl = "/api/business/ai/setup";
+      apiBody = {
+        messages: chatHistory,
+        model,
+        ...(uploadedFile ? { fileContent: uploadedFile.content, fileName: uploadedFile.name } : {}),
+      };
+    } else if (currentMode === "operations") {
+      apiUrl = "/api/business/ai/operations";
+      apiBody = { messages: chatHistory, model };
+    }
+
+    // Call AI API
     let aiContent: string;
     try {
-      const response = await fetch("/api/business/ai/chat", {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-cardlink-app-scope": "business",
         },
-        body: JSON.stringify({
-          messages: chatHistory,
-          model,
-          includeBusinessContext: true,
-        }),
+        body: JSON.stringify(apiBody),
       });
 
       if (!response.ok) {
         const errBody = (await response.json().catch(() => ({}))) as { error?: string; reason?: string };
         aiContent = errBody.error ?? t("aiError");
-        // If limit reached, update balance state
         if (response.status === 429) {
           setAiBalance({ allowed: false, reason: errBody.reason ?? "ai_limit_reached" });
         }
@@ -265,6 +311,9 @@ export default function BusinessAiPage() {
     } catch {
       aiContent = t("aiError");
     }
+
+    // Clear uploaded file after first use
+    if (uploadedFile) setUploadedFile(null);
 
     // Insert AI response
     const { data: aiMsg } = await supabase
@@ -321,6 +370,88 @@ export default function BusinessAiPage() {
     }
   };
 
+  /* ── File upload handler ── */
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setUploadedFile({
+        name: file.name,
+        content: reader.result as string,
+      });
+    };
+    reader.readAsText(file);
+
+    // Reset input so the same file can be re-uploaded
+    e.target.value = "";
+  };
+
+  /* ── Trigger business review ── */
+  const handleTriggerReview = async (reviewType: ReviewType) => {
+    if (!companyId || reviewLoading) return;
+    setReviewLoading(true);
+
+    try {
+      const response = await fetch("/api/business/ai/review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-cardlink-app-scope": "business",
+        },
+        body: JSON.stringify({ reviewType, model }),
+      });
+
+      if (!response.ok) {
+        const errBody = (await response.json().catch(() => ({}))) as { error?: string };
+        // Show as assistant message if we have an active convo
+        if (activeConvoId) {
+          const content = errBody.error ?? t("aiError");
+          const { data: aiMsg } = await supabase
+            .from("ai_messages")
+            .insert({ conversation_id: activeConvoId, role: "assistant", content })
+            .select()
+            .single();
+          if (aiMsg) setMessages((prev) => [...prev, aiMsg as Message]);
+        }
+      } else {
+        const data = (await response.json()) as { content?: string };
+        const content = data.content ?? t("aiError");
+        // Create convo if needed
+        let convoId = activeConvoId;
+        if (!convoId) {
+          await handleNewChat();
+          convoId = activeConvoId;
+        }
+        if (convoId) {
+          // Insert the review trigger message
+          const { data: userMsg } = await supabase
+            .from("ai_messages")
+            .insert({
+              conversation_id: convoId,
+              role: "user",
+              content: t("reviewTrigger", { type: reviewType }),
+            })
+            .select()
+            .single();
+          if (userMsg) setMessages((prev) => [...prev, userMsg as Message]);
+
+          // Insert the review result
+          const { data: aiMsg } = await supabase
+            .from("ai_messages")
+            .insert({ conversation_id: convoId, role: "assistant", content })
+            .select()
+            .single();
+          if (aiMsg) setMessages((prev) => [...prev, aiMsg as Message]);
+        }
+      }
+    } catch {
+      // silent
+    }
+    setReviewLoading(false);
+  };
+
   /* ── Relative time ── */
   const relativeTime = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
@@ -333,14 +464,56 @@ export default function BusinessAiPage() {
     return t("time.daysAgo", { count: days });
   };
 
-  /* ── Quick actions ── */
-  const quickActions = [
-    { key: "recordSale", label: t("quickActions.recordSale") },
-    { key: "checkBalance", label: t("quickActions.checkBalance") },
-    { key: "whatsOverdue", label: t("quickActions.whatsOverdue") },
-  ];
+  /* ── Quick actions (mode-aware) ── */
+  const quickActions = useMemo(() => {
+    const currentMode = activeConvo?.agent_mode ?? agentMode;
+    switch (currentMode) {
+      case "setup":
+        return [
+          { key: "uploadAccounting", label: t("quickActions.uploadAccounting") },
+          { key: "uploadInventory", label: t("quickActions.uploadInventory") },
+          { key: "uploadContacts", label: t("quickActions.uploadContacts") },
+        ];
+      case "operations":
+        return [
+          { key: "recordSale", label: t("quickActions.recordSale") },
+          { key: "createInvoice", label: t("quickActions.createInvoice") },
+          { key: "checkInventory", label: t("quickActions.checkInventory") },
+        ];
+      case "review":
+        return [
+          { key: "dailyReview", label: t("quickActions.dailyReview") },
+          { key: "monthlyAudit", label: t("quickActions.monthlyAudit") },
+          { key: "annualReview", label: t("quickActions.annualReview") },
+        ];
+      default:
+        return [
+          { key: "recordSale", label: t("quickActions.recordSale") },
+          { key: "checkBalance", label: t("quickActions.checkBalance") },
+          { key: "whatsOverdue", label: t("quickActions.whatsOverdue") },
+        ];
+    }
+  }, [agentMode, activeConvo, t]);
 
-  const handleQuickAction = (label: string) => {
+  const handleQuickAction = (label: string, key?: string) => {
+    // Handle review triggers directly
+    if (key === "dailyReview") {
+      void handleTriggerReview("daily");
+      return;
+    }
+    if (key === "monthlyAudit") {
+      void handleTriggerReview("monthly");
+      return;
+    }
+    if (key === "annualReview") {
+      void handleTriggerReview("annual");
+      return;
+    }
+    // Handle file upload triggers
+    if (key === "uploadAccounting" || key === "uploadInventory" || key === "uploadContacts") {
+      fileInputRef.current?.click();
+      return;
+    }
     setInputText(label);
     if (textareaRef.current) {
       textareaRef.current.focus();
@@ -498,6 +671,28 @@ export default function BusinessAiPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Agent mode tabs */}
+            <div className="hidden md:flex items-center gap-1 bg-gray-50 rounded-lg p-0.5">
+              {AGENT_MODES.map((mode) => {
+                const Icon = mode.icon;
+                const isActive = (activeConvo?.agent_mode ?? agentMode) === mode.value;
+                return (
+                  <button
+                    key={mode.value}
+                    onClick={() => setAgentMode(mode.value)}
+                    title={t(mode.labelKey)}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition ${
+                      isActive
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    <Icon className="h-3 w-3" />
+                    <span className="hidden lg:inline">{t(mode.labelKey)}</span>
+                  </button>
+                );
+              })}
+            </div>
             <select
               value={model}
               onChange={(e) => handleModelChange(e.target.value)}
@@ -518,6 +713,28 @@ export default function BusinessAiPage() {
           </div>
         </div>
 
+        {/* Mobile agent mode selector */}
+        <div className="flex md:hidden items-center gap-1 px-4 py-2 border-b border-gray-50 bg-gray-50/50 overflow-x-auto">
+          {AGENT_MODES.map((mode) => {
+            const Icon = mode.icon;
+            const isActive = (activeConvo?.agent_mode ?? agentMode) === mode.value;
+            return (
+              <button
+                key={mode.value}
+                onClick={() => setAgentMode(mode.value)}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium whitespace-nowrap transition ${
+                  isActive
+                    ? "bg-white text-indigo-700 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <Icon className="h-3 w-3" />
+                {t(mode.labelKey)}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {!activeConvoId ? (
@@ -527,22 +744,48 @@ export default function BusinessAiPage() {
                 <Bot className="h-8 w-8 text-indigo-400" />
               </div>
               <p className="text-sm text-gray-700 font-medium mb-1">
-                {t("emptyTitle")}
+                {t(`emptyTitle_${agentMode}`)}
               </p>
               <p className="text-xs text-gray-400 max-w-xs mb-6">
-                {t("emptyDesc")}
+                {t(`emptyDesc_${agentMode}`)}
               </p>
-              <div className="flex flex-wrap justify-center gap-2">
-                {quickActions.map((qa) => (
-                  <button
-                    key={qa.key}
-                    onClick={() => handleQuickAction(qa.label)}
-                    className="app-secondary-btn px-3 py-1.5 text-xs"
-                  >
-                    {qa.label}
-                  </button>
-                ))}
-              </div>
+
+              {/* Review mode: show review trigger buttons */}
+              {agentMode === "review" ? (
+                <div className="flex flex-col gap-3 w-full max-w-sm">
+                  {(["daily", "monthly", "annual"] as ReviewType[]).map((rt) => (
+                    <button
+                      key={rt}
+                      onClick={() => handleTriggerReview(rt)}
+                      disabled={reviewLoading}
+                      className="app-secondary-btn flex items-center justify-center gap-2 px-4 py-3 text-sm"
+                    >
+                      {reviewLoading ? (
+                        <Clock className="h-4 w-4 animate-spin" />
+                      ) : rt === "daily" ? (
+                        <CheckCircle className="h-4 w-4" />
+                      ) : rt === "monthly" ? (
+                        <FileText className="h-4 w-4" />
+                      ) : (
+                        <CalendarCheck className="h-4 w-4" />
+                      )}
+                      {t(`reviewButtons.${rt}`)}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-wrap justify-center gap-2">
+                  {quickActions.map((qa) => (
+                    <button
+                      key={qa.key}
+                      onClick={() => handleQuickAction(qa.label, qa.key)}
+                      className="app-secondary-btn px-3 py-1.5 text-xs"
+                    >
+                      {qa.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ) : loadingMessages ? (
             <div className="flex items-center justify-center py-12">
@@ -559,7 +802,7 @@ export default function BusinessAiPage() {
                 {quickActions.map((qa) => (
                   <button
                     key={qa.key}
-                    onClick={() => handleQuickAction(qa.label)}
+                    onClick={() => handleQuickAction(qa.label, qa.key)}
                     className="app-secondary-btn px-3 py-1.5 text-xs"
                   >
                     {qa.label}
@@ -610,12 +853,42 @@ export default function BusinessAiPage() {
                 used={aiBalance.used ?? 0}
               />
             ) : (
+            <>
+            {/* File upload indicator */}
+            {uploadedFile && (
+              <div className="flex items-center gap-2 mb-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
+                <FileText className="h-3.5 w-3.5" />
+                <span className="truncate flex-1">{uploadedFile.name}</span>
+                <button
+                  onClick={() => setUploadedFile(null)}
+                  className="p-0.5 hover:bg-indigo-100 rounded"
+                >
+                  <XCircle className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
             <div className="flex items-end gap-2">
-              {/* Attachment button (disabled) */}
+              {/* File upload button — enabled in setup mode */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.tsv,.txt,.json,.xml"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
               <button
-                disabled
-                title={t("attachmentComingSoon")}
-                className="p-2 rounded-lg text-gray-300 cursor-not-allowed"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={(activeConvo?.agent_mode ?? agentMode) !== "setup"}
+                title={
+                  (activeConvo?.agent_mode ?? agentMode) === "setup"
+                    ? t("uploadFile")
+                    : t("attachmentComingSoon")
+                }
+                className={`p-2 rounded-lg transition ${
+                  (activeConvo?.agent_mode ?? agentMode) === "setup"
+                    ? "text-indigo-600 hover:bg-indigo-50"
+                    : "text-gray-300 cursor-not-allowed"
+                }`}
               >
                 <Paperclip className="h-4 w-4" />
               </button>
@@ -626,7 +899,7 @@ export default function BusinessAiPage() {
                 value={inputText}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={t("inputPlaceholder")}
+                placeholder={t(`inputPlaceholder_${(activeConvo?.agent_mode ?? agentMode)}`)}
                 rows={1}
                 className="flex-1 resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-300 max-h-[120px]"
               />
@@ -644,6 +917,7 @@ export default function BusinessAiPage() {
                 <Send className="h-4 w-4" />
               </button>
             </div>
+            </>
             )}
           </div>
         )}
