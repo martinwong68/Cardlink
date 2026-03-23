@@ -204,13 +204,14 @@ export async function createVendorBillPaidJournalEntry(
   billId: string,
   amount: number,
   billNumber: string,
+  paymentId?: string,
 ) {
   const cashAccount = await ensureAccount(supabase, orgId, "1100", "Cash / Bank", "asset");
   const payableAccount = await ensureAccount(supabase, orgId, "2100", "Accounts Payable", "liability");
 
   if (!cashAccount || !payableAccount) return null;
 
-  const idempotencyKey = `bill-payment-${billId}-${Date.now()}`;
+  const idempotencyKey = paymentId ? `bill-payment-${paymentId}` : `bill-payment-${billId}`;
 
   const { data: tx, error: txErr } = await supabase
     .from("transactions")

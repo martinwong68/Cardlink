@@ -210,7 +210,7 @@ export async function POST(request: Request) {
   } else {
     txId = await createVendorBillPaidJournalEntry(
       supabase, guard.context.organizationId, guard.context.userId,
-      relatedId, round2(amount), documentNumber,
+      relatedId, round2(amount), documentNumber, payment.id,
     );
   }
 
