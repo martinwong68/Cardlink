@@ -98,7 +98,7 @@ export async function POST(request: Request) {
         .update({
           name: customer_name,
           phone: customer_phone || null,
-          total_bookings: (existingCustomer as Record<string, unknown>).total_bookings as number + 1,
+          total_bookings: ((existingCustomer as Record<string, unknown>).total_bookings as number) + 1,
           last_visit_date: date,
           updated_at: new Date().toISOString(),
         })

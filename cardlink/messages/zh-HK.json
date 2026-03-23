@@ -1682,10 +1682,10 @@
         "price": "價格",
         "category": "分類",
         "maxConcurrent": "最大同時預約數",
-        "bufferBefore": "前置缓冲（分钟）",
-        "bufferAfter": "后置缓冲（分钟）",
-        "minNotice": "最短提前通知（小时）",
-        "maxAdvance": "最长预约天数"
+        "bufferBefore": "前置緩衝（分鐘）",
+        "bufferAfter": "後置緩衝（分鐘）",
+        "minNotice": "最短提前通知（小時）",
+        "maxAdvance": "最長預約天數"
       },
       "saving": "儲存中...",
       "save": "儲存",
