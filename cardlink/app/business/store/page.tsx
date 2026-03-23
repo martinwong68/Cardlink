@@ -17,6 +17,9 @@ import {
   Box,
   Layers,
   DollarSign,
+  ShoppingCart,
+  Users,
+  ClipboardList,
 } from "lucide-react";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
@@ -54,6 +57,28 @@ type DiscountRow = {
   end_date: string | null;
 };
 
+type OrderRow = {
+  id: string;
+  total: number;
+  status: string;
+  payment_status: string;
+  payment_method: string | null;
+  created_at: string;
+};
+
+type ReportSummary = {
+  total_orders: number;
+  completed_orders: number;
+  pending_orders: number;
+  cancelled_orders: number;
+  refunded_orders: number;
+  total_revenue: number;
+  total_refunds: number;
+  net_revenue: number;
+  avg_order_value: number;
+  total_customers: number;
+};
+
 export default function BusinessStorePage() {
   const t = useTranslations("businessStore");
   const { companyId, loading: companyLoading, supabase } = useActiveCompany();
@@ -62,6 +87,7 @@ export default function BusinessStorePage() {
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
   const [discounts, setDiscounts] = useState<DiscountRow[]>([]);
+  const [reportSummary, setReportSummary] = useState<ReportSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -80,6 +106,20 @@ export default function BusinessStorePage() {
       setProducts((productsRes.data as ProductRow[]) ?? []);
       setCategories((categoriesRes.data as CategoryRow[]) ?? []);
       setDiscounts((discountsRes.data as DiscountRow[]) ?? []);
+
+      // Load order metrics via API
+      try {
+        const reportRes = await fetch("/api/business/store/reports?type=summary", {
+          headers: { "x-cardlink-app-scope": "business" },
+          cache: "no-store",
+        });
+        if (reportRes.ok) {
+          const reportData = await reportRes.json();
+          setReportSummary(reportData.summary as ReportSummary);
+        }
+      } catch {
+        // Store orders API may not be available yet
+      }
     } catch {
       // Tables may not exist yet — show empty state
     }
@@ -172,6 +212,54 @@ export default function BusinessStorePage() {
           </Link>
         </div>
       </div>
+
+      {/* Order Revenue Summary */}
+      {reportSummary && reportSummary.total_orders > 0 && (
+        <div className="app-card p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <ShoppingCart className="h-4 w-4 text-indigo-500" />
+            <span className="text-sm font-semibold text-gray-700">{t("dashboard.salesOverview")}</span>
+          </div>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-800">{reportSummary.total_orders}</p>
+              <p className="text-[10px] text-gray-500">{t("dashboard.totalOrders")}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-600">${reportSummary.net_revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p className="text-[10px] text-gray-500">{t("dashboard.netRevenue")}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-800">${reportSummary.avg_order_value.toFixed(2)}</p>
+              <p className="text-[10px] text-gray-500">{t("dashboard.avgOrder")}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            <div className="rounded-xl bg-emerald-50 p-2 text-center">
+              <p className="text-sm font-bold text-emerald-700">{reportSummary.completed_orders}</p>
+              <p className="text-[9px] text-emerald-600">{t("dashboard.completedLabel")}</p>
+            </div>
+            <div className="rounded-xl bg-amber-50 p-2 text-center">
+              <p className="text-sm font-bold text-amber-700">{reportSummary.pending_orders}</p>
+              <p className="text-[9px] text-amber-600">{t("dashboard.pendingLabel")}</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 p-2 text-center">
+              <p className="text-sm font-bold text-gray-500">{reportSummary.cancelled_orders}</p>
+              <p className="text-[9px] text-gray-400">{t("dashboard.cancelledLabel")}</p>
+            </div>
+            <div className="rounded-xl bg-rose-50 p-2 text-center">
+              <p className="text-sm font-bold text-rose-700">{reportSummary.refunded_orders}</p>
+              <p className="text-[9px] text-rose-600">{t("dashboard.refundedLabel")}</p>
+            </div>
+          </div>
+          {reportSummary.total_customers > 0 && (
+            <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+              <Users className="h-3.5 w-3.5" />
+              <span>{t("dashboard.totalCustomers", { count: reportSummary.total_customers })}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3">

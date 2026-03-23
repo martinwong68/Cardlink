@@ -12,6 +12,9 @@ import {
   Truck,
   ChevronRight,
   Loader2,
+  ClipboardList,
+  Users,
+  Ticket,
 } from "lucide-react";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 import StorePreview from "@/components/business/StorePreview";
@@ -85,6 +88,9 @@ export default function StoreManagementPage() {
   }
 
   const quickActions = [
+    { key: "orders" as const, icon: ClipboardList, color: "bg-amber-50 text-amber-600", href: "/business/store/orders" },
+    { key: "customers" as const, icon: Users, color: "bg-purple-50 text-purple-600", href: "/business/store/customers" },
+    { key: "coupons" as const, icon: Ticket, color: "bg-rose-50 text-rose-600", href: "/business/store/coupons" },
     { key: "setup" as const, icon: SettingsIcon, color: "bg-indigo-50 text-indigo-600", href: "/business/store/setup" },
     { key: "categories" as const, icon: FolderOpen, color: "bg-teal-50 text-teal-600", href: "/business/store/categories" },
     { key: "products" as const, icon: Package, color: "bg-blue-50 text-blue-600", href: "/business/store/products" },
