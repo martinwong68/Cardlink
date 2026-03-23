@@ -169,7 +169,7 @@ Cardlink's booking module currently consists of:
 | H7 | Invoice generation for bookings | Amelia, SimplyBook | ❌ | No invoice creation for completed appointments |
 | H8 | Tax calculation on booking | Amelia | ❌ | No tax configuration for services |
 | H9 | Refund processing | Cal.com, Amelia | ❌ | No refund workflow |
-| H10 | POS integration for walk-in payment | — (Cardlink opportunity) | ⚠️ | `booking-store-sync.ts` syncs to store but no POS payment trigger |
+| H10 | POS (Point of Sale) integration for walk-in payment | — (Cardlink opportunity) | ⚠️ | `booking-store-sync.ts` syncs to store but no POS payment trigger |
 
 ### Module I — Customer / Client Management
 
