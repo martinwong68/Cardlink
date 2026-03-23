@@ -24,11 +24,36 @@ export async function PATCH(
   if (body.crm_company_name !== undefined) updates.company_name = body.crm_company_name;
   if (body.job_title !== undefined) updates.position = body.job_title;
   if (body.notes !== undefined) updates.notes = body.notes;
+  if (body.address_street !== undefined) updates.address_street = body.address_street;
+  if (body.address_city !== undefined) updates.address_city = body.address_city;
+  if (body.address_state !== undefined) updates.address_state = body.address_state;
+  if (body.address_country !== undefined) updates.address_country = body.address_country;
+  if (body.address_postal_code !== undefined) updates.address_postal_code = body.address_postal_code;
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("crm_contacts")
     .update(updates)
+    .eq("id", id)
+    .eq("company_id", guard.context.activeCompanyId);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const guard = await requireBusinessActiveCompanyContext({ request });
+  if (!guard.ok) return guard.response;
+
+  const { id } = await params;
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("crm_contacts")
+    .delete()
     .eq("id", id)
     .eq("company_id", guard.context.activeCompanyId);
 

@@ -13,17 +13,13 @@ export async function PATCH(
   const body = await request.json();
 
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
-  if (body.title !== undefined) updates.name = body.title;
-  if (body.source !== undefined) updates.source = body.source;
-  if (body.status !== undefined) updates.status = body.status;
-  if (body.value !== undefined) updates.value = body.value;
-  if (body.notes !== undefined) updates.notes = body.notes;
-  if (body.email !== undefined) updates.email = body.email;
-  if (body.phone !== undefined) updates.phone = body.phone;
+  if (body.note_text !== undefined) updates.note_text = body.note_text;
+  if (body.tags !== undefined) updates.tags = body.tags;
+  if (body.reminder_date !== undefined) updates.reminder_date = body.reminder_date;
 
   const supabase = await createClient();
   const { error } = await supabase
-    .from("crm_leads")
+    .from("crm_notes")
     .update(updates)
     .eq("id", id)
     .eq("company_id", guard.context.activeCompanyId);
@@ -43,7 +39,7 @@ export async function DELETE(
 
   const supabase = await createClient();
   const { error } = await supabase
-    .from("crm_leads")
+    .from("crm_notes")
     .delete()
     .eq("id", id)
     .eq("company_id", guard.context.activeCompanyId);
