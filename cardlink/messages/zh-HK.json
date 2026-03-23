@@ -1762,7 +1762,12 @@
     "stats": {
       "activeEmployees": "在職員工",
       "pendingLeave": "待批假期申請",
-      "todayAttendance": "今日出勤"
+      "todayAttendance": "今日出勤",
+      "payrollDesc": "管理薪酬發放、扣款同津貼報告。",
+      "departmentsDesc": "透過部門同職位整理公司架構。",
+      "holidaysDesc": "追蹤公眾假期同公司日曆活動。",
+      "documentsDesc": "安全存儲員工合約、證件同證書。",
+      "reportsDesc": "生成人力分析同人事洞察報告。"
     },
     "employmentTypes": {
       "fullTime": "全職",
@@ -1787,7 +1792,15 @@
         "employmentType": "僱傭類型",
         "startDate": "入職日期",
         "salary": "薪金",
-        "salaryPeriod": "薪金週期"
+        "salaryPeriod": "薪金週期",
+        "address": "地址",
+        "nationalId": "身份證號碼 / 稅務編號",
+        "bankName": "銀行名稱",
+        "bankAccount": "銀行戶口號碼",
+        "emergencyContact": "緊急聯絡人",
+        "emergencyName": "聯絡人姓名",
+        "emergencyPhone": "聯絡人電話",
+        "emergencyRelation": "關係"
       },
       "salaryPeriods": {
         "monthly": "月薪",
@@ -1805,7 +1818,8 @@
         "terminated": "已解僱"
       },
       "toggleStatus": "切換狀態",
-      "confirmDelete": "確認刪除"
+      "confirmDelete": "確認刪除",
+      "step4": "附加資料"
     },
     "leave": {
       "title": "假期申請",
@@ -1825,12 +1839,14 @@
         "sick": "病假",
         "unpaid": "無薪假",
         "maternity": "產假",
-        "other": "其他"
+        "other": "其他",
+        "paternity": "侍產假"
       },
       "tabs": {
         "pending": "待批",
         "approved": "已批准",
-        "rejected": "已拒絕"
+        "rejected": "已拒絕",
+        "balances": "餘額"
       },
       "saving": "提交中...",
       "submit": "提交",
@@ -1838,7 +1854,10 @@
       "unknownEmployee": "未知員工",
       "days": "日",
       "approve": "批准",
-      "reject": "拒絕"
+      "reject": "拒絕",
+      "balancesEmpty": "今年尚未初始化假期配額。",
+      "initBalances": "初始化配額",
+      "balanceLeft": "剩餘"
     },
     "attendance": {
       "title": "出勤",
@@ -1875,6 +1894,96 @@
       "deductions": "扣款",
       "allowances": "津貼",
       "netPay": "淨薪"
+    },
+    "departments": {
+      "title": "部門",
+      "add": "新增",
+      "addTitle": "新增部門",
+      "editTitle": "編輯部門",
+      "fields": {
+        "name": "部門名稱",
+        "namePlaceholder": "例如：工程部",
+        "description": "描述"
+      },
+      "saving": "儲存中...",
+      "save": "儲存",
+      "emptyTitle": "尚無部門",
+      "emptyDesc": "新增您嘅第一個部門開始整理團隊。",
+      "confirmDelete": "確認刪除"
+    },
+    "holidays": {
+      "title": "公眾假期",
+      "add": "新增",
+      "addTitle": "新增假期",
+      "editTitle": "編輯假期",
+      "fields": {
+        "name": "假期名稱",
+        "namePlaceholder": "例如：農曆新年",
+        "date": "日期",
+        "recurring": "每年重覆"
+      },
+      "saving": "儲存中...",
+      "save": "儲存",
+      "emptyTitle": "尚無假期",
+      "emptyDesc": "為公司新增公眾假期。",
+      "confirmDelete": "確認刪除",
+      "recurring": "每年"
+    },
+    "documents": {
+      "title": "文件",
+      "add": "上傳",
+      "addTitle": "上傳文件",
+      "fields": {
+        "employee": "員工",
+        "name": "文件名稱",
+        "namePlaceholder": "例如：僱傭合約",
+        "docType": "文件類型",
+        "fileUrl": "檔案連結"
+      },
+      "types": {
+        "contract": "合約",
+        "id_document": "身份證明",
+        "certificate": "證書",
+        "payslip": "糧單",
+        "other": "其他"
+      },
+      "saving": "儲存中...",
+      "save": "上傳",
+      "emptyTitle": "尚無文件",
+      "emptyDesc": "上傳員工文件以安全存儲。",
+      "confirmDelete": "確認刪除",
+      "allEmployees": "所有員工"
+    },
+    "reports": {
+      "title": "人事報告",
+      "tabs": {
+        "headcount": "人數",
+        "attendance": "出勤",
+        "leave": "假期",
+        "payroll": "薪酬"
+      },
+      "headcount": {
+        "total": "員工總數",
+        "active": "在職",
+        "byDepartment": "按部門",
+        "byType": "按僱傭類型"
+      },
+      "attendance": {
+        "presentDays": "出勤日數",
+        "absentDays": "缺勤日數",
+        "lateDays": "遲到日數",
+        "totalHours": "總工時"
+      },
+      "leave": {
+        "entitlement": "配額",
+        "used": "已用",
+        "remaining": "剩餘",
+        "empty": "暫無假期餘額資料。請先初始化假期配額。"
+      },
+      "payroll": {
+        "totalNetPay": "淨薪總額",
+        "records": "記錄數"
+      }
     }
   },
   "businessStore": {
@@ -1887,14 +1996,206 @@
     "publishStore": "發佈商店",
     "unpublishStore": "取消發佈",
     "publishing": "更新中...",
-    "stats": { "products": "商品", "categories": "分類", "discounts": "優惠" },
-    "quickActions": { "setup": "商店設定", "setupDesc": "橫幅、名稱與營業時間", "categories": "分類", "categoriesDesc": "組織商品", "products": "商品", "productsDesc": "管理目錄", "discounts": "優惠", "discountsDesc": "促銷與折扣", "settings": "配送與付款", "settingsDesc": "運費與付款選項" },
-    "preview": { "title": "商店預覽", "noProducts": "暫無商品。", "noCategories": "暫無分類。", "allCategories": "全部", "discountBadge": "{value}% 折扣", "discountFixedBadge": "減 ${value}" },
-    "setup": { "title": "商店設定", "subtitle": "設定您的店面外觀與營業時間。", "step1Title": "品牌形象", "step2Title": "時間與主題", "bannerLabel": "商店橫幅", "bannerHint": "建議：1200×400px", "uploadBanner": "上傳橫幅", "changeBanner": "更換橫幅", "removeBanner": "移除", "storeNameLabel": "商店名稱", "storeNamePlaceholder": "我的商店", "descriptionLabel": "描述", "descriptionPlaceholder": "向顧客介紹您的商店...", "themeColorLabel": "主題色", "operatingHoursLabel": "營業時間", "days": { "monday": "星期一", "tuesday": "星期二", "wednesday": "星期三", "thursday": "星期四", "friday": "星期五", "saturday": "星期六", "sunday": "星期日" }, "closed": "休息", "open": "營業", "openTime": "開始", "closeTime": "結束", "save": "儲存", "saving": "儲存中...", "saved": "已儲存！", "error": "儲存失敗，請重試。", "back": "返回", "next": "下一步" },
-    "categories": { "title": "分類", "subtitle": "將商品組織到分類中。", "addCategory": "新增分類", "editCategory": "編輯分類", "nameLabel": "名稱", "namePlaceholder": "例如：電子產品", "descriptionLabel": "描述", "descriptionPlaceholder": "簡短分類描述...", "iconLabel": "圖示（表情符號）", "iconPlaceholder": "📦", "save": "儲存", "saving": "儲存中...", "cancel": "取消", "delete": "刪除", "deleteConfirm": "確定刪除此分類？", "deleteWarning": "此分類有 {count} 個商品，將變為未分類。", "confirmDelete": "確定刪除", "cancelDelete": "取消", "empty": "暫無分類。新增您的第一個分類。", "productCount": "{count} 個商品", "active": "啟用", "inactive": "停用", "saved": "分類已儲存！", "deleted": "分類已刪除！", "error": "發生錯誤，請重試。" },
-    "products": { "title": "商品", "subtitle": "管理您的商品目錄。", "addProduct": "新增商品", "editProduct": "編輯商品", "allCategories": "全部", "step1Title": "類型與基本資訊", "step2Title": "詳細資訊", "step3Title": "圖片與分類", "typePhysical": "實物商品", "typePhysicalDesc": "需要配送的商品", "typeService": "服務", "typeServiceDesc": "按時間計費", "typeDigital": "數碼商品", "typeDigitalDesc": "可下載內容", "nameLabel": "商品名稱", "namePlaceholder": "例如：無線耳機", "descriptionLabel": "描述", "descriptionPlaceholder": "描述您的商品...", "priceLabel": "價格", "compareAtPriceLabel": "原價", "compareAtPriceHint": "折扣前原價", "skuLabel": "SKU", "skuPlaceholder": "例如：WEB-001", "stockLabel": "庫存數量", "weightLabel": "重量（公斤）", "durationLabel": "時長（分鐘）", "availabilityNotesLabel": "可用性說明", "availabilityNotesPlaceholder": "例如：週一至週五 9am-5pm", "fileUrlLabel": "檔案網址或上傳", "fileUrlPlaceholder": "https://...", "imagesLabel": "商品圖片", "uploadImages": "上傳圖片", "categoryLabel": "分類", "noCategory": "無分類", "save": "儲存", "saving": "儲存中...", "cancel": "取消", "delete": "刪除", "deleteConfirm": "確定刪除此商品？", "confirmDelete": "確定刪除", "cancelDelete": "取消", "empty": "暫無商品。新增您的第一個商品。", "inStock": "庫存 {count}", "lowStock": "低庫存：{count}", "active": "啟用", "inactive": "停用", "saved": "商品已儲存！", "deleted": "商品已刪除！", "error": "發生錯誤，請重試。", "back": "返回", "next": "下一步" },
-    "discounts": { "title": "優惠", "subtitle": "建立促銷與折扣。", "addDiscount": "新增優惠", "editDiscount": "編輯優惠", "nameLabel": "優惠名稱", "namePlaceholder": "例如：夏季特賣", "typeLabel": "優惠類型", "typePercentage": "百分比", "typeFixed": "固定金額", "valueLabel": "數值", "appliesToLabel": "適用範圍", "appliesToAll": "所有商品", "appliesToCategory": "特定分類", "appliesToProduct": "特定商品", "selectCategory": "選擇分類", "selectProduct": "選擇商品", "startDateLabel": "開始日期", "endDateLabel": "結束日期（選填）", "noExpiry": "無期限", "save": "儲存", "saving": "儲存中...", "cancel": "取消", "delete": "刪除", "deleteConfirm": "確定刪除此優惠？", "confirmDelete": "確定刪除", "cancelDelete": "取消", "empty": "暫無優惠。建立您的第一個優惠。", "percentOff": "{value}% 折扣", "fixedOff": "減 ${value}", "allProducts": "所有商品", "categoryTarget": "分類：{name}", "productTarget": "商品：{name}", "active": "啟用", "expired": "已過期", "scheduled": "已排程", "saved": "優惠已儲存！", "deleted": "優惠已刪除！", "error": "發生錯誤，請重試。" },
-    "storeSettings": { "title": "配送與付款", "subtitle": "設定配送與付款選項。", "deliveryTitle": "配送", "enableDelivery": "啟用配送", "deliveryFeeLabel": "配送費", "freeThresholdLabel": "免運門檻", "freeThresholdHint": "超過此金額免運費", "paymentTitle": "付款方式", "cash": "現金", "bankTransfer": "銀行轉賬", "onlinePayment": "網上付款", "policiesTitle": "商店政策", "policiesPlaceholder": "退換貨政策、條款...", "save": "儲存", "saving": "儲存中...", "saved": "設定已儲存！", "error": "儲存失敗，請重試。" }
+    "stats": {
+      "products": "商品",
+      "categories": "分類",
+      "discounts": "優惠"
+    },
+    "quickActions": {
+      "setup": "商店設定",
+      "setupDesc": "橫幅、名稱與營業時間",
+      "categories": "分類",
+      "categoriesDesc": "組織商品",
+      "products": "商品",
+      "productsDesc": "管理目錄",
+      "discounts": "優惠",
+      "discountsDesc": "促銷與折扣",
+      "settings": "配送與付款",
+      "settingsDesc": "運費與付款選項"
+    },
+    "preview": {
+      "title": "商店預覽",
+      "noProducts": "暫無商品。",
+      "noCategories": "暫無分類。",
+      "allCategories": "全部",
+      "discountBadge": "{value}% 折扣",
+      "discountFixedBadge": "減 ${value}"
+    },
+    "setup": {
+      "title": "商店設定",
+      "subtitle": "設定您的店面外觀與營業時間。",
+      "step1Title": "品牌形象",
+      "step2Title": "時間與主題",
+      "bannerLabel": "商店橫幅",
+      "bannerHint": "建議：1200×400px",
+      "uploadBanner": "上傳橫幅",
+      "changeBanner": "更換橫幅",
+      "removeBanner": "移除",
+      "storeNameLabel": "商店名稱",
+      "storeNamePlaceholder": "我的商店",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "向顧客介紹您的商店...",
+      "themeColorLabel": "主題色",
+      "operatingHoursLabel": "營業時間",
+      "days": {
+        "monday": "星期一",
+        "tuesday": "星期二",
+        "wednesday": "星期三",
+        "thursday": "星期四",
+        "friday": "星期五",
+        "saturday": "星期六",
+        "sunday": "星期日"
+      },
+      "closed": "休息",
+      "open": "營業",
+      "openTime": "開始",
+      "closeTime": "結束",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "saved": "已儲存！",
+      "error": "儲存失敗，請重試。",
+      "back": "返回",
+      "next": "下一步"
+    },
+    "categories": {
+      "title": "分類",
+      "subtitle": "將商品組織到分類中。",
+      "addCategory": "新增分類",
+      "editCategory": "編輯分類",
+      "nameLabel": "名稱",
+      "namePlaceholder": "例如：電子產品",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "簡短分類描述...",
+      "iconLabel": "圖示（表情符號）",
+      "iconPlaceholder": "📦",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "cancel": "取消",
+      "delete": "刪除",
+      "deleteConfirm": "確定刪除此分類？",
+      "deleteWarning": "此分類有 {count} 個商品，將變為未分類。",
+      "confirmDelete": "確定刪除",
+      "cancelDelete": "取消",
+      "empty": "暫無分類。新增您的第一個分類。",
+      "productCount": "{count} 個商品",
+      "active": "啟用",
+      "inactive": "停用",
+      "saved": "分類已儲存！",
+      "deleted": "分類已刪除！",
+      "error": "發生錯誤，請重試。"
+    },
+    "products": {
+      "title": "商品",
+      "subtitle": "管理您的商品目錄。",
+      "addProduct": "新增商品",
+      "editProduct": "編輯商品",
+      "allCategories": "全部",
+      "step1Title": "類型與基本資訊",
+      "step2Title": "詳細資訊",
+      "step3Title": "圖片與分類",
+      "typePhysical": "實物商品",
+      "typePhysicalDesc": "需要配送的商品",
+      "typeService": "服務",
+      "typeServiceDesc": "按時間計費",
+      "typeDigital": "數碼商品",
+      "typeDigitalDesc": "可下載內容",
+      "nameLabel": "商品名稱",
+      "namePlaceholder": "例如：無線耳機",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "描述您的商品...",
+      "priceLabel": "價格",
+      "compareAtPriceLabel": "原價",
+      "compareAtPriceHint": "折扣前原價",
+      "skuLabel": "SKU",
+      "skuPlaceholder": "例如：WEB-001",
+      "stockLabel": "庫存數量",
+      "weightLabel": "重量（公斤）",
+      "durationLabel": "時長（分鐘）",
+      "availabilityNotesLabel": "可用性說明",
+      "availabilityNotesPlaceholder": "例如：週一至週五 9am-5pm",
+      "fileUrlLabel": "檔案網址或上傳",
+      "fileUrlPlaceholder": "https://...",
+      "imagesLabel": "商品圖片",
+      "uploadImages": "上傳圖片",
+      "categoryLabel": "分類",
+      "noCategory": "無分類",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "cancel": "取消",
+      "delete": "刪除",
+      "deleteConfirm": "確定刪除此商品？",
+      "confirmDelete": "確定刪除",
+      "cancelDelete": "取消",
+      "empty": "暫無商品。新增您的第一個商品。",
+      "inStock": "庫存 {count}",
+      "lowStock": "低庫存：{count}",
+      "active": "啟用",
+      "inactive": "停用",
+      "saved": "商品已儲存！",
+      "deleted": "商品已刪除！",
+      "error": "發生錯誤，請重試。",
+      "back": "返回",
+      "next": "下一步"
+    },
+    "discounts": {
+      "title": "優惠",
+      "subtitle": "建立促銷與折扣。",
+      "addDiscount": "新增優惠",
+      "editDiscount": "編輯優惠",
+      "nameLabel": "優惠名稱",
+      "namePlaceholder": "例如：夏季特賣",
+      "typeLabel": "優惠類型",
+      "typePercentage": "百分比",
+      "typeFixed": "固定金額",
+      "valueLabel": "數值",
+      "appliesToLabel": "適用範圍",
+      "appliesToAll": "所有商品",
+      "appliesToCategory": "特定分類",
+      "appliesToProduct": "特定商品",
+      "selectCategory": "選擇分類",
+      "selectProduct": "選擇商品",
+      "startDateLabel": "開始日期",
+      "endDateLabel": "結束日期（選填）",
+      "noExpiry": "無期限",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "cancel": "取消",
+      "delete": "刪除",
+      "deleteConfirm": "確定刪除此優惠？",
+      "confirmDelete": "確定刪除",
+      "cancelDelete": "取消",
+      "empty": "暫無優惠。建立您的第一個優惠。",
+      "percentOff": "{value}% 折扣",
+      "fixedOff": "減 ${value}",
+      "allProducts": "所有商品",
+      "categoryTarget": "分類：{name}",
+      "productTarget": "商品：{name}",
+      "active": "啟用",
+      "expired": "已過期",
+      "scheduled": "已排程",
+      "saved": "優惠已儲存！",
+      "deleted": "優惠已刪除！",
+      "error": "發生錯誤，請重試。"
+    },
+    "storeSettings": {
+      "title": "配送與付款",
+      "subtitle": "設定配送與付款選項。",
+      "deliveryTitle": "配送",
+      "enableDelivery": "啟用配送",
+      "deliveryFeeLabel": "配送費",
+      "freeThresholdLabel": "免運門檻",
+      "freeThresholdHint": "超過此金額免運費",
+      "paymentTitle": "付款方式",
+      "cash": "現金",
+      "bankTransfer": "銀行轉賬",
+      "onlinePayment": "網上付款",
+      "policiesTitle": "商店政策",
+      "policiesPlaceholder": "退換貨政策、條款...",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "saved": "設定已儲存！",
+      "error": "儲存失敗，請重試。"
+    }
   },
   "businessAi": {
     "brand": "商業介面",
@@ -2286,9 +2587,18 @@
       "perMonth": "/月",
       "perYear": "/年",
       "plans": {
-        "free": { "name": "免費版", "emoji": "🆓" },
-        "professional": { "name": "專業版", "emoji": "💼" },
-        "business": { "name": "企業版", "emoji": "🏢" }
+        "free": {
+          "name": "免費版",
+          "emoji": "🆓"
+        },
+        "professional": {
+          "name": "專業版",
+          "emoji": "💼"
+        },
+        "business": {
+          "name": "企業版",
+          "emoji": "🏢"
+        }
       },
       "features": {
         "aiActions": "AI 操作",

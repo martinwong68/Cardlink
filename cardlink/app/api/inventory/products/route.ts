@@ -9,7 +9,23 @@ type ProductDraft = {
   name?: string;
   unit?: string;
   is_active?: boolean;
+  description?: string;
+  cost_price?: number;
+  sell_price?: number;
+  max_stock_level?: number;
+  image_url?: string;
+  category_id?: string;
+  preferred_supplier_id?: string;
+  barcode?: string;
+  product_type?: string;
 };
+
+const PRODUCT_COLUMNS = [
+  "id", "company_id", "sku", "name", "unit", "is_active",
+  "description", "cost_price", "sell_price", "max_stock_level",
+  "image_url", "category_id", "preferred_supplier_id", "barcode",
+  "product_type", "reorder_level", "created_at", "updated_at",
+].join(", ");
 
 export async function GET(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
@@ -17,19 +33,28 @@ export async function GET(request: Request) {
     return guard.response;
   }
 
+  const url = new URL(request.url);
+  const categoryId = url.searchParams.get("category_id")?.trim() || null;
+  const activeOnly = url.searchParams.get("active_only") === "true";
+
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("inv_products")
-    .select("id, company_id, sku, name, unit, is_active, created_at, updated_at")
+    .select(PRODUCT_COLUMNS)
     .eq("company_id", guard.context.activeCompanyId)
     .order("created_at", { ascending: false });
+
+  if (categoryId) query = query.eq("category_id", categoryId);
+  if (activeOnly) query = query.eq("is_active", true);
+
+  const { data, error } = await query;
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   return NextResponse.json({
-    contract: "inventory.products.v1",
+    contract: "inventory.products.v2",
     status: "ok",
     company_id: guard.context.activeCompanyId,
     products: data ?? [],
@@ -64,6 +89,15 @@ export async function POST(request: Request) {
       name,
       unit,
       is_active: body.is_active ?? true,
+      description: body.description?.trim() || null,
+      cost_price: body.cost_price ?? 0,
+      sell_price: body.sell_price ?? 0,
+      max_stock_level: body.max_stock_level ?? null,
+      image_url: body.image_url?.trim() || null,
+      category_id: body.category_id?.trim() || null,
+      preferred_supplier_id: body.preferred_supplier_id?.trim() || null,
+      barcode: body.barcode?.trim() || null,
+      product_type: body.product_type?.trim() || "physical",
     })
     .select("id, company_id")
     .single();
@@ -74,7 +108,7 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({
-    contract: "inventory.products.v1",
+    contract: "inventory.products.v2",
     status: "created",
     company_id: guard.context.activeCompanyId,
     product_id: data.id,

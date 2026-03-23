@@ -7,10 +7,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /* ── Standard Chart of Accounts codes ────────────────────────── */
-const ACCOUNT_CASH     = { code: "1100", name: "Cash / Bank",        type: "asset"     as const };
-const ACCOUNT_INVENTORY = { code: "1400", name: "Inventory",         type: "asset"     as const };
-const ACCOUNT_PAYABLE  = { code: "2100", name: "Accounts Payable",   type: "liability" as const };
-const ACCOUNT_REVENUE  = { code: "4100", name: "Sales Revenue",      type: "revenue"   as const };
+const ACCOUNT_CASH       = { code: "1100", name: "Cash / Bank",            type: "asset"     as const };
+const ACCOUNT_INVENTORY  = { code: "1400", name: "Inventory",              type: "asset"     as const };
+const ACCOUNT_PAYABLE    = { code: "2100", name: "Accounts Payable",       type: "liability" as const };
+const ACCOUNT_REVENUE    = { code: "4100", name: "Sales Revenue",          type: "revenue"   as const };
+const ACCOUNT_ADJUSTMENT = { code: "5300", name: "Inventory Adjustment",   type: "expense"   as const };
 
 /**
  * When a procurement receipt is processed (goods received),
@@ -259,10 +260,10 @@ export async function createPosRefundJournalEntry(
 }
 
 /**
- * When a vendor bill is paid,
+ * When a vendor bill is paid (AP payment),
  * create an accounting journal entry:
  *   Debit: Accounts Payable (liability)
- *   Credit: Cash / Bank (asset)
+ *   Credit: Cash/Bank (asset)
  */
 export async function createVendorBillPaidJournalEntry(
   supabase: SupabaseClient,
@@ -272,10 +273,10 @@ export async function createVendorBillPaidJournalEntry(
   totalAmount: number,
   billNumber: string,
 ) {
-  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
   const payableAccount = await ensureAccount(supabase, orgId, ACCOUNT_PAYABLE.code, ACCOUNT_PAYABLE.name, ACCOUNT_PAYABLE.type);
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
 
-  if (!cashAccount || !payableAccount) return null;
+  if (!payableAccount || !cashAccount) return null;
 
   const idempotencyKey = `vendor-bill-paid-${billId}`;
 
@@ -305,16 +306,87 @@ export async function createVendorBillPaidJournalEntry(
       account_id: payableAccount,
       debit: totalAmount,
       credit: 0,
-      description: `AP Payment: ${billNumber}`,
+      description: `AP Payment: Bill ${billNumber}`,
     },
     {
       transaction_id: tx.id,
       account_id: cashAccount,
       debit: 0,
       credit: totalAmount,
-      description: `Cash Payment: ${billNumber}`,
+      description: `Cash Payment: Bill ${billNumber}`,
     },
   ]);
+
+  return tx.id;
+}
+
+/**
+ * When a stock adjustment is approved (e.g., from stock-take),
+ * create an accounting journal entry:
+ *   Debit/Credit: Inventory (asset)
+ *   Credit/Debit: Inventory Adjustment (expense)
+ */
+export async function createStockAdjustmentJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  referenceId: string,
+  totalAdjustmentValue: number,
+  description: string,
+) {
+  if (totalAdjustmentValue === 0) return null;
+
+  const inventoryAccount = await ensureAccount(supabase, orgId, ACCOUNT_INVENTORY.code, ACCOUNT_INVENTORY.name, ACCOUNT_INVENTORY.type);
+  const adjustmentAccount = await ensureAccount(supabase, orgId, ACCOUNT_ADJUSTMENT.code, ACCOUNT_ADJUSTMENT.name, ACCOUNT_ADJUSTMENT.type);
+
+  if (!inventoryAccount || !adjustmentAccount) return null;
+
+  const idempotencyKey = `inv-adjust-${referenceId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `Inventory Adjustment: ${description}`,
+      reference_number: `ADJ-${referenceId.slice(0, 8)}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null;
+    console.error("[cross-module] adjustment journal error:", txErr.message);
+    return null;
+  }
+
+  /* Positive adjustment = increase inventory, negative = decrease */
+  const isIncrease = totalAdjustmentValue > 0;
+  const absValue = Math.abs(totalAdjustmentValue);
+
+  const { error: lineErr } = await supabase.from("transaction_lines").insert([
+    {
+      transaction_id: tx.id,
+      account_id: isIncrease ? inventoryAccount : adjustmentAccount,
+      debit: absValue,
+      credit: 0,
+      description: isIncrease ? "Inventory increase" : "Adjustment expense",
+    },
+    {
+      transaction_id: tx.id,
+      account_id: isIncrease ? adjustmentAccount : inventoryAccount,
+      debit: 0,
+      credit: absValue,
+      description: isIncrease ? "Adjustment credit" : "Inventory decrease",
+    },
+  ]);
+
+  if (lineErr) {
+    console.error("[cross-module] adjustment lines error:", lineErr.message);
+  }
 
   return tx.id;
 }

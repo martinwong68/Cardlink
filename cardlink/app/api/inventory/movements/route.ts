@@ -18,6 +18,40 @@ type MovementDraft = {
   occurred_at?: string;
 };
 
+export async function GET(request: Request) {
+  const guard = await requireBusinessActiveCompanyContext({ request });
+  if (!guard.ok) return guard.response;
+
+  const url = new URL(request.url);
+  const productId = url.searchParams.get("product_id")?.trim() || null;
+  const movementType = url.searchParams.get("movement_type")?.trim() || null;
+  const referenceType = url.searchParams.get("reference_type")?.trim() || null;
+  const limit = Math.min(Number(url.searchParams.get("limit")) || 100, 500);
+  const offset = Number(url.searchParams.get("offset")) || 0;
+
+  const supabase = await createClient();
+  let query = supabase
+    .from("inv_stock_movements")
+    .select("id, company_id, product_id, movement_type, qty, reason, reference_type, reference_id, created_by, created_at")
+    .eq("company_id", guard.context.activeCompanyId)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (productId) query = query.eq("product_id", productId);
+  if (movementType) query = query.eq("movement_type", movementType);
+  if (referenceType) query = query.eq("reference_type", referenceType);
+
+  const { data, error } = await query;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({
+    contract: "inventory.movements.v2",
+    status: "ok",
+    company_id: guard.context.activeCompanyId,
+    movements: data ?? [],
+  });
+}
+
 export async function POST(request: Request) {
   const body = (await request.json()) as MovementDraft;
   const expectedCompanyId = body.company_id?.trim() ?? body.companyId?.trim();

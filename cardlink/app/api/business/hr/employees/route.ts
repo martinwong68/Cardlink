@@ -41,6 +41,14 @@ export async function POST(request: Request) {
       salary: body.salary ?? 0,
       salary_period: body.salary_period || "monthly",
       avatar_url: body.avatar_url || null,
+      address: body.address || null,
+      national_id: body.national_id || null,
+      bank_name: body.bank_name || null,
+      bank_account: body.bank_account || null,
+      emergency_contact_name: body.emergency_contact_name || null,
+      emergency_contact_phone: body.emergency_contact_phone || null,
+      emergency_contact_relation: body.emergency_contact_relation || null,
+      reporting_manager_id: body.reporting_manager_id || null,
     })
     .select()
     .single();
@@ -74,6 +82,14 @@ export async function PUT(request: Request) {
       salary_period: body.salary_period,
       status: body.status,
       avatar_url: body.avatar_url || null,
+      address: body.address || null,
+      national_id: body.national_id || null,
+      bank_name: body.bank_name || null,
+      bank_account: body.bank_account || null,
+      emergency_contact_name: body.emergency_contact_name || null,
+      emergency_contact_phone: body.emergency_contact_phone || null,
+      emergency_contact_relation: body.emergency_contact_relation || null,
+      reporting_manager_id: body.reporting_manager_id || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", body.id)

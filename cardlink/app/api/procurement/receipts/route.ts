@@ -22,6 +22,50 @@ type ReceiptDraft = {
   idempotency_key?: string;
 };
 
+export async function GET(request: Request) {
+  const guard = await requireBusinessActiveCompanyContext({ request });
+  if (!guard.ok) return guard.response;
+
+  const supabase = await createClient();
+
+  const { data: receipts, error: recError } = await supabase
+    .from("proc_receipts")
+    .select("id, company_id, po_id, received_at, received_by, note, created_at")
+    .eq("company_id", guard.context.activeCompanyId)
+    .order("created_at", { ascending: false });
+
+  if (recError) {
+    return NextResponse.json({ error: recError.message }, { status: 500 });
+  }
+
+  const receiptIds = (receipts ?? []).map((r) => r.id);
+  const { data: items } = receiptIds.length
+    ? await supabase
+        .from("proc_receipt_items")
+        .select("id, receipt_id, po_item_id, product_id, qty")
+        .in("receipt_id", receiptIds)
+    : { data: [] };
+
+  const itemMap = new Map<string, unknown[]>();
+  (items ?? []).forEach((item) => {
+    const list = itemMap.get(item.receipt_id) ?? [];
+    list.push(item);
+    itemMap.set(item.receipt_id, list);
+  });
+
+  const enriched = (receipts ?? []).map((r) => ({
+    ...r,
+    items: itemMap.get(r.id) ?? [],
+  }));
+
+  return NextResponse.json({
+    contract: "procurement.receipts.v1",
+    status: "ok",
+    company_id: guard.context.activeCompanyId,
+    receipts: enriched,
+  });
+}
+
 export async function POST(request: Request) {
   const body = (await request.json()) as ReceiptDraft;
   const expectedCompanyId = body.company_id?.trim() ?? body.companyId?.trim();

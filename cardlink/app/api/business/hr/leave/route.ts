@@ -110,5 +110,27 @@ export async function PUT(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Auto-deduct leave balance on approval
+  if (body.status === "approved" && data) {
+    const rec = data as Record<string, unknown>;
+    const year = new Date(rec.start_date as string).getFullYear();
+    const { data: balance } = await supabase
+      .from("hr_leave_balances")
+      .select("id, used")
+      .eq("company_id", companyId)
+      .eq("employee_id", rec.employee_id as string)
+      .eq("leave_type", rec.leave_type as string)
+      .eq("year", year)
+      .maybeSingle();
+
+    if (balance) {
+      await supabase
+        .from("hr_leave_balances")
+        .update({ used: (balance.used as number) + (rec.days as number), updated_at: new Date().toISOString() })
+        .eq("id", balance.id as string);
+    }
+  }
+
   return NextResponse.json({ leave_request: data });
 }
