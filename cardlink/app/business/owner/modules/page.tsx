@@ -9,6 +9,10 @@ const ALL_MODULES = [
   { name: "pos", icon: "🛒", label: "POS" },
   { name: "procurement", icon: "🚛", label: "Procurement" },
   { name: "crm", icon: "🤝", label: "CRM" },
+  { name: "inventory", icon: "📦", label: "Inventory" },
+  { name: "hr", icon: "👥", label: "HR" },
+  { name: "booking", icon: "📅", label: "Booking" },
+  { name: "store", icon: "🛍️", label: "Store" },
   { name: "cards", icon: "💳", label: "Name Cards" },
   { name: "client", icon: "🏪", label: "Client App" },
 ];

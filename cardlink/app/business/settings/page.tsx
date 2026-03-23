@@ -14,6 +14,7 @@ import {
   Shield,
   ChevronRight,
   LayoutDashboard,
+  PlusCircle,
 } from "lucide-react";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -27,6 +28,7 @@ const settingsCards = [
   { key: "notificationSettings" as const, icon: BellRing, color: "bg-orange-50 text-orange-600", href: "/business/settings/notifications" },
   { key: "language" as const, icon: Globe, color: "bg-teal-50 text-teal-600", href: "/business/settings/language" },
   { key: "integrations" as const, icon: Plug, color: "bg-pink-50 text-pink-600", href: "/business/settings/integrations" },
+  { key: "newCompany" as const, icon: PlusCircle, color: "bg-cyan-50 text-cyan-600", href: "/business/register-company" },
 ];
 
 const ownerCard = {

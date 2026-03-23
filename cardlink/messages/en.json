@@ -2728,6 +2728,10 @@
       "ownerPanel": {
         "title": "Owner Panel",
         "desc": "Admin-only settings and controls."
+      },
+      "newCompany": {
+        "title": "Start New Company",
+        "desc": "Register a new business entity under your account."
       }
     },
     "switchToClient": "Switch to Client GUI"
