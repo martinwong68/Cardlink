@@ -125,6 +125,9 @@ export default function CrmLeadsPage() {
       });
       if (res.ok) {
         setConvertId(null); setConvertTitle(""); await loadLeads();
+      } else {
+        const err = await res.json().catch(() => null);
+        alert(err?.error ?? "Conversion failed. Please try again.");
       }
     } catch { /* silent */ } finally { setConverting(false); }
   };
