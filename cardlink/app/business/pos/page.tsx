@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Monitor, ClipboardList, Package, Clock } from "lucide-react";
+import { Monitor, ClipboardList, Package, Clock, BarChart3 } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
 import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
@@ -43,6 +43,15 @@ const posFunctions: ModuleFunctionDefinition[] = [
     color: "bg-purple-50 text-purple-600",
     ctaLabel: "View Shifts",
     ctaHref: "/business/pos/shifts",
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    description: "Daily sales summaries, payment breakdown, and top products",
+    icon: BarChart3,
+    color: "bg-sky-50 text-sky-600",
+    ctaLabel: "View Reports",
+    ctaHref: "/business/pos/reports",
   },
 ];
 
@@ -120,6 +129,7 @@ function hasContent(id: string, data: PosData | null): boolean {
     case "orders": return data.orders.length > 0;
     case "products": return data.products.length > 0;
     case "shifts": return data.shifts.length > 0;
+    case "reports": return data.orders.length > 0;
     default: return false;
   }
 }
@@ -196,6 +206,28 @@ function DetailContent({ activeId, data }: { activeId: string; data: PosData | n
           <div className="rounded-xl bg-indigo-50 px-3 py-2 text-center">
             <p className="text-lg font-bold text-indigo-700">{open}</p>
             <p className="text-[10px] text-indigo-600">Open Now</p>
+          </div>
+        </div>
+      );
+    }
+    case "reports": {
+      const today = new Date().toDateString();
+      const todayCompleted = data.orders.filter((o) => new Date(o.created_at).toDateString() === today && o.status === "completed");
+      const todayRevenue = todayCompleted.reduce((s, o) => s + Number(o.total), 0);
+      const refunded = data.orders.filter((o) => new Date(o.created_at).toDateString() === today && o.status === "refunded").length;
+      return (
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-emerald-700">${todayRevenue.toLocaleString()}</p>
+            <p className="text-[10px] text-gray-500">Today Revenue</p>
+          </div>
+          <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-900">{todayCompleted.length}</p>
+            <p className="text-[10px] text-gray-500">Completed</p>
+          </div>
+          <div className="rounded-xl bg-rose-50 px-3 py-2 text-center">
+            <p className="text-lg font-bold text-rose-700">{refunded}</p>
+            <p className="text-[10px] text-rose-600">Refunded</p>
           </div>
         </div>
       );
