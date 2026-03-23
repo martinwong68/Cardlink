@@ -575,3 +575,105 @@ async function ensureAccount(
 
   return created.id;
 }
+
+/* ─────────────────────────────────────────────────────────────── */
+/*  Store Order → Accounting Journal Entry                        */
+/* ─────────────────────────────────────────────────────────────── */
+
+/**
+ * When a store order is completed (online sale),
+ * create an accounting journal entry:
+ *   Debit:  Cash / Bank (asset)
+ *   Credit: Sales Revenue (revenue)
+ */
+export async function createStoreOrderJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  orderId: string,
+  totalAmount: number,
+  orderNumber: string,
+) {
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
+
+  if (!cashAccount || !revenueAccount) return null;
+
+  const idempotencyKey = `store-order-journal-${orderId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `Store Sale: ${orderNumber}`,
+      reference_number: `STORE-${orderId.slice(0, 8)}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null; // duplicate
+    console.error("[cross-module] store order journal error:", txErr.message);
+    return null;
+  }
+
+  await supabase.from("transaction_lines").insert([
+    { transaction_id: tx.id, account_id: cashAccount, debit: totalAmount, credit: 0, description: `Cash received — ${orderNumber}` },
+    { transaction_id: tx.id, account_id: revenueAccount, debit: 0, credit: totalAmount, description: `Store sale — ${orderNumber}` },
+  ]);
+
+  return tx.id;
+}
+
+/**
+ * When a store order is refunded,
+ * create a reversal journal entry:
+ *   Debit:  Sales Revenue (revenue)
+ *   Credit: Cash / Bank (asset)
+ */
+export async function createStoreRefundJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  orderId: string,
+  refundAmount: number,
+  orderNumber: string,
+) {
+  const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
+
+  if (!cashAccount || !revenueAccount) return null;
+
+  const idempotencyKey = `store-refund-journal-${orderId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `Store Refund: ${orderNumber}`,
+      reference_number: `STORE-REF-${orderId.slice(0, 8)}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null; // duplicate
+    console.error("[cross-module] store refund journal error:", txErr.message);
+    return null;
+  }
+
+  await supabase.from("transaction_lines").insert([
+    { transaction_id: tx.id, account_id: revenueAccount, debit: refundAmount, credit: 0, description: `Refund — ${orderNumber}` },
+    { transaction_id: tx.id, account_id: cashAccount, debit: 0, credit: refundAmount, description: `Cash refunded — ${orderNumber}` },
+  ]);
+
+  return tx.id;
+}

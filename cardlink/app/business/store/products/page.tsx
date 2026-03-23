@@ -329,7 +329,7 @@ export default function StoreProductsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.push("/business/store")} className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-gray-100 transition">
+        <button onClick={() => router.push("/business/store-management")} className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-gray-100 transition">
           <ArrowLeft className="h-4 w-4 text-gray-600" />
         </button>
         <div className="flex-1">
