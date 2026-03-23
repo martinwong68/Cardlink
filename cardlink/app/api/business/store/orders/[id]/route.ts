@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { createStoreRefundJournalEntry } from "@/src/lib/cross-module-integration";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 /* ── GET /api/business/store/orders/[id] — Order detail ──── */
 export async function GET(
@@ -131,7 +132,7 @@ export async function PATCH(
 
 /* ── Helper: re-stock items when order is cancelled/refunded ── */
 async function restockOrderItems(
-  supabase: ReturnType<typeof createClient> extends Promise<infer T> ? T : never,
+  supabase: SupabaseClient,
   orderId: string,
   _orderUuid: string,
   companyId: string,
@@ -175,7 +176,8 @@ async function restockOrderItems(
         p_operation_id: null,
         p_correlation_id: null,
         p_occurred_at: null,
-      }).catch(() => { /* Inventory module may not exist */ });
+      });
+      // Inventory module may not exist — errors are silent
 
       // Mark line item as refunded
       await supabase

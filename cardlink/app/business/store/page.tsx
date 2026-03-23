@@ -150,7 +150,9 @@ export default function BusinessStorePage() {
   const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
   const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
   const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
-  const totalCatalogValue = activeProducts.reduce((sum, p) => sum + p.price * (p.stock_quantity ?? 1), 0);
+  const totalCatalogValue = activeProducts
+    .filter((p) => p.product_type === "physical" && p.stock_quantity != null)
+    .reduce((sum, p) => sum + p.price * (p.stock_quantity ?? 0), 0);
 
   const lowStockProducts = physicalProducts.filter((p) => (p.stock_quantity ?? 0) > 0 && (p.stock_quantity ?? 0) <= 5);
   const outOfStockProducts = physicalProducts.filter((p) => (p.stock_quantity ?? 0) === 0);

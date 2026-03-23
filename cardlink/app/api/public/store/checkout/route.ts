@@ -143,7 +143,7 @@ export async function POST(request: Request) {
   const { data: orderNum } = await supabase.rpc("generate_store_order_number", {
     p_company_id: companyId,
   });
-  const orderNumber = (orderNum as string) || `SO-${Date.now()}`;
+  const orderNumber = (orderNum as string) || `SO-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
   // Find or create customer
   let customerId: string | null = null;

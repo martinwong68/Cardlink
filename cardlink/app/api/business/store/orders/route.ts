@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     p_company_id: guard.context.activeCompanyId,
   });
 
-  const orderNumber = (orderNum as string) || `SO-${Date.now()}`;
+  const orderNumber = (orderNum as string) || `SO-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
   // Calculate totals
   const lineItems: Array<{
@@ -143,9 +143,8 @@ export async function POST(request: Request) {
           p_operation_id: null,
           p_correlation_id: null,
           p_occurred_at: null,
-        }).catch(() => {
-          // Inventory module may not be enabled — ignore
         });
+        // Inventory module may not be enabled — errors are silent
 
         // Also decrement store_products.stock_quantity directly
         const { data: prod } = await supabase
@@ -177,15 +176,20 @@ export async function POST(request: Request) {
 
   // Increment coupon usage
   if (body.coupon_code && order) {
-    await supabase
+    // Fetch current usage count and increment
+    const { data: couponRow } = await supabase
       .from("store_coupons")
-      .update({ usage_count: supabase.rpc ? undefined : 0 })
+      .select("id, usage_count")
       .eq("company_id", guard.context.activeCompanyId)
-      .eq("code", body.coupon_code);
-    // Use raw SQL increment via RPC if available, otherwise manual:
-    await supabase.rpc("increment_coupon_usage", { p_company_id: guard.context.activeCompanyId, p_code: body.coupon_code }).catch(() => {
-      // RPC not available; do manual increment
-    });
+      .eq("code", String(body.coupon_code).toUpperCase().trim())
+      .single();
+
+    if (couponRow) {
+      await supabase
+        .from("store_coupons")
+        .update({ usage_count: ((couponRow.usage_count as number) ?? 0) + 1, updated_at: new Date().toISOString() })
+        .eq("id", couponRow.id);
+    }
   }
 
   return NextResponse.json({ order }, { status: 201 });
