@@ -1504,7 +1504,10 @@
     },
     "labels": {
       "community": "コミュニティ",
-      "replies": "{count} replies"
+      "replies": "{count} replies",
+      "categories": "{count}カテゴリー",
+      "members": "{count}人のメンバー",
+      "posts": "{count}件の投稿"
     },
     "actions": {
       "view": "表示"
@@ -1610,7 +1613,9 @@
       "loading": "Loading ボード..."
     },
     "labels": {
-      "posts": "{count} posts"
+      "posts": "{count} posts",
+      "members": "{count}人のメンバー",
+      "private": "プライベート"
     },
     "sections": {
       "latest": "コミュニティの最新情報"
@@ -1622,7 +1627,13 @@
       "member": "CardLink Member"
     },
     "empty": {
-      "noPosts": "まだ投稿がありません。"
+      "noPosts": "まだ投稿がありません。",
+      "noCommunities": "コミュニティが見つかりません"
+    },
+    "filters": {
+      "all": "すべてのコミュニティ",
+      "company": "会社",
+      "public": "公開"
     }
   },
   "businessNav": {
@@ -2563,7 +2574,9 @@
       "monthly": "Run 月額 監査",
       "annual": "Run 年額 レビュー"
     },
-    "executionComplete": "実行完了"
+    "executionComplete": "実行完了",
+    "operationHistory": "操作履歴",
+    "noOperationHistory": "操作履歴がありません"
   },
   "aiPresetCard": {
     "title": "AI Action プラン",

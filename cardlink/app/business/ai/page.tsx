@@ -28,6 +28,7 @@ import {
   FileUp,
   ArrowLeft,
   Loader2,
+  History,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -68,6 +69,15 @@ type Message = {
 };
 
 type ReviewType = "daily" | "monthly" | "annual";
+
+type ActionRecord = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  source_module: string | null;
+  created_at: string;
+};
 
 /* ── Model tiers — auto-selected based on file size / operation complexity ── */
 const MODEL_OPTIONS = [
@@ -251,6 +261,10 @@ export default function BusinessAiPage() {
   const [aiBalance, setAiBalance] = useState<PlanCheckResult | null>(null);
   const [enforcementLoading, setEnforcementLoading] = useState(true);
 
+  /* ── Operation history state ── */
+  const [actionRecords, setActionRecords] = useState<ActionRecord[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -292,6 +306,22 @@ export default function BusinessAiPage() {
   useEffect(() => {
     if (!companyLoading && companyId) void fetchConversations();
   }, [companyLoading, companyId, fetchConversations]);
+
+  /* ── Load operation history (ai_action_cards) ── */
+  const fetchActionRecords = useCallback(async () => {
+    if (!companyId) return;
+    const { data } = await supabase
+      .from("ai_action_cards")
+      .select("id, title, description, status, source_module, created_at")
+      .eq("company_id", companyId)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    setActionRecords((data as ActionRecord[]) ?? []);
+  }, [companyId, supabase]);
+
+  useEffect(() => {
+    if (!companyLoading && companyId) void fetchActionRecords();
+  }, [companyLoading, companyId, fetchActionRecords]);
 
   /* ── Load messages for active conversation ── */
   useEffect(() => {
@@ -768,6 +798,8 @@ IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` 
       setPresetExecuted(t("aiError"));
     }
     setPresetCard(null);
+    // Refresh operation history after execution
+    void fetchActionRecords();
   };
 
   const handlePresetCardCancel = () => {
@@ -1066,6 +1098,67 @@ IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` 
                 )}
               </div>
             ))
+          )}
+        </div>
+
+        {/* ── Operation History Section ── */}
+        <div className="border-t border-gray-100">
+          <button
+            onClick={() => setShowHistory((v) => !v)}
+            className="flex w-full items-center justify-between px-3 py-2.5 text-left hover:bg-gray-50 transition"
+          >
+            <div className="flex items-center gap-2">
+              <History className="h-3.5 w-3.5 text-gray-400" />
+              <span className="text-xs font-semibold text-gray-600">
+                {t("operationHistory")}
+              </span>
+            </div>
+            <span className="text-[10px] text-gray-400">
+              {actionRecords.length}
+            </span>
+          </button>
+          {showHistory && (
+            <div className="px-2 pb-2 max-h-48 overflow-y-auto space-y-1">
+              {actionRecords.length === 0 ? (
+                <p className="px-3 py-3 text-center text-[10px] text-gray-400">
+                  {t("noOperationHistory")}
+                </p>
+              ) : (
+                actionRecords.map((record) => (
+                  <div
+                    key={record.id}
+                    className="rounded-lg bg-gray-50 border border-gray-100 px-3 py-2"
+                  >
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      {record.status === "approved" ? (
+                        <CheckCircle className="h-3 w-3 text-green-500 shrink-0" />
+                      ) : (
+                        <Clock className="h-3 w-3 text-amber-500 shrink-0" />
+                      )}
+                      <span className="text-[10px] font-medium text-gray-700 truncate">
+                        {record.title}
+                      </span>
+                    </div>
+                    {record.description && (
+                      <p className="text-[9px] text-gray-400 line-clamp-2 pl-4.5 ml-1">
+                        {record.description.slice(0, 80)}
+                        {record.description.length > 80 ? "..." : ""}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1 pl-4.5 ml-1">
+                      {record.source_module && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium">
+                          {record.source_module}
+                        </span>
+                      )}
+                      <span className="text-[9px] text-gray-400">
+                        {relativeTime(record.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           )}
         </div>
       </aside>

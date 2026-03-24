@@ -1504,7 +1504,10 @@
     },
     "labels": {
       "community": "Community",
-      "replies": "{count} replies"
+      "replies": "{count} replies",
+      "categories": "{count} categories",
+      "members": "{count} members",
+      "posts": "{count} posts"
     },
     "actions": {
       "view": "View"
@@ -1610,7 +1613,9 @@
       "loading": "Loading boards..."
     },
     "labels": {
-      "posts": "{count} posts"
+      "posts": "{count} posts",
+      "members": "{count} members",
+      "private": "Private"
     },
     "sections": {
       "latest": "Latest from the community"
@@ -1622,7 +1627,13 @@
       "member": "CardLink Member"
     },
     "empty": {
-      "noPosts": "No posts yet."
+      "noPosts": "No posts yet.",
+      "noCommunities": "No communities found"
+    },
+    "filters": {
+      "all": "All Communities",
+      "company": "Company",
+      "public": "Public"
     }
   },
   "businessNav": {
@@ -2563,7 +2574,9 @@
       "monthly": "Run Monthly Audit",
       "annual": "Run Annual Review"
     },
-    "executionComplete": "Execution Complete"
+    "executionComplete": "Execution Complete",
+    "operationHistory": "Operation History",
+    "noOperationHistory": "No operations recorded yet"
   },
   "aiPresetCard": {
     "title": "AI Action Plan",

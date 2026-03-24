@@ -1504,7 +1504,10 @@
     },
     "labels": {
       "community": "커뮤니티",
-      "replies": "{count} replies"
+      "replies": "{count} replies",
+      "categories": "카테고리 {count}개",
+      "members": "회원 {count}명",
+      "posts": "게시글 {count}개"
     },
     "actions": {
       "view": "보기"
@@ -1610,7 +1613,9 @@
       "loading": "Loading 게시판..."
     },
     "labels": {
-      "posts": "{count} posts"
+      "posts": "{count} posts",
+      "members": "{count}명의 회원",
+      "private": "비공개"
     },
     "sections": {
       "latest": "커뮤니티 최신글"
@@ -1622,7 +1627,13 @@
       "member": "CardLink Member"
     },
     "empty": {
-      "noPosts": "아직 게시글이 없습니다."
+      "noPosts": "아직 게시글이 없습니다.",
+      "noCommunities": "커뮤니티를 찾을 수 없습니다"
+    },
+    "filters": {
+      "all": "모든 커뮤니티",
+      "company": "회사",
+      "public": "공개"
     }
   },
   "businessNav": {
@@ -2563,7 +2574,9 @@
       "monthly": "실행 월간 감사",
       "annual": "실행 연간 검토"
     },
-    "executionComplete": "실행 완료"
+    "executionComplete": "실행 완료",
+    "operationHistory": "작업 이력",
+    "noOperationHistory": "아직 작업 이력이 없습니다"
   },
   "aiPresetCard": {
     "title": "AI Action 플랜",

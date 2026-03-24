@@ -1504,7 +1504,10 @@
     },
     "labels": {
       "community": "社群",
-      "replies": "{count} 則回覆"
+      "replies": "{count} 則回覆",
+      "categories": "{count} 個分類",
+      "members": "{count} 位成員",
+      "posts": "{count} 篇貼文"
     },
     "actions": {
       "view": "查看"
@@ -1610,7 +1613,9 @@
       "loading": "正在載入看板..."
     },
     "labels": {
-      "posts": "{count} 則貼文"
+      "posts": "{count} 則貼文",
+      "members": "{count} 位成員",
+      "private": "私密"
     },
     "sections": {
       "latest": "社群最新動態"
@@ -1622,7 +1627,13 @@
       "member": "CardLink 會員"
     },
     "empty": {
-      "noPosts": "目前尚無貼文。"
+      "noPosts": "目前尚無貼文。",
+      "noCommunities": "未找到社群"
+    },
+    "filters": {
+      "all": "所有社群",
+      "company": "公司",
+      "public": "公開"
     }
   },
   "businessNav": {
@@ -2563,7 +2574,9 @@
       "monthly": "執行每月稽核",
       "annual": "執行年度審查"
     },
-    "executionComplete": "執行完成"
+    "executionComplete": "執行完成",
+    "operationHistory": "操作記錄",
+    "noOperationHistory": "尚無操作記錄"
   },
   "aiPresetCard": {
     "title": "AI 操作計畫",
