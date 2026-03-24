@@ -34,7 +34,7 @@ export default function DashboardNav() {
         <Link
           key={`${keyPrefix}-${item.href}`}
           href={item.href}
-          className="flex flex-col items-center gap-0.5 px-2 py-1"
+          className="flex flex-1 flex-col items-center gap-0.5 py-1"
         >
           <Icon
             className={`h-[18px] w-[18px] ${
@@ -56,14 +56,14 @@ export default function DashboardNav() {
     <>
       {/* ── Mobile Bottom Nav ── */}
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-gray-100 bg-white px-2 py-2 md:hidden">
-        <div className="flex justify-around">
+        <div className="flex">
           {renderNavItems("mob")}
         </div>
       </nav>
 
       {/* ── Desktop/Tablet Floating Bottom Nav ── */}
       <nav className="fixed bottom-6 left-1/2 z-50 hidden -translate-x-1/2 md:flex">
-        <div className="flex items-end justify-around gap-1 rounded-2xl border border-gray-200/60 bg-white/90 px-4 pt-2 pb-2 shadow-lg backdrop-blur-md w-[26rem]">
+        <div className="flex items-end rounded-2xl border border-gray-200/60 bg-white/90 px-4 pt-2 pb-2 shadow-lg backdrop-blur-md w-[26rem]">
           {renderNavItems("desk")}
         </div>
       </nav>
