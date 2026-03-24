@@ -20,6 +20,14 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  DollarSign,
+  BarChart3,
+  Package,
+  Users,
+  ShoppingCart,
+  FileUp,
+  ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -57,11 +65,145 @@ type Message = {
 
 type ReviewType = "daily" | "monthly" | "annual";
 
+/* ── Model tiers — auto-selected based on file size / operation complexity ── */
 const MODEL_OPTIONS = [
-  { value: "gemini-flash", label: "Gemini Flash" },
-  { value: "claude-sonnet", label: "Claude Sonnet" },
-  { value: "gpt-4o", label: "GPT-4o" },
+  { value: "claude-haiku-4.5", label: "Haiku 4.5 (Fast)" },
+  { value: "claude-sonnet-4.6", label: "Sonnet 4.6 (Balanced)" },
+  { value: "claude-opus-4.6", label: "Opus 4.6 (Advanced)" },
 ] as const;
+
+/** Byte thresholds for auto model selection */
+const FILE_SIZE_SONNET_THRESHOLD = 500 * 1024; // 500 KB
+const FILE_SIZE_OPUS_THRESHOLD = 5 * 1024 * 1024; // 5 MB
+
+function selectModelForFile(fileSize: number): string {
+  if (fileSize >= FILE_SIZE_OPUS_THRESHOLD) return "claude-opus-4.6";
+  if (fileSize >= FILE_SIZE_SONNET_THRESHOLD) return "claude-sonnet-4.6";
+  return "claude-haiku-4.5";
+}
+
+/* ── Preset operation definitions ── */
+type PresetOperation = {
+  key: string;
+  labelKey: string;
+  descKey: string;
+  icon: typeof Bot;
+  category: "accounting" | "inventory" | "report" | "crm" | "setup" | "review";
+  /** Additional fields the user can fill in before running */
+  fields: { key: string; labelKey: string; type: "text" | "number" | "date" | "textarea" | "file" }[];
+  /** If true this is a "hard" operation that defaults to sonnet */
+  complex?: boolean;
+};
+
+const PRESET_OPERATIONS: PresetOperation[] = [
+  {
+    key: "recordExpense",
+    labelKey: "presets.recordExpense",
+    descKey: "presets.recordExpenseDesc",
+    icon: DollarSign,
+    category: "accounting",
+    fields: [
+      { key: "amount", labelKey: "fields.amount", type: "number" },
+      { key: "description", labelKey: "fields.description", type: "text" },
+      { key: "date", labelKey: "fields.date", type: "date" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "generateReport",
+    labelKey: "presets.generateReport",
+    descKey: "presets.generateReportDesc",
+    icon: BarChart3,
+    category: "report",
+    fields: [
+      { key: "reportType", labelKey: "fields.reportType", type: "text" },
+      { key: "dateRange", labelKey: "fields.dateRange", type: "text" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+    complex: true,
+  },
+  {
+    key: "checkInventory",
+    labelKey: "presets.checkInventory",
+    descKey: "presets.checkInventoryDesc",
+    icon: Package,
+    category: "inventory",
+    fields: [
+      { key: "productName", labelKey: "fields.productName", type: "text" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "createInvoice",
+    labelKey: "presets.createInvoice",
+    descKey: "presets.createInvoiceDesc",
+    icon: FileText,
+    category: "accounting",
+    fields: [
+      { key: "customerName", labelKey: "fields.customerName", type: "text" },
+      { key: "amount", labelKey: "fields.amount", type: "number" },
+      { key: "description", labelKey: "fields.description", type: "text" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "recordSale",
+    labelKey: "presets.recordSale",
+    descKey: "presets.recordSaleDesc",
+    icon: ShoppingCart,
+    category: "accounting",
+    fields: [
+      { key: "item", labelKey: "fields.item", type: "text" },
+      { key: "amount", labelKey: "fields.amount", type: "number" },
+      { key: "customerName", labelKey: "fields.customerName", type: "text" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "uploadData",
+    labelKey: "presets.uploadData",
+    descKey: "presets.uploadDataDesc",
+    icon: FileUp,
+    category: "setup",
+    fields: [
+      { key: "file", labelKey: "fields.file", type: "file" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "crmAddLead",
+    labelKey: "presets.crmAddLead",
+    descKey: "presets.crmAddLeadDesc",
+    icon: Users,
+    category: "crm",
+    fields: [
+      { key: "leadName", labelKey: "fields.leadName", type: "text" },
+      { key: "email", labelKey: "fields.email", type: "text" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "dailyReview",
+    labelKey: "presets.dailyReview",
+    descKey: "presets.dailyReviewDesc",
+    icon: CheckCircle,
+    category: "review",
+    fields: [
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "monthlyAudit",
+    labelKey: "presets.monthlyAudit",
+    descKey: "presets.monthlyAuditDesc",
+    icon: CalendarCheck,
+    category: "report",
+    fields: [
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+    complex: true,
+  },
+];
 
 const AGENT_MODES: { value: AgentMode; icon: typeof Bot; labelKey: string }[] = [
   { value: "chat", icon: MessageCircle, labelKey: "agentModes.chat" },
@@ -79,7 +221,7 @@ export default function BusinessAiPage() {
   const [activeConvoId, setActiveConvoId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
-  const [model, setModel] = useState<string>("gemini-flash");
+  const [model, setModel] = useState<string>("claude-haiku-4.5");
   const [sending, setSending] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
@@ -88,9 +230,15 @@ export default function BusinessAiPage() {
 
   /* ── Agent mode state ── */
   const [agentMode, setAgentMode] = useState<AgentMode>("chat");
-  const [uploadedFile, setUploadedFile] = useState<{ name: string; content: string } | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; content: string; size: number } | null>(null);
   const [reviewLoading, setReviewLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /* ── Preset workflow state ── */
+  const [activePreset, setActivePreset] = useState<PresetOperation | null>(null);
+  const [presetFields, setPresetFields] = useState<Record<string, string>>({});
+  const [presetResult, setPresetResult] = useState<string | null>(null);
+  const [presetRunning, setPresetRunning] = useState(false);
 
   /* ── Plan enforcement ── */
   const [aiAccess, setAiAccess] = useState<PlanCheckResult | null>(null);
@@ -370,22 +518,145 @@ export default function BusinessAiPage() {
     }
   };
 
-  /* ── File upload handler ── */
+  /* ── File upload handler — auto-selects model based on file size ── */
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Auto-select model tier based on file size
+    const autoModel = selectModelForFile(file.size);
+    setModel(autoModel);
 
     const reader = new FileReader();
     reader.onload = () => {
       setUploadedFile({
         name: file.name,
         content: reader.result as string,
+        size: file.size,
       });
     };
     reader.readAsText(file);
 
     // Reset input so the same file can be re-uploaded
     e.target.value = "";
+  };
+
+  /* ── Execute a preset operation ── */
+  const handleRunPreset = async () => {
+    if (!activePreset || !companyId || presetRunning) return;
+
+    // Re-check balance
+    const balance = await checkAiActionBalance(supabase, companyId);
+    setAiBalance(balance);
+    if (!balance.allowed) return;
+
+    setPresetRunning(true);
+    setPresetResult(null);
+
+    // Build a structured prompt from the preset + user fields
+    const fieldEntries = Object.entries(presetFields).filter(([, v]) => (v as string).trim());
+    const fieldSummary = fieldEntries
+      .map(([k, v]) => `- ${k}: ${v as string}`)
+      .join("\n");
+
+    // Choose model — auto-upgrade for complex ops or large files
+    let selectedModel = model;
+    if (activePreset.complex && selectedModel === "claude-haiku-4.5") {
+      selectedModel = "claude-sonnet-4.6";
+      setModel(selectedModel);
+    }
+    if (uploadedFile) {
+      const fileModel = selectModelForFile(uploadedFile.size);
+      if (fileModel !== "claude-haiku-4.5") {
+        selectedModel = fileModel;
+        setModel(selectedModel);
+      }
+    }
+
+    const prompt = `You are Cardlink AI assistant. The user wants to perform the following operation:
+
+OPERATION: ${activePreset.key}
+CATEGORY: ${activePreset.category}
+
+USER INPUT:
+${fieldSummary || "(No additional input provided)"}
+
+${uploadedFile ? `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB)\nFILE CONTENT:\n${uploadedFile.content.slice(0, 10000)}` : ""}
+
+Please break down this operation into clear steps and provide a structured response:
+1. **Summary** — What you understood the user wants to do
+2. **Steps** — The individual steps/actions to complete this operation
+3. **Data Preview** — If applicable, show a preview of the data to be created/modified
+4. **Confirmation** — Ask the user to confirm before proceeding
+
+Respond in a clear, professional format. If there are missing details, list what's needed.`;
+
+    const messages = [{ role: "user" as const, content: prompt }];
+
+    // Determine endpoint based on category
+    let apiUrl = "/api/business/ai/chat";
+    if (activePreset.category === "setup") apiUrl = "/api/business/ai/setup";
+    else if (activePreset.category === "review") apiUrl = "/api/business/ai/review";
+    else apiUrl = "/api/business/ai/operations";
+
+    // For review category, use the review endpoint format
+    if (activePreset.category === "review") {
+      const reviewType: ReviewType = activePreset.key === "dailyReview" ? "daily" : "monthly";
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-cardlink-app-scope": "business" },
+          body: JSON.stringify({ reviewType, model: selectedModel }),
+        });
+        if (!response.ok) {
+          const errBody = (await response.json().catch(() => ({}))) as { error?: string };
+          setPresetResult(errBody.error ?? t("aiError"));
+        } else {
+          const data = (await response.json()) as { content?: string };
+          setPresetResult(data.content ?? t("aiError"));
+        }
+      } catch {
+        setPresetResult(t("aiError"));
+      }
+    } else {
+      // Use operations or chat endpoint
+      try {
+        const bodyPayload = activePreset.category === "setup"
+          ? {
+              messages,
+              model: selectedModel,
+              ...(uploadedFile ? { fileContent: uploadedFile.content, fileName: uploadedFile.name } : {}),
+            }
+          : {
+              messages,
+              model: selectedModel,
+              includeBusinessContext: true,
+            };
+
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-cardlink-app-scope": "business" },
+          body: JSON.stringify(bodyPayload),
+        });
+
+        if (!response.ok) {
+          const errBody = (await response.json().catch(() => ({}))) as { error?: string; reason?: string };
+          setPresetResult(errBody.error ?? t("aiError"));
+          if (response.status === 429) {
+            setAiBalance({ allowed: false, reason: errBody.reason ?? "ai_limit_reached" });
+          }
+        } else {
+          const data = (await response.json()) as { content?: string };
+          setPresetResult(data.content ?? t("aiError"));
+        }
+      } catch {
+        setPresetResult(t("aiError"));
+      }
+    }
+
+    // Clear file after use
+    if (uploadedFile) setUploadedFile(null);
+    setPresetRunning(false);
   };
 
   /* ── Trigger business review ── */
@@ -520,6 +791,28 @@ export default function BusinessAiPage() {
     }
   };
 
+  /* ── Handle selecting a preset operation ── */
+  const handleSelectPreset = (preset: PresetOperation) => {
+    setActivePreset(preset);
+    setPresetFields({});
+    setPresetResult(null);
+    setUploadedFile(null);
+    // Set default model based on complexity
+    if (preset.complex) {
+      setModel("claude-sonnet-4.6");
+    } else {
+      setModel("claude-haiku-4.5");
+    }
+  };
+
+  const handleBackToPresets = () => {
+    setActivePreset(null);
+    setPresetFields({});
+    setPresetResult(null);
+    setUploadedFile(null);
+    setModel("claude-haiku-4.5");
+  };
+
   if (companyLoading || enforcementLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -652,7 +945,7 @@ export default function BusinessAiPage() {
         </div>
       </aside>
 
-      {/* ── Main chat area ── */}
+      {/* ── Main content area ── */}
       <div className="flex flex-1 flex-col min-w-0 bg-white md:rounded-r-2xl md:border md:border-l-0 md:border-gray-200">
         {/* Header bar */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
@@ -671,39 +964,13 @@ export default function BusinessAiPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Agent mode tabs */}
-            <div className="hidden md:flex items-center gap-1 bg-gray-50 rounded-lg p-0.5">
-              {AGENT_MODES.map((mode) => {
-                const Icon = mode.icon;
-                const isActive = (activeConvo?.agent_mode ?? agentMode) === mode.value;
-                return (
-                  <button
-                    key={mode.value}
-                    onClick={() => setAgentMode(mode.value)}
-                    title={t(mode.labelKey)}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition ${
-                      isActive
-                        ? "bg-white text-indigo-700 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    <Icon className="h-3 w-3" />
-                    <span className="hidden lg:inline">{t(mode.labelKey)}</span>
-                  </button>
-                );
-              })}
+            {/* Model indicator */}
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 text-[10px] text-gray-500">
+              <span className="hidden sm:inline">{t("modelLabel")}:</span>
+              <span className="font-medium text-gray-700">
+                {MODEL_OPTIONS.find((m) => m.value === model)?.label ?? model}
+              </span>
             </div>
-            <select
-              value={model}
-              onChange={(e) => handleModelChange(e.target.value)}
-              className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-gray-50 text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-300"
-            >
-              {MODEL_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
             <Link
               href="/business/settings"
               className="p-1.5 rounded-lg hover:bg-gray-100 transition"
@@ -713,86 +980,182 @@ export default function BusinessAiPage() {
           </div>
         </div>
 
-        {/* Mobile agent mode selector */}
-        <div className="flex md:hidden items-center gap-1 px-4 py-2 border-b border-gray-50 bg-gray-50/50 overflow-x-auto">
-          {AGENT_MODES.map((mode) => {
-            const Icon = mode.icon;
-            const isActive = (activeConvo?.agent_mode ?? agentMode) === mode.value;
-            return (
-              <button
-                key={mode.value}
-                onClick={() => setAgentMode(mode.value)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium whitespace-nowrap transition ${
-                  isActive
-                    ? "bg-white text-indigo-700 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <Icon className="h-3 w-3" />
-                {t(mode.labelKey)}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Messages area */}
+        {/* Content area */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
-          {!activeConvoId ? (
-            /* Empty state — no conversation selected */
-            <div className="flex flex-col items-center justify-center h-full text-center px-6">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 mb-4">
-                <Bot className="h-8 w-8 text-indigo-400" />
-              </div>
-              <p className="text-sm text-gray-700 font-medium mb-1">
-                {t(`emptyTitle_${agentMode}`)}
-              </p>
-              <p className="text-xs text-gray-400 max-w-xs mb-6">
-                {t(`emptyDesc_${agentMode}`)}
-              </p>
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.tsv,.txt,.json,.xml,.xlsx,.pdf"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
 
-              {/* Review mode: show review trigger buttons */}
-              {agentMode === "review" ? (
-                <div className="flex flex-col gap-3 w-full max-w-sm">
-                  {(["daily", "monthly", "annual"] as ReviewType[]).map((rt) => (
-                    <button
-                      key={rt}
-                      onClick={() => handleTriggerReview(rt)}
-                      disabled={reviewLoading}
-                      className="app-secondary-btn flex items-center justify-center gap-2 px-4 py-3 text-sm"
-                    >
-                      {reviewLoading ? (
-                        <Clock className="h-4 w-4 animate-spin" />
-                      ) : rt === "daily" ? (
-                        <CheckCircle className="h-4 w-4" />
-                      ) : rt === "monthly" ? (
-                        <FileText className="h-4 w-4" />
-                      ) : (
-                        <CalendarCheck className="h-4 w-4" />
-                      )}
-                      {t(`reviewButtons.${rt}`)}
-                    </button>
-                  ))}
+          {aiBalance && !aiBalance.allowed ? (
+            <div className="flex items-center justify-center h-full">
+              <AiLimitPrompt
+                limit={aiBalance.limit ?? 0}
+                used={aiBalance.used ?? 0}
+              />
+            </div>
+          ) : activePreset ? (
+            /* ── Preset operation form ── */
+            <div className="max-w-2xl mx-auto">
+              {/* Back button */}
+              <button
+                onClick={handleBackToPresets}
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 mb-4"
+              >
+                <ArrowLeft className="h-3 w-3" />
+                {t("backToPresets")}
+              </button>
+
+              {/* Preset header */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
+                  <activePreset.icon className="h-6 w-6 text-indigo-600" />
                 </div>
-              ) : (
-                <div className="flex flex-wrap justify-center gap-2">
-                  {quickActions.map((qa) => (
-                    <button
-                      key={qa.key}
-                      onClick={() => handleQuickAction(qa.label, qa.key)}
-                      className="app-secondary-btn px-3 py-1.5 text-xs"
-                    >
-                      {qa.label}
-                    </button>
-                  ))}
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900">
+                    {t(activePreset.labelKey)}
+                  </h2>
+                  <p className="text-xs text-gray-500">{t(activePreset.descKey)}</p>
+                </div>
+              </div>
+
+              {/* Dynamic fields */}
+              <div className="space-y-4">
+                {activePreset.fields.map((field) => (
+                  <div key={field.key}>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      {t(field.labelKey)}
+                    </label>
+                    {field.type === "file" ? (
+                      <div>
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="flex items-center gap-2 px-4 py-3 w-full rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition text-sm text-gray-500"
+                        >
+                          <FileUp className="h-4 w-4 text-indigo-500" />
+                          {uploadedFile ? uploadedFile.name : t("selectFile")}
+                        </button>
+                        {uploadedFile && (
+                          <div className="flex items-center gap-2 mt-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
+                            <FileText className="h-3.5 w-3.5" />
+                            <span className="truncate flex-1">
+                              {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
+                            </span>
+                            <span className="text-[10px] text-indigo-500">
+                              → {MODEL_OPTIONS.find((m) => m.value === model)?.label}
+                            </span>
+                            <button
+                              onClick={() => { setUploadedFile(null); setModel(activePreset.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5"); }}
+                              className="p-0.5 hover:bg-indigo-100 rounded"
+                            >
+                              <XCircle className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : field.type === "textarea" ? (
+                      <textarea
+                        value={presetFields[field.key] ?? ""}
+                        onChange={(e) => setPresetFields((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                        placeholder={t("optionalNotes")}
+                        rows={3}
+                        className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-300"
+                      />
+                    ) : (
+                      <input
+                        type={field.type}
+                        value={presetFields[field.key] ?? ""}
+                        onChange={(e) => setPresetFields((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-300"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Run button */}
+              <button
+                onClick={handleRunPreset}
+                disabled={presetRunning}
+                className="mt-6 w-full app-primary-btn flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium"
+              >
+                {presetRunning ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {t("processing")}
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    {t("runOperation")}
+                  </>
+                )}
+              </button>
+
+              {/* Result area */}
+              {presetResult && (
+                <div className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Bot className="h-4 w-4 text-indigo-600" />
+                    <span className="text-xs font-semibold text-gray-700">{t("aiResponse")}</span>
+                    <span className="text-[10px] text-gray-400">
+                      ({MODEL_OPTIONS.find((m) => m.value === model)?.label})
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+                    {presetResult}
+                  </div>
                 </div>
               )}
+            </div>
+          ) : !activeConvoId ? (
+            /* ── Preset operations grid ── */
+            <div className="max-w-3xl mx-auto">
+              <div className="text-center mb-6">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 mx-auto mb-3">
+                  <Bot className="h-7 w-7 text-indigo-400" />
+                </div>
+                <h2 className="text-sm font-semibold text-gray-800 mb-1">
+                  {t("presetTitle")}
+                </h2>
+                <p className="text-xs text-gray-400 max-w-sm mx-auto">
+                  {t("presetDesc")}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {PRESET_OPERATIONS.map((preset) => {
+                  const Icon = preset.icon;
+                  return (
+                    <button
+                      key={preset.key}
+                      onClick={() => handleSelectPreset(preset)}
+                      className="flex flex-col items-center gap-2 rounded-2xl border border-gray-200 bg-white p-4 text-center shadow-sm hover:shadow-md hover:border-indigo-200 hover:bg-indigo-50/30 transition"
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50">
+                        <Icon className="h-5 w-5 text-indigo-600" />
+                      </div>
+                      <span className="text-xs font-medium text-gray-800">
+                        {t(preset.labelKey)}
+                      </span>
+                      <span className="text-[10px] text-gray-400 line-clamp-2">
+                        {t(preset.descKey)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           ) : loadingMessages ? (
             <div className="flex items-center justify-center py-12">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
             </div>
           ) : messages.length === 0 ? (
-            /* Empty conversation */
+            /* Empty conversation — show quick actions */
             <div className="flex flex-col items-center justify-center h-full text-center px-6">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 mb-4">
                 <Bot className="h-7 w-7 text-indigo-400" />
@@ -844,7 +1207,7 @@ export default function BusinessAiPage() {
           )}
         </div>
 
-        {/* Input area */}
+        {/* Input area — only shown when inside a conversation */}
         {activeConvoId && (
           <div className="border-t border-gray-100 px-4 py-3">
             {aiBalance && !aiBalance.allowed ? (
@@ -858,7 +1221,9 @@ export default function BusinessAiPage() {
             {uploadedFile && (
               <div className="flex items-center gap-2 mb-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
                 <FileText className="h-3.5 w-3.5" />
-                <span className="truncate flex-1">{uploadedFile.name}</span>
+                <span className="truncate flex-1">
+                  {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
+                </span>
                 <button
                   onClick={() => setUploadedFile(null)}
                   className="p-0.5 hover:bg-indigo-100 rounded"
@@ -868,27 +1233,11 @@ export default function BusinessAiPage() {
               </div>
             )}
             <div className="flex items-end gap-2">
-              {/* File upload button — enabled in setup mode */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,.tsv,.txt,.json,.xml"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
+              {/* File upload button */}
               <button
                 onClick={() => fileInputRef.current?.click()}
-                disabled={(activeConvo?.agent_mode ?? agentMode) !== "setup"}
-                title={
-                  (activeConvo?.agent_mode ?? agentMode) === "setup"
-                    ? t("uploadFile")
-                    : t("attachmentComingSoon")
-                }
-                className={`p-2 rounded-lg transition ${
-                  (activeConvo?.agent_mode ?? agentMode) === "setup"
-                    ? "text-indigo-600 hover:bg-indigo-50"
-                    : "text-gray-300 cursor-not-allowed"
-                }`}
+                title={t("uploadFile")}
+                className="p-2 rounded-lg transition text-indigo-600 hover:bg-indigo-50"
               >
                 <Paperclip className="h-4 w-4" />
               </button>
