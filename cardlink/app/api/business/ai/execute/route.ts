@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
-import { createClient } from "@/src/lib/supabase/server";
+import { createAdminClient } from "@/src/lib/supabase/admin";
 
 /**
  * POST /api/business/ai/execute
@@ -9,6 +9,9 @@ import { createClient } from "@/src/lib/supabase/server";
  * This runs the actions directly without re-asking the AI.
  *
  * Each step specifies a module, operation, and params.
+ *
+ * Uses service-role (admin) client to bypass RLS and avoid PostgREST
+ * schema-cache issues that caused "0 actions completed" errors.
  */
 
 type ActionStep = {
@@ -21,6 +24,7 @@ type ActionStep = {
 type ExecuteBody = {
   steps: ActionStep[];
   answers?: Record<string, string>;
+  conversationId?: string;
 };
 
 type StepResult = {
@@ -34,7 +38,7 @@ export async function POST(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
   if (!guard.ok) return guard.response;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const companyId = guard.context.activeCompanyId;
   const userId = guard.context.user.id;
 
@@ -57,10 +61,11 @@ export async function POST(request: Request) {
     }
   }
 
-  const allSuccess = results.every((r) => r.success);
+  const successCount = results.filter((r) => r.success).length;
+  const allSuccess = successCount === results.length;
 
   // Store the execution as an action card for history
-  await supabase.from("ai_action_cards").insert({
+  const { error: historyError } = await supabase.from("ai_action_cards").insert({
     company_id: companyId,
     card_type: "general",
     title: `Executed ${results.length} action(s)`,
@@ -72,18 +77,23 @@ export async function POST(request: Request) {
     approved_at: allSuccess ? new Date().toISOString() : null,
   });
 
+  // If history insert failed, log but don't block the response
+  if (historyError) {
+    console.error("[ai/execute] Failed to store action card:", historyError.message);
+  }
+
   return NextResponse.json({
     success: allSuccess,
     results,
     message: allSuccess
       ? `All ${results.length} action(s) completed successfully.`
-      : `${results.filter((r) => r.success).length}/${results.length} action(s) completed.`,
+      : `${successCount}/${results.length} action(s) completed.`,
   });
 }
 
 /* ── Step executor ── */
 async function executeStep(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   companyId: string,
   userId: string,
   step: ActionStep,
@@ -120,7 +130,7 @@ async function executeStep(
 /* ── Module-specific executors ── */
 
 async function executeAccountingStep(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   companyId: string,
   userId: string,
   operation: string,
@@ -171,7 +181,7 @@ async function executeAccountingStep(
 }
 
 async function executeInventoryStep(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   companyId: string,
   operation: string,
   params: Record<string, unknown>,
@@ -216,7 +226,7 @@ async function executeInventoryStep(
 }
 
 async function executeCrmStep(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   companyId: string,
   operation: string,
   params: Record<string, unknown>,
@@ -250,7 +260,7 @@ async function executeCrmStep(
 }
 
 async function executePosStep(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   companyId: string,
   operation: string,
   params: Record<string, unknown>,
@@ -273,7 +283,7 @@ async function executePosStep(
 }
 
 async function executeGenericStep(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   companyId: string,
   operation: string,
   _params: Record<string, unknown>,

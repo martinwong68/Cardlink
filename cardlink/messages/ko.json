@@ -1,0 +1,3167 @@
+{
+  "app": {
+    "name": "CardLink"
+  },
+  "language": {
+    "label": "언어"
+  },
+  "login": {
+    "brand": "CardLink",
+    "title": "다시 오신 것을 환영합니다",
+    "subtitle": "디지털 카드를 관리하려면 로그인하세요.",
+    "fields": {
+      "email": "이메일",
+      "password": "비밀번호"
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "createAccount": "계정 만들기",
+      "forgotPassword": "비밀번호를 잊으셨나요?",
+      "sendingReset": "Sending 초기화 이메일..."
+    },
+    "footer": {
+      "newHere": "새로운 to CardLink?"
+    },
+    "messages": {
+      "enterEmailForReset": "먼저 이메일을 입력한 후 비밀번호 찾기를 다시 클릭하세요.",
+      "resetEmailSent": "비밀번호 재설정 이메일이 전송되었습니다."
+    }
+  },
+  "signup": {
+    "brand": "CardLink",
+    "title": "만들기 your 계정",
+    "subtitle": "몇 분 안에 카드를 공유하세요.",
+    "fields": {
+      "fullName": "이름",
+      "email": "이메일",
+      "password": "비밀번호"
+    },
+    "actions": {
+      "create": "계정 생성",
+      "creating": "Creating 계정...",
+      "signIn": "Sign in"
+    },
+    "footer": {
+      "haveAccount": "이미 계정이 있으신가요?"
+    },
+    "messages": {
+      "checkEmail": "계정 확인을 위해 이메일을 확인하세요."
+    }
+  },
+  "auth": {
+    "brand": "CardLink",
+    "title": "Get started",
+    "subtitle": "Sign in or create an account to join the community.",
+    "actions": {
+      "createAccount": "계정 생성",
+      "signIn": "Sign in",
+      "browseCommunity": "Browse 커뮤니티 instead"
+    }
+  },
+  "ban": {
+    "brand": "CardLink",
+    "title": "계정 restricted",
+    "description": "Your access is currently restricted. If you believe this is a mistake, please contact support.",
+    "scope": {
+      "user": "Your user 계정 is restricted.",
+      "company": "Your 회사 접근 is restricted."
+    },
+    "company": "Company: {company}",
+    "reason": "Reason: {reason}",
+    "until": "Restricted until: {date}",
+    "actions": {
+      "back": "뒤로",
+      "signOut": "Sign out"
+    }
+  },
+  "dashboard": {
+    "brand": "CardLink",
+    "title": "대시보드"
+  },
+  "dashboardNav": {
+    "community": "커뮤니티",
+    "cards": "카드",
+    "membership": "Membership",
+    "discount": "탐색",
+    "scan": "스캔",
+    "settings": "설정"
+  },
+  "getCard": {
+    "brand": "CardLink",
+    "title": "Get your NFC card",
+    "subtitle": "Order a tap-to-share card that links to your CardLink profile. We ship fast and keep your details always up to date.",
+    "highlights": {
+      "shipping": "Ships in 3-5 비즈니스 days",
+      "customize": "Choose your card style",
+      "linked": "프로필 updates in real time",
+      "analytics": "See tap 분석"
+    },
+    "cta": {
+      "badge": "One-time 구매",
+      "price": "{price}",
+      "note": "Includes one NFC card and free profile updates.",
+      "action": "Checkout",
+      "loading": "Redirecting..."
+    },
+    "features": {
+      "instant": {
+        "title": "Instant sharing",
+        "description": "Tap any phone to share your card without an app."
+      },
+      "durable": {
+        "title": "Built to last",
+        "description": "Premium material with waterproof, scratch-resistant finish."
+      },
+      "tap": {
+        "title": "Smart NFC chip",
+        "description": "Secure chip that links directly to your CardLink profile."
+      }
+    },
+    "faq": {
+      "badge": "자주 묻는 질문",
+      "title": "Questions, answered",
+      "shipping": {
+        "question": "Where do you ship?",
+        "answer": "We ship worldwide. Delivery times vary by region."
+      },
+      "compatibility": {
+        "question": "Will it work on iPhone and Android?",
+        "answer": "Yes. All modern NFC-enabled phones can read the card."
+      },
+      "management": {
+        "question": "Can I change my info later?",
+        "answer": "Any updates you make in CardLink are reflected instantly."
+      },
+      "teams": {
+        "question": "Do you offer 팀 주문?",
+        "answer": "Yes. Contact us for bulk pricing and custom branding."
+      }
+    },
+    "errors": {
+      "checkout": "Unable to start checkout. Please try again.",
+      "unavailable": "Checkout is 이용불가 right now.",
+      "missingPrice": "Price configuration is missing. Please contact support."
+    }
+  },
+  "cards": {
+    "brand": "CardLink",
+    "title": "내 카드",
+    "subtitle": "Manage and share your digital business cards.",
+    "loading": "Loading 카드...",
+    "empty": "No cards yet. Create your first card to get started.",
+    "errors": {
+      "signInView": "Please sign in to view your cards.",
+      "signInCreate": "Please sign in to create a card.",
+      "createFailed": "Unable to create a new card.",
+      "upgradeToCreate": "Upgrade to Premium to create more than one card.",
+      "companyCardLimit": "Company accounts can create up to 2 cards.",
+      "missingLink": "Missing card link.",
+      "copyFailed": "Unable to 복사 link."
+    },
+    "badges": {
+      "premium": "프리미엄",
+      "company": "회사"
+    },
+    "toast": {
+      "created": "Card created.",
+      "linkCopied": "Link copied.",
+      "deleted": "Card deleted."
+    },
+    "actions": {
+      "create": "만들기 새로운 Card",
+      "edit": "편집",
+      "share": "공유",
+      "qr": "QR Code",
+      "delete": "삭제",
+      "confirmDelete": "Delete this card? This cannot be undone."
+    },
+    "card": {
+      "defaultName": "My Card",
+      "defaultUser": "CardLink User",
+      "unpublished": "Unpublished",
+      "slug": "Slug: {slug}",
+      "created": "Created {date}"
+    },
+    "tabs": {
+      "cards": "내 카드",
+      "contacts": "연락처",
+      "nfc": "NFC 카드"
+    }
+  },
+  "contacts": {
+    "brand": "CardLink",
+    "title": "연락처",
+    "searchPlaceholder": "검색 연락처",
+    "loading": "Loading 연락처...",
+    "pendingTitle": "Pending Requests ({count})",
+    "connectedOn": "Connected on {date}",
+    "errors": {
+      "signIn": "Please sign in to view your contacts.",
+      "needCard": "Create a card first to accept requests."
+    },
+    "actions": {
+      "accept": "수락",
+      "decline": "감소",
+      "viewCard": "보기 Card",
+      "remove": "제거",
+      "removeConfirm": "Remove this connection? This will delete the connection for both of you."
+    },
+    "empty": {
+      "title": "아니오 connections yet.",
+      "body": "Exchange cards with people to build your network."
+    }
+  },
+  "cardEditor": {
+    "brand": "CardLink",
+    "title": "카드 편집",
+    "defaults": {
+      "cardName": "My Card"
+    },
+    "messages": {
+      "saved": "Card saved successfully.",
+      "loading": "Loading editor...",
+      "backgroundUploaded": "Background 이미지 uploaded.",
+      "backgroundRemoved": "Background 이미지 removed.",
+      "freePlanContactLimit": "Free plan allows up to {count} contact items.",
+      "freePlanLinkLimit": "Free plan allows up to {count} links.",
+      "freePlanNoExperience": "Experience section is available on Premium only."
+    },
+    "errors": {
+      "signInEdit": "Please sign in to edit your card.",
+      "signInUpload": "Please sign in to upload an avatar.",
+      "signInSave": "Please sign in to save your card.",
+      "notFound": "Card not found.",
+      "invalidImageFile": "Please 업로드 an 이미지 파일.",
+      "backgroundTooLargeBeforeCompression": "Image is too large. Please upload an image under 10MB.",
+      "backgroundTooLargeAfterCompression": "Image is too large after compression. Please use a simpler image so it can be under 500KB.",
+      "backgroundProcessFailed": "실패 to process 이미지.",
+      "freePlanContactLimit": "Free plan supports only {count} contact items.",
+      "freePlanLinkLimit": "Free plan supports only {count} links."
+    },
+    "actions": {
+      "showPreview": "Show 미리보기",
+      "hidePreview": "Hide 미리보기",
+      "save": "저장",
+      "saving": "Saving...",
+      "back": "뒤로",
+      "add": "추가",
+      "uploadPhoto": "업로드 Photo",
+      "uploading": "Uploading...",
+      "uploadBackground": "업로드 Background 이미지",
+      "removeBackground": "제거 Background 이미지"
+    },
+    "sections": {
+      "background": "Background 설정",
+      "profilePhoto": "프로필 Photo",
+      "bioInfo": "Bio & 정보",
+      "contactFields": "연락처 Fields",
+      "links": "Links",
+      "experience": "경력",
+      "livePreview": "Live 미리보기"
+    },
+    "labels": {
+      "color": "색상",
+      "preview": "미리보기",
+      "cardName": "Card 이름",
+      "fullName": "이름",
+      "title": "제목",
+      "company": "회사",
+      "bio": "Bio",
+      "type": "유형",
+      "value": "가치",
+      "label": "라벨",
+      "visibility": "Visibility",
+      "url": "URL",
+      "icon": "Icon",
+      "role": "역할",
+      "startDate": "시작 날짜",
+      "endDate": "End 날짜",
+      "description": "설명"
+    },
+    "empty": {
+      "fields": "아니오 fields yet.",
+      "links": "아니오 links yet.",
+      "experience": "아니오 경력 yet."
+    },
+    "placeholders": {
+      "present": "출석",
+      "startDate": "2020-01",
+      "endDate": "출석",
+      "linkLabel": "Link",
+      "yourName": "Your 이름"
+    },
+    "misc": {
+      "storageNote": "Stored in Supabase Storage (avatars bucket).",
+      "backgroundUploadNote": "Auto-compress to max 1920px and keep under 500KB."
+    },
+    "fieldTypes": {
+      "phone": "전화번호",
+      "email": "이메일",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "wechat": "WeChat",
+      "telegram": "Telegram",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "website": "웹사이트"
+    },
+    "visibility": {
+      "public": "Public",
+      "friends": "Friends",
+      "hidden": "Hidden"
+    }
+  },
+  "contactDetail": {
+    "states": {
+      "loading": "Loading 연락처...",
+      "notFound": "연락처 not found."
+    },
+    "defaults": {
+      "userName": "CardLink User"
+    },
+    "errors": {
+      "signIn": "Please sign in to view this contact.",
+      "loadCard": "Unable to load 연락처 card."
+    },
+    "actions": {
+      "viewCard": "보기 Card",
+      "removeConnection": "제거 connection",
+      "backToContacts": "뒤로 to 연락처",
+      "save": "저장",
+      "cancel": "취소",
+      "edit": "편집",
+      "delete": "삭제"
+    },
+    "labels": {
+      "contactFields": "연락처 fields"
+    },
+    "connection": {
+      "connected": "Connected {date}",
+      "requested": "Requested {date}"
+    },
+    "fieldTypes": {
+      "phone": "전화번호",
+      "email": "이메일",
+      "wechat": "WeChat",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter/X",
+      "xhs": "XHS",
+      "website": "웹사이트",
+      "other": "기타"
+    },
+    "crm": {
+      "title": "고객 관리",
+      "tags": {
+        "title": "태그",
+        "add": "추가 태그",
+        "empty": "아니오 태그 yet.",
+        "placeholder": "Enter 태그",
+        "submit": "추가"
+      },
+      "notes": {
+        "title": "메모",
+        "add": "추가 note",
+        "placeholder": "Enter private note...",
+        "save": "저장 note",
+        "empty": "아니오 메모 yet."
+      },
+      "reminders": {
+        "title": "Reminders",
+        "set": "Set 알림",
+        "empty": "아니오 reminders set.",
+        "label": "Follow-up reminder: {date}"
+      },
+      "activity": {
+        "title": "활동",
+        "empty": "아니오 card exchange 이력 yet.",
+        "method": "Share method: {method}",
+        "methodFallback": "Link"
+      },
+      "suggestedTags": [
+        "client",
+        "investor",
+        "partner",
+        "met at event",
+        "follow up",
+        "VIP"
+      ]
+    },
+    "upgrade": {
+      "cta": "Upgrade to Premium to unlock CRM notes, tags, and reminders."
+    }
+  },
+  "nfc": {
+    "brand": "CardLink",
+    "title": "NFC 카드",
+    "subtitle": "Manage your physical NFC cards and their linked business cards.",
+    "loading": "Loading NFC 카드...",
+    "empty": {
+      "title": "아니오 NFC 카드 Yet",
+      "body": "Purchase an NFC card to start sharing your business card with a tap.",
+      "cta": "Get a Card"
+    },
+    "errors": {
+      "signIn": "Please sign in to view NFC cards.",
+      "updateLinkedCard": "Unable to 업데이트 linked card."
+    },
+    "actions": {
+      "confirmDeactivate": "비활성화 this NFC card?",
+      "changeLinkedCard": "변경 Linked Card",
+      "deactivate": "비활성화"
+    },
+    "status": {
+      "active": "활성",
+      "suspended": "Suspended",
+      "deactivated": "Deactivated",
+      "other": "비활성"
+    },
+    "linkedTo": "Linked to",
+    "noCardSelected": "아니오 card 선택됨",
+    "personal": "Personal",
+    "stats": {
+      "totalTaps": "{count} total taps",
+      "lastTapped": "Last tapped: {date}"
+    },
+    "never": "Never",
+    "chart": {
+      "label": "Tap 활동",
+      "title": "Last 7 Days"
+    },
+    "modal": {
+      "label": "변경 Linked Card",
+      "title": "선택 a 비즈니스 card",
+      "close": "닫기",
+      "untitled": "Untitled Card",
+      "cancel": "취소",
+      "saving": "Saving...",
+      "save": "변경 저장"
+    }
+  },
+  "qr": {
+    "close": "닫기",
+    "download": "다운로드 QR",
+    "copy": "복사 Link",
+    "copied": "Copied"
+  },
+  "publicConnect": {
+    "contactTitle": "연락처",
+    "actions": {
+      "saveContact": "연락처 저장",
+      "editCard": "카드 편집",
+      "signupToConnect": "Sign up to 연결",
+      "connected": "Connected ✓",
+      "acceptConnection": "수락 Connection",
+      "requestSent": "Request Sent ✓",
+      "connect": "연결"
+    }
+  },
+  "publicCard": {
+    "defaultUser": "CardLink User",
+    "errors": {
+      "missingShare": "Missing 공유 link.",
+      "copyLink": "Unable to 복사 link.",
+      "missingContact": "Missing 연락처 정보.",
+      "copyWechat": "Unable to 복사 WeChat ID."
+    },
+    "toast": {
+      "linkCopied": "Link copied to clipboard.",
+      "wechatCopied": "WeChat ID copied."
+    },
+    "actions": {
+      "saveContact": "연락처 저장",
+      "share": "공유"
+    },
+    "sections": {
+      "contact": "연락처",
+      "links": "Links",
+      "experience": "경력"
+    },
+    "empty": {
+      "contact": "아니오 연락처 정보 shared yet."
+    },
+    "experience": {
+      "roleAt": "{role} at {company}",
+      "present": "출석"
+    },
+    "footer": {
+      "madeWith": "Made with CardLink"
+    },
+    "wechat": {
+      "title": "WeChat ID",
+      "close": "닫기",
+      "copy": "복사 WeChat ID"
+    }
+  },
+  "notifications": {
+    "errors": {
+      "loadRequest": "Unable to load this request.",
+      "selectCard": "선택 a card to 공유.",
+      "needCard": "Create a card first to accept this request."
+    },
+    "toast": {
+      "exchanged": "Cards exchanged! This person is now in your contacts.",
+      "declined": "Request declined."
+    },
+    "labels": {
+      "ariaNotifications": "알림",
+      "avatar": "Avatar",
+      "cardlink": "CardLink",
+      "member": "CardLink Member",
+      "sharedCard": "Shared Card",
+      "shareBack": "공유 your card 뒤로",
+      "myCard": "My Card"
+    },
+    "title": "알림",
+    "actions": {
+      "markAllRead": "Mark 전체 as read",
+      "viewFullCard": "보기 Full Card",
+      "acceptExchange": "수락 & Exchange",
+      "decline": "감소"
+    },
+    "loading": "Loading 알림...",
+    "empty": {
+      "title": "아니오 알림 yet",
+      "body": "You will be notified when someone wants to exchange cards with you."
+    },
+    "request": {
+      "title": "Card Exchange Request"
+    }
+  },
+  "notificationsPage": {
+    "brand": "CardLink",
+    "title": "알림",
+    "subtitle": "Stay on top of new connections and reminders.",
+    "loading": "Loading 알림...",
+    "empty": "아니오 알림 yet.",
+    "errors": {
+      "signIn": "Please sign in to view notifications.",
+      "needCard": "Create a card first to accept requests."
+    },
+    "labels": {
+      "someone": "Someone",
+      "thisContact": "this 연락처"
+    },
+    "items": {
+      "request": "{name} sent you a connection request",
+      "accepted": "{name} accepted your connection request",
+      "viewed": "{name} viewed your business card",
+      "via": "via {method}",
+      "reminder": "Reminder: Follow up with {name}"
+    },
+    "actions": {
+      "accept": "수락",
+      "decline": "감소"
+    }
+  },
+  "tap": {
+    "suspended": {
+      "title": "Card Suspended",
+      "body": "This card has been temporarily suspended. Please contact the card owner or CardLink support.",
+      "link": "Learn 더보기"
+    },
+    "deactivated": {
+      "title": "Card Deactivated",
+      "body": "This card is no longer active."
+    },
+    "expired": {
+      "title": "Subscription 만료됨",
+      "body": "The owner's subscription has expired. If this is your card, please renew your subscription.",
+      "link": "Renew Subscription"
+    },
+    "noCard": {
+      "title": "아니오 Card Linked",
+      "body": "This NFC card hasn't been linked to a digital business card yet.",
+      "link": "Set up your card"
+    },
+    "error": {
+      "title": "Card Not Found",
+      "body": "This NFC card is not recognized."
+    }
+  },
+  "register": {
+    "brand": "CardLink",
+    "loading": "Loading...",
+    "title": "Link Your NFC Card",
+    "subtitle": "Choose which business card you want to link to this physical NFC card. When someone taps your card, they'll see the linked business card.",
+    "cardId": "Card ID: {id}",
+    "guest": {
+      "title": "활성화 Your CardLink Card",
+      "subtitle": "Sign in or create an account to link this NFC card to your digital business card.",
+      "signIn": "Sign In",
+      "createAccount": "계정 생성"
+    },
+    "empty": {
+      "title": "만들기 a 비즈니스 card first",
+      "body": "You'll need at least one digital card to link this NFC card.",
+      "cta": "Go to My 카드"
+    },
+    "success": {
+      "title": "Your card is 활성!",
+      "subtitle": "When someone taps your NFC card, they'll see your business card.",
+      "testTitle": "테스트 your card",
+      "testBody": "Tap your NFC card on a phone to confirm everything is working. Share the tap link if you want to preview it.",
+      "goDashboard": "Go to 대시보드",
+      "testButton": "테스트 your card"
+    },
+    "actions": {
+      "activating": "Activating...",
+      "activate": "활성화 Card",
+      "goDashboard": "Go to 대시보드"
+    },
+    "errors": {
+      "selectCard": "선택 a 비즈니스 card first.",
+      "alreadyLinked": "This card is already linked to an account. If this is your card, go to Dashboard to manage it.",
+      "invalid": "This card ID is not recognized. Please contact support.",
+      "generic": "Something went wrong while activating your card. Please try again."
+    }
+  },
+  "home": {
+    "brand": "CardLink",
+    "hero": {
+      "kicker": "Digital 비즈니스 카드",
+      "title": "Make every introduction effortless with CardLink.",
+      "subtitle": "Build a shareable card, manage contacts, and discover the community conversations that matter to your career."
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "getStarted": "Get Started",
+      "browseCommunity": "Browse 커뮤니티"
+    },
+    "features": {
+      "share": {
+        "title": "공유 instantly",
+        "body": "QR, NFC, or link-based 카드."
+      },
+      "crm": {
+        "title": "Build CRM",
+        "body": "저장 connections with context."
+      },
+      "discover": {
+        "title": "발견 people",
+        "body": "Meet peers in the forum."
+      }
+    },
+    "forum": {
+      "kicker": "Latest in the forum",
+      "empty": "No posts yet. Be the first to start a conversation.",
+      "member": "CardLink Member",
+      "replies": "{count} replies"
+    }
+  },
+  "community": {
+    "brand": "CardLink",
+    "title": "커뮤니티",
+    "subtitle": "CardLink 포럼을 탐색하세요. 게시물을 작성하려면 로그인하세요.",
+    "loadingBoards": "Loading 게시판...",
+    "actions": {
+      "loginToPost": "게시하려면 로그인하세요"
+    },
+    "stats": {
+      "posts": "{count} posts",
+      "replies": "{count} replies"
+    },
+    "latest": {
+      "title": "커뮤니티 최신글",
+      "empty": "아직 게시글이 없습니다."
+    },
+    "member": "CardLink Member"
+  },
+  "communityBoard": {
+    "brand": "CardLink",
+    "loading": "Loading board...",
+    "errors": {
+      "notFound": "Board not found."
+    },
+    "actions": {
+      "loginToPost": "게시하려면 로그인하세요",
+      "community": "커뮤니티",
+      "view": "보기"
+    },
+    "emptyPosts": "아직 게시글이 없습니다.",
+    "member": "CardLink Member",
+    "stats": {
+      "replies": "{count} replies"
+    }
+  },
+  "communitySubBoard": {
+    "brand": "CardLink",
+    "loading": "Loading 게시글...",
+    "errors": {
+      "boardNotFound": "Board not found.",
+      "subBoardNotFound": "Sub-board not found."
+    },
+    "actions": {
+      "loginToPost": "게시하려면 로그인하세요"
+    },
+    "cta": {
+      "loginToPost": "Log in to start a new post or reply."
+    },
+    "empty": "아직 게시글이 없습니다.",
+    "member": "CardLink Member",
+    "stats": {
+      "replies": "{count} replies"
+    }
+  },
+  "communityPost": {
+    "brand": "CardLink",
+    "loading": "Loading 게시글...",
+    "errors": {
+      "notFound": "게시글 not found."
+    },
+    "actions": {
+      "loginToPost": "게시하려면 로그인하세요"
+    },
+    "cta": {
+      "loginToReply": "Log in to reply or start a new discussion."
+    },
+    "replies": {
+      "title": "답글",
+      "empty": "아니오 답글 yet."
+    },
+    "member": "CardLink Member",
+    "stats": {
+      "replies": "{count} replies"
+    }
+  },
+  "scan": {
+    "brand": "CardLink",
+    "title": "스캔",
+    "subtitle": "Scan redemption QR codes to verify discount usage.",
+    "actions": {
+      "startScan": "시작 스캔",
+      "scanning": "Scanning...",
+      "stopScan": "중지 스캔",
+      "verify": "Verify",
+      "confirmUse": "확인 Used",
+      "alreadyUsed": "Already Processed",
+      "backToDiscount": "뒤로 to 할인"
+    },
+    "placeholders": {
+      "code": "Paste scanned content, QR URL, or redemption UUID"
+    },
+    "messages": {
+      "signInFirst": "Please sign in first.",
+      "cameraNotSupported": "This device or browser does not support camera QR scanning. You can paste the code instead.",
+      "cameraDenied": "Cannot access camera. Please check browser camera permissions.",
+      "invalidCode": "Invalid redemption code. Please rescan or paste a valid value.",
+      "offerNotFound": "Offer not found for this redemption code.",
+      "noPermission": "You do not have permission to process this company's redemptions.",
+      "alreadyProcessed": "This redemption has already been processed.",
+      "markedUsed": "Redemption confirmed and marked as used.",
+      "requireAdmin": "You must be a company owner/admin to process discount redemptions."
+    },
+    "labels": {
+      "unknownCompany": "Unknown 회사",
+      "points": "포인트",
+      "pointUnit": "BOBO-POINT",
+      "requestedAt": "Requested",
+      "processedAt": "Processed",
+      "reason": "Reason"
+    },
+    "status": {
+      "redeemed": "Redeemed",
+      "used": "Used",
+      "rejected": "거부됨"
+    },
+    "empty": {
+      "noCode": "After scanning or entering a code, redemption details appear here."
+    }
+  },
+  "settings": {
+    "brand": "CardLink",
+    "title": "설정",
+    "subtitle": "관리 your 계정 and 환경설정.",
+    "notices": {
+      "businessAccessDenied": "Business access is unavailable for your account."
+    },
+    "errors": {
+      "upgradeToExport": "Upgrade to Premium to export contacts.",
+      "signInExport": "Please sign in to export contacts.",
+      "openPortal": "Unable to open billing portal. Please try again."
+    },
+    "export": {
+      "headers": {
+        "name": "이름",
+        "title": "제목",
+        "company": "회사",
+        "connectedAt": "Connected At"
+      },
+      "fileName": "cardlink-contacts.csv"
+    },
+    "links": {
+      "profile": "편집 프로필",
+      "privacy": "Privacy 설정",
+      "password": "초기화 비밀번호",
+      "subscription": "Subscription 플랜",
+      "subscriptionActive": "Subscription",
+      "premiumUntil": "Premium until {date}",
+      "premiumBadge": "프리미엄",
+      "downgrade": "Downgrade to Free",
+      "openingPortal": "Opening...",
+      "switchToBusiness": "Switch to 비즈니스 Interface",
+      "orderNfc": "주문 NFC Card",
+      "export": "내보내기 연락처",
+      "support": "도움말 & 고객지원",
+      "language": "언어"
+    },
+    "actions": {
+      "logout": "로그 Out"
+    }
+  },
+  "businessSettings": {
+    "brand": "비즈니스 Interface",
+    "title": "설정",
+    "subtitle": "관리 비즈니스 interface 환경설정.",
+    "links": {
+      "mainAccount": "Main 계정 Context",
+      "switchToClient": "Switch to 클라이언트 GUI"
+    }
+  },
+  "businessMainAccount": {
+    "brand": "비즈니스 Interface",
+    "title": "Main 계정",
+    "subtitle": "Choose the active company context for Business App operations.",
+    "states": {
+      "loading": "Loading 계정 context...",
+      "activeTag": "Active: {company}"
+    },
+    "fields": {
+      "activeCompany": "활성 회사",
+      "selectPlaceholder": "선택 a 회사",
+      "quickSwitch": "Quick 회사 Switch",
+      "permissionScope": "회사 권한 Scope"
+    },
+    "actions": {
+      "save": "저장 활성 회사",
+      "saving": "Saving..."
+    },
+    "badges": {
+      "masterRuntime": "Master (Runtime)",
+      "masterDb": "Master (DB Flag)"
+    },
+    "messages": {
+      "signInRequired": "Please sign in again.",
+      "loadFailed": "실패 to load main-account data.",
+      "selectCompany": "Please 선택 a 회사 first.",
+      "saveFailed": "실패 to 저장 활성 회사.",
+      "saved": "활성 회사 updated.",
+      "notEligible": "Your account is not eligible for Business management context."
+    }
+  },
+  "support": {
+    "brand": "CardLink",
+    "title": "도움말 & 고객지원",
+    "subtitle": "Find answers, manage your subscription, and review our privacy policy.",
+    "contact": {
+      "title": "고객지원 문의",
+      "subtitle": "Need help with your account or card? We're here to help.",
+      "emailLabel": "이메일:",
+      "emailValue": "support@cardlink.app",
+      "hoursLabel": "Hours:",
+      "hoursValue": "Mon-Fri, 9:00 AM-6:00 PM (UTC)",
+      "responseLabel": "Typical 응답:",
+      "responseValue": "Within 1 비즈니스 day"
+    },
+    "subscription": {
+      "title": "관리 Subscription",
+      "subtitle": "Cancel or update your plan in the secure billing portal.",
+      "button": "열림 결제 Portal",
+      "loading": "Opening portal...",
+      "note": "You can cancel at any time. Changes take effect at the end of the current billing period."
+    },
+    "faq": {
+      "title": "Quick Answers",
+      "items": [
+        {
+          "question": "How do I update my card details?",
+          "answer": "Go to Dashboard > Cards, pick a card, and tap Edit to update your info."
+        },
+        {
+          "question": "I forgot my password. What should I do?",
+          "answer": "Open Settings and choose Reset Password to follow the steps."
+        },
+        {
+          "question": "How do I export contacts?",
+          "answer": "Use Export Contacts from the Settings page. Premium is required."
+        },
+        {
+          "question": "Can I delete my account?",
+          "answer": "Email support@cardlink.app and we will help you with account removal."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "subtitle": "We respect your privacy and only use your data to deliver CardLink.",
+      "lastUpdated": "Last updated: Feb 23, 2026",
+      "sections": [
+        {
+          "title": "Information we collect",
+          "body": [
+            "We collect information you provide, such as your name, email, profile details, and card content.",
+            "We also collect basic usage data like visits, device type, and error logs."
+          ]
+        },
+        {
+          "title": "How we use information",
+          "body": [
+            "We use your information to provide, maintain, and improve CardLink, including syncing cards and processing orders.",
+            "We also use it for security, fraud prevention, account support, and service communications."
+          ]
+        },
+        {
+          "title": "How we share information",
+          "body": [
+            "We only share data with service providers when needed to operate CardLink, such as payment and email providers.",
+            "We do not sell your personal information unless required by law or with your consent."
+          ]
+        },
+        {
+          "title": "Data retention",
+          "body": [
+            "We keep data only as long as needed to provide the service and meet legal obligations.",
+            "You can request account deletion to remove your personal data."
+          ]
+        },
+        {
+          "title": "Your choices",
+          "body": [
+            "You can update your profile or adjust privacy controls in Settings.",
+            "You can also contact support to access or delete your data."
+          ]
+        },
+        {
+          "title": "Security",
+          "body": [
+            "We use reasonable technical and organizational measures to protect your data.",
+            "No method of transmission or storage is 100% secure."
+          ]
+        },
+        {
+          "title": "Changes",
+          "body": [
+            "We may update this policy and will post the latest version on this page."
+          ]
+        },
+        {
+          "title": "Contact us",
+          "body": [
+            "If you have privacy questions, email support@cardlink.app."
+          ]
+        }
+      ]
+    },
+    "errors": {
+      "portal": "Unable to open the billing portal. Please try again."
+    }
+  },
+  "passwordSettings": {
+    "brand": "CardLink",
+    "title": "초기화 비밀번호",
+    "subtitle": "Set a new password for your account.",
+    "fields": {
+      "newPassword": "새로운 비밀번호",
+      "confirmPassword": "확인 새로운 비밀번호"
+    },
+    "errors": {
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordNotMatch": "Passwords do not match."
+    },
+    "messages": {
+      "updated": "비밀번호 updated successfully."
+    },
+    "actions": {
+      "save": "저장 비밀번호",
+      "saving": "Saving..."
+    }
+  },
+  "resetPassword": {
+    "brand": "CardLink",
+    "title": "Set a 새로운 비밀번호",
+    "subtitle": "After opening the reset link from email, enter your new password here.",
+    "fields": {
+      "newPassword": "새로운 비밀번호",
+      "confirmPassword": "확인 새로운 비밀번호"
+    },
+    "errors": {
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordNotMatch": "Passwords do not match.",
+      "invalidOrExpiredLink": "This reset link is invalid or expired. Please request a new one."
+    },
+    "messages": {
+      "updated": "Password reset completed. You can now sign in.",
+      "redirecting": "Redirecting to login in {seconds}s..."
+    },
+    "actions": {
+      "save": "초기화 비밀번호",
+      "saving": "Updating...",
+      "verifying": "Verifying 초기화 link...",
+      "backToLogin": "뒤로 to login"
+    }
+  },
+  "profile": {
+    "brand": "CardLink",
+    "title": "편집 프로필",
+    "avatar": {
+      "title": "Avatar",
+      "subtitle": "업로드 coming soon"
+    },
+    "fields": {
+      "fullName": "이름",
+      "email": "이메일",
+      "title": "제목",
+      "company": "회사",
+      "bio": "Bio",
+      "avatarUrl": "Avatar URL"
+    },
+    "errors": {
+      "signInEdit": "Please sign in to edit your profile.",
+      "signInSave": "Please sign in to save your profile."
+    },
+    "defaults": {
+      "name": "CardLink"
+    },
+    "toast": {
+      "updated": "프로필 updated."
+    },
+    "actions": {
+      "saving": "Saving...",
+      "save": "변경 저장"
+    }
+  },
+  "upgrade": {
+    "brand": "CardLink",
+    "title": "Choose Your 플랜",
+    "subtitle": "Unlock premium tools to grow your network. Upgrade or downgrade anytime.",
+    "errors": {
+      "checkout": "Unable to 시작 checkout.",
+      "unavailable": "Checkout 이용불가.",
+      "portal": "Unable to 열림 결제 portal."
+    },
+    "toggle": {
+      "monthly": "월간",
+      "yearly": "연간",
+      "save": "저장 ~17%",
+      "mo": "mo",
+      "yr": "yr"
+    },
+    "free": {
+      "title": "Free",
+      "badge": "Free forever"
+    },
+    "premium": {
+      "badge": "Popular",
+      "status": "You are subscribed.",
+      "until": "Active until {date}"
+    },
+    "business": {
+      "badge": "Best 가치"
+    },
+    "features": {
+      "companies": "회사",
+      "unlimitedCompanies": "Unlimited companies",
+      "users": "users",
+      "storage": "storage",
+      "aiActions": "AI actions/mo",
+      "pdfExport": "PDF 내보내기",
+      "ocrDocs": "OCR docs/mo"
+    },
+    "actions": {
+      "redirecting": "Redirecting...",
+      "subscribe": "구독",
+      "currentPlan": "현재 플랜",
+      "manageBilling": "관리 결제"
+    }
+  },
+  "upgradeSuccess": {
+    "title": "Welcome to 프리미엄! 🎉",
+    "subtitle": "Your 계정 is now upgraded.",
+    "action": "뒤로 to 대시보드"
+  },
+  "discountHistory": {
+    "brand": "CardLink",
+    "title": "Redemption 이력",
+    "subtitle": "Company admins can review confirmed and rejected redemptions here."
+  },
+  "explorePage": {
+    "brand": "CardLink",
+    "title": "탐색",
+    "subtitle": "Discover partner companies, promotions, and redeemable discounts.",
+    "loading": "Loading 탐색 content...",
+    "sections": {
+      "promotion": "Promotion Carousel",
+      "partners": "Partner 회사",
+      "discounts": "할인 목록"
+    },
+    "labels": {
+      "specialOffer": "Special Offer",
+      "membershipPartner": "Membership partner 회사.",
+      "company": "회사",
+      "balance": "잔액",
+      "pointUnit": "BOBO-POINT",
+      "offPercent": "{value}% off",
+      "offFixed": "${value} off",
+      "offGeneric": "{value} off"
+    },
+    "actions": {
+      "view": "보기",
+      "join": "참여",
+      "joined": "Joined",
+      "addToMembership": "추가 to Membership",
+      "all": "전체",
+      "submitting": "Submitting...",
+      "redeem": "Redeem"
+    },
+    "empty": {
+      "promotions": "아니오 활성 promotions right now.",
+      "partners": "아니오 partner companies 이용가능.",
+      "discounts": "No discounts available for this company."
+    },
+    "messages": {
+      "signInToRedeem": "Please sign in to redeem discounts.",
+      "applyMembershipFirst": "Apply for membership first before redeeming this discount.",
+      "redeemSubmitted": "Redemption request submitted. Waiting for company approval."
+    },
+    "errors": {
+      "loadCompanies": "Failed to load companies: {message}",
+      "loadDiscounts": "Failed to load discounts: {message}",
+      "loadPartners": "Failed to load partner companies: {message}",
+      "loadMemberships": "Failed to load memberships: {message}"
+    }
+  },
+  "discountPanel": {
+    "loading": "Loading discounts...",
+    "quickAccess": "Quick 접근",
+    "labels": {
+      "specialOffer": "Special Offer",
+      "offPercent": "{value}% off",
+      "offFixed": "${value} off",
+      "offGeneric": "{value} off",
+      "serviceCompany": "서비스 회사",
+      "yourBalance": "Your 잔액",
+      "offer": "Offer",
+      "company": "회사"
+    },
+    "actions": {
+      "reviewPending": "검토 대기중",
+      "reviewHistory": "검토 이력",
+      "openScanner": "열림 Scanner",
+      "allCompanies": "전체 Companies",
+      "submitting": "Submitting...",
+      "redeem": "Redeem",
+      "confirm": "확인",
+      "reject": "거부"
+    },
+    "admin": {
+      "title": "회사 관리자 Panel",
+      "subtitle": "Login as a company owner/admin to confirm redemption requests.",
+      "pending": "대기중",
+      "history": "이력",
+      "accountPoints": "계정 포인트",
+      "pointUnit": "BOBO-POINT",
+      "required": "필수",
+      "requested": "Requested",
+      "processed": "Processed"
+    },
+    "status": {
+      "confirmed": "CONFIRMED",
+      "rejected": "거부됨"
+    },
+    "empty": {
+      "noActiveDiscounts": "아니오 활성 discounts right now.",
+      "noPending": "아니오 대기중 redemption requests.",
+      "noHistory": "아니오 processed redemption 이력."
+    },
+    "messages": {
+      "signInToUse": "Please sign in to use discounts.",
+      "needMembership": "You need an active membership account for this company.",
+      "requestSubmitted": "Redemption request submitted. Waiting for company confirmation.",
+      "rejectedByAdmin": "거부됨 by 회사 관리자",
+      "fallbackAdmin": "Loaded with fallback admin detection ({reason}).",
+      "confirmed": "Redemption confirmed.",
+      "rejected": "Redemption 거부됨."
+    },
+    "errors": {
+      "loadCompanies": "Failed to load companies: {message}",
+      "loadOffers": "Failed to load offers: {message}",
+      "loadAccounts": "Failed to load membership accounts: {message}",
+      "loadRedemptions": "Failed to load redemptions: {message}"
+    }
+  },
+  "membershipOverview": {
+    "brand": "CardLink",
+    "title": "Membership 개요",
+    "subtitle": "All your memberships and account points across every company.",
+    "cards": {
+      "pointSystemTitle": "Point System",
+      "pointSystemName": "BOBO-POINT",
+      "pointSystemBody": "Shared by 전체 partner companies.",
+      "totalBalanceTitle": "합계 잔액",
+      "totalBalanceBody": "BOBO-POINT across 전체 memberships.",
+      "totalSpendTitle": "합계 Spend",
+      "totalSpendBody": "Total amount spent across all memberships."
+    },
+    "labels": {
+      "unknownCompany": "Unknown 회사",
+      "membershipAccount": "Membership 계정",
+      "tier": "등급",
+      "noTier": "아니오 등급",
+      "totalSpend": "합계 Spend",
+      "current": "Current",
+      "lifetime": "Lifetime",
+      "pointUnit": "BOBO-POINT",
+      "joined": "Joined",
+      "expires": "Expires",
+      "noExpiry": "아니오 expiry"
+    },
+    "errors": {
+      "tablesNotReady": "Membership tables are not ready yet. Run phase migrations to enable this view."
+    },
+    "empty": {
+      "noMemberships": "아니오 memberships found yet."
+    },
+    "redeemHistory": {
+      "title": "My 할인 Redemptions",
+      "loading": "Loading redemption 이력...",
+      "empty": "아니오 할인 redemption records yet.",
+      "signInToView": "Please sign in to view redemption history.",
+      "labels": {
+        "unknownOffer": "Unknown offer",
+        "points": "포인트",
+        "requestedAt": "Redeemed At",
+        "processedAt": "Processed At",
+        "reason": "Reason"
+      },
+      "status": {
+        "redeemed": "Redeemed",
+        "used": "Used",
+        "rejected": "거부됨"
+      },
+      "actions": {
+        "refresh": "새로고침",
+        "showQr": "Show Redeem QR",
+        "used": "This offer is used",
+        "unavailable": "QR 이용불가 for this offer"
+      },
+      "errors": {
+        "load": "Failed to load redemption history: {message}"
+      }
+    },
+    "redeemQr": {
+      "close": "닫기",
+      "download": "다운로드 QR",
+      "copy": "복사 Link",
+      "copied": "Copied"
+    }
+  },
+  "discover": {
+    "brand": "CardLink",
+    "title": "발견",
+    "subtitle": "Find people and grow your network.",
+    "search": {
+      "placeholder": "Search by name, title, or company",
+      "action": "검색"
+    },
+    "loading": "Loading results...",
+    "empty": {
+      "results": "아니오 results found."
+    },
+    "suggested": {
+      "title": "People you may know",
+      "empty": "아니오 suggestions yet."
+    },
+    "errors": {
+      "signIn": "Please sign in to 검색.",
+      "needCard": "Create a card first to exchange cards."
+    },
+    "defaults": {
+      "user": "CardLink User"
+    },
+    "upgradePrompt": "업그레이드 to see 세부사항",
+    "status": {
+      "connected": "Connected",
+      "pending": "대기중",
+      "none": "연결되지 않음"
+    },
+    "actions": {
+      "connect": "연결",
+      "loadMore": "Load 더보기"
+    }
+  },
+  "companyManagementPanel": {
+    "header": {
+      "brand": "CardLink",
+      "title": "회사 관리",
+      "subtitle": "Manage company profile, discounts, members, and coupon redemption approvals."
+    },
+    "states": {
+      "loading": "Loading 회사 관리...",
+      "noAdmin": "You are not a company owner/admin yet."
+    },
+    "errors": {
+      "signIn": "Please sign in to use company management.",
+      "discountTitleRequired": "할인 제목 is 필수.",
+      "requiredAmountInvalid": "Required amount must be a valid non-negative number.",
+      "usageLimitInvalid": "Usage limits must be valid non-negative numbers."
+    },
+    "messages": {
+      "companyProfileUpdated": "회사 프로필 updated.",
+      "discountUploaded": "할인 uploaded.",
+      "discountDeleted": "할인 deleted.",
+      "discountUpdated": "할인 updated.",
+      "rejectedByOwner": "거부됨 by 회사 소유자",
+      "couponRedeemed": "쿠폰 redeemed.",
+      "couponRejected": "쿠폰 거부됨.",
+      "tierRequirementUpdated": "등급 업그레이드 필수 금액 updated."
+    },
+    "sections": {
+      "companyProfile": {
+        "title": "회사 프로필",
+        "subtitle": "Update company image and promotion banner URLs."
+      },
+      "currentDiscounts": {
+        "title": "Current Discounts"
+      },
+      "uploadDiscount": {
+        "title": "업로드 새로운 할인"
+      },
+      "members": {
+        "title": "Membership 회원"
+      },
+      "tierRules": {
+        "title": "Membership 등급 업그레이드 Rules",
+        "subtitle": "Set required spend amount for each tier upgrade."
+      },
+      "transactions": {
+        "title": "Membership 계정 거래내역",
+        "subtitle": "Owner/admin can review each account spending transaction."
+      },
+      "redemption": {
+        "title": "쿠폰 / 할인 Redemption",
+        "subtitle": "Approve or reject pending redemption requests."
+      }
+    },
+    "placeholders": {
+      "companyName": "회사명",
+      "companyDescription": "회사 설명",
+      "companyLogoUrl": "회사 이미지 URL (logo_url)",
+      "companyCoverUrl": "Promotion banner URL (cover_url)",
+      "discountTitle": "할인 제목",
+      "discountDescription": "할인 설명",
+      "discountValue": "할인 가치",
+      "pointsCostOptional": "포인트 cost 선택l)",
+      "usageLimitOptional": "합계 usage limit 선택l)",
+      "perMemberLimitOptional": "Per-user usage limit 선택l)"
+    },
+    "discountType": {
+      "percentage": "비율",
+      "fixed": "Fixed 금액",
+      "special": "Special"
+    },
+    "actions": {
+      "saving": "Saving...",
+      "save": "저장",
+      "saveCompanyProfile": "저장 회사 프로필",
+      "submitting": "Submitting...",
+      "deleting": "Deleting...",
+      "uploadDiscount": "업로드 할인",
+      "editDiscount": "편집 할인",
+      "saveDiscount": "저장 할인",
+      "deleteDiscount": "삭제 할인",
+      "cancel": "취소",
+      "scanRedemption": "스캔 redemption",
+      "approve": "승인",
+      "reject": "거부"
+    },
+    "offer": {
+      "percentageOff": "{value}% off",
+      "fixedOff": "${value} off",
+      "points": "{value} BOBO-POINT",
+      "special": "Special offer"
+    },
+    "labels": {
+      "status": "상태",
+      "tier": "등급",
+      "spend": "Spend",
+      "current": "Current",
+      "lifetime": "Lifetime",
+      "joined": "Joined",
+      "rank": "Rank",
+      "amount": "금액",
+      "account": "계정",
+      "user": "User",
+      "points": "포인트",
+      "totalLimit": "합계 limit",
+      "perUserLimit": "Per-user limit",
+      "active": "활성"
+    },
+    "common": {
+      "active": "활성",
+      "inactive": "비활성",
+      "na": "N/A",
+      "program": "Program",
+      "offer": "Offer",
+      "unknown": "Unknown",
+      "unlimited": "Unlimited"
+    },
+    "confirm": {
+      "deleteDiscount": "Delete this discount? This cannot be undone."
+    },
+    "empty": {
+      "noDiscount": "아니오 할인 yet.",
+      "noMembershipAccount": "아니오 membership 계정 yet.",
+      "noMembershipTiers": "아니오 membership tiers found.",
+      "noMembershipTransactions": "아니오 membership transaction record yet.",
+      "noPendingRedemption": "아니오 대기중 redemption request."
+    }
+  },
+  "companyCardsManagementPanel": {
+    "states": {
+      "loading": "Loading 회사 카드...",
+      "noAdmin": "This tab is available for company owner/admin only."
+    },
+    "errors": {
+      "signIn": "Please sign in to use company card management.",
+      "chooseMember": "Choose a 팀 member first.",
+      "selectCompany": "Please 선택 a 회사.",
+      "emailRequired": "Email is required for new account.",
+      "passwordMinLength": "Password must be at least 8 characters.",
+      "createAccountCardFailed": "Failed to create account and card.",
+      "selectCompanyFirst": "Please 선택 a 회사 first.",
+      "signInFirst": "Please sign in first.",
+      "createCompanyProfileCardFailed": "Failed to create company profile card."
+    },
+    "messages": {
+      "accountCardCreated": "Account and company name card created.",
+      "companyCardCreated": "회사 이름 card created.",
+      "cardDeleted": "이름 card deleted."
+    },
+    "defaults": {
+      "companyCard": "회사 Card",
+      "companyProfile": "회사 프로필"
+    },
+    "confirm": {
+      "deleteCard": "삭제 this 회사 이름 card?"
+    },
+    "sections": {
+      "companyProfile": {
+        "title": "회사 프로필",
+        "subtitle": "Edit in full card editor (same as personal card), with personal name hidden."
+      },
+      "addCard": {
+        "title": "추가 회사 이름 Card"
+      },
+      "performance": {
+        "title": "회사 이름 카드 성과"
+      }
+    },
+    "modes": {
+      "newAccount": "새로운 계정 + card",
+      "existingMember": "Existing member only"
+    },
+    "actions": {
+      "preparing": "Preparing...",
+      "openCompanyProfileEdit": "열림 회사 프로필 편집 page",
+      "generate": "Generate",
+      "creating": "Creating...",
+      "createAccountAndCard": "만들기 계정 + 회사 card",
+      "addCompanyCard": "추가 회사 card",
+      "openPublicCard": "열림 public card",
+      "editPage": "편집 page",
+      "delete": "삭제"
+    },
+    "placeholders": {
+      "loginEmail": "Login 이메일",
+      "password": "비밀번호",
+      "cardName": "Card 이름",
+      "fullName": "이름",
+      "title": "제목",
+      "company": "회사"
+    },
+    "labels": {
+      "company": "회사",
+      "description": "설명",
+      "member": "member",
+      "untitledCard": "Untitled card",
+      "views": "Views",
+      "connections": "Connections"
+    },
+    "hints": {
+      "newAccount": "A separate normal user account will be created and a verification email will be sent."
+    },
+    "empty": {
+      "noCards": "No company name cards found for current members."
+    }
+  },
+  "communityDashboardBoard": {
+    "states": {
+      "loading": "Loading board..."
+    },
+    "errors": {
+      "boardNotFound": "Board not found."
+    },
+    "labels": {
+      "community": "커뮤니티",
+      "replies": "{count} replies"
+    },
+    "actions": {
+      "view": "보기"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noPosts": "No posts yet. Start the first conversation."
+    }
+  },
+  "communityDashboardSubBoard": {
+    "states": {
+      "loading": "Loading 게시글..."
+    },
+    "errors": {
+      "boardNotFound": "Board not found.",
+      "subBoardNotFound": "Sub-board not found.",
+      "signInToPost": "Please sign in to 게시글."
+    },
+    "sections": {
+      "newPost": "새 게시글"
+    },
+    "placeholders": {
+      "postTitle": "게시글 제목",
+      "postBody": "Write something thoughtful..."
+    },
+    "actions": {
+      "posting": "Posting...",
+      "publish": "Publish"
+    },
+    "labels": {
+      "replies": "{count} replies"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noPosts": "아직 게시글이 없습니다."
+    }
+  },
+  "communityDashboardPost": {
+    "states": {
+      "loading": "Loading 게시글..."
+    },
+    "errors": {
+      "postNotFound": "게시글 not found.",
+      "signInToReply": "Please sign in to 답글."
+    },
+    "sections": {
+      "replies": "답글",
+      "addReply": "추가 a 답글"
+    },
+    "placeholders": {
+      "replyBody": "Write your 답글..."
+    },
+    "hints": {
+      "replyVisibility": "Replies are visible to everyone in this sub-board."
+    },
+    "actions": {
+      "posting": "Posting...",
+      "reply": "답글"
+    },
+    "labels": {
+      "replies": "{count} replies"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noReplies": "아니오 답글 yet."
+    }
+  },
+  "templateSelector": {
+    "title": "템플릿 선택",
+    "subtitle": "Choose your card 템플릿.",
+    "templates": {
+      "classic-business": {
+        "name": "Classic 비즈니스",
+        "category": "비즈니스"
+      },
+      "profile-community": {
+        "name": "프로필 커뮤니티",
+        "category": "프로필"
+      },
+      "minimal-editorial": {
+        "name": "Minimal Editorial",
+        "category": "프로필"
+      },
+      "fullscreen-hero-tabs": {
+        "name": "Aurora Hero Tabs",
+        "category": "프로필"
+      }
+    }
+  },
+  "communityDashboardList": {
+    "header": {
+      "brand": "CardLink",
+      "title": "커뮤니티",
+      "subtitle": "Browse boards and join the conversation."
+    },
+    "states": {
+      "loading": "Loading 게시판..."
+    },
+    "labels": {
+      "posts": "{count} posts"
+    },
+    "sections": {
+      "latest": "커뮤니티 최신글"
+    },
+    "actions": {
+      "viewPublicFeed": "공개 피드 보기"
+    },
+    "defaults": {
+      "member": "CardLink Member"
+    },
+    "empty": {
+      "noPosts": "아직 게시글이 없습니다."
+    }
+  },
+  "businessNav": {
+    "business": "비즈니스",
+    "store": "스토어",
+    "ai": "AI",
+    "notifications": "알림",
+    "settings": "설정"
+  },
+  "businessHandle": {
+    "brand": "비즈니스 Interface",
+    "title": "비즈니스 Handle",
+    "subtitle": "Your 비즈니스 command center.",
+    "modules": "모듈",
+    "aiSuggestions": {
+      "title": "AI Suggestions",
+      "empty": "No suggestions yet. Your AI assistant will show action items here.",
+      "viewAll": "보기 전체",
+      "urgent": "Urgent",
+      "review": "검토",
+      "info": "정보"
+    },
+    "moduleNames": {
+      "accounting": "회계",
+      "store": "스토어",
+      "hr": "인사",
+      "booking": "예약",
+      "inventory": "재고",
+      "pos": "POS",
+      "crm": "CRM",
+      "procurement": "Procurement",
+      "companyCards": "회사 카드"
+    },
+    "moduleStats": {
+      "pending": "{count} pending"
+    },
+    "comingSoon": "Coming Soon",
+    "comingSoonDesc": "This module is under development and will be available soon."
+  },
+  "businessBooking": {
+    "brand": "비즈니스 Interface",
+    "stats": {
+      "today": "오늘",
+      "upcoming": "Upcoming",
+      "completionRate": "Completion Rate"
+    },
+    "todaySchedule": "Today's 일정",
+    "services": {
+      "title": "서비스",
+      "add": "추가",
+      "addTitle": "추가 서비스",
+      "editTitle": "편집 서비스",
+      "fields": {
+        "name": "서비스 이름",
+        "namePlaceholder": "e.g. Haircut",
+        "description": "설명",
+        "duration": "기간 (mins)",
+        "price": "가격",
+        "category": "카테고리",
+        "maxConcurrent": "Max Concurrent",
+        "bufferBefore": "Buffer Before (mins)",
+        "bufferAfter": "Buffer After (mins)",
+        "minNotice": "Min Notice (hours)",
+        "maxAdvance": "Max Advance (days)"
+      },
+      "saving": "Saving...",
+      "save": "저장",
+      "emptyTitle": "아니오 서비스 yet",
+      "emptyDesc": "추가 your first bookable 서비스.",
+      "mins": "mins",
+      "confirmDelete": "확인 삭제"
+    },
+    "appointments": {
+      "title": "예약",
+      "add": "추가",
+      "addTitle": "새로운 예약",
+      "fields": {
+        "service": "서비스",
+        "selectService": "선택 a 서비스",
+        "customerName": "고객 이름",
+        "email": "이메일",
+        "phone": "전화번호",
+        "date": "날짜",
+        "time": "Time",
+        "notes": "메모"
+      },
+      "saving": "Saving...",
+      "save": "저장",
+      "tabs": {
+        "all": "전체",
+        "today": "오늘",
+        "upcoming": "Upcoming",
+        "past": "Past"
+      },
+      "empty": "아니오 예약 found.",
+      "confirm": "확인",
+      "cancel": "취소",
+      "complete": "Complete",
+      "noShow": "아니오 Show",
+      "reschedule": "일정변경",
+      "rescheduleTitle": "일정변경 예약",
+      "confirmReschedule": "확인 일정변경",
+      "cancelTitle": "취소 예약",
+      "cancelReasonPlaceholder": "Reason for 취소 선택l)",
+      "confirmCancel": "확인 취소",
+      "back": "뒤로",
+      "cancelReason": "Reason"
+    },
+    "statuses": {
+      "pending": "대기중",
+      "confirmed": "Confirmed",
+      "completed": "완료됨",
+      "cancelled": "취소됨",
+      "no_show": "아니오 Show"
+    },
+    "calendar": {
+      "title": "캘린더",
+      "day": "Day",
+      "week": "주",
+      "empty": "아니오 예약 for this period.",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun",
+      "month": "월"
+    },
+    "availability": {
+      "title": "Availability",
+      "subtitle": "Set your business hours for each day of the week.",
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "open": "열림",
+      "closed": "닫힘",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "save": "저장",
+      "dateOverrides": "Date-Specific Overrides",
+      "addOverride": "추가",
+      "overrideDate": "날짜",
+      "closedAllDay": "닫힘 전체 day",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Public 공휴일, renovation",
+      "saveOverride": "추가 Override",
+      "noOverrides": "아니오 날짜 overrides configured."
+    },
+    "settings": {
+      "title": "예약 설정",
+      "behavior": "예약 Behavior",
+      "autoConfirm": "Auto-confirm 예약",
+      "autoConfirmDesc": "Automatically confirm new bookings without manual approval",
+      "timezone": "Timezone",
+      "slotInterval": "시간대 Interval",
+      "cancellationNotice": "취소 Notice",
+      "noLimit": "아니오 limit",
+      "requiredFields": "필수 고객 Fields",
+      "requireEmail": "Require 이메일 주소",
+      "requirePhone": "Require 전화번호 number",
+      "bookingPage": "Public 예약 Page",
+      "pageTitle": "Page 제목",
+      "pageTitlePlaceholder": "e.g. Book an 예약",
+      "pageDescription": "Page 설명",
+      "cancellationPolicy": "취소 Policy",
+      "cancellationPolicyPlaceholder": "e.g. Free cancellation up to 24 hours before",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "save": "저장 설정"
+    },
+    "customers": {
+      "title": "고객",
+      "add": "추가",
+      "addTitle": "추가 고객",
+      "editTitle": "편집 고객",
+      "fields": {
+        "name": "이름",
+        "email": "이메일",
+        "phone": "전화번호",
+        "notes": "메모"
+      },
+      "saving": "Saving...",
+      "save": "저장",
+      "emptyTitle": "아니오 고객 yet",
+      "emptyDesc": "Customers are automatically created when they book.",
+      "searchPlaceholder": "검색 고객...",
+      "bookings": "bookings",
+      "spent": "spent",
+      "lastVisit": "Last visit",
+      "confirmDelete": "확인 삭제"
+    },
+    "reports": {
+      "title": "예약 보고서",
+      "empty": "No data for the selected period.",
+      "totalAppointments": "합계 예약",
+      "revenue": "수익",
+      "completionRate": "Completion Rate",
+      "noShowRate": "No-Show Rate",
+      "statusBreakdown": "상태 Breakdown",
+      "byService": "By 서비스",
+      "dailyBreakdown": "일간 Breakdown",
+      "bookings": "bookings"
+    }
+  },
+  "businessHr": {
+    "brand": "비즈니스 Interface",
+    "stats": {
+      "activeEmployees": "활성 직원",
+      "pendingLeave": "대기중 휴가 Requests",
+      "todayAttendance": "출석 오늘",
+      "payrollDesc": "Manage salary runs, deductions, and compensation reports.",
+      "departmentsDesc": "Organize your company structure with departments and positions.",
+      "holidaysDesc": "Track public holidays and company calendar events.",
+      "documentsDesc": "Store employee contracts, IDs, and certificates securely.",
+      "reportsDesc": "Generate workforce analytics and HR insights."
+    },
+    "employmentTypes": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time",
+      "contract": "Contract"
+    },
+    "employees": {
+      "title": "직원",
+      "add": "추가",
+      "addTitle": "추가 직원",
+      "editTitle": "편집 직원",
+      "step1": "Personal Information",
+      "step2": "Job 세부사항",
+      "step3": "Compensation",
+      "fields": {
+        "fullName": "이름",
+        "fullNamePlaceholder": "e.g. John Smith",
+        "email": "이메일",
+        "phone": "전화번호",
+        "position": "Position",
+        "department": "Department",
+        "employmentType": "Employment 유형",
+        "startDate": "시작 날짜",
+        "salary": "급여",
+        "salaryPeriod": "급여 Period",
+        "address": "주소",
+        "nationalId": "National ID / 세금 Number",
+        "bankName": "Bank 이름",
+        "bankAccount": "Bank 계정 Number",
+        "emergencyContact": "Emergency 연락처",
+        "emergencyName": "연락처 이름",
+        "emergencyPhone": "연락처 전화번호",
+        "emergencyRelation": "Relationship"
+      },
+      "salaryPeriods": {
+        "monthly": "월간",
+        "hourly": "Hourly"
+      },
+      "back": "뒤로",
+      "next": "다음",
+      "saving": "Saving...",
+      "save": "저장",
+      "emptyTitle": "아니오 직원 yet",
+      "emptyDesc": "Add your first employee to get started.",
+      "statuses": {
+        "active": "활성",
+        "inactive": "비활성",
+        "terminated": "Terminated"
+      },
+      "toggleStatus": "Toggle 상태",
+      "confirmDelete": "확인 삭제",
+      "step4": "Additional Information"
+    },
+    "leave": {
+      "title": "휴가 Requests",
+      "add": "추가",
+      "addTitle": "새로운 휴가 Request",
+      "fields": {
+        "employee": "직원",
+        "selectEmployee": "선택 직원",
+        "leaveType": "휴가 유형",
+        "startDate": "시작 날짜",
+        "endDate": "End 날짜",
+        "daysCount": "{count} day(s)",
+        "reason": "Reason"
+      },
+      "types": {
+        "annual": "연간",
+        "sick": "병가",
+        "unpaid": "미지불",
+        "maternity": "Maternity",
+        "other": "기타",
+        "paternity": "Paternity"
+      },
+      "tabs": {
+        "pending": "대기중",
+        "approved": "승인됨",
+        "rejected": "거부됨",
+        "balances": "Balances"
+      },
+      "saving": "Submitting...",
+      "submit": "제출",
+      "empty": "아니오 휴가 requests.",
+      "unknownEmployee": "Unknown 직원",
+      "days": "day(s)",
+      "approve": "승인",
+      "reject": "거부",
+      "balancesEmpty": "No leave balances initialized for this year.",
+      "initBalances": "Initialize Balances",
+      "balanceLeft": "left"
+    },
+    "attendance": {
+      "title": "출석",
+      "present": "출석",
+      "absent": "결근",
+      "late": "지각",
+      "noEmployees": "No employees found. Add employees first.",
+      "clockIn": "In",
+      "clockOut": "Out",
+      "clockInBtn": "Clock In",
+      "clockOutBtn": "Clock Out",
+      "statuses": {
+        "present": "출석",
+        "absent": "결근",
+        "late": "지각",
+        "half_day": "Half Day"
+      }
+    },
+    "payroll": {
+      "title": "급여",
+      "generate": "Generate",
+      "statuses": {
+        "draft": "초안",
+        "approved": "승인됨",
+        "paid": "지불됨"
+      },
+      "bulkApprove": "승인 전체",
+      "bulkPaid": "Mark 지불됨",
+      "empty": "No payroll records for this period.",
+      "emptyHint": "Generate 급여 to 만들기 records.",
+      "unknownEmployee": "Unknown 직원",
+      "basic": "기본",
+      "overtime": "초과근무",
+      "deductions": "Deductions",
+      "allowances": "Allowances",
+      "netPay": "Net Pay"
+    },
+    "departments": {
+      "title": "부서",
+      "add": "추가",
+      "addTitle": "추가 Department",
+      "editTitle": "편집 Department",
+      "fields": {
+        "name": "Department 이름",
+        "namePlaceholder": "e.g. Engineering",
+        "description": "설명"
+      },
+      "saving": "Saving...",
+      "save": "저장",
+      "emptyTitle": "아니오 부서 yet",
+      "emptyDesc": "Add your first department to organize your team.",
+      "confirmDelete": "확인 삭제"
+    },
+    "holidays": {
+      "title": "Public Holidays",
+      "add": "추가",
+      "addTitle": "추가 공휴일",
+      "editTitle": "편집 공휴일",
+      "fields": {
+        "name": "공휴일 이름",
+        "namePlaceholder": "e.g. Chinese 새로운 년",
+        "date": "날짜",
+        "recurring": "Repeats every 년"
+      },
+      "saving": "Saving...",
+      "save": "저장",
+      "emptyTitle": "아니오 holidays yet",
+      "emptyDesc": "Add public holidays for your company.",
+      "confirmDelete": "확인 삭제",
+      "recurring": "연간"
+    },
+    "documents": {
+      "title": "문서",
+      "add": "업로드",
+      "addTitle": "업로드 문서",
+      "fields": {
+        "employee": "직원",
+        "name": "문서 이름",
+        "namePlaceholder": "e.g. Employment Contract",
+        "docType": "문서 유형",
+        "fileUrl": "파일 URL"
+      },
+      "types": {
+        "contract": "Contract",
+        "id_document": "ID 문서",
+        "certificate": "자격증",
+        "payslip": "Payslip",
+        "other": "기타"
+      },
+      "saving": "Saving...",
+      "save": "업로드",
+      "emptyTitle": "아니오 문서 yet",
+      "emptyDesc": "Upload employee documents to store them securely.",
+      "confirmDelete": "확인 삭제",
+      "allEmployees": "전체 직원"
+    },
+    "reports": {
+      "title": "인사 보고서",
+      "tabs": {
+        "headcount": "Headcount",
+        "attendance": "출석",
+        "leave": "휴가",
+        "payroll": "급여"
+      },
+      "headcount": {
+        "total": "합계 직원",
+        "active": "활성",
+        "byDepartment": "By Department",
+        "byType": "By Employment 유형"
+      },
+      "attendance": {
+        "presentDays": "출석 Days",
+        "absentDays": "결근 Days",
+        "lateDays": "지각 Days",
+        "totalHours": "합계 Hours"
+      },
+      "leave": {
+        "entitlement": "Entitlement",
+        "used": "Used",
+        "remaining": "Remaining",
+        "empty": "No leave balance data. Initialize leave balances first."
+      },
+      "payroll": {
+        "totalNetPay": "합계 Net Pay",
+        "records": "Records"
+      }
+    }
+  },
+  "businessStore": {
+    "brand": "비즈니스 Interface",
+    "title": "스토어",
+    "subtitle": "Build and 관리 your storefront.",
+    "empty": "Your store is not set up yet. Start building your storefront.",
+    "published": "게시됨",
+    "draft": "초안",
+    "publishStore": "Publish 스토어",
+    "unpublishStore": "Unpublish 스토어",
+    "publishing": "Updating...",
+    "dashboard": {
+      "title": "스토어 대시보드",
+      "subtitle": "Sales data, metrics, and store performance.",
+      "manage": "관리 스토어",
+      "totalProducts": "합계 제품",
+      "inactive": "{count} inactive",
+      "avgPrice": "Avg. 가격",
+      "categories": "Categories",
+      "uncategorized": "{count} uncategorized",
+      "activeDiscounts": "활성 Discounts",
+      "scheduled": "{count} scheduled",
+      "catalogValue": "Catalog 가치",
+      "catalogValueDesc": "Total value of active products based on price × stock",
+      "productMix": "제품 Mix",
+      "physical": "Physical",
+      "services": "서비스",
+      "digital": "Digital",
+      "inventoryHealth": "재고 Health",
+      "inStock": "In 재고",
+      "lowStock": "Low 재고",
+      "outOfStock": "Out of 재고",
+      "lowStockItems": "Low 재고 items",
+      "left": "left",
+      "categoryDistribution": "카테고리 Distribution",
+      "uncategorizedLabel": "Uncategorized",
+      "discountSummary": "할인 요약",
+      "active": "활성",
+      "scheduledLabel": "Scheduled",
+      "expired": "만료됨",
+      "discountedProducts": "{count} products on sale (avg {avg}% off)",
+      "salesOverview": "매출 개요",
+      "totalOrders": "합계 주문",
+      "netRevenue": "Net 수익",
+      "avgOrder": "Avg 주문",
+      "completedLabel": "완료됨",
+      "pendingLabel": "대기중",
+      "cancelledLabel": "취소됨",
+      "refundedLabel": "환불됨",
+      "totalCustomers": "{count} customers",
+      "storeReadiness": "스토어 Readiness",
+      "readiness": {
+        "hasName": "스토어 이름 set",
+        "hasBanner": "Banner 이미지 uploaded",
+        "hasProducts": "제품 added",
+        "hasCategories": "Categories created",
+        "isPublished": "스토어 게시됨"
+      }
+    },
+    "stats": {
+      "products": "제품",
+      "categories": "Categories",
+      "discounts": "Discounts"
+    },
+    "quickActions": {
+      "setup": "스토어 설정",
+      "setupDesc": "Banner, 이름 & hours",
+      "categories": "Categories",
+      "categoriesDesc": "Organize 제품",
+      "products": "제품",
+      "productsDesc": "관리 catalog",
+      "discounts": "Discounts",
+      "discountsDesc": "Promotions & 거래",
+      "settings": "배달 & Payments",
+      "settingsDesc": "배송 & 결제 options"
+    },
+    "preview": {
+      "title": "스토어 미리보기",
+      "noProducts": "아니오 제품 yet.",
+      "noCategories": "아니오 categories yet.",
+      "allCategories": "전체",
+      "discountBadge": "{value}% off",
+      "discountFixedBadge": "${value} off"
+    },
+    "setup": {
+      "title": "스토어 설정",
+      "subtitle": "Configure your storefront appearance and hours.",
+      "step1Title": "Branding",
+      "step2Title": "Hours & 테마",
+      "bannerLabel": "스토어 Banner",
+      "bannerHint": "Recommended: 1200×400px",
+      "uploadBanner": "업로드 Banner",
+      "changeBanner": "변경 Banner",
+      "removeBanner": "제거",
+      "storeNameLabel": "스토어 이름",
+      "storeNamePlaceholder": "My Awesome 스토어",
+      "descriptionLabel": "설명",
+      "descriptionPlaceholder": "Tell 고객 about your 스토어...",
+      "themeColorLabel": "테마 색상",
+      "operatingHoursLabel": "Operating Hours",
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "closed": "닫힘",
+      "open": "열림",
+      "openTime": "열림",
+      "closeTime": "닫기",
+      "save": "저장",
+      "saving": "Saving...",
+      "saved": "Saved successfully!",
+      "error": "Failed to save. Please try again.",
+      "back": "뒤로",
+      "next": "다음"
+    },
+    "categories": {
+      "title": "Categories",
+      "subtitle": "Organize your 제품 into categories.",
+      "addCategory": "추가 카테고리",
+      "editCategory": "편집 카테고리",
+      "nameLabel": "이름",
+      "namePlaceholder": "e.g. Electronics",
+      "descriptionLabel": "설명",
+      "descriptionPlaceholder": "Brief 카테고리 설명...",
+      "iconLabel": "Icon (emoji)",
+      "iconPlaceholder": "📦",
+      "save": "저장",
+      "saving": "Saving...",
+      "cancel": "취소",
+      "delete": "삭제",
+      "deleteConfirm": "삭제 this 카테고리?",
+      "deleteWarning": "This category has {count} product(s). They will become uncategorized.",
+      "confirmDelete": "예, 삭제",
+      "cancelDelete": "취소",
+      "empty": "No categories yet. Add your first category.",
+      "productCount": "{count} product(s)",
+      "active": "활성",
+      "inactive": "비활성",
+      "saved": "카테고리 saved!",
+      "deleted": "카테고리 deleted!",
+      "error": "Something went wrong. Please try again."
+    },
+    "products": {
+      "title": "제품",
+      "subtitle": "관리 your 제품 catalog.",
+      "addProduct": "추가 제품",
+      "editProduct": "편집 제품",
+      "allCategories": "전체",
+      "step1Title": "유형 & Basics",
+      "step2Title": "세부사항",
+      "step3Title": "이미지 & 카테고리",
+      "typePhysical": "Physical",
+      "typePhysicalDesc": "Tangible goods that ship",
+      "typeService": "서비스",
+      "typeServiceDesc": "Time-based offerings",
+      "typeDigital": "Digital",
+      "typeDigitalDesc": "Downloadable content",
+      "nameLabel": "제품 이름",
+      "namePlaceholder": "e.g. Wireless Earbuds",
+      "descriptionLabel": "설명",
+      "descriptionPlaceholder": "Describe your 제품...",
+      "priceLabel": "가격",
+      "compareAtPriceLabel": "Compare-at 가격",
+      "compareAtPriceHint": "Original 가격 before 할인",
+      "skuLabel": "SKU",
+      "skuPlaceholder": "e.g. WEB-001",
+      "stockLabel": "재고 수량",
+      "weightLabel": "Weight (kg)",
+      "durationLabel": "기간 (minutes)",
+      "availabilityNotesLabel": "Availability 메모",
+      "availabilityNotesPlaceholder": "e.g. 이용가능 weekdays 9am-5pm",
+      "fileUrlLabel": "파일 URL or 업로드",
+      "fileUrlPlaceholder": "https://...",
+      "imagesLabel": "제품 이미지",
+      "uploadImages": "업로드 이미지",
+      "categoryLabel": "카테고리",
+      "noCategory": "아니오 카테고리",
+      "save": "저장",
+      "saving": "Saving...",
+      "cancel": "취소",
+      "delete": "삭제",
+      "deleteConfirm": "삭제 this 제품?",
+      "confirmDelete": "예, 삭제",
+      "cancelDelete": "취소",
+      "empty": "No products yet. Add your first product.",
+      "inStock": "{count} in stock",
+      "lowStock": "Low: {count}",
+      "active": "활성",
+      "inactive": "비활성",
+      "saved": "제품 saved!",
+      "deleted": "제품 deleted!",
+      "error": "Something went wrong. Please try again.",
+      "back": "뒤로",
+      "next": "다음"
+    },
+    "discounts": {
+      "title": "Discounts",
+      "subtitle": "만들기 promotions and 거래.",
+      "addDiscount": "추가 할인",
+      "editDiscount": "편집 할인",
+      "nameLabel": "할인 이름",
+      "namePlaceholder": "e.g. Summer 판매",
+      "typeLabel": "할인 유형",
+      "typePercentage": "비율",
+      "typeFixed": "Fixed 금액",
+      "valueLabel": "가치",
+      "appliesToLabel": "Applies To",
+      "appliesToAll": "전체 제품",
+      "appliesToCategory": "Specific 카테고리",
+      "appliesToProduct": "Specific 제품",
+      "selectCategory": "선택 카테고리",
+      "selectProduct": "선택 제품",
+      "startDateLabel": "시작 날짜",
+      "endDateLabel": "End 날짜 선택l)",
+      "noExpiry": "아니오 expiry",
+      "save": "저장",
+      "saving": "Saving...",
+      "cancel": "취소",
+      "delete": "삭제",
+      "deleteConfirm": "삭제 this 할인?",
+      "confirmDelete": "예, 삭제",
+      "cancelDelete": "취소",
+      "empty": "No discounts yet. Create your first discount.",
+      "percentOff": "{value}% off",
+      "fixedOff": "${value} off",
+      "allProducts": "전체 제품",
+      "categoryTarget": "Category: {name}",
+      "productTarget": "Product: {name}",
+      "active": "활성",
+      "expired": "만료됨",
+      "scheduled": "Scheduled",
+      "saved": "할인 saved!",
+      "deleted": "할인 deleted!",
+      "error": "Something went wrong. Please try again."
+    },
+    "storeSettings": {
+      "title": "배달 & Payments",
+      "subtitle": "설정 배달 and 결제 options.",
+      "deliveryTitle": "배달",
+      "enableDelivery": "활성화 배달",
+      "deliveryFeeLabel": "배달 Fee",
+      "freeThresholdLabel": "Free 배달 Threshold",
+      "freeThresholdHint": "Orders above this amount get free delivery",
+      "paymentTitle": "결제 Methods",
+      "cash": "Cash",
+      "bankTransfer": "Bank 이동",
+      "onlinePayment": "Online 결제",
+      "policiesTitle": "스토어 Policies",
+      "policiesPlaceholder": "반품 policy, terms and conditions...",
+      "save": "저장",
+      "saving": "Saving...",
+      "saved": "설정 saved!",
+      "error": "Failed to save. Please try again."
+    },
+    "orders": {
+      "title": "주문",
+      "subtitle": "보기 and 관리 스토어 주문.",
+      "searchPlaceholder": "검색 주문...",
+      "empty": "아니오 주문 yet.",
+      "guest": "Guest",
+      "subtotal": "소계",
+      "discount": "할인",
+      "tax": "세금",
+      "shipping": "배송",
+      "paymentMethod": "결제",
+      "shippingMethod": "배송",
+      "tracking": "추적",
+      "cancel": "취소",
+      "refundTitle": "환불 주문",
+      "refundReasonPlaceholder": "Reason for 환불...",
+      "confirmRefund": "확인 환불",
+      "statuses": {
+        "all": "전체",
+        "pending": "대기중",
+        "confirmed": "Confirmed",
+        "processing": "처리중",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "completed": "완료됨",
+        "cancelled": "취소됨",
+        "refunded": "환불됨"
+      },
+      "paymentStatus": {
+        "unpaid": "미지불",
+        "paid": "지불됨",
+        "partial": "Partial",
+        "refunded": "환불됨"
+      },
+      "actions": {
+        "confirmed": "확인",
+        "processing": "Process",
+        "shipped": "Ship",
+        "delivered": "Delivered",
+        "completed": "Complete",
+        "cancel": "취소",
+        "refund": "환불"
+      }
+    },
+    "customers": {
+      "title": "고객",
+      "subtitle": "관리 your 스토어 고객.",
+      "searchPlaceholder": "검색 고객...",
+      "addCustomer": "추가 고객",
+      "editCustomer": "편집 고객",
+      "empty": "아니오 고객 yet.",
+      "nameLabel": "이름",
+      "namePlaceholder": "고객 이름",
+      "emailLabel": "이메일",
+      "emailPlaceholder": "customer@email.com",
+      "phoneLabel": "전화번호",
+      "phonePlaceholder": "+1 234 567 890",
+      "save": "저장",
+      "saving": "Saving...",
+      "cancel": "취소",
+      "edit": "편집",
+      "delete": "삭제",
+      "deleteConfirm": "삭제 this 고객?",
+      "ordersCount": "{count} orders",
+      "lastOrder": "Last 주문"
+    },
+    "coupons": {
+      "title": "Coupons",
+      "subtitle": "만들기 and 관리 쿠폰 codes.",
+      "addCoupon": "추가 쿠폰",
+      "editCoupon": "편집 쿠폰",
+      "empty": "No coupons yet. Create your first coupon code.",
+      "codeLabel": "Code",
+      "codePlaceholder": "e.g. SAVE20",
+      "nameLabel": "이름",
+      "namePlaceholder": "e.g. Summer 판매",
+      "typeLabel": "유형",
+      "typePercentage": "비율",
+      "typeFixed": "Fixed 금액",
+      "valueLabel": "가치",
+      "minOrderLabel": "Min. 주문",
+      "maxDiscountLabel": "Max 할인",
+      "noLimit": "아니오 limit",
+      "usageLimitLabel": "Usage Limit",
+      "unlimited": "Unlimited",
+      "validFromLabel": "Valid From",
+      "validUntilLabel": "Valid Until",
+      "activeLabel": "활성",
+      "save": "저장",
+      "saving": "Saving...",
+      "cancel": "취소",
+      "edit": "편집",
+      "delete": "삭제",
+      "deleteConfirm": "삭제 this 쿠폰?",
+      "minOrder": "Min order: ${amount}",
+      "used": "{count}/{limit} used",
+      "status": {
+        "active": "활성",
+        "inactive": "비활성",
+        "expired": "만료됨",
+        "scheduled": "Scheduled",
+        "exhausted": "Exhausted"
+      }
+    }
+  },
+  "storeManagement": {
+    "brand": "비즈니스 Interface",
+    "title": "스토어 관리",
+    "subtitle": "설정 and 관리 your storefront.",
+    "published": "게시됨",
+    "draft": "초안",
+    "publishStore": "Publish 스토어",
+    "unpublishStore": "Unpublish 스토어",
+    "publishing": "Updating...",
+    "stats": {
+      "products": "제품",
+      "categories": "Categories",
+      "discounts": "Discounts"
+    },
+    "quickActions": {
+      "orders": "주문",
+      "ordersDesc": "보기 & 관리 주문",
+      "customers": "고객",
+      "customersDesc": "고객 database",
+      "coupons": "Coupons",
+      "couponsDesc": "Promo codes & offers",
+      "setup": "스토어 설정",
+      "setupDesc": "Banner, 이름 & hours",
+      "categories": "Categories",
+      "categoriesDesc": "Organize 제품",
+      "products": "제품",
+      "productsDesc": "관리 catalog",
+      "discounts": "Discounts",
+      "discountsDesc": "Promotions & 거래",
+      "settings": "배달 & Payments",
+      "settingsDesc": "배송 & 결제 options"
+    }
+  },
+  "businessAi": {
+    "brand": "비즈니스 Interface",
+    "title": "AI 어시스턴트",
+    "subtitle": "Your intelligent 비즈니스 companion.",
+    "chatTitle": "CardLink AI",
+    "newChat": "새 대화",
+    "conversations": "대화",
+    "noConversations": "No conversations yet. Start a new chat!",
+    "confirmDelete": "삭제",
+    "cancel": "취소",
+    "emptyTitle": "Hi! I'm your AI business assistant.",
+    "emptyDesc": "Tell me what happened today, or ask me anything about your business.",
+    "emptyConvoHint": "Type a message to get started.",
+    "inputPlaceholder": "유형 a 메시지...",
+    "attachmentComingSoon": "Attachments coming soon",
+    "mockResponse": "I received your message. AI backend will be connected in Phase 6.",
+    "aiError": "Sorry, I couldn't process your request. Please try again.",
+    "modelLabel": "Model",
+    "backToPresets": "뒤로 to 운영",
+    "presetTitle": "무엇을 하시겠습니까?",
+    "presetDesc": "Select an operation below. Fill in the details and AI will handle the rest.",
+    "selectFile": "Click to 선택 a 파일",
+    "optionalNotes": "Additional 메모 선택l)...",
+    "processing": "처리중...",
+    "runOperation": "실행 Operation",
+    "aiResponse": "AI 응답",
+    "presets": {
+      "recordExpense": "비용 기록",
+      "recordExpenseDesc": "Log a business expense with amount and description",
+      "generateReport": "보고서 생성",
+      "generateReportDesc": "Get a detailed business report for any period",
+      "checkInventory": "재고 확인",
+      "checkInventoryDesc": "Check 재고 levels for 제품",
+      "createInvoice": "청구서 생성",
+      "createInvoiceDesc": "Generate an invoice for a customer",
+      "recordSale": "매출 기록",
+      "recordSaleDesc": "로그 a 매출 transaction",
+      "uploadData": "데이터 업로드",
+      "uploadDataDesc": "Upload a file to import business data",
+      "crmAddLead": "추가 CRM 리드",
+      "crmAddLeadDesc": "Add a new lead to your CRM pipeline",
+      "dailyReview": "일일 리뷰",
+      "dailyReviewDesc": "Run a quick daily business health check",
+      "monthlyAudit": "월간 감사",
+      "monthlyAuditDesc": "Run a comprehensive monthly business audit"
+    },
+    "fields": {
+      "amount": "금액",
+      "description": "설명",
+      "date": "날짜",
+      "notes": "Additional 메모",
+      "reportType": "Report Type (e.g. Sales, P&L, Inventory)",
+      "dateRange": "Date Range (e.g. Last 30 days)",
+      "productName": "제품 이름",
+      "customerName": "고객 이름",
+      "item": "항목 / 제품",
+      "file": "파일",
+      "leadName": "리드 이름",
+      "email": "이메일"
+    },
+    "quickActions": {
+      "recordSale": "Record a 판매",
+      "checkBalance": "Check my 잔액",
+      "whatsOverdue": "What's 연체됨?",
+      "uploadAccounting": "업로드 회계 data",
+      "uploadInventory": "업로드 재고 목록",
+      "uploadContacts": "업로드 연락처",
+      "createInvoice": "만들기 an 청구서",
+      "checkInventory": "Check 재고 levels",
+      "dailyReview": "실행 일간 check",
+      "monthlyAudit": "실행 월간 감사",
+      "annualReview": "실행 연간 검토"
+    },
+    "time": {
+      "justNow": "방금",
+      "minsAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
+    },
+    "agentModes": {
+      "chat": "채팅",
+      "setup": "설정",
+      "operations": "운영",
+      "review": "검토"
+    },
+    "emptyTitle_chat": "Hi! I'm your AI business assistant.",
+    "emptyTitle_setup": "Setup Agent — Onboard your business",
+    "emptyTitle_operations": "Operations Agent — Run your business",
+    "emptyTitle_review": "Review Agent — Audit your business",
+    "emptyDesc_chat": "Tell me what happened today, or ask me anything about your business.",
+    "emptyDesc_setup": "Upload your business documents (accounting, inventory, contacts) and I'll help you set up your store.",
+    "emptyDesc_operations": "Tell me what you need to do and I'll handle it across all your business modules.",
+    "emptyDesc_review": "I can run daily, monthly, or annual reviews of your business and provide professional recommendations.",
+    "inputPlaceholder_chat": "유형 a 메시지...",
+    "inputPlaceholder_setup": "Describe the data you're uploading or paste it here...",
+    "inputPlaceholder_operations": "Tell me what operation to perform...",
+    "inputPlaceholder_review": "Ask about your 비즈니스 성과...",
+    "uploadFile": "업로드 a 비즈니스 문서",
+    "reviewTrigger": "Run {type} business review",
+    "reviewButtons": {
+      "daily": "실행 일간 Check",
+      "monthly": "실행 월간 감사",
+      "annual": "실행 연간 검토"
+    },
+    "executionComplete": "실행 완료"
+  },
+  "aiPresetCard": {
+    "title": "AI Action 플랜",
+    "actionsLabel": "작업 to perform",
+    "questionsLabel": "Please 답변 these questions",
+    "other": "기타",
+    "otherPlaceholder": "답변을 입력하세요...",
+    "cancel": "취소",
+    "confirm": "확인 & 실행",
+    "executing": "Executing...",
+    "answerAllQuestions": "확인 전에 모든 질문에 답변하세요."
+  },
+  "aiActionCard": {
+    "aiSuggestion": "AI Suggestion",
+    "module": "Module",
+    "general": "일반",
+    "suggestedData": "Suggested Data",
+    "confidence": "Confidence",
+    "approve": "승인",
+    "reject": "거부",
+    "amend": "Amend",
+    "cancel": "취소",
+    "confirmApprove": "승인 this action?",
+    "confirmReject": "확인 거부",
+    "rejectReason": "Reason for rejection:",
+    "rejectReasonPlaceholder": "Why are you rejecting this?",
+    "saveAndApprove": "저장 & 승인",
+    "collapse": "Collapse",
+    "rejectionReasons": {
+      "Incorrect amount": "Incorrect 금액",
+      "Wrong account": "Wrong account/category",
+      "Not applicable": "Not applicable",
+      "Duplicate": "Duplicate",
+      "Other": "기타"
+    },
+    "status": {
+      "approved": "승인됨",
+      "amended": "Amended",
+      "rejected": "거부됨"
+    }
+  },
+  "planBilling": {
+    "title": "플랜 & 결제",
+    "subtitle": "Manage your subscription plan and billing details.",
+    "active": "활성",
+    "renewsOn": "Renews on {date}",
+    "changePlan": "변경 플랜",
+    "monthly": "월간",
+    "yearly": "연간",
+    "free": "Free",
+    "aiActionsMonth": "AI actions/mo",
+    "noAi": "아니오 AI 작업",
+    "teamMembers": "팀 회원",
+    "storage": "storage",
+    "pdfExport": "PDF 내보내기",
+    "currentPlan": "현재 플랜",
+    "upgrade": "업그레이드",
+    "downgrade": "Downgrade",
+    "downgradeWarning": "Some 기능 may be lost.",
+    "meters": {
+      "aiActions": "AI 작업",
+      "storage": "Storage",
+      "companies": "Companies",
+      "users": "팀 회원",
+      "ocr": "OCR 문서"
+    },
+    "credits": {
+      "title": "AI Credits",
+      "balance": "{count} credits remaining",
+      "save": "Save {pct}",
+      "purchase": "구매"
+    },
+    "history": {
+      "title": "결제 이력",
+      "empty": "아니오 결제 이력 yet.",
+      "date": "날짜",
+      "description": "설명",
+      "amount": "금액",
+      "type": "유형"
+    }
+  },
+  "aiHistory": {
+    "title": "Action Card 이력",
+    "subtitle": "Review all AI-suggested actions and their outcomes.",
+    "empty": "No action cards yet. AI suggestions will appear here after you chat.",
+    "filter": {
+      "all": "전체",
+      "pending": "대기중",
+      "approved": "승인됨",
+      "amended": "Amended",
+      "rejected": "거부됨"
+    }
+  },
+  "actionCardQueue": {
+    "title": "Action 카드",
+    "subtitle": "Review and manage AI-suggested actions for your business.",
+    "empty": "아니오 action 카드 found.",
+    "emptyDesc": "AI-generated action items will appear here as your business data grows.",
+    "stats": {
+      "pending": "대기중",
+      "approvedWeek": "승인됨 this 주",
+      "rejectedWeek": "거부됨 this 주"
+    },
+    "filter": {
+      "all": "전체",
+      "pending": "⏳ 대기중",
+      "approved": "✅ 승인됨",
+      "rejected": "❌ 거부됨",
+      "amended": "✏️ Amended"
+    },
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "confidence": "Highest confidence"
+    },
+    "group": {
+      "urgent": "🔴 Urgent",
+      "review": "🟡 검토",
+      "info": "🟢 정보"
+    },
+    "approveAll": "승인 전체",
+    "dismissAll": "Dismiss 전체",
+    "bulkApproveConfirm": "Approve all {count} cards in this group?",
+    "bulkDismissConfirm": "Dismiss all {count} cards in this group?"
+  },
+  "aiSettings": {
+    "title": "AI 환경설정",
+    "subtitle": "Configure your AI assistant behavior and review performance.",
+    "model": {
+      "title": "기본 Model",
+      "desc": "Choose the AI model for generating suggestions and chat responses."
+    },
+    "language": {
+      "title": "AI 언어",
+      "desc": "Set the language the AI will use for responses."
+    },
+    "personality": {
+      "title": "AI Personality",
+      "desc": "Choose the tone of AI responses.",
+      "formal": "Formal",
+      "casual": "Casual"
+    },
+    "save": "저장 환경설정",
+    "saving": "Saving…",
+    "saved": "Saved ✓",
+    "performance": {
+      "title": "AI 성과 Stats",
+      "noData": "No feedback data yet. Stats will appear after you review action cards.",
+      "totalCards": "합계 카드",
+      "approved": "승인됨",
+      "rejected": "거부됨",
+      "amended": "Amended",
+      "ratio": "Approval / Rejection / Amended Ratio",
+      "topReasons": "Top Rejection Reasons"
+    }
+  },
+  "businessNotifications": {
+    "brand": "비즈니스 Interface",
+    "title": "알림",
+    "subtitle": "Stay updated on your business activity.",
+    "empty": "아니오 알림 yet.",
+    "emptyDesc": "Business events like orders, stock alerts, and AI suggestions will appear here.",
+    "markAllRead": "Mark 전체 read",
+    "filters": {
+      "all": "전체",
+      "orders": "주문",
+      "stock": "재고",
+      "ai": "AI",
+      "system": "System"
+    },
+    "types": {
+      "new_order": "새로운 주문",
+      "low_stock": "Low 재고",
+      "new_connection": "새로운 Connection",
+      "invoice_overdue": "청구서 연체됨",
+      "payment_received": "결제 Received",
+      "booking_new": "새로운 예약",
+      "ai_suggestion": "AI Suggestion",
+      "system": "System"
+    },
+    "bell": {
+      "viewAll": "보기 전체 알림"
+    }
+  },
+  "businessSettingsOverview": {
+    "title": "설정",
+    "subtitle": "Manage your business app preferences and configuration.",
+    "cards": {
+      "mainAccount": {
+        "title": "Main 계정",
+        "desc": "Manage your primary business account context."
+      },
+      "companyProfile": {
+        "title": "회사 프로필",
+        "desc": "업데이트 회사 세부사항 and branding."
+      },
+      "planBilling": {
+        "title": "플랜 & 결제",
+        "desc": "View your subscription and manage billing."
+      },
+      "aiPreferences": {
+        "title": "AI 환경설정",
+        "desc": "Configure AI assistant behavior and defaults."
+      },
+      "notificationSettings": {
+        "title": "알림",
+        "desc": "Control which 알림 you receive."
+      },
+      "language": {
+        "title": "언어",
+        "desc": "변경 the app display 언어."
+      },
+      "integrations": {
+        "title": "통합",
+        "desc": "연결 third-party 서비스 and tools."
+      },
+      "ownerPanel": {
+        "title": "소유자 Panel",
+        "desc": "Admin-only 설정 and controls."
+      },
+      "stripeConnect": {
+        "title": "Stripe Connect",
+        "desc": "Receive payments from your platform sales."
+      },
+      "newCompany": {
+        "title": "시작 새로운 회사",
+        "desc": "Register a new business entity under your account."
+      }
+    },
+    "switchToClient": "Switch to 클라이언트 GUI"
+  },
+  "businessRegister": {
+    "back": "뒤로",
+    "stepIndicator": "Step {current} of {total}",
+    "step1": {
+      "title": "시작 Your 비즈니스",
+      "subtitle": "Create your business account on Cardlink to unlock powerful tools.",
+      "companyName": "회사명",
+      "companyNamePlaceholder": "e.g. Acme Corp",
+      "companyNameHint": "This is how your business will appear to customers.",
+      "businessType": "비즈니스 유형",
+      "businessTypePlaceholder": "선택 비즈니스 유형",
+      "businessTypes": {
+        "sole_proprietorship": "Sole Proprietorship",
+        "partnership": "Partnership",
+        "corporation": "Corporation",
+        "llc": "LLC",
+        "nonprofit": "Nonprofit",
+        "cooperative": "Cooperative",
+        "franchise": "Franchise",
+        "other": "기타"
+      },
+      "industry": "Industry",
+      "industryPlaceholder": "선택 an industry",
+      "industries": {
+        "retail": "Retail & E-commerce",
+        "food": "Food & Beverage",
+        "services": "프로페셔널 서비스",
+        "tech": "Technology",
+        "health": "Health & Wellness",
+        "education": "학력",
+        "finance": "Finance & 보험",
+        "realestate": "Real Estate",
+        "entertainment": "Entertainment & Media",
+        "manufacturing": "Manufacturing",
+        "logistics": "Logistics & Transportation",
+        "agriculture": "Agriculture",
+        "other": "기타"
+      },
+      "next": "계속"
+    },
+    "step2": {
+      "title": "비즈니스 세부사항",
+      "subtitle": "Tell us more about your business. These fields are optional — you can complete them later.",
+      "registrationNumber": "Registration Number",
+      "registrationNumberPlaceholder": "e.g. 12345678",
+      "registrationNumberHint": "Your official company registration or business license number.",
+      "taxId": "세금 ID / VAT Number",
+      "taxIdPlaceholder": "e.g. XX-XXXXXXX",
+      "foundedDate": "Founded 날짜",
+      "employeeRange": "직원 수량",
+      "employeeRangePlaceholder": "선택 range",
+      "employees": "직원",
+      "website": "웹사이트",
+      "optional": "All fields on this step are optional. You can update them later in Settings.",
+      "next": "계속"
+    },
+    "step3": {
+      "title": "주소 & 연락처",
+      "subtitle": "How can customers and partners reach your business?",
+      "email": "비즈니스 이메일",
+      "emailPlaceholder": "hello@company.com",
+      "phone": "비즈니스 전화번호",
+      "phonePlaceholder": "+1 (555) 000-0000",
+      "addressSection": "비즈니스 주소",
+      "addressLine1": "주소 Line 1",
+      "addressLine1Placeholder": "Street 주소",
+      "addressLine2": "주소 Line 2",
+      "addressLine2Placeholder": "Suite, 단위, floor 선택l)",
+      "city": "도시",
+      "cityPlaceholder": "도시",
+      "stateProvince": "주/도 / Province",
+      "stateProvincePlaceholder": "주/도",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "우편번호 / Postal",
+      "country": "국가",
+      "countryPlaceholder": "국가",
+      "next": "계속"
+    },
+    "step4": {
+      "title": "Choose Your 플랜",
+      "subtitle": "Select a plan that fits your business needs. You can upgrade anytime.",
+      "free": {
+        "name": "스타터",
+        "price": "Free",
+        "period": "forever",
+        "features": [
+          "1 team member",
+          "Basic modules",
+          "Community support",
+          "100 transactions/mo"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$29",
+        "period": "/month",
+        "features": [
+          "5 team members",
+          "All modules",
+          "Priority support",
+          "Unlimited transactions",
+          "AI assistant"
+        ]
+      },
+      "enterprise": {
+        "name": "엔터프라이즈",
+        "price": "사용자정의",
+        "period": "연락처 us",
+        "features": [
+          "Unlimited team",
+          "All modules + API",
+          "Dedicated support",
+          "Custom integrations",
+          "White-label options"
+        ]
+      },
+      "popular": "Most Popular",
+      "next": "계속"
+    },
+    "step5": {
+      "title": "검토 & 만들기",
+      "subtitle": "Review your details and create your business account.",
+      "companySection": "회사 정보",
+      "companyNameLabel": "회사명",
+      "businessTypeLabel": "비즈니스 유형",
+      "industryLabel": "Industry",
+      "contactSection": "연락처 & 주소",
+      "addressLabel": "주소",
+      "planSection": "플랜",
+      "planLabel": "플랜",
+      "create": "만들기 비즈니스 계정",
+      "creating": "Creating...",
+      "terms": "By creating an account, you agree to the Cardlink Business Terms of Service.",
+      "success": "비즈니스 계정 created! Redirecting...",
+      "error": "Something went wrong. Please try again."
+    }
+  },
+  "registerCompany": {
+    "pageTitle": "등록 Your 회사",
+    "back": "뒤로",
+    "next": "다음",
+    "stepOf": "Step {current} of {total}",
+    "step1": {
+      "title": "Choose Your 플랜",
+      "subtitle": "Select the plan that best fits your business. You can upgrade or downgrade anytime.",
+      "selectPlan": "선택 플랜",
+      "selected": "선택됨",
+      "perMonth": "/mo",
+      "perYear": "/yr",
+      "plans": {
+        "free": {
+          "name": "Free",
+          "emoji": "🆓"
+        },
+        "professional": {
+          "name": "프로페셔널",
+          "emoji": "💼"
+        },
+        "business": {
+          "name": "비즈니스",
+          "emoji": "🏢"
+        }
+      },
+      "features": {
+        "aiActions": "AI 작업",
+        "aiChat": "AI 채팅",
+        "companies": "Companies",
+        "users": "Users",
+        "storage": "Storage",
+        "modules": "모듈",
+        "store": "스토어",
+        "pdfExport": "PDF 내보내기",
+        "docOcr": "Doc OCR",
+        "support": "고객지원"
+      },
+      "featureValues": {
+        "none": "없음",
+        "unlimited": "Unlimited",
+        "core": "Core",
+        "allPlusAi": "전체 + AI",
+        "allPlusCustomAi": "전체 + 사용자정의 AI",
+        "basic": "기본",
+        "full": "Full",
+        "fullAnalytics": "Full + 분석",
+        "community": "커뮤니티",
+        "email": "이메일",
+        "priority": "Priority"
+      },
+      "aiCredits": {
+        "title": "Need 더보기 AI power?",
+        "subtitle": "Purchase additional AI action credits anytime.",
+        "pack100": "100 AI 작업",
+        "pack100Price": "$5",
+        "pack500": "500 AI 작업",
+        "pack500Price": "$20",
+        "pack500Save": "저장 20%",
+        "pack2000": "2,000 AI 작업",
+        "pack2000Price": "$60",
+        "pack2000Save": "저장 40%"
+      }
+    },
+    "step2a": {
+      "title": "기본 Information",
+      "subtitle": "Tell us about your 회사.",
+      "companyName": "회사명",
+      "companyNamePlaceholder": "e.g. Acme Corp Sdn Bhd",
+      "registrationNumber": "Registration Number (SSM/BR)",
+      "registrationNumberPlaceholder": "e.g. 202301012345",
+      "industry": "Industry",
+      "industryPlaceholder": "선택 industry",
+      "industries": {
+        "retail": "Retail",
+        "fnb": "F&B",
+        "services": "서비스",
+        "manufacturing": "Manufacturing",
+        "technology": "Technology",
+        "healthcare": "Healthcare",
+        "education": "학력",
+        "construction": "Construction",
+        "professional": "프로페셔널 서비스",
+        "other": "기타"
+      },
+      "companySize": "회사 크기",
+      "companySizePlaceholder": "선택 크기",
+      "sizes": {
+        "1-5": "1–5 직원",
+        "6-20": "6–20 직원",
+        "21-50": "21–50 직원",
+        "50+": "50+ 직원"
+      },
+      "yearEstablished": "년 Established",
+      "yearEstablishedPlaceholder": "e.g. 2020"
+    },
+    "step2b": {
+      "title": "주소 & 연락처",
+      "subtitle": "Where is your 회사 located?",
+      "addressLine1": "주소 Line 1",
+      "addressLine1Placeholder": "Street 주소",
+      "addressLine2": "주소 Line 2",
+      "addressLine2Placeholder": "Suite, 단위, floor 선택l)",
+      "city": "도시",
+      "cityPlaceholder": "도시",
+      "stateRegion": "주/도 / 지역",
+      "stateRegionPlaceholder": "주/도 or 지역",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "Postal code",
+      "country": "국가",
+      "countryPlaceholder": "선택 국가",
+      "countries": {
+        "MY": "Malaysia",
+        "HK": "Hong Kong",
+        "SG": "Singapore",
+        "other": "기타"
+      },
+      "phone": "비즈니스 전화번호",
+      "phonePlaceholder": "+60 12-345 6789",
+      "email": "비즈니스 이메일",
+      "emailPlaceholder": "hello@company.com",
+      "website": "웹사이트",
+      "websitePlaceholder": "https://company.com"
+    },
+    "step3": {
+      "title": "Financial 설정",
+      "subtitle": "설정 your 회계 defaults.",
+      "defaultCurrency": "기본 Currency",
+      "currencies": {
+        "MYR": "MYR — Malaysian Ringgit",
+        "HKD": "HKD — Hong Kong Dollar",
+        "SGD": "SGD — Singapore Dollar",
+        "USD": "USD — US Dollar"
+      },
+      "taxRegistrationNumber": "세금 Registration Number",
+      "taxRegistrationNumberPlaceholder": "e.g. MY-12345678",
+      "taxRate": "세금 Rate (%)",
+      "taxRatePlaceholder": "e.g. 6",
+      "fiscalYearEnd": "Fiscal 년 End",
+      "fiscalYearEndPlaceholder": "선택 월",
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "accountingBasis": "회계 Basis",
+      "accountingBasisPlaceholder": "선택 basis",
+      "bases": {
+        "cash": "Cash Basis",
+        "accrual": "Accrual Basis"
+      }
+    },
+    "step4": {
+      "title": "Branding & 모듈",
+      "subtitle": "Upload your logo and choose which modules to enable.",
+      "companyLogo": "회사 Logo",
+      "uploadLogo": "업로드 Logo",
+      "coverImage": "Cover / Banner 이미지",
+      "uploadCover": "업로드 Banner",
+      "changeImage": "변경",
+      "modules": "활성화 모듈",
+      "moduleNames": {
+        "accounting": "회계",
+        "hr": "인사 & 급여",
+        "booking": "예약",
+        "inventory": "재고",
+        "pos": "POS",
+        "crm": "CRM",
+        "procurement": "Procurement"
+      },
+      "alwaysOn": "Always on",
+      "submit": "회사 등록",
+      "submitting": "Registering...",
+      "success": "회사 registered! Redirecting...",
+      "error": "등록에 실패했습니다. 다시 시도해주세요."
+    },
+    "validation": {
+      "required": "필수 항목입니다",
+      "companyNameMin": "회사명은 2자 이상이어야 합니다",
+      "invalidEmail": "잘못된 이메일 주소입니다",
+      "invalidPhone": "잘못된 전화번호입니다"
+    }
+  },
+  "stripeConnect": {
+    "kicker": "Payments",
+    "title": "Stripe Connect",
+    "subtitle": "플랫폼 판매 결제를 받으려면 Stripe 계정을 연결하세요.",
+    "learnMore": "Stripe Connect에 대해 자세히 알아보기",
+    "status": {
+      "active": "Stripe 계정 활성화됨",
+      "activeDesc": "Your Stripe account is fully set up. You can receive payments and payouts.",
+      "pending": "조치가 필요합니다",
+      "pendingDesc": "Your Stripe account setup is not yet complete. Please finish the onboarding process.",
+      "notConnected": "연결되지 않음",
+      "notConnectedDesc": "Connect your Stripe account to start receiving payments from your platform sales."
+    },
+    "capabilities": {
+      "detailsSubmitted": "계정 세부사항 submitted",
+      "chargesEnabled": "Charges enabled — can accept payments",
+      "payoutsEnabled": "Payouts enabled — can receive transfers"
+    },
+    "actions": {
+      "connectStripe": "Stripe 계정 연결",
+      "completeOnboarding": "설정 완료",
+      "openDashboard": "Stripe 대시보드 열기",
+      "refresh": "새로고침"
+    },
+    "howItWorks": {
+      "title": "이용 방법",
+      "step1": {
+        "title": "1. 연결 Your 계정",
+        "desc": "Create or link your Stripe Express account through our secure onboarding flow."
+      },
+      "step2": {
+        "title": "2. 수락 Payments",
+        "desc": "Customers pay through our platform checkout. Payments are securely processed by Stripe."
+      },
+      "step3": {
+        "title": "3. Get 지불됨",
+        "desc": "Funds are automatically transferred to your bank account on a rolling basis."
+      }
+    }
+  }
+}
