@@ -813,6 +813,11 @@ Respond in a clear, professional format. If there are missing details, list what
     setModel("claude-haiku-4.5");
   };
 
+  const handleClearUploadedFile = () => {
+    setUploadedFile(null);
+    setModel(activePreset?.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5");
+  };
+
   if (companyLoading || enforcementLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -1049,7 +1054,7 @@ Respond in a clear, professional format. If there are missing details, list what
                               → {MODEL_OPTIONS.find((m) => m.value === model)?.label}
                             </span>
                             <button
-                              onClick={() => { setUploadedFile(null); setModel(activePreset.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5"); }}
+                              onClick={handleClearUploadedFile}
                               className="p-0.5 hover:bg-indigo-100 rounded"
                             >
                               <XCircle className="h-3.5 w-3.5" />
