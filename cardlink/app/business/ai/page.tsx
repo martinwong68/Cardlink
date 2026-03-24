@@ -79,9 +79,8 @@ const FILE_SIZE_SONNET_THRESHOLD = 500 * 1024; // 500 KB
 const FILE_SIZE_OPUS_THRESHOLD = 5 * 1024 * 1024; // 5 MB
 
 function selectModelForFile(fileSize: number): string {
-  if (fileSize >= FILE_SIZE_OPUS_THRESHOLD) return "gpt-4o";
   if (fileSize >= FILE_SIZE_SONNET_THRESHOLD) return "gpt-4o";
-  return "gpt-4o";
+  return "gpt-4o-mini";
 }
 
 /* ── Preset operation definitions ── */
@@ -803,7 +802,7 @@ Respond in a clear, professional format. If there are missing details, list what
     if (preset.complex) {
       setModel("gpt-4o");
     } else {
-      setModel("gpt-4o");
+      setModel("gpt-4o-mini");
     }
   };
 
@@ -812,12 +811,12 @@ Respond in a clear, professional format. If there are missing details, list what
     setPresetFields({});
     setPresetResult(null);
     setUploadedFile(null);
-    setModel("gpt-4o");
+    setModel("gpt-4o-mini");
   };
 
   const handleClearUploadedFile = () => {
     setUploadedFile(null);
-    setModel(activePreset?.complex ? "gpt-4o" : "gpt-4o");
+    setModel(activePreset?.complex ? "gpt-4o" : "gpt-4o-mini");
   };
 
   if (companyLoading || enforcementLoading) {

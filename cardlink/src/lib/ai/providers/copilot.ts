@@ -51,8 +51,13 @@ export class CopilotProvider implements AIProvider {
       model?: string;
     };
 
+    const content = json.choices?.[0]?.message?.content;
+    if (content == null) {
+      throw new Error("Copilot API returned no content in response");
+    }
+
     return {
-      content: json.choices[0]?.message?.content ?? "",
+      content,
       meta: {
         provider: "copilot",
         model: json.model ?? model,
