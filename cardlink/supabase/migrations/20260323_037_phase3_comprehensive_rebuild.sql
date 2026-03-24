@@ -1011,6 +1011,20 @@ CREATE TABLE IF NOT EXISTS audit_log (
   user_agent text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Guard: if audit_log pre-existed without these columns, add them
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS company_id uuid REFERENCES companies(id) ON DELETE CASCADE;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS user_id uuid;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS module text;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS table_name text;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS record_id uuid;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS action text;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS old_values jsonb;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS new_values jsonb;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS ip_address text;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS user_agent text;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
+
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='audit_log' AND policyname='audit_log_company') THEN
