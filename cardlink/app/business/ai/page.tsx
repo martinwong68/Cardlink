@@ -67,6 +67,8 @@ type ReviewType = "daily" | "monthly" | "annual";
 
 /* ── Model tiers — auto-selected based on file size / operation complexity ── */
 const MODEL_OPTIONS = [
+  { value: "gpt-4o", label: "GPT-4o (Copilot)" },
+  { value: "gpt-4o-mini", label: "GPT-4o Mini (Fast)" },
   { value: "claude-haiku-4.5", label: "Haiku 4.5 (Fast)" },
   { value: "claude-sonnet-4.6", label: "Sonnet 4.6 (Balanced)" },
   { value: "claude-opus-4.6", label: "Opus 4.6 (Advanced)" },
@@ -77,9 +79,9 @@ const FILE_SIZE_SONNET_THRESHOLD = 500 * 1024; // 500 KB
 const FILE_SIZE_OPUS_THRESHOLD = 5 * 1024 * 1024; // 5 MB
 
 function selectModelForFile(fileSize: number): string {
-  if (fileSize >= FILE_SIZE_OPUS_THRESHOLD) return "claude-opus-4.6";
-  if (fileSize >= FILE_SIZE_SONNET_THRESHOLD) return "claude-sonnet-4.6";
-  return "claude-haiku-4.5";
+  if (fileSize >= FILE_SIZE_OPUS_THRESHOLD) return "gpt-4o";
+  if (fileSize >= FILE_SIZE_SONNET_THRESHOLD) return "gpt-4o";
+  return "gpt-4o";
 }
 
 /* ── Preset operation definitions ── */
@@ -221,7 +223,7 @@ export default function BusinessAiPage() {
   const [activeConvoId, setActiveConvoId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
-  const [model, setModel] = useState<string>("claude-haiku-4.5");
+  const [model, setModel] = useState<string>("gpt-4o");
   const [sending, setSending] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
@@ -561,13 +563,13 @@ export default function BusinessAiPage() {
 
     // Choose model — auto-upgrade for complex ops or large files
     let selectedModel = model;
-    if (activePreset.complex && selectedModel === "claude-haiku-4.5") {
-      selectedModel = "claude-sonnet-4.6";
+    if (activePreset.complex && selectedModel === "gpt-4o-mini") {
+      selectedModel = "gpt-4o";
       setModel(selectedModel);
     }
     if (uploadedFile) {
       const fileModel = selectModelForFile(uploadedFile.size);
-      if (fileModel !== "claude-haiku-4.5") {
+      if (fileModel !== "gpt-4o-mini") {
         selectedModel = fileModel;
         setModel(selectedModel);
       }
@@ -799,9 +801,9 @@ Respond in a clear, professional format. If there are missing details, list what
     setUploadedFile(null);
     // Set default model based on complexity
     if (preset.complex) {
-      setModel("claude-sonnet-4.6");
+      setModel("gpt-4o");
     } else {
-      setModel("claude-haiku-4.5");
+      setModel("gpt-4o");
     }
   };
 
@@ -810,12 +812,12 @@ Respond in a clear, professional format. If there are missing details, list what
     setPresetFields({});
     setPresetResult(null);
     setUploadedFile(null);
-    setModel("claude-haiku-4.5");
+    setModel("gpt-4o");
   };
 
   const handleClearUploadedFile = () => {
     setUploadedFile(null);
-    setModel(activePreset?.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5");
+    setModel(activePreset?.complex ? "gpt-4o" : "gpt-4o");
   };
 
   if (companyLoading || enforcementLoading) {

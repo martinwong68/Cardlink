@@ -14,7 +14,7 @@ import Link from "next/link";
 
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
-type AiModel = "claude-haiku-4.5" | "claude-sonnet-4.6" | "claude-opus-4.6";
+type AiModel = "gpt-4o" | "gpt-4o-mini" | "claude-haiku-4.5" | "claude-sonnet-4.6" | "claude-opus-4.6";
 type AiPersonality = "formal" | "casual";
 
 type FeedbackStats = {
@@ -30,7 +30,7 @@ export default function AiPreferencesSettingsPage() {
   const { companyId, loading, supabase } = useActiveCompany();
 
   /* ── Preferences state ── */
-  const [model, setModel] = useState<AiModel>("claude-haiku-4.5");
+  const [model, setModel] = useState<AiModel>("gpt-4o");
   const [language, setLanguage] = useState("en");
   const [personality, setPersonality] = useState<AiPersonality>("formal");
   const [saving, setSaving] = useState(false);
@@ -187,6 +187,8 @@ export default function AiPreferencesSettingsPage() {
           onChange={(e) => setModel(e.target.value as AiModel)}
           className="app-input text-sm"
         >
+          <option value="gpt-4o">GPT-4o (Copilot Default)</option>
+          <option value="gpt-4o-mini">GPT-4o Mini (Copilot Fast)</option>
           <option value="claude-haiku-4.5">Claude Haiku 4.5 (Fast)</option>
           <option value="claude-sonnet-4.6">Claude Sonnet 4.6 (Balanced)</option>
           <option value="claude-opus-4.6">Claude Opus 4.6 (Advanced)</option>
