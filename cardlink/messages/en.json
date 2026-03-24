@@ -2562,7 +2562,19 @@
       "daily": "Run Daily Check",
       "monthly": "Run Monthly Audit",
       "annual": "Run Annual Review"
-    }
+    },
+    "executionComplete": "Execution Complete"
+  },
+  "aiPresetCard": {
+    "title": "AI Action Plan",
+    "actionsLabel": "Actions to perform",
+    "questionsLabel": "Please answer these questions",
+    "other": "Other",
+    "otherPlaceholder": "Type your answer...",
+    "cancel": "Cancel",
+    "confirm": "Confirm & Execute",
+    "executing": "Executing...",
+    "answerAllQuestions": "Please answer all questions before confirming."
   },
   "aiActionCard": {
     "aiSuggestion": "AI Suggestion",

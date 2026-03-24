@@ -2562,7 +2562,19 @@
       "daily": "运行每日检查",
       "monthly": "运行每月审计",
       "annual": "运行年度审查"
-    }
+    },
+    "executionComplete": "执行完成"
+  },
+  "aiPresetCard": {
+    "title": "AI 操作计划",
+    "actionsLabel": "待执行操作",
+    "questionsLabel": "请回答以下问题",
+    "other": "其他",
+    "otherPlaceholder": "请输入您的答案...",
+    "cancel": "取消",
+    "confirm": "确认并执行",
+    "executing": "执行中...",
+    "answerAllQuestions": "请回答所有问题后再确认。"
   },
   "aiActionCard": {
     "aiSuggestion": "AI 建议",
