@@ -39,6 +39,10 @@ import {
 } from "@/src/lib/plan-enforcement";
 import UpgradePrompt from "@/components/business/UpgradePrompt";
 import AiLimitPrompt from "@/components/business/AiLimitPrompt";
+import AiPresetCard, {
+  type PresetCardData,
+  type ActionStep,
+} from "@/components/business/AiPresetCard";
 
 /* ── Types ── */
 type AgentMode = "chat" | "setup" | "operations" | "review";
@@ -239,6 +243,8 @@ export default function BusinessAiPage() {
   const [presetFields, setPresetFields] = useState<Record<string, string>>({});
   const [presetResult, setPresetResult] = useState<string | null>(null);
   const [presetRunning, setPresetRunning] = useState(false);
+  const [presetCard, setPresetCard] = useState<PresetCardData | null>(null);
+  const [presetExecuted, setPresetExecuted] = useState<string | null>(null);
 
   /* ── Plan enforcement ── */
   const [aiAccess, setAiAccess] = useState<PlanCheckResult | null>(null);
@@ -583,13 +589,46 @@ ${fieldSummary || "(No additional input provided)"}
 
 ${uploadedFile ? `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB)\nFILE CONTENT:\n${uploadedFile.content.slice(0, 10000)}` : ""}
 
-Please break down this operation into clear steps and provide a structured response:
-1. **Summary** — What you understood the user wants to do
-2. **Steps** — The individual steps/actions to complete this operation
-3. **Data Preview** — If applicable, show a preview of the data to be created/modified
-4. **Confirmation** — Ask the user to confirm before proceeding
+You MUST respond with a JSON object wrapped in \`\`\`json ... \`\`\` containing:
+1. "summary" — A short sentence explaining what the user wants to do.
+2. "actions" — An array of action steps to execute. Each step has:
+   - "label": Human-readable description of the step
+   - "module": The business module (accounting, inventory, crm, pos)
+   - "operation": The specific operation (e.g. record_expense, create_invoice, add_lead, adjust_stock, record_sale, check_stock, create_journal_entry, add_contact)
+   - "params": Object with the parameters for the operation (use the user input values)
+3. "questions" — An array of clarification questions (if any info is missing or ambiguous). Each question has:
+   - "id": A unique identifier (e.g. "q1", "q2")
+   - "question": The question text
+   - "options": An array of 2-5 multiple-choice options (best-fit suggestions)
+   - "allowOther": true (always allow the user to type a custom answer)
+   If a question answer should fill a param in an action step, set that param value to "{{question_id}}" as a placeholder.
 
-Respond in a clear, professional format. If there are missing details, list what's needed.`;
+If all required info is provided, set "questions" to an empty array.
+
+Example response format:
+\`\`\`json
+{
+  "summary": "Record a $150 office supply expense",
+  "actions": [
+    {
+      "label": "Record expense of $150 for office supplies",
+      "module": "accounting",
+      "operation": "record_expense",
+      "params": { "amount": 150, "description": "Office supplies", "category": "{{q1}}" }
+    }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What expense category should this be filed under?",
+      "options": ["Office Supplies", "Equipment", "General Expenses", "Operating Costs"],
+      "allowOther": true
+    }
+  ]
+}
+\`\`\`
+
+IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` code fences. Do not include any text outside the fences.`;
 
     const messages = [{ role: "user" as const, content: prompt }];
 
@@ -647,7 +686,17 @@ Respond in a clear, professional format. If there are missing details, list what
           }
         } else {
           const data = (await response.json()) as { content?: string };
-          setPresetResult(data.content ?? t("aiError"));
+          const content = data.content ?? "";
+
+          // Try to parse structured JSON card from AI response
+          const parsed = parsePresetCardJson(content);
+          if (parsed) {
+            setPresetCard(parsed);
+            setPresetResult(null);
+          } else {
+            // Fallback: show raw text if JSON parsing fails
+            setPresetResult(content || t("aiError"));
+          }
         }
       } catch {
         setPresetResult(t("aiError"));
@@ -657,6 +706,73 @@ Respond in a clear, professional format. If there are missing details, list what
     // Clear file after use
     if (uploadedFile) setUploadedFile(null);
     setPresetRunning(false);
+  };
+
+  /* ── Parse structured JSON card from AI response ── */
+  const parsePresetCardJson = (content: string): PresetCardData | null => {
+    try {
+      // Extract JSON from ```json ... ``` code fences
+      const jsonMatch = content.match(/```json\s*([\s\S]*?)```/);
+      if (!jsonMatch) return null;
+
+      const raw = JSON.parse(jsonMatch[1].trim()) as Record<string, unknown>;
+      if (!raw.summary || !Array.isArray(raw.actions)) return null;
+
+      return {
+        summary: String(raw.summary),
+        actions: (raw.actions as Array<Record<string, unknown>>).map((a) => ({
+          label: String(a.label ?? ""),
+          module: String(a.module ?? "general"),
+          operation: String(a.operation ?? ""),
+          params: (a.params ?? {}) as Record<string, unknown>,
+        })),
+        questions: Array.isArray(raw.questions)
+          ? (raw.questions as Array<Record<string, unknown>>).map((q) => ({
+              id: String(q.id ?? ""),
+              question: String(q.question ?? ""),
+              options: Array.isArray(q.options) ? (q.options as string[]).map(String) : [],
+              allowOther: q.allowOther !== false,
+            }))
+          : [],
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  /* ── Execute confirmed preset card actions ── */
+  const handlePresetCardConfirm = async (
+    answers: Record<string, string>,
+    actions: ActionStep[],
+  ) => {
+    try {
+      const response = await fetch("/api/business/ai/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-cardlink-app-scope": "business" },
+        body: JSON.stringify({ steps: actions, answers }),
+      });
+
+      if (!response.ok) {
+        const errBody = (await response.json().catch(() => ({}))) as { error?: string };
+        setPresetExecuted(errBody.error ?? t("aiError"));
+      } else {
+        const data = (await response.json()) as { message?: string; results?: Array<{ step: number; label: string; success: boolean; error?: string }> };
+        const lines = (data.results ?? []).map(
+          (r) => `${r.success ? "✓" : "✗"} Step ${r.step}: ${r.label}${r.error ? ` — ${r.error}` : ""}`,
+        );
+        setPresetExecuted(
+          `${data.message ?? "Done"}\n\n${lines.join("\n")}`,
+        );
+      }
+    } catch {
+      setPresetExecuted(t("aiError"));
+    }
+    setPresetCard(null);
+  };
+
+  const handlePresetCardCancel = () => {
+    setPresetCard(null);
+    setPresetResult(null);
   };
 
   /* ── Trigger business review ── */
@@ -796,6 +912,8 @@ Respond in a clear, professional format. If there are missing details, list what
     setActivePreset(preset);
     setPresetFields({});
     setPresetResult(null);
+    setPresetCard(null);
+    setPresetExecuted(null);
     setUploadedFile(null);
     // Set default model based on complexity
     if (preset.complex) {
@@ -809,6 +927,8 @@ Respond in a clear, professional format. If there are missing details, list what
     setActivePreset(null);
     setPresetFields({});
     setPresetResult(null);
+    setPresetCard(null);
+    setPresetExecuted(null);
     setUploadedFile(null);
     setModel("claude-haiku-4.5");
   };
@@ -1101,8 +1221,30 @@ Respond in a clear, professional format. If there are missing details, list what
                 )}
               </button>
 
-              {/* Result area */}
-              {presetResult && (
+              {/* Result area — AI Action Card */}
+              {presetCard && (
+                <AiPresetCard
+                  data={presetCard}
+                  onConfirm={handlePresetCardConfirm}
+                  onCancel={handlePresetCardCancel}
+                />
+              )}
+
+              {/* Execution result */}
+              {presetExecuted && (
+                <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-xs font-semibold text-green-700">{t("executionComplete")}</span>
+                  </div>
+                  <div className="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+                    {presetExecuted}
+                  </div>
+                </div>
+              )}
+
+              {/* Fallback: plain text result (when JSON parsing fails) */}
+              {presetResult && !presetCard && (
                 <div className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Bot className="h-4 w-4 text-indigo-600" />
