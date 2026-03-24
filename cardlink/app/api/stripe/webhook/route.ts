@@ -331,6 +331,40 @@ export async function POST(request: Request) {
         }
         break;
       }
+      /* ── Stripe Connect: account.updated ── */
+      case "account.updated": {
+        const account = event.data.object as Stripe.Account;
+        const connectAccountId = account.id;
+
+        // Update company record when connected account status changes
+        const { data: companyRow, error: companyLookupError } =
+          await supabaseAdmin
+            .from("companies")
+            .select("id")
+            .eq("stripe_connect_account_id", connectAccountId)
+            .maybeSingle();
+
+        if (!companyLookupError && companyRow) {
+          const { error: companyUpdateError } = await supabaseAdmin
+            .from("companies")
+            .update({
+              stripe_connect_charges_enabled:
+                account.charges_enabled ?? false,
+              stripe_connect_payouts_enabled:
+                account.payouts_enabled ?? false,
+              stripe_connect_onboarding_complete:
+                account.details_submitted ?? false,
+            })
+            .eq("id", companyRow.id);
+          if (companyUpdateError) {
+            console.error(
+              "[stripe-webhook] failed to update company connect status",
+              companyUpdateError,
+            );
+          }
+        }
+        break;
+      }
       default:
         break;
     }

@@ -2783,6 +2783,14 @@
       "ownerPanel": {
         "title": "管理员面板",
         "desc": "仅限管理员的设置和控制。"
+      },
+      "stripeConnect": {
+        "title": "Stripe Connect",
+        "desc": "接收平台销售付款。"
+      },
+      "newCompany": {
+        "title": "创建新公司",
+        "desc": "在您的账户下注册新的业务实体。"
       }
     },
     "switchToClient": "切换到客户界面"
@@ -3114,6 +3122,46 @@
       "companyNameMin": "公司名称至少需要 2 个字元",
       "invalidEmail": "电子邮件地址无效",
       "invalidPhone": "电话号码无效"
+    }
+  },
+  "stripeConnect": {
+    "kicker": "收款",
+    "title": "Stripe Connect",
+    "subtitle": "连接您的 Stripe 账户以接收平台销售付款。",
+    "learnMore": "了解更多关于 Stripe Connect",
+    "status": {
+      "active": "Stripe 账户已激活",
+      "activeDesc": "您的 Stripe 账户已完全设置。您可以接收付款和提款。",
+      "pending": "需要操作",
+      "pendingDesc": "您的 Stripe 账户设置尚未完成。请完成入驻流程。",
+      "notConnected": "未连接",
+      "notConnectedDesc": "连接您的 Stripe 账户以开始接收平台销售付款。"
+    },
+    "capabilities": {
+      "detailsSubmitted": "账户详情已提交",
+      "chargesEnabled": "收款已启用 — 可以接受付款",
+      "payoutsEnabled": "提款已启用 — 可以接收转账"
+    },
+    "actions": {
+      "connectStripe": "连接 Stripe 账户",
+      "completeOnboarding": "完成设置",
+      "openDashboard": "打开 Stripe 仪表板",
+      "refresh": "刷新"
+    },
+    "howItWorks": {
+      "title": "如何运作",
+      "step1": {
+        "title": "1. 连接您的账户",
+        "desc": "通过我们的安全入驻流程创建或链接您的 Stripe Express 账户。"
+      },
+      "step2": {
+        "title": "2. 接受付款",
+        "desc": "客户通过我们的平台结账付款。付款由 Stripe 安全处理。"
+      },
+      "step3": {
+        "title": "3. 获得收入",
+        "desc": "资金会自动滚动转入您的银行账户。"
+      }
     }
   }
 }

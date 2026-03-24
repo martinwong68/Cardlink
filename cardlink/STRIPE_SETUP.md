@@ -6,6 +6,12 @@ This project already contains Stripe routes:
 - `POST /api/stripe/webhook`
 - `POST /api/stripe/checkout/confirm` (fallback sync after checkout success redirect)
 
+**Stripe Connect routes** (for business users to receive payments):
+- `POST /api/stripe/connect/onboard` — create connected account & start onboarding
+- `GET  /api/stripe/connect/status`  — check connected account status
+- `POST /api/stripe/connect/dashboard` — get Express dashboard login link
+- `POST /api/stripe/connect/checkout` — create checkout session with connected account
+
 If Stripe is not configured, users can reach checkout but app/database will not sync plan status correctly.
 
 ## 1) Environment variables
@@ -78,3 +84,53 @@ where id = 'USER_ID_HERE';
 stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
 Use the printed signing secret as `STRIPE_WEBHOOK_SECRET` in `.env.local`.
+
+## 8) Stripe Connect Setup (Business Payments)
+
+Stripe Connect lets business users on your platform receive payments from customers.
+The platform takes a configurable application fee from each payment.
+
+### a) Enable Connect in Stripe Dashboard
+1. Go to **Stripe Dashboard → Settings → Connect settings**
+2. Choose **Express** account type (recommended)
+3. Customize your Connect branding (platform name, icon, color)
+4. Enable **Card payments** and **Transfers** capabilities
+
+### b) Configure webhook for Connect events
+Add the `account.updated` event to your webhook endpoint in Stripe Dashboard:
+- Endpoint URL: `https://YOUR_DOMAIN/api/stripe/webhook`
+- Add event: `account.updated`
+
+### c) Environment variables (optional)
+```env
+# Platform fee percentage (default: 10%)
+STRIPE_CONNECT_PLATFORM_FEE_PERCENT=10
+```
+
+### d) Database migration
+Ensure migration `20260324_041_stripe_connect_columns.sql` is applied.
+It adds to the `companies` table:
+- `stripe_connect_account_id` — the Stripe connected account ID
+- `stripe_connect_onboarding_complete` — whether onboarding is done
+- `stripe_connect_charges_enabled` — whether charges are enabled
+- `stripe_connect_payouts_enabled` — whether payouts are enabled
+
+### e) Business user flow
+1. Business user navigates to **Settings → Stripe Connect**
+2. Clicks "Connect Stripe Account" → redirected to Stripe Express onboarding
+3. Completes identity verification and bank account setup on Stripe
+4. Returns to Cardlink — status shows as active
+5. Can open Stripe Express Dashboard to view balance, payouts, and transactions
+
+### f) Platform payment flow
+Use `POST /api/stripe/connect/checkout` with:
+```json
+{
+  "companyId": "uuid-of-connected-company",
+  "amount": 50.00,
+  "description": "Product purchase",
+  "currency": "usd"
+}
+```
+This creates a Checkout Session where the payment goes to the connected account
+minus the platform application fee.

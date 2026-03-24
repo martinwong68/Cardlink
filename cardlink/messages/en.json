@@ -2784,6 +2784,10 @@
         "title": "Owner Panel",
         "desc": "Admin-only settings and controls."
       },
+      "stripeConnect": {
+        "title": "Stripe Connect",
+        "desc": "Receive payments from your platform sales."
+      },
       "newCompany": {
         "title": "Start New Company",
         "desc": "Register a new business entity under your account."
@@ -3118,6 +3122,46 @@
       "companyNameMin": "Company name must be at least 2 characters",
       "invalidEmail": "Invalid email address",
       "invalidPhone": "Invalid phone number"
+    }
+  },
+  "stripeConnect": {
+    "kicker": "Payments",
+    "title": "Stripe Connect",
+    "subtitle": "Connect your Stripe account to receive payments from sales on the platform.",
+    "learnMore": "Learn more about Stripe Connect",
+    "status": {
+      "active": "Stripe Account Active",
+      "activeDesc": "Your Stripe account is fully set up. You can receive payments and payouts.",
+      "pending": "Action Required",
+      "pendingDesc": "Your Stripe account setup is not yet complete. Please finish the onboarding process.",
+      "notConnected": "Not Connected",
+      "notConnectedDesc": "Connect your Stripe account to start receiving payments from your platform sales."
+    },
+    "capabilities": {
+      "detailsSubmitted": "Account details submitted",
+      "chargesEnabled": "Charges enabled — can accept payments",
+      "payoutsEnabled": "Payouts enabled — can receive transfers"
+    },
+    "actions": {
+      "connectStripe": "Connect Stripe Account",
+      "completeOnboarding": "Complete Setup",
+      "openDashboard": "Open Stripe Dashboard",
+      "refresh": "Refresh"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "1. Connect Your Account",
+        "desc": "Create or link your Stripe Express account through our secure onboarding flow."
+      },
+      "step2": {
+        "title": "2. Accept Payments",
+        "desc": "Customers pay through our platform checkout. Payments are securely processed by Stripe."
+      },
+      "step3": {
+        "title": "3. Get Paid",
+        "desc": "Funds are automatically transferred to your bank account on a rolling basis."
+      }
     }
   }
 }
