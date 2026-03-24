@@ -178,13 +178,35 @@ async function executeInventoryStep(
 ) {
   switch (operation) {
     case "check_stock": {
-      // Read-only operation — no mutation needed
+      // Read-only — no mutation. Just validate we can find the product.
+      const { data, error } = await supabase
+        .from("inventory_products")
+        .select("id, name, stock_quantity")
+        .eq("company_id", companyId)
+        .ilike("name", String(params.product ?? params.product_name ?? ""))
+        .limit(1)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      if (!data) throw new Error(`Product not found: ${String(params.product ?? params.product_name ?? "")}`);
       return;
     }
     case "adjust_stock": {
-      const { error } = await supabase.from("inventory_products").update({
-        stock_quantity: Number(params.quantity ?? params.stock_quantity ?? 0),
-      }).eq("company_id", companyId).eq("name", String(params.product ?? params.product_name ?? ""));
+      // First find the product by name to get its unique ID
+      const productName = String(params.product ?? params.product_name ?? "");
+      const { data: product, error: findError } = await supabase
+        .from("inventory_products")
+        .select("id")
+        .eq("company_id", companyId)
+        .ilike("name", productName)
+        .limit(1)
+        .maybeSingle();
+      if (findError) throw new Error(findError.message);
+      if (!product) throw new Error(`Product not found: ${productName}`);
+
+      const { error } = await supabase
+        .from("inventory_products")
+        .update({ stock_quantity: Number(params.quantity ?? params.stock_quantity ?? 0) })
+        .eq("id", product.id);
       if (error) throw new Error(error.message);
       return;
     }
