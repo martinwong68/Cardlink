@@ -16,7 +16,7 @@ const VALID_MONTHS = new Set([
   "july", "august", "september", "october", "november", "december",
 ]);
 const VALID_MODULES = new Set([
-  "accounting", "hr", "booking", "inventory", "pos", "crm", "procurement",
+  "accounting", "hr", "booking", "inventory", "pos", "crm", "procurement", "store", "cards",
 ]);
 
 type RegisterCompanyRequest = {

@@ -26,15 +26,15 @@ import { runBusinessRules } from "@/src/lib/ai-rule-engine";
 import AiActionCard, { type AiActionCardData } from "@/components/business/AiActionCard";
 
 const modules = [
-  { key: "accounting" as const, icon: BookOpen, color: "bg-blue-50 text-blue-600", route: "/business/accounting", exists: true },
-  { key: "store" as const, icon: Store, color: "bg-indigo-50 text-indigo-600", route: "/business/store-management", exists: true },
-  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: false },
-  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: false },
-  { key: "inventory" as const, icon: Package, color: "bg-orange-50 text-orange-600", route: "/business/inventory", exists: true },
-  { key: "pos" as const, icon: ShoppingCart, color: "bg-green-50 text-green-600", route: "/business/pos", exists: true },
-  { key: "crm" as const, icon: Handshake, color: "bg-indigo-50 text-indigo-600", route: "/business/crm", exists: true },
-  { key: "procurement" as const, icon: ClipboardList, color: "bg-amber-50 text-amber-600", route: "/business/procurement", exists: true },
-  { key: "companyCards" as const, icon: CreditCard, color: "bg-slate-100 text-slate-600", route: "/business/company-cards", exists: true },
+  { key: "accounting" as const, icon: BookOpen, color: "bg-blue-50 text-blue-600", route: "/business/accounting", exists: true, moduleName: "accounting" },
+  { key: "store" as const, icon: Store, color: "bg-indigo-50 text-indigo-600", route: "/business/store-management", exists: true, moduleName: "store" },
+  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: false, moduleName: "hr" },
+  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: false, moduleName: "booking" },
+  { key: "inventory" as const, icon: Package, color: "bg-orange-50 text-orange-600", route: "/business/inventory", exists: true, moduleName: "inventory" },
+  { key: "pos" as const, icon: ShoppingCart, color: "bg-green-50 text-green-600", route: "/business/pos", exists: true, moduleName: "pos" },
+  { key: "crm" as const, icon: Handshake, color: "bg-indigo-50 text-indigo-600", route: "/business/crm", exists: true, moduleName: "crm" },
+  { key: "procurement" as const, icon: ClipboardList, color: "bg-amber-50 text-amber-600", route: "/business/procurement", exists: true, moduleName: "procurement" },
+  { key: "companyCards" as const, icon: CreditCard, color: "bg-slate-100 text-slate-600", route: "/business/company-cards", exists: true, moduleName: "cards" },
 ];
 
 export default function BusinessHandlePage() {
@@ -45,6 +45,7 @@ export default function BusinessHandlePage() {
   const [actionCards, setActionCards] = useState<AiActionCardData[]>([]);
   const [loadingCards, setLoadingCards] = useState(true);
   const [moduleStats, setModuleStats] = useState<Record<string, number>>({});
+  const [enabledModules, setEnabledModules] = useState<Set<string> | null>(null);
 
   const fetchActionCards = useCallback(async () => {
     if (!companyId) return;
@@ -71,6 +72,28 @@ export default function BusinessHandlePage() {
       })();
     }
   }, [loading, companyId, fetchActionCards, supabase]);
+
+  /* ── Fetch enabled modules from company_modules ── */
+  useEffect(() => {
+    if (loading || !companyId) return;
+    (async () => {
+      const { data } = await supabase
+        .from("company_modules")
+        .select("module_name, is_enabled")
+        .eq("company_id", companyId);
+      if (data && data.length > 0) {
+        const enabled = new Set(
+          (data as { module_name: string; is_enabled: boolean }[])
+            .filter((m) => m.is_enabled)
+            .map((m) => m.module_name)
+        );
+        setEnabledModules(enabled);
+      } else {
+        /* No module config → show all modules (default) */
+        setEnabledModules(null);
+      }
+    })();
+  }, [loading, companyId, supabase]);
 
   /* ── Module stats ── */
   useEffect(() => {
@@ -336,7 +359,14 @@ export default function BusinessHandlePage() {
       <div>
         <h2 className="text-sm font-semibold text-gray-700 mb-3">{t("modules")}</h2>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-          {modules.map((mod) => {
+          {modules
+            .filter((mod) => {
+              /* If no module config exists (null), show all modules by default */
+              if (enabledModules === null) return true;
+              /* Otherwise only show modules that are enabled */
+              return enabledModules.has(mod.moduleName);
+            })
+            .map((mod) => {
             const Icon = mod.icon;
             const href = mod.exists ? mod.route : `/business/${mod.key}`;
             return (

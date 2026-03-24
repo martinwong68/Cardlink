@@ -18,6 +18,8 @@ import {
   ShoppingCart,
   Handshake,
   ClipboardList,
+  Store,
+  CreditCard,
 } from "lucide-react";
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -44,7 +46,7 @@ const accountingBases = ["cash", "accrual"] as const;
 
 type PlanSlug = "free" | "professional" | "business";
 
-type ModuleKey = "accounting" | "hr" | "booking" | "inventory" | "pos" | "crm" | "procurement";
+type ModuleKey = "accounting" | "hr" | "booking" | "inventory" | "pos" | "crm" | "procurement" | "store" | "cards";
 
 const moduleConfig: { key: ModuleKey; icon: typeof BookOpen; defaultOn: boolean; alwaysOn: boolean }[] = [
   { key: "accounting", icon: BookOpen, defaultOn: true, alwaysOn: true },
@@ -54,6 +56,8 @@ const moduleConfig: { key: ModuleKey; icon: typeof BookOpen; defaultOn: boolean;
   { key: "pos", icon: ShoppingCart, defaultOn: true, alwaysOn: false },
   { key: "crm", icon: Handshake, defaultOn: true, alwaysOn: false },
   { key: "procurement", icon: ClipboardList, defaultOn: false, alwaysOn: false },
+  { key: "store", icon: Store, defaultOn: true, alwaysOn: false },
+  { key: "cards", icon: CreditCard, defaultOn: false, alwaysOn: false },
 ];
 
 /* ─── Plan Feature Data ─── */
@@ -197,6 +201,8 @@ export default function RegisterCompanyPage() {
     pos: true,
     crm: true,
     procurement: false,
+    store: true,
+    cards: false,
   });
 
   /* State */

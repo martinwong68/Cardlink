@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { createClient } from "@/src/lib/supabase/server";
+import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 
 export async function GET(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
@@ -15,11 +15,22 @@ export async function GET(request: Request) {
     .eq("company_id", companyId)
     .maybeSingle();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
 
   // Return defaults if no settings row exists
   const settings = data ?? {
     company_id: companyId,
+    is_public: false,
+    public_slug: null,
+    booking_window_days: 30,
+    min_advance_hours: 1,
+    max_advance_days: 30,
+    cancellation_hours: 0,
+    confirmation_email_enabled: true,
+    reminder_email_enabled: false,
+    reminder_hours_before: 24,
+    custom_message: null,
     auto_confirm: false,
     timezone: "Asia/Kuala_Lumpur",
     slot_interval_mins: 30,
@@ -31,7 +42,7 @@ export async function GET(request: Request) {
     require_email: true,
   };
 
-  return NextResponse.json({ settings });
+  return NextResponse.json({ status: "ok", settings });
 }
 
 export async function POST(request: Request) {
@@ -44,6 +55,16 @@ export async function POST(request: Request) {
 
   const payload = {
     company_id: companyId,
+    is_public: body.is_public ?? false,
+    public_slug: body.public_slug || null,
+    booking_window_days: body.booking_window_days ?? 30,
+    min_advance_hours: body.min_advance_hours ?? 1,
+    max_advance_days: body.max_advance_days ?? 30,
+    cancellation_hours: body.cancellation_hours ?? 0,
+    confirmation_email_enabled: body.confirmation_email_enabled ?? true,
+    reminder_email_enabled: body.reminder_email_enabled ?? false,
+    reminder_hours_before: body.reminder_hours_before ?? 24,
+    custom_message: body.custom_message || null,
     auto_confirm: body.auto_confirm ?? false,
     timezone: body.timezone ?? "Asia/Kuala_Lumpur",
     slot_interval_mins: body.slot_interval_mins ?? 30,
@@ -79,6 +100,14 @@ export async function POST(request: Request) {
       .single());
   }
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ settings: data });
+  if (error) {
+    if (error.code === "23505")
+      return NextResponse.json(
+        { error: "Booking settings already exist" },
+        { status: 409 },
+      );
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ status: "ok", settings: data }, { status: 201 });
 }
