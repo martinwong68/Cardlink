@@ -130,21 +130,21 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
     const { count: dueInvoices } = await supabase
       .from("invoices")
       .select("id", { count: "exact", head: true })
-      .eq("company_id", companyId)
+      .eq("org_id", companyId)
       .eq("due_date", today)
       .neq("status", "paid");
     sections.push(`INVOICES DUE TODAY: ${dueInvoices ?? 0}`);
 
-    // Low stock items
+    // Low stock items — inv_products joined with inv_stock_balances
     const { data: lowStock } = await supabase
-      .from("inventory_products")
-      .select("name, sku")
+      .from("inv_stock_balances")
+      .select("on_hand, inv_products!inner(name, sku)")
       .eq("company_id", companyId)
-      .eq("is_low_stock", true)
+      .lt("on_hand", 10)
       .limit(10);
     sections.push(`LOW STOCK ITEMS: ${lowStock?.length ?? 0}`);
     if (lowStock?.length) {
-      sections.push(`  Items: ${lowStock.map((i: { name: string }) => i.name).join(", ")}`);
+      sections.push(`  Items: ${lowStock.map((i: { inv_products: { name: string; sku: string }[] }) => i.inv_products?.[0]?.name ?? "unknown").join(", ")}`);
     }
 
   } else if (reviewType === "monthly") {
@@ -165,7 +165,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
     const { data: arInvoices } = await supabase
       .from("invoices")
       .select("total, status, due_date")
-      .eq("company_id", companyId)
+      .eq("org_id", companyId)
       .neq("status", "paid")
       .order("due_date", { ascending: true });
     const arTotal = arInvoices?.reduce((sum: number, i: { total?: number }) => sum + (i.total ?? 0), 0) ?? 0;
@@ -175,7 +175,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
     const { data: apBills } = await supabase
       .from("vendor_bills")
       .select("total, status, due_date")
-      .eq("company_id", companyId)
+      .eq("org_id", companyId)
       .neq("status", "paid")
       .order("due_date", { ascending: true });
     const apTotal = apBills?.reduce((sum: number, b: { total?: number }) => sum + (b.total ?? 0), 0) ?? 0;
@@ -183,7 +183,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
 
     // Employee count
     const { count: employeeCount } = await supabase
-      .from("employees")
+      .from("hr_employees")
       .select("id", { count: "exact", head: true })
       .eq("company_id", companyId)
       .eq("status", "active");
@@ -191,8 +191,8 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
 
     // Inventory value
     const { data: products } = await supabase
-      .from("inventory_products")
-      .select("name, cost_price")
+      .from("inv_products")
+      .select("name")
       .eq("company_id", companyId)
       .eq("is_active", true);
     sections.push(`ACTIVE PRODUCTS: ${products?.length ?? 0}`);
@@ -216,7 +216,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
     const { data: yearInvoices } = await supabase
       .from("invoices")
       .select("total, status")
-      .eq("company_id", companyId)
+      .eq("org_id", companyId)
       .gte("created_at", yearStart);
     const invoiceTotal = yearInvoices?.reduce((sum: number, i: { total?: number }) => sum + (i.total ?? 0), 0) ?? 0;
     const paidInvoices = yearInvoices?.filter((i: { status: string }) => i.status === "paid").length ?? 0;
@@ -226,7 +226,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
     const { data: yearBills } = await supabase
       .from("vendor_bills")
       .select("total, status")
-      .eq("company_id", companyId)
+      .eq("org_id", companyId)
       .gte("created_at", yearStart);
     const billTotal = yearBills?.reduce((sum: number, b: { total?: number }) => sum + (b.total ?? 0), 0) ?? 0;
     sections.push(`ANNUAL EXPENSES: ${billTotal} across ${yearBills?.length ?? 0} bills`);
@@ -242,7 +242,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
 
     // Employee count
     const { count: empCount } = await supabase
-      .from("employees")
+      .from("hr_employees")
       .select("id", { count: "exact", head: true })
       .eq("company_id", companyId)
       .eq("status", "active");
@@ -250,7 +250,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
 
     // Product count
     const { count: prodCount } = await supabase
-      .from("inventory_products")
+      .from("inv_products")
       .select("id", { count: "exact", head: true })
       .eq("company_id", companyId)
       .eq("is_active", true);

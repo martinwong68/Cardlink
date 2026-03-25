@@ -37,18 +37,19 @@ export async function POST(request: Request) {
 
     switch (targetModule) {
       case "inventory": {
-        tableName = "inventory_products";
-        const rows = fullData.map((row) => ({
-          company_id: companyId,
-          name: String(row.name ?? row.product_name ?? row.item_name ?? ""),
-          sku: String(row.sku ?? row.code ?? row.item_code ?? ""),
-          description: String(row.description ?? row.desc ?? ""),
-          unit_price: Number(row.unit_price ?? row.price ?? row.selling_price ?? 0),
-          cost_price: Number(row.cost_price ?? row.cost ?? row.buying_price ?? 0),
-          category: String(row.category ?? row.type ?? ""),
-          unit_of_measure: String(row.unit ?? row.uom ?? row.unit_of_measure ?? "pcs"),
-          is_active: true,
-        }));
+        tableName = "inv_products";
+        let skuCounter = 0;
+        const batchTimestamp = Date.now().toString(36).toUpperCase();
+        const rows = fullData.map((row) => {
+          skuCounter++;
+          return {
+            company_id: companyId,
+            name: String(row.name ?? row.product_name ?? row.item_name ?? ""),
+            sku: String(row.sku ?? row.code ?? row.item_code ?? `SKU-${batchTimestamp}-${skuCounter}`),
+            unit: String(row.unit ?? row.uom ?? row.unit_of_measure ?? "pcs"),
+            is_active: true,
+          };
+        });
         const { data, error } = await supabase
           .from(tableName)
           .insert(rows)
@@ -62,11 +63,10 @@ export async function POST(request: Request) {
         if (documentType === "accounting_accounts") {
           tableName = "accounts";
           const rows = fullData.map((row) => ({
-            company_id: companyId,
+            org_id: companyId,
             code: String(row.code ?? row.account_code ?? row.account_number ?? ""),
             name: String(row.name ?? row.account_name ?? ""),
             type: String(row.type ?? row.account_type ?? "expense"),
-            description: String(row.description ?? row.desc ?? ""),
             is_active: true,
           }));
           const { data, error } = await supabase
@@ -80,17 +80,21 @@ export async function POST(request: Request) {
       }
 
       case "hr": {
-        tableName = "employees";
-        const rows = fullData.map((row) => ({
-          company_id: companyId,
-          first_name: String(row.first_name ?? row.name?.toString().split(" ")[0] ?? ""),
-          last_name: String(row.last_name ?? row.name?.toString().split(" ").slice(1).join(" ") ?? ""),
-          email: String(row.email ?? ""),
-          phone: String(row.phone ?? row.mobile ?? ""),
-          position: String(row.position ?? row.title ?? row.job_title ?? ""),
-          department: String(row.department ?? row.dept ?? ""),
-          status: "active",
-        }));
+        tableName = "hr_employees";
+        const rows = fullData.map((row) => {
+          const firstName = String(row.first_name ?? row.name?.toString().split(" ")[0] ?? "");
+          const lastName = String(row.last_name ?? row.name?.toString().split(" ").slice(1).join(" ") ?? "");
+          const fullName = String(row.full_name ?? `${firstName} ${lastName}`.trim()) || "Unknown";
+          return {
+            company_id: companyId,
+            full_name: fullName,
+            email: String(row.email ?? "") || null,
+            phone: String(row.phone ?? row.mobile ?? "") || null,
+            position: String(row.position ?? row.title ?? row.job_title ?? "") || null,
+            department: String(row.department ?? row.dept ?? "") || null,
+            status: "active",
+          };
+        });
         const { data, error } = await supabase
           .from(tableName)
           .insert(rows)
@@ -102,15 +106,18 @@ export async function POST(request: Request) {
 
       case "crm": {
         tableName = "crm_contacts";
-        const rows = fullData.map((row) => ({
-          company_id: companyId,
-          first_name: String(row.first_name ?? row.name?.toString().split(" ")[0] ?? ""),
-          last_name: String(row.last_name ?? row.name?.toString().split(" ").slice(1).join(" ") ?? ""),
-          email: String(row.email ?? ""),
-          phone: String(row.phone ?? row.mobile ?? ""),
-          company: String(row.company ?? row.organization ?? ""),
-          source: "import",
-        }));
+        const rows = fullData.map((row) => {
+          const firstName = String(row.first_name ?? row.name?.toString().split(" ")[0] ?? "");
+          const lastName = String(row.last_name ?? row.name?.toString().split(" ").slice(1).join(" ") ?? "");
+          const fullName = `${firstName} ${lastName}`.trim() || "Unknown";
+          return {
+            company_id: companyId,
+            name: fullName,
+            email: String(row.email ?? "") || null,
+            phone: String(row.phone ?? row.mobile ?? "") || null,
+            company_name: String(row.company ?? row.organization ?? "") || null,
+          };
+        });
         const { data, error } = await supabase
           .from(tableName)
           .insert(rows)

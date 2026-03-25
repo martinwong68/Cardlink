@@ -63,6 +63,13 @@ function escapeIlikePattern(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
 }
 
+/** Generate a short unique identifier (prefix + timestamp + random) */
+function generateUniqueCode(prefix: string): string {
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `${prefix}-${ts}-${rand}`;
+}
+
 /* ── Pre-flight helpers ── */
 
 /**
@@ -251,7 +258,7 @@ async function executeStep(
     case "crm":
       return executeCrmStep(supabase, companyId, step.operation, params);
     case "pos":
-      return executePosStep(supabase, companyId, step.operation, params);
+      return executePosStep(supabase, companyId, userId, step.operation, params);
     default:
       return executeGenericStep(supabase, companyId, step.operation, params);
   }
@@ -321,15 +328,23 @@ async function executeAccountingStep(
       const clientName = sanitizeText(params.customer_name ?? params.customer ?? params.client_name, 200);
       if (!clientName) throw new Error("Customer / client name is required for an invoice.");
 
+      const today = new Date().toISOString().slice(0, 10);
+      const invoiceNumber = generateUniqueCode("INV");
+
       const { error } = await supabase.from("invoices").insert({
         org_id: companyId,
+        invoice_number: invoiceNumber,
         client_name: clientName,
         client_email: sanitizeText(params.client_email ?? params.email, 200) || null,
-        total: amount,
-        due_date: params.due_date ? String(params.due_date).slice(0, 10) : null,
+        issue_date: today,
+        due_date: params.due_date
+          ? String(params.due_date).slice(0, 10)
+          : new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
         status: "draft",
+        total: amount,
+        tax: sanitizeAmount(params.tax),
+        currency: sanitizeText(params.currency, 10) || "USD",
         notes: sanitizeText(params.notes, 500) || null,
-        created_by: userId,
       });
       if (error) throw new Error(error.message);
       return;
@@ -388,20 +403,68 @@ async function executeAccountingStep(
       const amount = sanitizeAmount(params.amount);
       if (amount <= 0) throw new Error("Payment amount must be greater than zero.");
 
-      const { error } = await supabase.from("payments").insert({
-        org_id: companyId,
-        amount,
-        payment_date: params.date
-          ? String(params.date).slice(0, 10)
-          : new Date().toISOString().slice(0, 10),
-        payment_method: sanitizeText(params.payment_method || "cash", 50),
-        reference: sanitizeText(params.reference, 200) || null,
-        notes: sanitizeText(params.notes, 500) || null,
-        related_type: sanitizeText(params.related_type, 50) || null,
-        related_id: params.related_id ? String(params.related_id) : null,
-        created_by: userId,
-      });
-      if (error) throw new Error(error.message);
+      const paymentDate = params.date
+        ? String(params.date).slice(0, 10)
+        : new Date().toISOString().slice(0, 10);
+      const method = sanitizeText(params.payment_method || "cash", 50);
+      const reference = sanitizeText(params.reference, 200) || null;
+      const notes = sanitizeText(params.notes, 500) || null;
+
+      // If the AI provides a related invoice/bill, use the payments table
+      const relatedType = sanitizeText(params.related_type, 50);
+      const relatedId = params.related_id ? String(params.related_id) : null;
+
+      if (relatedType && relatedId && ["invoice", "vendor_bill"].includes(relatedType)) {
+        const paymentNumber = generateUniqueCode("PAY");
+        const paymentType = relatedType === "invoice" ? "received" : "made";
+
+        const { error } = await supabase.from("payments").insert({
+          org_id: companyId,
+          payment_number: paymentNumber,
+          payment_type: paymentType,
+          related_type: relatedType,
+          related_id: relatedId,
+          amount,
+          payment_method: method,
+          payment_date: paymentDate,
+          reference,
+          notes,
+          created_by: userId,
+        });
+        if (error) throw new Error(error.message);
+      } else {
+        // Standalone payment — record as a transaction with transaction_lines
+        const description = sanitizeText(
+          params.description || `Payment received — ${method}`,
+        );
+        const category = sanitizeText(params.category || "Payment", 100);
+        const accountId = await ensureAccount(supabase, companyId, category, "revenue");
+
+        const { data: txn, error: txnError } = await supabase
+          .from("transactions")
+          .insert({
+            org_id: companyId,
+            description,
+            date: paymentDate,
+            reference_number: reference,
+            status: "posted",
+            created_by: userId,
+          })
+          .select("id")
+          .single();
+        if (txnError) throw new Error(txnError.message);
+
+        const { error: lineError } = await supabase
+          .from("transaction_lines")
+          .insert({
+            transaction_id: txn.id,
+            account_id: accountId,
+            credit: amount,
+            debit: 0,
+            description,
+          });
+        if (lineError) throw new Error(lineError.message);
+      }
       return;
     }
     default:
@@ -417,38 +480,62 @@ async function executeInventoryStep(
 ) {
   switch (operation) {
     case "check_stock": {
-      // Read-only — no mutation. Just validate we can find the product.
+      // Read-only — find the product and its stock balance.
       const searchName = sanitizeText(params.product ?? params.product_name, 200);
-      const { data, error } = await supabase
-        .from("inventory_products")
-        .select("id, name, stock_quantity")
+      const escapedName = escapeIlikePattern(searchName);
+      const { data: product, error: findError } = await supabase
+        .from("inv_products")
+        .select("id, name, sku")
         .eq("company_id", companyId)
-        .ilike("name", `%${searchName}%`)
+        .ilike("name", `%${escapedName}%`)
         .limit(1)
         .maybeSingle();
-      if (error) throw new Error(error.message);
-      if (!data) throw new Error(`Product not found: ${searchName}`);
+      if (findError) throw new Error(findError.message);
+      if (!product) throw new Error(`Product not found: ${searchName}`);
+
+      // Look up the stock balance
+      const { data: balance } = await supabase
+        .from("inv_stock_balances")
+        .select("on_hand")
+        .eq("product_id", product.id)
+        .eq("company_id", companyId)
+        .maybeSingle();
+
+      // Stock info is available even if balance row is missing (means 0)
+      const onHand = balance?.on_hand ?? 0;
+      // Result is informational; the step succeeds if product exists
+      console.log(`[check_stock] ${product.name}: ${onHand} on hand`);
       return;
     }
     case "adjust_stock": {
       const productName = sanitizeText(params.product ?? params.product_name, 200);
       if (!productName) throw new Error("Product name is required for stock adjustment.");
 
+      const escapedName = escapeIlikePattern(productName);
       const { data: product, error: findError } = await supabase
-        .from("inventory_products")
+        .from("inv_products")
         .select("id")
         .eq("company_id", companyId)
-        .ilike("name", `%${productName}%`)
+        .ilike("name", `%${escapedName}%`)
         .limit(1)
         .maybeSingle();
       if (findError) throw new Error(findError.message);
       if (!product) throw new Error(`Product not found: ${productName}`);
 
       const qty = sanitizeAmount(params.quantity ?? params.stock_quantity);
+
+      // Upsert inv_stock_balances for this product
       const { error } = await supabase
-        .from("inventory_products")
-        .update({ stock_quantity: qty })
-        .eq("id", product.id);
+        .from("inv_stock_balances")
+        .upsert(
+          {
+            product_id: product.id,
+            company_id: companyId,
+            on_hand: qty,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "product_id,company_id" },
+        );
       if (error) throw new Error(error.message);
       return;
     }
@@ -457,24 +544,44 @@ async function executeInventoryStep(
       if (!name) throw new Error("Product name is required.");
 
       // Check if product already exists (exact match, case insensitive)
+      const escapedName = escapeIlikePattern(name);
       const { data: existing } = await supabase
-        .from("inventory_products")
+        .from("inv_products")
         .select("id")
         .eq("company_id", companyId)
-        .ilike("name", escapeIlikePattern(name))
+        .ilike("name", escapedName)
         .limit(1)
         .maybeSingle();
       if (existing) throw new Error(`Product "${name}" already exists.`);
 
-      const { error } = await supabase.from("inventory_products").insert({
-        company_id: companyId,
-        name,
-        sku: sanitizeText(params.sku, 100) || null,
-        stock_quantity: sanitizeAmount(params.quantity ?? params.stock_quantity),
-        price: sanitizeAmount(params.price ?? params.unit_price),
-        description: sanitizeText(params.description, 500) || null,
-      });
+      // Generate a SKU if not provided (required NOT NULL)
+      const sku = sanitizeText(params.sku, 100) || generateUniqueCode("SKU");
+
+      const { data: created, error } = await supabase
+        .from("inv_products")
+        .insert({
+          company_id: companyId,
+          name,
+          sku,
+          unit: sanitizeText(params.unit, 20) || "pcs",
+          is_active: true,
+        })
+        .select("id")
+        .single();
       if (error) throw new Error(error.message);
+
+      // Set initial stock balance if quantity is provided
+      const initialQty = sanitizeAmount(params.quantity ?? params.stock_quantity);
+      if (initialQty > 0) {
+        const { error: balError } = await supabase
+          .from("inv_stock_balances")
+          .insert({
+            product_id: created.id,
+            company_id: companyId,
+            on_hand: initialQty,
+          });
+        if (balError) throw new Error(balError.message);
+      }
       return;
     }
     default:
@@ -525,6 +632,7 @@ async function executeCrmStep(
 async function executePosStep(
   supabase: ReturnType<typeof createAdminClient>,
   companyId: string,
+  userId: string,
   operation: string,
   params: Record<string, unknown>,
 ) {
@@ -533,14 +641,51 @@ async function executePosStep(
       const total = sanitizeAmount(params.amount ?? params.total);
       if (total <= 0) throw new Error("Sale total must be greater than zero.");
 
-      const { error } = await supabase.from("pos_orders").insert({
-        company_id: companyId,
-        total,
-        items: Array.isArray(params.items) ? params.items.slice(0, 100) : [],
-        status: "completed",
-        payment_method: sanitizeText(params.payment_method || "cash", 50),
-      });
+      const taxRate = sanitizeAmount(params.tax_rate ?? 0);
+      const subtotal = taxRate > 0 ? +(total / (1 + taxRate)).toFixed(2) : total;
+      const tax = +(total - subtotal).toFixed(2);
+      const orderNumber = generateUniqueCode("ORD");
+
+      const { data: order, error } = await supabase
+        .from("pos_orders")
+        .insert({
+          company_id: companyId,
+          order_number: orderNumber,
+          status: "completed",
+          subtotal,
+          tax_rate: taxRate,
+          tax,
+          total,
+          payment_method: sanitizeText(params.payment_method || "cash", 50),
+          customer_name: sanitizeText(params.customer_name, 200) || null,
+          notes: sanitizeText(params.notes, 500) || null,
+          created_by: userId,
+        })
+        .select("id")
+        .single();
       if (error) throw new Error(error.message);
+
+      // Insert order items if provided
+      const items = Array.isArray(params.items) ? params.items.slice(0, 100) : [];
+      if (items.length > 0 && order) {
+        const orderItems = items.map((item: Record<string, unknown>) => ({
+          order_id: order.id,
+          product_name: sanitizeText(item.name ?? item.product_name, 200) || "Item",
+          qty: Math.max(1, Math.round(Number(item.qty ?? item.quantity ?? 1))),
+          unit_price: sanitizeAmount(item.unit_price ?? item.price),
+          subtotal: sanitizeAmount(
+            item.subtotal ??
+              (Number(item.unit_price ?? item.price ?? 0) *
+                Number(item.qty ?? item.quantity ?? 1)),
+          ),
+        }));
+        const { error: itemsError } = await supabase
+          .from("pos_order_items")
+          .insert(orderItems);
+        if (itemsError) {
+          console.error("[record_sale] Failed to insert order items:", itemsError.message);
+        }
+      }
       return;
     }
     default:

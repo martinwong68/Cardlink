@@ -645,11 +645,11 @@ SUPPORTED OPERATIONS (use ONLY these exact module + operation combinations):
 - module: "accounting", operation: "record_expense" — params: { amount: number (required), description: string (required), category: string (optional, e.g. "Office Supplies"), date: "YYYY-MM-DD" (optional) }
 - module: "accounting", operation: "create_invoice" — params: { customer_name: string (required), amount: number (required), due_date: "YYYY-MM-DD" (optional), notes: string (optional) }
 - module: "accounting", operation: "create_journal_entry" — params: { description: string, date: "YYYY-MM-DD", entries: [{account: string, debit: number, credit: number}] }
-- module: "accounting", operation: "record_payment" — params: { amount: number (required), payment_method: string, reference: string, date: "YYYY-MM-DD" }
+- module: "accounting", operation: "record_payment" — params: { amount: number (required), payment_method: string (e.g. "cash","bank_transfer","credit_card"), reference: string, date: "YYYY-MM-DD", description: string (optional) }
 - module: "inventory", operation: "check_stock" — params: { product_name: string }
-- module: "inventory", operation: "adjust_stock" — params: { product_name: string, quantity: number }
-- module: "inventory", operation: "add_product" — params: { name: string (required), sku: string, quantity: number, price: number, description: string }
-- module: "pos", operation: "record_sale" — params: { amount: number (required), items: array, payment_method: string }
+- module: "inventory", operation: "adjust_stock" — params: { product_name: string, quantity: number (new on-hand quantity) }
+- module: "inventory", operation: "add_product" — params: { name: string (required), sku: string (optional), quantity: number (optional, initial stock), unit: string (optional, default "pcs") }
+- module: "pos", operation: "record_sale" — params: { amount: number (required, total including tax), payment_method: string, customer_name: string, items: [{name: string, qty: number, unit_price: number}] (optional) }
 - module: "crm", operation: "add_lead" — params: { name: string (required), email: string, phone: string, source: string }
 - module: "crm", operation: "add_contact" — params: { name: string (required), email: string, phone: string }
 

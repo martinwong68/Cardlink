@@ -1,6 +1,7 @@
 # CRM Module (Leads, Deals, Contacts, Campaigns)
 
 > Auto-generated from Supabase database on 2025-07-21
+> Updated 2026-03-25 with Phase 1 enhancements (address fields, deal→contact FK)
 > 6 tables | All verified ✅ in live DB (currently 0 rows)
 
 ---
@@ -54,9 +55,9 @@
 ## crm_deals
 
 **Status:** ✅ Exists (0 rows)
-**FKs:** company_id → companies.id, lead_id → crm_leads.id
+**FKs:** company_id → companies.id, lead_id → crm_leads.id, contact_id → crm_contacts.id
 
-### Columns (14)
+### Columns (16)
 
 | Column | Type | Default | Notes |
 |--------|------|---------|-------|
@@ -67,10 +68,12 @@
 | stage | text | 'discovery' | discovery, proposal, negotiation, closed_won, closed_lost |
 | probability | numeric | 0 | Win probability % |
 | lead_id | uuid | | FK → crm_leads.id |
+| contact_id | uuid | | FK → crm_contacts.id |
 | contact_name | text | | |
 | assigned_to | uuid | | FK → auth.users |
 | expected_close_date | date | | |
 | notes | text | | |
+| lost_reason | text | | Reason for losing deal |
 | created_by | uuid | | |
 | created_at | timestamptz | now() | |
 | updated_at | timestamptz | now() | |
@@ -86,7 +89,7 @@
 **Status:** ✅ Exists (0 rows)
 **FK:** company_id → companies.id
 
-### Columns (12)
+### Columns (17)
 
 | Column | Type | Default | Notes |
 |--------|------|---------|-------|
@@ -99,6 +102,11 @@
 | position | text | | Job title |
 | tags | text[] | | Array of tags |
 | notes | text | | |
+| address_street | text | | Street address |
+| address_city | text | | City |
+| address_state | text | | State/Province |
+| address_country | text | | Country |
+| address_postal_code | text | | Postal code |
 | created_by | uuid | | |
 | created_at | timestamptz | now() | |
 | updated_at | timestamptz | now() | |
@@ -112,6 +120,7 @@
 | Table | Column |
 |-------|--------|
 | crm_notes | contact_id |
+| crm_deals | contact_id |
 
 ---
 
