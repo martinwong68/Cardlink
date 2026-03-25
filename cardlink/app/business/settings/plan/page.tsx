@@ -57,12 +57,14 @@ type BillingRow = {
 };
 
 const PLAN_ICONS: Record<string, typeof Rocket> = {
+  starter: Rocket,
   free: Rocket,
   professional: Zap,
   business: Crown,
 };
 
 const PLAN_COLORS: Record<string, { ring: string; bg: string; icon: string }> = {
+  starter: { ring: "ring-gray-200", bg: "bg-gray-50", icon: "text-gray-500" },
   free: { ring: "ring-gray-200", bg: "bg-gray-50", icon: "text-gray-500" },
   professional: { ring: "ring-indigo-300", bg: "bg-indigo-50", icon: "text-indigo-600" },
   business: { ring: "ring-amber-300", bg: "bg-amber-50", icon: "text-amber-600" },
@@ -208,20 +210,30 @@ export default function PlanBillingSettingsPage() {
 
   /* ── Change Plan ── */
   const handleChangePlan = async (newPlan: Plan) => {
-    if (!companyId || !subscription) return;
+    if (!companyId) return;
     setChangingPlan(true);
 
-    // Free plan → direct DB downgrade (no payment needed)
+    // Free/starter plan with $0 → direct DB downgrade (no payment needed)
     if (newPlan.price_monthly === 0) {
-      await supabase
-        .from("company_subscriptions")
-        .update({
+      if (subscription) {
+        await supabase
+          .from("company_subscriptions")
+          .update({
+            plan_id: newPlan.id,
+            ai_actions_limit: newPlan.ai_actions_monthly,
+            storage_limit_mb: newPlan.storage_mb,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("company_id", companyId);
+      } else {
+        await supabase.from("company_subscriptions").insert({
+          company_id: companyId,
           plan_id: newPlan.id,
+          status: "active",
           ai_actions_limit: newPlan.ai_actions_monthly,
           storage_limit_mb: newPlan.storage_mb,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("company_id", companyId);
+        });
+      }
 
       await supabase.from("billing_history").insert({
         company_id: companyId,
@@ -305,7 +317,7 @@ export default function PlanBillingSettingsPage() {
     );
   }
 
-  const planSlug = currentPlan?.slug ?? "free";
+  const planSlug = currentPlan?.slug ?? "starter";
   const PlanIcon = PLAN_ICONS[planSlug] ?? Rocket;
   const planColor = PLAN_COLORS[planSlug] ?? PLAN_COLORS.free;
 
@@ -507,8 +519,8 @@ export default function PlanBillingSettingsPage() {
         </div>
       )}
 
-      {/* ── AI Credits Section (hidden for free plan) ── */}
-      {planSlug !== "free" && <div className="app-card p-6 space-y-4" id="credits">
+      {/* ── AI Credits Section ── */}
+      <div className="app-card p-6 space-y-4" id="credits">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50">
             <Zap className="h-5 w-5 text-violet-600" />
@@ -546,7 +558,7 @@ export default function PlanBillingSettingsPage() {
             </button>
           ))}
         </div>
-      </div>}
+      </div>
 
       {/* ── Billing History ── */}
       <div className="app-card p-6 space-y-4">

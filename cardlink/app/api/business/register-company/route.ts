@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { createAdminClient } from "@/src/lib/supabase/admin";
 
-const VALID_PLAN_SLUGS = new Set(["free", "professional", "business"]);
+const VALID_PLAN_SLUGS = new Set(["starter", "professional", "business"]);
 const VALID_INDUSTRIES = new Set([
   "retail", "fnb", "services", "manufacturing", "technology",
   "healthcare", "education", "construction", "professional", "other",

@@ -2,6 +2,42 @@ import { NextResponse } from "next/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { createClient } from "@/src/lib/supabase/server";
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const guard = await requireBusinessActiveCompanyContext({ request });
+  if (!guard.ok) return guard.response;
+
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("proc_purchase_orders")
+    .select("*")
+    .eq("id", id)
+    .eq("company_id", guard.context.activeCompanyId)
+    .single();
+
+  if (error || !data) {
+    return NextResponse.json(
+      { error: error?.message ?? "Purchase order not found." },
+      { status: error ? 500 : 404 },
+    );
+  }
+
+  // Get items
+  const { data: items } = await supabase
+    .from("proc_purchase_order_items")
+    .select("*")
+    .eq("purchase_order_id", id);
+
+  return NextResponse.json({
+    contract: "procurement.purchase_orders.v1",
+    purchase_order: { ...data, items: items ?? [] },
+  });
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -15,6 +51,7 @@ export async function PATCH(
   const allowed = [
     "status", "expected_at", "terms", "notes",
     "discount_percent", "tax_percent", "shipping_cost", "payment_terms",
+    "rejection_reason",
   ];
 
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -23,12 +60,21 @@ export async function PATCH(
   }
 
   if (body.status) {
-    const validStatuses = ["draft", "submitted", "ordered", "partial", "received", "cancelled"];
+    const validStatuses = ["draft", "submitted", "approved", "ordered", "partial", "received", "cancelled", "rejected"];
     if (!validStatuses.includes(body.status)) {
       return NextResponse.json(
         { error: `status must be one of: ${validStatuses.join(", ")}` },
         { status: 400 },
       );
+    }
+
+    // Track approval metadata
+    if (body.status === "approved") {
+      updates.approved_by = guard.context.user.id;
+      updates.approved_at = new Date().toISOString();
+    }
+    if (body.status === "rejected" && body.rejection_reason) {
+      updates.rejection_reason = body.rejection_reason;
     }
   }
 

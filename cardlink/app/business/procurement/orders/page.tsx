@@ -7,7 +7,7 @@ type PO = { id: string; po_number: string; supplier_id: string; status: string; 
 type Supplier = { id: string; name: string };
 type Product = { id: string; name: string; sku: string };
 
-const statusColors: Record<string, string> = { draft: "bg-gray-100 text-gray-600", submitted: "bg-blue-100 text-blue-700", ordered: "bg-indigo-100 text-indigo-700", partial: "bg-yellow-100 text-yellow-700", received: "bg-green-100 text-green-700", cancelled: "bg-red-100 text-red-700" };
+const statusColors: Record<string, string> = { draft: "bg-gray-100 text-gray-600", submitted: "bg-blue-100 text-blue-700", approved: "bg-emerald-100 text-emerald-700", ordered: "bg-indigo-100 text-indigo-700", partial: "bg-yellow-100 text-yellow-700", received: "bg-green-100 text-green-700", cancelled: "bg-red-100 text-red-700", rejected: "bg-red-100 text-red-600" };
 
 export default function ProcurementOrdersPage() {
   const [orders, setOrders] = useState<PO[]>([]);
@@ -98,7 +98,7 @@ export default function ProcurementOrdersPage() {
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
-        {["all", "draft", "submitted", "ordered", "partial", "received", "cancelled"].map((s) => (
+        {["all", "draft", "submitted", "approved", "ordered", "partial", "received", "cancelled", "rejected"].map((s) => (
           <button key={s} onClick={() => setFilter(s)} className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${filter === s ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-600"}`}>{s}</button>
         ))}
       </div>
@@ -180,7 +180,16 @@ export default function ProcurementOrdersPage() {
               </div>
             )}
             {po.status === "submitted" && (
-              <button onClick={() => updateStatus(po.id, "received")} className="mt-2 rounded-lg bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Mark Received</button>
+              <div className="mt-2 flex gap-2">
+                <button onClick={() => updateStatus(po.id, "approved")} className="rounded-lg bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Approve</button>
+                <button onClick={() => updateStatus(po.id, "rejected")} className="rounded-lg bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">Reject</button>
+              </div>
+            )}
+            {po.status === "approved" && (
+              <div className="mt-2 flex gap-2">
+                <button onClick={() => updateStatus(po.id, "ordered")} className="rounded-lg bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">Mark Ordered</button>
+                <button onClick={() => updateStatus(po.id, "received")} className="rounded-lg bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Mark Received</button>
+              </div>
             )}
           </div>
         ))}
