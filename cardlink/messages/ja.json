@@ -1006,7 +1006,7 @@
     "title": "編集 プロフィール",
     "avatar": {
       "title": "Avatar",
-      "subtitle": "アップロード coming soon"
+      "subtitle": "JPG、PNG対応。アップロード前に自動圧縮。"
     },
     "fields": {
       "fullName": "氏名",
@@ -3212,5 +3212,13 @@
     "saving": "保存中...",
     "saved": "設定が保存されました！",
     "error": "設定の保存に失敗しました。"
+  },
+  "upgradePrompt": {
+    "lockedTitle": "{feature} はロックされています",
+    "defaultDescription": "この機能のロックを解除し、高度なビジネスツールにアクセスするには、プランをアップグレードしてください。",
+    "yourPlan": "現在のプラン",
+    "viewPlans": "プランを見る",
+    "inlineLabel": "{feature} にはアップグレードが必要です",
+    "upgrade": "アップグレード"
   }
 }

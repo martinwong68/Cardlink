@@ -259,7 +259,7 @@ export default function PosTerminalPage() {
               <div className="mt-2">
                 <select value={selectedTaxId} onChange={(e) => setSelectedTaxId(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-1.5 text-xs text-gray-700">
                   {taxConfigs.map((t) => (
-                    <option key={t.id} value={t.id}>{t.name} ({(Number(t.rate) * 100).toFixed(1)}%)</option>
+                    <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
                 </select>
               </div>
@@ -276,7 +276,7 @@ export default function PosTerminalPage() {
               {discountAmount > 0 && (
                 <div className="flex justify-between"><span className="text-xs text-emerald-600">Discount ({activeDiscount?.name})</span><span className="text-xs text-emerald-600">−${discountAmount.toFixed(2)}</span></div>
               )}
-              <div className="flex justify-between"><span className="text-xs text-gray-500">{taxLabel} ({(taxRate * 100).toFixed(1)}%)</span><span className="text-xs text-gray-900">${tax.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-xs text-gray-500">{taxLabel}</span><span className="text-xs text-gray-900">${tax.toFixed(2)}</span></div>
               <div className="flex justify-between pt-1"><span className="text-base font-bold text-gray-900">Total</span><span className="text-base font-bold text-gray-900">${total.toFixed(2)}</span></div>
             </div>
 

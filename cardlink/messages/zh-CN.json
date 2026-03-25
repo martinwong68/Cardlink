@@ -1006,7 +1006,7 @@
     "title": "编辑资料",
     "avatar": {
       "title": "头像",
-      "subtitle": "上传功能即将上线"
+      "subtitle": "支持 JPG、PNG 格式，上传前自动压缩。"
     },
     "fields": {
       "fullName": "姓名",
@@ -3212,5 +3212,13 @@
     "saving": "保存中...",
     "saved": "设置已保存！",
     "error": "保存设置失败。"
+  },
+  "upgradePrompt": {
+    "lockedTitle": "{feature} 已锁定",
+    "defaultDescription": "升级您的计划以解锁此功能并使用高级商业工具。",
+    "yourPlan": "您当前的计划",
+    "viewPlans": "查看计划",
+    "inlineLabel": "{feature} 需要升级",
+    "upgrade": "升级"
   }
 }

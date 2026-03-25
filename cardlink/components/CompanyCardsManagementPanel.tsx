@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Eye, EyeOff } from "lucide-react";
 
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -101,6 +102,7 @@ export default function CompanyCardsManagementPanel() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [isMasterUser, setIsMasterUser] = useState(false);
   const [activeAccessRole, setActiveAccessRole] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [draft, setDraft] = useState<Draft>({
     mode: "new-account",
     email: "",
@@ -580,14 +582,15 @@ export default function CompanyCardsManagementPanel() {
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() =>
+            onClick={() => {
               setDraft((prev) => ({
                 ...prev,
                 mode: "new-account",
                 passwordMode: prev.passwordMode,
                 password: prev.password || generatePassword(),
-              }))
-            }
+              }));
+              setShowPassword(false);
+            }}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               draft.mode === "new-account"
                 ? "bg-indigo-600 text-white"
@@ -598,7 +601,7 @@ export default function CompanyCardsManagementPanel() {
           </button>
           <button
             type="button"
-            onClick={() => setDraft((prev) => ({ ...prev, mode: "existing-member" }))}
+            onClick={() => { setDraft((prev) => ({ ...prev, mode: "existing-member" })); setShowPassword(false); }}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               draft.mode === "existing-member"
                 ? "bg-indigo-600 text-white"
@@ -635,12 +638,22 @@ export default function CompanyCardsManagementPanel() {
           )}
           {draft.mode === "new-account" ? (
             <div className="flex items-center gap-2 rounded-xl border border-gray-100 px-2 py-2">
-              <input
-                value={draft.password}
-                onChange={(event) => setDraft((prev) => ({ ...prev, password: event.target.value }))}
-                placeholder={t("placeholders.password")}
-                className="w-full border-0 px-1 py-1 text-sm outline-none"
-              />
+              <div className="flex items-center gap-1 w-full">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={draft.password}
+                  onChange={(event) => setDraft((prev) => ({ ...prev, password: event.target.value }))}
+                  placeholder={t("placeholders.password")}
+                  className="w-full border-0 px-1 py-1 text-sm outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="shrink-0 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() =>

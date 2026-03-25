@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/src/lib/supabase/server";
 
 const ALLOWED_EVENT_NAMES = new Set([
   "interface.switch.requested",
@@ -17,6 +18,12 @@ type InterfaceEventRequest = {
 };
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = (await request.json()) as InterfaceEventRequest;
 
   if (!body.event_name || !ALLOWED_EVENT_NAMES.has(body.event_name as never)) {

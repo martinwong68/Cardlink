@@ -1006,7 +1006,7 @@
     "title": "Edit Profile",
     "avatar": {
       "title": "Avatar",
-      "subtitle": "Upload coming soon"
+      "subtitle": "Supports JPG, PNG. Auto-compressed before upload."
     },
     "fields": {
       "fullName": "Full name",
@@ -3212,5 +3212,13 @@
     "saving": "Saving...",
     "saved": "Settings saved!",
     "error": "Failed to save settings."
+  },
+  "upgradePrompt": {
+    "lockedTitle": "{feature} is locked",
+    "defaultDescription": "Upgrade your plan to unlock this feature and access advanced business tools.",
+    "yourPlan": "Your current plan",
+    "viewPlans": "View Plans",
+    "inlineLabel": "{feature} requires an upgrade",
+    "upgrade": "Upgrade"
   }
 }
