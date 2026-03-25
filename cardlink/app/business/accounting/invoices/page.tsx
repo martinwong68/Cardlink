@@ -52,7 +52,15 @@ export default function AccountingInvoicesPage() {
       <section className="app-card p-4 md:p-5">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-gray-800">Invoices</h2>
-          <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/business/accounting/invoices/new"
+              className="app-primary-btn px-3 py-1.5 text-xs font-semibold"
+            >
+              Create Invoice
+            </Link>
+            <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>
+          </div>
         </div>
         {isLoading ? <p className="text-sm text-gray-500">Loading invoices...</p> : null}
 

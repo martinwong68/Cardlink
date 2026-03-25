@@ -1006,7 +1006,7 @@
     "title": "編輯個人資料",
     "avatar": {
       "title": "頭像",
-      "subtitle": "上傳功能即將推出"
+      "subtitle": "支援 JPG、PNG 格式，上傳前自動壓縮。"
     },
     "fields": {
       "fullName": "姓名",
@@ -3212,5 +3212,13 @@
     "saving": "儲存中...",
     "saved": "設定已儲存！",
     "error": "儲存設定失敗。"
+  },
+  "upgradePrompt": {
+    "lockedTitle": "{feature} 已鎖定",
+    "defaultDescription": "升級您的方案以解鎖此功能並使用進階商業工具。",
+    "yourPlan": "您目前的方案",
+    "viewPlans": "查看方案",
+    "inlineLabel": "{feature} 需要升級",
+    "upgrade": "升級"
   }
 }

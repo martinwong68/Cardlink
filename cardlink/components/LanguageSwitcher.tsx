@@ -9,6 +9,8 @@ const localeOptions = [
   { value: "zh-HK", label: "繁體中文 (香港)" },
   { value: "zh-TW", label: "繁體中文 (台灣)" },
   { value: "zh-CN", label: "简体中文" },
+  { value: "ko", label: "한국어" },
+  { value: "ja", label: "日本語" },
 ];
 
 export default function LanguageSwitcher({ compact = false }: { compact?: boolean }) {

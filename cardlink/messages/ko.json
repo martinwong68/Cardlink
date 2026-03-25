@@ -1006,7 +1006,7 @@
     "title": "편집 프로필",
     "avatar": {
       "title": "Avatar",
-      "subtitle": "업로드 coming soon"
+      "subtitle": "JPG, PNG 지원. 업로드 전 자동 압축."
     },
     "fields": {
       "fullName": "이름",
@@ -3212,5 +3212,13 @@
     "saving": "저장 중...",
     "saved": "설정이 저장되었습니다!",
     "error": "설정 저장에 실패했습니다."
+  },
+  "upgradePrompt": {
+    "lockedTitle": "{feature} 잠김",
+    "defaultDescription": "이 기능을 잠금 해제하고 고급 비즈니스 도구에 액세스하려면 플랜을 업그레이드하세요.",
+    "yourPlan": "현재 플랜",
+    "viewPlans": "플랜 보기",
+    "inlineLabel": "{feature} 업그레이드 필요",
+    "upgrade": "업그레이드"
   }
 }

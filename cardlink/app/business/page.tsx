@@ -28,8 +28,8 @@ import AiActionCard, { type AiActionCardData } from "@/components/business/AiAct
 const modules = [
   { key: "accounting" as const, icon: BookOpen, color: "bg-blue-50 text-blue-600", route: "/business/accounting", exists: true, moduleName: "accounting" },
   { key: "store" as const, icon: Store, color: "bg-indigo-50 text-indigo-600", route: "/business/store-management", exists: true, moduleName: "store" },
-  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: false, moduleName: "hr" },
-  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: false, moduleName: "booking" },
+  { key: "hr" as const, icon: Users, color: "bg-purple-50 text-purple-600", route: "/business/hr", exists: true, moduleName: "hr" },
+  { key: "booking" as const, icon: Calendar, color: "bg-teal-50 text-teal-600", route: "/business/booking", exists: true, moduleName: "booking" },
   { key: "inventory" as const, icon: Package, color: "bg-orange-50 text-orange-600", route: "/business/inventory", exists: true, moduleName: "inventory" },
   { key: "pos" as const, icon: ShoppingCart, color: "bg-green-50 text-green-600", route: "/business/pos", exists: true, moduleName: "pos" },
   { key: "crm" as const, icon: Handshake, color: "bg-indigo-50 text-indigo-600", route: "/business/crm", exists: true, moduleName: "crm" },
