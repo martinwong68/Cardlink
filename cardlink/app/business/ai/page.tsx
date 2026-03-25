@@ -762,17 +762,36 @@ The JSON object must have:
   /* ── Parse structured JSON card from AI response ── */
   const parsePresetCardJson = (content: string): PresetCardData | null => {
     try {
-      // Extract JSON from ```json ... ``` code fences
-      const jsonMatch = content.match(/```json\s*([\s\S]*?)```/);
-      if (!jsonMatch) return null;
+      // Try extracting JSON from multiple possible code fence formats
+      const patterns = [
+        /```json\s*([\s\S]*?)```/,
+        /```action-plan\s*([\s\S]*?)```/,
+        /```\s*([\s\S]*?)```/,
+      ];
 
-      const raw = JSON.parse(jsonMatch[1].trim()) as Record<string, unknown>;
-      if (!raw.summary || !Array.isArray(raw.actions)) return null;
+      let rawText: string | null = null;
+      for (const pattern of patterns) {
+        const match = content.match(pattern);
+        if (match?.[1]) {
+          rawText = match[1].trim();
+          break;
+        }
+      }
+
+      // Fallback: try parsing the entire content as JSON
+      if (!rawText) rawText = content.trim();
+
+      const raw = JSON.parse(rawText) as Record<string, unknown>;
+
+      // Handle both preset card format (summary/actions) and action-plan format (intent/steps)
+      const summary = raw.summary ?? raw.intent;
+      const actions = raw.actions ?? raw.steps;
+      if (!summary || !Array.isArray(actions)) return null;
 
       return {
-        summary: String(raw.summary),
-        actions: (raw.actions as Array<Record<string, unknown>>).map((a) => ({
-          label: String(a.label ?? ""),
+        summary: String(summary),
+        actions: (actions as Array<Record<string, unknown>>).map((a) => ({
+          label: String(a.label ?? a.operation ?? ""),
           module: String(a.module ?? "general"),
           operation: String(a.operation ?? ""),
           params: (a.params ?? {}) as Record<string, unknown>,
