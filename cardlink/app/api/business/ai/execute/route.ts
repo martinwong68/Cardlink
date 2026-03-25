@@ -337,7 +337,9 @@ async function executeAccountingStep(
         client_name: clientName,
         client_email: sanitizeText(params.client_email ?? params.email, 200) || null,
         issue_date: today,
-        due_date: params.due_date ? String(params.due_date).slice(0, 10) : today,
+        due_date: params.due_date
+          ? String(params.due_date).slice(0, 10)
+          : new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
         status: "draft",
         total: amount,
         tax: sanitizeAmount(params.tax),
