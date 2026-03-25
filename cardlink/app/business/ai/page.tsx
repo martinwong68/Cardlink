@@ -89,6 +89,9 @@ const MODEL_OPTIONS = [
 const FILE_SIZE_SONNET_THRESHOLD = 500 * 1024; // 500 KB
 const FILE_SIZE_OPUS_THRESHOLD = 5 * 1024 * 1024; // 5 MB
 
+/** Max characters of file content to include in AI prompt */
+const MAX_FILE_CONTENT_IN_PROMPT = 15000;
+
 function selectModelForFile(fileSize: number): string {
   if (fileSize >= FILE_SIZE_OPUS_THRESHOLD) return "claude-opus-4.6";
   if (fileSize >= FILE_SIZE_SONNET_THRESHOLD) return "claude-sonnet-4.6";
@@ -556,21 +559,13 @@ export default function BusinessAiPage() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      if (isText) {
-        setUploadedFile({
-          name: file.name,
-          content: reader.result as string,
-          size: file.size,
-        });
-      } else {
-        // For binary files (images, PDFs, xlsx) store base64 data-URL
-        setUploadedFile({
-          name: file.name,
-          content: reader.result as string,
-          size: file.size,
-        });
-      }
+      setUploadedFile({
+        name: file.name,
+        content: reader.result as string,
+        size: file.size,
+      });
     };
+    // Use text reader for text files, base64 data-URL for binary (images, PDFs, xlsx)
     if (isText) {
       reader.readAsText(file);
     } else {
@@ -627,12 +622,12 @@ export default function BusinessAiPage() {
 NOTE: This is a ${isImage ? "image" : isPdf ? "PDF document" : "binary"} file. The file data is attached as base64.
 If you can read the content, extract relevant data from it. If you cannot fully read it, mention in the summary what you found or that the file could not be fully processed and suggest the user enter the data manually.
 FILE DATA (base64):
-${uploadedFile.content.slice(0, 15000)}`;
+${uploadedFile.content.slice(0, MAX_FILE_CONTENT_IN_PROMPT)}`;
       } else {
         // For text files, include the raw content
         fileContext = `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB)
 FILE CONTENT:
-${uploadedFile.content.slice(0, 15000)}${uploadedFile.content.length > 15000 ? "\n... (truncated)" : ""}`;
+${uploadedFile.content.slice(0, MAX_FILE_CONTENT_IN_PROMPT)}${uploadedFile.content.length > MAX_FILE_CONTENT_IN_PROMPT ? "\n... (truncated)" : ""}`;
       }
     }
 

@@ -44,6 +44,9 @@ const MAX_TEXT_LENGTH = 2000;
 const MAX_STEPS_PER_REQUEST = 20;
 const MAX_JOURNAL_ENTRY_LINES = 50;
 
+const VALID_ACCOUNT_TYPES = ["asset", "liability", "equity", "revenue", "expense"] as const;
+type AccountType = (typeof VALID_ACCOUNT_TYPES)[number];
+
 function sanitizeText(value: unknown, maxLen = MAX_TEXT_LENGTH): string {
   const s = String(value ?? "");
   return s.slice(0, maxLen);
@@ -53,6 +56,11 @@ function sanitizeAmount(value: unknown): number {
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0) return 0;
   return Math.min(n, MAX_AMOUNT);
+}
+
+/** Escape special characters for PostgreSQL ilike patterns */
+function escapeIlikePattern(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
 }
 
 /* ── Pre-flight helpers ── */
@@ -100,7 +108,7 @@ async function ensureAccount(
   supabase: ReturnType<typeof createAdminClient>,
   orgId: string,
   category: string,
-  accountType: "asset" | "liability" | "equity" | "revenue" | "expense" = "expense",
+  accountType: AccountType = "expense",
 ): Promise<string> {
   const prefix = accountType.slice(0, 3).toUpperCase(); // EXP, REV, ASS, LIA, EQU
   const normalised = sanitizeText(category, 100).toLowerCase().replace(/[^a-z0-9 _-]/g, "");
@@ -356,8 +364,8 @@ async function executeAccountingStep(
           if (!accountName) continue;
 
           // Determine account type from the entry or default to expense
-          const entryType = (e.type === "asset" || e.type === "liability" || e.type === "equity" || e.type === "revenue")
-            ? e.type as "asset" | "liability" | "equity" | "revenue"
+          const entryType: AccountType = (VALID_ACCOUNT_TYPES as readonly string[]).includes(e.type ?? "")
+            ? (e.type as AccountType)
             : "expense";
 
           const accountId = await ensureAccount(supabase, companyId, accountName, entryType);
@@ -449,13 +457,11 @@ async function executeInventoryStep(
       if (!name) throw new Error("Product name is required.");
 
       // Check if product already exists (exact match, case insensitive)
-      // Escape ilike special chars: backslash, percent, underscore
-      const escapedName = name.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
       const { data: existing } = await supabase
         .from("inventory_products")
         .select("id")
         .eq("company_id", companyId)
-        .ilike("name", escapedName)
+        .ilike("name", escapeIlikePattern(name))
         .limit(1)
         .maybeSingle();
       if (existing) throw new Error(`Product "${name}" already exists.`);
