@@ -3,50 +3,50 @@
     "name": "CardLink"
   },
   "language": {
-    "label": "Language"
+    "label": "言語"
   },
   "login": {
     "brand": "CardLink",
-    "title": "Welcome back",
-    "subtitle": "Sign in to manage your digital card.",
+    "title": "お帰りなさい",
+    "subtitle": "デジタルカードを管理するにはサインインしてください。",
     "fields": {
-      "email": "Email",
-      "password": "Password"
+      "email": "メールアドレス",
+      "password": "パスワード"
     },
     "actions": {
       "signIn": "Sign in",
       "signingIn": "Signing in...",
-      "createAccount": "Create an account",
-      "forgotPassword": "Forgot password?",
-      "sendingReset": "Sending reset email..."
+      "createAccount": "アカウントを作成",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "sendingReset": "Sending リセット メールアドレス..."
     },
     "footer": {
-      "newHere": "New to CardLink?"
+      "newHere": "新規 to CardLink?"
     },
     "messages": {
-      "enterEmailForReset": "Enter your email first, then click forgot password again.",
-      "resetEmailSent": "Password reset email sent. Please check your inbox."
+      "enterEmailForReset": "まずメールアドレスを入力してからもう一度お試しください。",
+      "resetEmailSent": "パスワードリセットメールを送信しました。"
     }
   },
   "signup": {
     "brand": "CardLink",
-    "title": "Create your account",
-    "subtitle": "Start sharing your card in minutes.",
+    "title": "作成 your アカウント",
+    "subtitle": "数分でカードの共有を始めましょう。",
     "fields": {
-      "fullName": "Full name",
-      "email": "Email",
-      "password": "Password"
+      "fullName": "氏名",
+      "email": "メールアドレス",
+      "password": "パスワード"
     },
     "actions": {
-      "create": "Create account",
-      "creating": "Creating account...",
+      "create": "アカウント作成",
+      "creating": "Creating アカウント...",
       "signIn": "Sign in"
     },
     "footer": {
-      "haveAccount": "Already have an account?"
+      "haveAccount": "アカウントをお持ちですか？"
     },
     "messages": {
-      "checkEmail": "Check your email to confirm your account."
+      "checkEmail": "アカウントの確認のためメールをご確認ください。"
     }
   },
   "auth": {
@@ -54,51 +54,51 @@
     "title": "Get started",
     "subtitle": "Sign in or create an account to join the community.",
     "actions": {
-      "createAccount": "Create account",
+      "createAccount": "アカウント作成",
       "signIn": "Sign in",
-      "browseCommunity": "Browse community instead"
+      "browseCommunity": "Browse コミュニティ instead"
     }
   },
   "ban": {
     "brand": "CardLink",
-    "title": "Account restricted",
+    "title": "アカウント restricted",
     "description": "Your access is currently restricted. If you believe this is a mistake, please contact support.",
     "scope": {
-      "user": "Your user account is restricted.",
-      "company": "Your company access is restricted."
+      "user": "Your user アカウント is restricted.",
+      "company": "Your 会社 アクセス is restricted."
     },
     "company": "Company: {company}",
     "reason": "Reason: {reason}",
     "until": "Restricted until: {date}",
     "actions": {
-      "back": "Back",
+      "back": "戻る",
       "signOut": "Sign out"
     }
   },
   "dashboard": {
     "brand": "CardLink",
-    "title": "Dashboard"
+    "title": "ダッシュボード"
   },
   "dashboardNav": {
-    "community": "Community",
-    "cards": "Cards",
+    "community": "コミュニティ",
+    "cards": "カード",
     "membership": "Membership",
-    "discount": "Explore",
-    "scan": "Scan",
-    "settings": "Settings"
+    "discount": "探索",
+    "scan": "スキャン",
+    "settings": "設定"
   },
   "getCard": {
     "brand": "CardLink",
     "title": "Get your NFC card",
     "subtitle": "Order a tap-to-share card that links to your CardLink profile. We ship fast and keep your details always up to date.",
     "highlights": {
-      "shipping": "Ships in 3-5 business days",
+      "shipping": "Ships in 3-5 ビジネス days",
       "customize": "Choose your card style",
-      "linked": "Profile updates in real time",
-      "analytics": "See tap analytics"
+      "linked": "プロフィール updates in real time",
+      "analytics": "See tap 分析"
     },
     "cta": {
-      "badge": "One-time purchase",
+      "badge": "One-time 購入",
       "price": "{price}",
       "note": "Includes one NFC card and free profile updates.",
       "action": "Checkout",
@@ -134,21 +134,21 @@
         "answer": "Any updates you make in CardLink are reflected instantly."
       },
       "teams": {
-        "question": "Do you offer team orders?",
+        "question": "Do you offer チーム 注文?",
         "answer": "Yes. Contact us for bulk pricing and custom branding."
       }
     },
     "errors": {
       "checkout": "Unable to start checkout. Please try again.",
-      "unavailable": "Checkout is unavailable right now.",
+      "unavailable": "Checkout is 利用不可 right now.",
       "missingPrice": "Price configuration is missing. Please contact support."
     }
   },
   "cards": {
     "brand": "CardLink",
-    "title": "My Cards",
+    "title": "マイカード",
     "subtitle": "Manage and share your digital business cards.",
-    "loading": "Loading cards...",
+    "loading": "Loading カード...",
     "empty": "No cards yet. Create your first card to get started.",
     "errors": {
       "signInView": "Please sign in to view your cards.",
@@ -157,11 +157,11 @@
       "upgradeToCreate": "Upgrade to Premium to create more than one card.",
       "companyCardLimit": "Company accounts can create up to 2 cards.",
       "missingLink": "Missing card link.",
-      "copyFailed": "Unable to copy link."
+      "copyFailed": "Unable to コピー link."
     },
     "badges": {
-      "premium": "Premium",
-      "company": "Company"
+      "premium": "プレミアム",
+      "company": "会社"
     },
     "toast": {
       "created": "Card created.",
@@ -169,11 +169,11 @@
       "deleted": "Card deleted."
     },
     "actions": {
-      "create": "Create New Card",
-      "edit": "Edit",
-      "share": "Share",
+      "create": "作成 新規 Card",
+      "edit": "編集",
+      "share": "共有",
       "qr": "QR Code",
-      "delete": "Delete",
+      "delete": "削除",
       "confirmDelete": "Delete this card? This cannot be undone."
     },
     "card": {
@@ -184,16 +184,16 @@
       "created": "Created {date}"
     },
     "tabs": {
-      "cards": "My Cards",
-      "contacts": "Contacts",
-      "nfc": "NFC Cards"
+      "cards": "マイカード",
+      "contacts": "連絡先",
+      "nfc": "NFC カード"
     }
   },
   "contacts": {
     "brand": "CardLink",
-    "title": "Contacts",
-    "searchPlaceholder": "Search contacts",
-    "loading": "Loading contacts...",
+    "title": "連絡先",
+    "searchPlaceholder": "検索 連絡先",
+    "loading": "Loading 連絡先...",
     "pendingTitle": "Pending Requests ({count})",
     "connectedOn": "Connected on {date}",
     "errors": {
@@ -201,28 +201,28 @@
       "needCard": "Create a card first to accept requests."
     },
     "actions": {
-      "accept": "Accept",
-      "decline": "Decline",
-      "viewCard": "View Card",
-      "remove": "Remove",
+      "accept": "承諾",
+      "decline": "辞退",
+      "viewCard": "表示 Card",
+      "remove": "削除",
       "removeConfirm": "Remove this connection? This will delete the connection for both of you."
     },
     "empty": {
-      "title": "No connections yet.",
+      "title": "いいえ connections yet.",
       "body": "Exchange cards with people to build your network."
     }
   },
   "cardEditor": {
     "brand": "CardLink",
-    "title": "Edit Card",
+    "title": "カードを編集",
     "defaults": {
       "cardName": "My Card"
     },
     "messages": {
       "saved": "Card saved successfully.",
       "loading": "Loading editor...",
-      "backgroundUploaded": "Background image uploaded.",
-      "backgroundRemoved": "Background image removed.",
+      "backgroundUploaded": "Background 画像 uploaded.",
+      "backgroundRemoved": "Background 画像 removed.",
       "freePlanContactLimit": "Free plan allows up to {count} contact items.",
       "freePlanLinkLimit": "Free plan allows up to {count} links.",
       "freePlanNoExperience": "Experience section is available on Premium only."
@@ -232,79 +232,79 @@
       "signInUpload": "Please sign in to upload an avatar.",
       "signInSave": "Please sign in to save your card.",
       "notFound": "Card not found.",
-      "invalidImageFile": "Please upload an image file.",
+      "invalidImageFile": "Please アップロード an 画像 ファイル.",
       "backgroundTooLargeBeforeCompression": "Image is too large. Please upload an image under 10MB.",
       "backgroundTooLargeAfterCompression": "Image is too large after compression. Please use a simpler image so it can be under 500KB.",
-      "backgroundProcessFailed": "Failed to process image.",
+      "backgroundProcessFailed": "失敗 to process 画像.",
       "freePlanContactLimit": "Free plan supports only {count} contact items.",
       "freePlanLinkLimit": "Free plan supports only {count} links."
     },
     "actions": {
-      "showPreview": "Show Preview",
-      "hidePreview": "Hide Preview",
-      "save": "Save",
+      "showPreview": "Show プレビュー",
+      "hidePreview": "Hide プレビュー",
+      "save": "保存",
       "saving": "Saving...",
-      "back": "Back",
-      "add": "Add",
-      "uploadPhoto": "Upload Photo",
+      "back": "戻る",
+      "add": "追加",
+      "uploadPhoto": "アップロード Photo",
       "uploading": "Uploading...",
-      "uploadBackground": "Upload Background Image",
-      "removeBackground": "Remove Background Image"
+      "uploadBackground": "アップロード Background 画像",
+      "removeBackground": "削除 Background 画像"
     },
     "sections": {
-      "background": "Background Settings",
-      "profilePhoto": "Profile Photo",
-      "bioInfo": "Bio & Info",
-      "contactFields": "Contact Fields",
+      "background": "Background 設定",
+      "profilePhoto": "プロフィール Photo",
+      "bioInfo": "Bio & 情報",
+      "contactFields": "連絡先 Fields",
       "links": "Links",
-      "experience": "Experience",
-      "livePreview": "Live Preview"
+      "experience": "経験",
+      "livePreview": "Live プレビュー"
     },
     "labels": {
-      "color": "Color",
-      "preview": "Preview",
-      "cardName": "Card name",
-      "fullName": "Full name",
-      "title": "Title",
-      "company": "Company",
+      "color": "カラー",
+      "preview": "プレビュー",
+      "cardName": "Card 名前",
+      "fullName": "氏名",
+      "title": "タイトル",
+      "company": "会社",
       "bio": "Bio",
-      "type": "Type",
-      "value": "Value",
-      "label": "Label",
+      "type": "タイプ",
+      "value": "値",
+      "label": "ラベル",
       "visibility": "Visibility",
       "url": "URL",
       "icon": "Icon",
-      "role": "Role",
-      "startDate": "Start Date",
-      "endDate": "End Date",
-      "description": "Description"
+      "role": "役割",
+      "startDate": "Start 日付",
+      "endDate": "End 日付",
+      "description": "説明"
     },
     "empty": {
-      "fields": "No fields yet.",
-      "links": "No links yet.",
-      "experience": "No experience yet."
+      "fields": "いいえ fields yet.",
+      "links": "いいえ links yet.",
+      "experience": "いいえ 経験 yet."
     },
     "placeholders": {
-      "present": "Present",
+      "present": "出席",
       "startDate": "2020-01",
-      "endDate": "Present",
+      "endDate": "出席",
       "linkLabel": "Link",
-      "yourName": "Your Name"
+      "yourName": "Your 名前"
     },
     "misc": {
       "storageNote": "Stored in Supabase Storage (avatars bucket).",
       "backgroundUploadNote": "Auto-compress to max 1920px and keep under 500KB."
     },
     "fieldTypes": {
-      "phone": "Phone",
-      "email": "Email",
+      "phone": "電話番号",
+      "email": "メールアドレス",
       "whatsapp": "WhatsApp",
       "linkedin": "LinkedIn",
       "wechat": "WeChat",
       "telegram": "Telegram",
       "instagram": "Instagram",
       "twitter": "Twitter",
-      "website": "Website"
+      "website": "ウェブサイト"
     },
     "visibility": {
       "public": "Public",
@@ -314,68 +314,68 @@
   },
   "contactDetail": {
     "states": {
-      "loading": "Loading contact...",
-      "notFound": "Contact not found."
+      "loading": "Loading 連絡先...",
+      "notFound": "連絡先 not found."
     },
     "defaults": {
       "userName": "CardLink User"
     },
     "errors": {
       "signIn": "Please sign in to view this contact.",
-      "loadCard": "Unable to load contact card."
+      "loadCard": "Unable to load 連絡先 card."
     },
     "actions": {
-      "viewCard": "View Card",
-      "removeConnection": "Remove connection",
-      "backToContacts": "Back to contacts",
-      "save": "Save",
-      "cancel": "Cancel",
-      "edit": "Edit",
-      "delete": "Delete"
+      "viewCard": "表示 Card",
+      "removeConnection": "削除 connection",
+      "backToContacts": "戻る to 連絡先",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "edit": "編集",
+      "delete": "削除"
     },
     "labels": {
-      "contactFields": "Contact fields"
+      "contactFields": "連絡先 fields"
     },
     "connection": {
       "connected": "Connected {date}",
       "requested": "Requested {date}"
     },
     "fieldTypes": {
-      "phone": "Phone",
-      "email": "Email",
+      "phone": "電話番号",
+      "email": "メールアドレス",
       "wechat": "WeChat",
       "whatsapp": "WhatsApp",
       "linkedin": "LinkedIn",
       "twitter": "Twitter/X",
       "xhs": "XHS",
-      "website": "Website",
-      "other": "Other"
+      "website": "ウェブサイト",
+      "other": "その他"
     },
     "crm": {
-      "title": "Customer Management",
+      "title": "顧客 管理",
       "tags": {
-        "title": "Tags",
-        "add": "Add tag",
-        "empty": "No tags yet.",
-        "placeholder": "Enter tag",
-        "submit": "Add"
+        "title": "タグ",
+        "add": "追加 タグ",
+        "empty": "いいえ タグ yet.",
+        "placeholder": "Enter タグ",
+        "submit": "追加"
       },
       "notes": {
-        "title": "Notes",
-        "add": "Add note",
+        "title": "メモ",
+        "add": "追加 note",
         "placeholder": "Enter private note...",
-        "save": "Save note",
-        "empty": "No notes yet."
+        "save": "保存 note",
+        "empty": "いいえ メモ yet."
       },
       "reminders": {
         "title": "Reminders",
-        "set": "Set reminder",
-        "empty": "No reminders set.",
+        "set": "Set リマインダー",
+        "empty": "いいえ reminders set.",
         "label": "Follow-up reminder: {date}"
       },
       "activity": {
-        "title": "Activity",
-        "empty": "No card exchange history yet.",
+        "title": "アクティビティ",
+        "empty": "いいえ card exchange 履歴 yet.",
         "method": "Share method: {method}",
         "methodFallback": "Link"
       },
@@ -394,17 +394,17 @@
   },
   "nfc": {
     "brand": "CardLink",
-    "title": "NFC Cards",
+    "title": "NFC カード",
     "subtitle": "Manage your physical NFC cards and their linked business cards.",
-    "loading": "Loading NFC cards...",
+    "loading": "Loading NFC カード...",
     "empty": {
-      "title": "No NFC Cards Yet",
+      "title": "いいえ NFC カード Yet",
       "body": "Purchase an NFC card to start sharing your business card with a tap.",
       "cta": "Get a Card"
     },
     "errors": {
       "signIn": "Please sign in to view NFC cards.",
-      "updateLinkedCard": "Unable to update linked card."
+      "updateLinkedCard": "Unable to 更新 linked card."
     },
     "actions": {
       "confirmDeactivate": "Deactivate this NFC card?",
@@ -412,13 +412,13 @@
       "deactivate": "Deactivate"
     },
     "status": {
-      "active": "Active",
+      "active": "有効",
       "suspended": "Suspended",
       "deactivated": "Deactivated",
-      "other": "Inactive"
+      "other": "無効"
     },
     "linkedTo": "Linked to",
-    "noCardSelected": "No card selected",
+    "noCardSelected": "いいえ card 選択済み",
     "personal": "Personal",
     "stats": {
       "totalTaps": "{count} total taps",
@@ -426,78 +426,78 @@
     },
     "never": "Never",
     "chart": {
-      "label": "Tap Activity",
+      "label": "Tap アクティビティ",
       "title": "Last 7 Days"
     },
     "modal": {
       "label": "Change Linked Card",
-      "title": "Select a business card",
-      "close": "Close",
+      "title": "選択 a ビジネス card",
+      "close": "閉じる",
       "untitled": "Untitled Card",
-      "cancel": "Cancel",
+      "cancel": "キャンセル",
       "saving": "Saving...",
-      "save": "Save Changes"
+      "save": "変更を保存"
     }
   },
   "qr": {
-    "close": "Close",
-    "download": "Download QR",
-    "copy": "Copy Link",
+    "close": "閉じる",
+    "download": "ダウンロード QR",
+    "copy": "コピー Link",
     "copied": "Copied"
   },
   "publicConnect": {
-    "contactTitle": "Contact",
+    "contactTitle": "連絡先",
     "actions": {
-      "saveContact": "Save Contact",
-      "editCard": "Edit Card",
-      "signupToConnect": "Sign up to connect",
+      "saveContact": "連絡先を保存",
+      "editCard": "カードを編集",
+      "signupToConnect": "Sign up to 接続",
       "connected": "Connected ✓",
-      "acceptConnection": "Accept Connection",
+      "acceptConnection": "承諾 Connection",
       "requestSent": "Request Sent ✓",
-      "connect": "Connect"
+      "connect": "接続"
     }
   },
   "publicCard": {
     "defaultUser": "CardLink User",
     "errors": {
-      "missingShare": "Missing share link.",
-      "copyLink": "Unable to copy link.",
-      "missingContact": "Missing contact info.",
-      "copyWechat": "Unable to copy WeChat ID."
+      "missingShare": "Missing 共有 link.",
+      "copyLink": "Unable to コピー link.",
+      "missingContact": "Missing 連絡先 情報.",
+      "copyWechat": "Unable to コピー WeChat ID."
     },
     "toast": {
       "linkCopied": "Link copied to clipboard.",
       "wechatCopied": "WeChat ID copied."
     },
     "actions": {
-      "saveContact": "Save Contact",
-      "share": "Share"
+      "saveContact": "連絡先を保存",
+      "share": "共有"
     },
     "sections": {
-      "contact": "Contact",
+      "contact": "連絡先",
       "links": "Links",
-      "experience": "Experience"
+      "experience": "経験"
     },
     "empty": {
-      "contact": "No contact info shared yet."
+      "contact": "いいえ 連絡先 情報 shared yet."
     },
     "experience": {
       "roleAt": "{role} at {company}",
-      "present": "Present"
+      "present": "出席"
     },
     "footer": {
       "madeWith": "Made with CardLink"
     },
     "wechat": {
       "title": "WeChat ID",
-      "close": "Close",
-      "copy": "Copy WeChat ID"
+      "close": "閉じる",
+      "copy": "コピー WeChat ID"
     }
   },
   "notifications": {
     "errors": {
       "loadRequest": "Unable to load this request.",
-      "selectCard": "Select a card to share.",
+      "selectCard": "選択 a card to 共有.",
       "needCard": "Create a card first to accept this request."
     },
     "toast": {
@@ -505,24 +505,24 @@
       "declined": "Request declined."
     },
     "labels": {
-      "ariaNotifications": "Notifications",
+      "ariaNotifications": "通知",
       "avatar": "Avatar",
       "cardlink": "CardLink",
       "member": "CardLink Member",
       "sharedCard": "Shared Card",
-      "shareBack": "Share your card back",
+      "shareBack": "共有 your card 戻る",
       "myCard": "My Card"
     },
-    "title": "Notifications",
+    "title": "通知",
     "actions": {
-      "markAllRead": "Mark all as read",
-      "viewFullCard": "View Full Card",
-      "acceptExchange": "Accept & Exchange",
-      "decline": "Decline"
+      "markAllRead": "Mark すべて as read",
+      "viewFullCard": "表示 Full Card",
+      "acceptExchange": "承諾 & Exchange",
+      "decline": "辞退"
     },
-    "loading": "Loading notifications...",
+    "loading": "Loading 通知...",
     "empty": {
-      "title": "No notifications yet",
+      "title": "いいえ 通知 yet",
       "body": "You will be notified when someone wants to exchange cards with you."
     },
     "request": {
@@ -531,17 +531,17 @@
   },
   "notificationsPage": {
     "brand": "CardLink",
-    "title": "Notifications",
+    "title": "通知",
     "subtitle": "Stay on top of new connections and reminders.",
-    "loading": "Loading notifications...",
-    "empty": "No notifications yet.",
+    "loading": "Loading 通知...",
+    "empty": "いいえ 通知 yet.",
     "errors": {
       "signIn": "Please sign in to view notifications.",
       "needCard": "Create a card first to accept requests."
     },
     "labels": {
       "someone": "Someone",
-      "thisContact": "this contact"
+      "thisContact": "this 連絡先"
     },
     "items": {
       "request": "{name} sent you a connection request",
@@ -551,27 +551,27 @@
       "reminder": "Reminder: Follow up with {name}"
     },
     "actions": {
-      "accept": "Accept",
-      "decline": "Decline"
+      "accept": "承諾",
+      "decline": "辞退"
     }
   },
   "tap": {
     "suspended": {
       "title": "Card Suspended",
       "body": "This card has been temporarily suspended. Please contact the card owner or CardLink support.",
-      "link": "Learn more"
+      "link": "Learn もっと見る"
     },
     "deactivated": {
       "title": "Card Deactivated",
       "body": "This card is no longer active."
     },
     "expired": {
-      "title": "Subscription Expired",
+      "title": "Subscription 期限切れ",
       "body": "The owner's subscription has expired. If this is your card, please renew your subscription.",
       "link": "Renew Subscription"
     },
     "noCard": {
-      "title": "No Card Linked",
+      "title": "いいえ Card Linked",
       "body": "This NFC card hasn't been linked to a digital business card yet.",
       "link": "Set up your card"
     },
@@ -590,28 +590,28 @@
       "title": "Activate Your CardLink Card",
       "subtitle": "Sign in or create an account to link this NFC card to your digital business card.",
       "signIn": "Sign In",
-      "createAccount": "Create Account"
+      "createAccount": "アカウント作成"
     },
     "empty": {
-      "title": "Create a business card first",
+      "title": "作成 a ビジネス card first",
       "body": "You'll need at least one digital card to link this NFC card.",
-      "cta": "Go to My Cards"
+      "cta": "Go to My カード"
     },
     "success": {
-      "title": "Your card is active!",
+      "title": "Your card is 有効!",
       "subtitle": "When someone taps your NFC card, they'll see your business card.",
       "testTitle": "Test your card",
       "testBody": "Tap your NFC card on a phone to confirm everything is working. Share the tap link if you want to preview it.",
-      "goDashboard": "Go to Dashboard",
+      "goDashboard": "Go to ダッシュボード",
       "testButton": "Test your card"
     },
     "actions": {
       "activating": "Activating...",
       "activate": "Activate Card",
-      "goDashboard": "Go to Dashboard"
+      "goDashboard": "Go to ダッシュボード"
     },
     "errors": {
-      "selectCard": "Select a business card first.",
+      "selectCard": "選択 a ビジネス card first.",
       "alreadyLinked": "This card is already linked to an account. If this is your card, go to Dashboard to manage it.",
       "invalid": "This card ID is not recognized. Please contact support.",
       "generic": "Something went wrong while activating your card. Please try again."
@@ -620,26 +620,26 @@
   "home": {
     "brand": "CardLink",
     "hero": {
-      "kicker": "Digital business cards",
+      "kicker": "Digital ビジネス カード",
       "title": "Make every introduction effortless with CardLink.",
       "subtitle": "Build a shareable card, manage contacts, and discover the community conversations that matter to your career."
     },
     "actions": {
       "signIn": "Sign in",
       "getStarted": "Get Started",
-      "browseCommunity": "Browse Community"
+      "browseCommunity": "Browse コミュニティ"
     },
     "features": {
       "share": {
-        "title": "Share instantly",
-        "body": "QR, NFC, or link-based cards."
+        "title": "共有 instantly",
+        "body": "QR, NFC, or link-based カード."
       },
       "crm": {
         "title": "Build CRM",
-        "body": "Save connections with context."
+        "body": "保存 connections with context."
       },
       "discover": {
-        "title": "Discover people",
+        "title": "発見 people",
         "body": "Meet peers in the forum."
       }
     },
@@ -652,19 +652,19 @@
   },
   "community": {
     "brand": "CardLink",
-    "title": "Community",
-    "subtitle": "Explore the CardLink forums. Sign in to start a post.",
-    "loadingBoards": "Loading boards...",
+    "title": "コミュニティ",
+    "subtitle": "CardLinkフォーラムを探索しましょう。投稿するにはサインインしてください。",
+    "loadingBoards": "Loading ボード...",
     "actions": {
-      "loginToPost": "Login to post"
+      "loginToPost": "投稿するにはログインしてください"
     },
     "stats": {
       "posts": "{count} posts",
       "replies": "{count} replies"
     },
     "latest": {
-      "title": "Latest from the community",
-      "empty": "No posts yet."
+      "title": "コミュニティの最新情報",
+      "empty": "まだ投稿がありません。"
     },
     "member": "CardLink Member"
   },
@@ -675,11 +675,11 @@
       "notFound": "Board not found."
     },
     "actions": {
-      "loginToPost": "Login to post",
-      "community": "Community",
-      "view": "View"
+      "loginToPost": "投稿するにはログインしてください",
+      "community": "コミュニティ",
+      "view": "表示"
     },
-    "emptyPosts": "No posts yet.",
+    "emptyPosts": "まだ投稿がありません。",
     "member": "CardLink Member",
     "stats": {
       "replies": "{count} replies"
@@ -687,18 +687,18 @@
   },
   "communitySubBoard": {
     "brand": "CardLink",
-    "loading": "Loading posts...",
+    "loading": "Loading 投稿...",
     "errors": {
       "boardNotFound": "Board not found.",
       "subBoardNotFound": "Sub-board not found."
     },
     "actions": {
-      "loginToPost": "Login to post"
+      "loginToPost": "投稿するにはログインしてください"
     },
     "cta": {
       "loginToPost": "Log in to start a new post or reply."
     },
-    "empty": "No posts yet.",
+    "empty": "まだ投稿がありません。",
     "member": "CardLink Member",
     "stats": {
       "replies": "{count} replies"
@@ -706,19 +706,19 @@
   },
   "communityPost": {
     "brand": "CardLink",
-    "loading": "Loading post...",
+    "loading": "Loading 投稿...",
     "errors": {
-      "notFound": "Post not found."
+      "notFound": "投稿 not found."
     },
     "actions": {
-      "loginToPost": "Login to post"
+      "loginToPost": "投稿するにはログインしてください"
     },
     "cta": {
       "loginToReply": "Log in to reply or start a new discussion."
     },
     "replies": {
-      "title": "Replies",
-      "empty": "No replies yet."
+      "title": "返信",
+      "empty": "いいえ 返信 yet."
     },
     "member": "CardLink Member",
     "stats": {
@@ -727,16 +727,16 @@
   },
   "scan": {
     "brand": "CardLink",
-    "title": "Scan",
+    "title": "スキャン",
     "subtitle": "Scan redemption QR codes to verify discount usage.",
     "actions": {
-      "startScan": "Start Scan",
+      "startScan": "Start スキャン",
       "scanning": "Scanning...",
-      "stopScan": "Stop Scan",
+      "stopScan": "Stop スキャン",
       "verify": "Verify",
-      "confirmUse": "Confirm Used",
+      "confirmUse": "確認 Used",
       "alreadyUsed": "Already Processed",
-      "backToDiscount": "Back to Discount"
+      "backToDiscount": "戻る to 割引"
     },
     "placeholders": {
       "code": "Paste scanned content, QR URL, or redemption UUID"
@@ -753,8 +753,8 @@
       "requireAdmin": "You must be a company owner/admin to process discount redemptions."
     },
     "labels": {
-      "unknownCompany": "Unknown company",
-      "points": "Points",
+      "unknownCompany": "Unknown 会社",
+      "points": "ポイント",
       "pointUnit": "BOBO-POINT",
       "requestedAt": "Requested",
       "processedAt": "Processed",
@@ -763,7 +763,7 @@
     "status": {
       "redeemed": "Redeemed",
       "used": "Used",
-      "rejected": "Rejected"
+      "rejected": "却下"
     },
     "empty": {
       "noCode": "After scanning or entering a code, redemption details appear here."
@@ -771,8 +771,8 @@
   },
   "settings": {
     "brand": "CardLink",
-    "title": "Settings",
-    "subtitle": "Manage your account and preferences.",
+    "title": "設定",
+    "subtitle": "管理 your アカウント and 設定.",
     "notices": {
       "businessAccessDenied": "Business access is unavailable for your account."
     },
@@ -783,58 +783,58 @@
     },
     "export": {
       "headers": {
-        "name": "Name",
-        "title": "Title",
-        "company": "Company",
+        "name": "名前",
+        "title": "タイトル",
+        "company": "会社",
         "connectedAt": "Connected At"
       },
       "fileName": "cardlink-contacts.csv"
     },
     "links": {
-      "profile": "Edit Profile",
-      "privacy": "Privacy Settings",
-      "password": "Reset Password",
-      "subscription": "Subscription Plan",
+      "profile": "編集 プロフィール",
+      "privacy": "Privacy 設定",
+      "password": "リセット パスワード",
+      "subscription": "Subscription プラン",
       "subscriptionActive": "Subscription",
       "premiumUntil": "Premium until {date}",
-      "premiumBadge": "Premium",
+      "premiumBadge": "プレミアム",
       "downgrade": "Downgrade to Free",
       "openingPortal": "Opening...",
-      "switchToBusiness": "Switch to Business Interface",
-      "orderNfc": "Order NFC Card",
-      "export": "Export Contacts",
-      "support": "Help & Support",
-      "language": "Language"
+      "switchToBusiness": "Switch to ビジネス Interface",
+      "orderNfc": "注文 NFC Card",
+      "export": "エクスポート 連絡先",
+      "support": "Help & サポート",
+      "language": "言語"
     },
     "actions": {
       "logout": "Log Out"
     }
   },
   "businessSettings": {
-    "brand": "Business Interface",
-    "title": "Settings",
-    "subtitle": "Manage business interface preferences.",
+    "brand": "ビジネス Interface",
+    "title": "設定",
+    "subtitle": "管理 ビジネス interface 設定.",
     "links": {
-      "mainAccount": "Main Account Context",
-      "switchToClient": "Switch to Client GUI"
+      "mainAccount": "Main アカウント Context",
+      "switchToClient": "Switch to クライアント GUI"
     }
   },
   "businessMainAccount": {
-    "brand": "Business Interface",
-    "title": "Main Account",
+    "brand": "ビジネス Interface",
+    "title": "Main アカウント",
     "subtitle": "Choose the active company context for Business App operations.",
     "states": {
-      "loading": "Loading account context...",
+      "loading": "Loading アカウント context...",
       "activeTag": "Active: {company}"
     },
     "fields": {
-      "activeCompany": "Active Company",
-      "selectPlaceholder": "Select a company",
-      "quickSwitch": "Quick Company Switch",
-      "permissionScope": "Company Permission Scope"
+      "activeCompany": "有効 会社",
+      "selectPlaceholder": "選択 a 会社",
+      "quickSwitch": "Quick 会社 Switch",
+      "permissionScope": "会社 権限 Scope"
     },
     "actions": {
-      "save": "Save Active Company",
+      "save": "保存 有効 会社",
       "saving": "Saving..."
     },
     "badges": {
@@ -843,31 +843,31 @@
     },
     "messages": {
       "signInRequired": "Please sign in again.",
-      "loadFailed": "Failed to load main-account data.",
-      "selectCompany": "Please select a company first.",
-      "saveFailed": "Failed to save active company.",
-      "saved": "Active company updated.",
+      "loadFailed": "失敗 to load main-account data.",
+      "selectCompany": "Please 選択 a 会社 first.",
+      "saveFailed": "失敗 to 保存 有効 会社.",
+      "saved": "有効 会社 updated.",
       "notEligible": "Your account is not eligible for Business management context."
     }
   },
   "support": {
     "brand": "CardLink",
-    "title": "Help & Support",
+    "title": "Help & サポート",
     "subtitle": "Find answers, manage your subscription, and review our privacy policy.",
     "contact": {
-      "title": "Contact Support",
+      "title": "サポートに連絡",
       "subtitle": "Need help with your account or card? We're here to help.",
-      "emailLabel": "Email:",
+      "emailLabel": "メールアドレス:",
       "emailValue": "support@cardlink.app",
       "hoursLabel": "Hours:",
       "hoursValue": "Mon-Fri, 9:00 AM-6:00 PM (UTC)",
-      "responseLabel": "Typical response:",
-      "responseValue": "Within 1 business day"
+      "responseLabel": "Typical 応答:",
+      "responseValue": "Within 1 ビジネス day"
     },
     "subscription": {
-      "title": "Manage Subscription",
+      "title": "管理 Subscription",
       "subtitle": "Cancel or update your plan in the secure billing portal.",
-      "button": "Open Billing Portal",
+      "button": "オープン 請求 Portal",
       "loading": "Opening portal...",
       "note": "You can cancel at any time. Changes take effect at the end of the current billing period."
     },
@@ -959,31 +959,31 @@
   },
   "passwordSettings": {
     "brand": "CardLink",
-    "title": "Reset Password",
+    "title": "リセット パスワード",
     "subtitle": "Set a new password for your account.",
     "fields": {
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password"
+      "newPassword": "新規 パスワード",
+      "confirmPassword": "確認 新規 パスワード"
     },
     "errors": {
       "passwordLength": "Password must be at least 8 characters.",
       "passwordNotMatch": "Passwords do not match."
     },
     "messages": {
-      "updated": "Password updated successfully."
+      "updated": "パスワード updated successfully."
     },
     "actions": {
-      "save": "Save password",
+      "save": "保存 パスワード",
       "saving": "Saving..."
     }
   },
   "resetPassword": {
     "brand": "CardLink",
-    "title": "Set a new password",
+    "title": "Set a 新規 パスワード",
     "subtitle": "After opening the reset link from email, enter your new password here.",
     "fields": {
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password"
+      "newPassword": "新規 パスワード",
+      "confirmPassword": "確認 新規 パスワード"
     },
     "errors": {
       "passwordLength": "Password must be at least 8 characters.",
@@ -995,24 +995,24 @@
       "redirecting": "Redirecting to login in {seconds}s..."
     },
     "actions": {
-      "save": "Reset password",
+      "save": "リセット パスワード",
       "saving": "Updating...",
-      "verifying": "Verifying reset link...",
-      "backToLogin": "Back to login"
+      "verifying": "Verifying リセット link...",
+      "backToLogin": "戻る to login"
     }
   },
   "profile": {
     "brand": "CardLink",
-    "title": "Edit Profile",
+    "title": "編集 プロフィール",
     "avatar": {
       "title": "Avatar",
-      "subtitle": "Upload coming soon"
+      "subtitle": "アップロード coming soon"
     },
     "fields": {
-      "fullName": "Full name",
-      "email": "Email",
-      "title": "Title",
-      "company": "Company",
+      "fullName": "氏名",
+      "email": "メールアドレス",
+      "title": "タイトル",
+      "company": "会社",
       "bio": "Bio",
       "avatarUrl": "Avatar URL"
     },
@@ -1024,26 +1024,26 @@
       "name": "CardLink"
     },
     "toast": {
-      "updated": "Profile updated."
+      "updated": "プロフィール updated."
     },
     "actions": {
       "saving": "Saving...",
-      "save": "Save Changes"
+      "save": "変更を保存"
     }
   },
   "upgrade": {
     "brand": "CardLink",
-    "title": "Choose Your Plan",
+    "title": "Choose Your プラン",
     "subtitle": "Unlock premium tools to grow your network. Upgrade or downgrade anytime.",
     "errors": {
       "checkout": "Unable to start checkout.",
-      "unavailable": "Checkout unavailable.",
-      "portal": "Unable to open billing portal."
+      "unavailable": "Checkout 利用不可.",
+      "portal": "Unable to オープン 請求 portal."
     },
     "toggle": {
-      "monthly": "Monthly",
-      "yearly": "Yearly",
-      "save": "Save ~17%",
+      "monthly": "月額",
+      "yearly": "年間",
+      "save": "保存 ~17%",
       "mo": "mo",
       "yr": "yr"
     },
@@ -1057,66 +1057,66 @@
       "until": "Active until {date}"
     },
     "business": {
-      "badge": "Best Value"
+      "badge": "Best 値"
     },
     "features": {
-      "companies": "company",
+      "companies": "会社",
       "unlimitedCompanies": "Unlimited companies",
       "users": "users",
       "storage": "storage",
       "aiActions": "AI actions/mo",
-      "pdfExport": "PDF export",
+      "pdfExport": "PDF エクスポート",
       "ocrDocs": "OCR docs/mo"
     },
     "actions": {
       "redirecting": "Redirecting...",
-      "subscribe": "Subscribe",
-      "currentPlan": "Current plan",
-      "manageBilling": "Manage billing"
+      "subscribe": "登録",
+      "currentPlan": "現在のプラン",
+      "manageBilling": "管理 請求"
     }
   },
   "upgradeSuccess": {
-    "title": "Welcome to Premium! 🎉",
-    "subtitle": "Your account is now upgraded.",
-    "action": "Back to dashboard"
+    "title": "Welcome to プレミアム! 🎉",
+    "subtitle": "Your アカウント is now upgraded.",
+    "action": "戻る to ダッシュボード"
   },
   "discountHistory": {
     "brand": "CardLink",
-    "title": "Redemption History",
+    "title": "Redemption 履歴",
     "subtitle": "Company admins can review confirmed and rejected redemptions here."
   },
   "explorePage": {
     "brand": "CardLink",
-    "title": "Explore",
+    "title": "探索",
     "subtitle": "Discover partner companies, promotions, and redeemable discounts.",
-    "loading": "Loading explore content...",
+    "loading": "Loading 探索 content...",
     "sections": {
       "promotion": "Promotion Carousel",
-      "partners": "Partner Company",
-      "discounts": "Discount List"
+      "partners": "Partner 会社",
+      "discounts": "割引 リスト"
     },
     "labels": {
       "specialOffer": "Special Offer",
-      "membershipPartner": "Membership partner company.",
-      "company": "Company",
-      "balance": "Balance",
+      "membershipPartner": "Membership partner 会社.",
+      "company": "会社",
+      "balance": "残高",
       "pointUnit": "BOBO-POINT",
       "offPercent": "{value}% off",
       "offFixed": "${value} off",
       "offGeneric": "{value} off"
     },
     "actions": {
-      "view": "View",
-      "join": "Join",
+      "view": "表示",
+      "join": "参加",
       "joined": "Joined",
-      "addToMembership": "Add to Membership",
-      "all": "All",
+      "addToMembership": "追加 to Membership",
+      "all": "すべて",
       "submitting": "Submitting...",
       "redeem": "Redeem"
     },
     "empty": {
-      "promotions": "No active promotions right now.",
-      "partners": "No partner companies available.",
+      "promotions": "いいえ 有効 promotions right now.",
+      "partners": "いいえ partner companies 利用可能.",
       "discounts": "No discounts available for this company."
     },
     "messages": {
@@ -1133,55 +1133,55 @@
   },
   "discountPanel": {
     "loading": "Loading discounts...",
-    "quickAccess": "Quick Access",
+    "quickAccess": "Quick アクセス",
     "labels": {
       "specialOffer": "Special Offer",
       "offPercent": "{value}% off",
       "offFixed": "${value} off",
       "offGeneric": "{value} off",
-      "serviceCompany": "Service Company",
-      "yourBalance": "Your balance",
+      "serviceCompany": "サービス 会社",
+      "yourBalance": "Your 残高",
       "offer": "Offer",
-      "company": "Company"
+      "company": "会社"
     },
     "actions": {
-      "reviewPending": "Review Pending",
-      "reviewHistory": "Review History",
-      "openScanner": "Open Scanner",
-      "allCompanies": "All Companies",
+      "reviewPending": "レビュー 保留中",
+      "reviewHistory": "レビュー 履歴",
+      "openScanner": "オープン Scanner",
+      "allCompanies": "すべて Companies",
       "submitting": "Submitting...",
       "redeem": "Redeem",
-      "confirm": "Confirm",
-      "reject": "Reject"
+      "confirm": "確認",
+      "reject": "却下"
     },
     "admin": {
-      "title": "Company Admin Panel",
+      "title": "会社 管理者 Panel",
       "subtitle": "Login as a company owner/admin to confirm redemption requests.",
-      "pending": "Pending",
-      "history": "History",
-      "accountPoints": "Account points",
+      "pending": "保留中",
+      "history": "履歴",
+      "accountPoints": "アカウント ポイント",
       "pointUnit": "BOBO-POINT",
-      "required": "Required",
+      "required": "必須",
       "requested": "Requested",
       "processed": "Processed"
     },
     "status": {
       "confirmed": "CONFIRMED",
-      "rejected": "REJECTED"
+      "rejected": "却下"
     },
     "empty": {
-      "noActiveDiscounts": "No active discounts right now.",
-      "noPending": "No pending redemption requests.",
-      "noHistory": "No processed redemption history."
+      "noActiveDiscounts": "いいえ 有効 discounts right now.",
+      "noPending": "いいえ 保留中 redemption requests.",
+      "noHistory": "いいえ processed redemption 履歴."
     },
     "messages": {
       "signInToUse": "Please sign in to use discounts.",
       "needMembership": "You need an active membership account for this company.",
       "requestSubmitted": "Redemption request submitted. Waiting for company confirmation.",
-      "rejectedByAdmin": "Rejected by company admin",
+      "rejectedByAdmin": "却下 by 会社 管理者",
       "fallbackAdmin": "Loaded with fallback admin detection ({reason}).",
       "confirmed": "Redemption confirmed.",
-      "rejected": "Redemption rejected."
+      "rejected": "Redemption 却下."
     },
     "errors": {
       "loadCompanies": "Failed to load companies: {message}",
@@ -1192,44 +1192,44 @@
   },
   "membershipOverview": {
     "brand": "CardLink",
-    "title": "Membership Overview",
+    "title": "Membership 概要",
     "subtitle": "All your memberships and account points across every company.",
     "cards": {
       "pointSystemTitle": "Point System",
       "pointSystemName": "BOBO-POINT",
-      "pointSystemBody": "Shared by all partner companies.",
-      "totalBalanceTitle": "Total Balance",
-      "totalBalanceBody": "BOBO-POINT across all memberships.",
-      "totalSpendTitle": "Total Spend",
+      "pointSystemBody": "Shared by すべて partner companies.",
+      "totalBalanceTitle": "合計 残高",
+      "totalBalanceBody": "BOBO-POINT across すべて memberships.",
+      "totalSpendTitle": "合計 Spend",
       "totalSpendBody": "Total amount spent across all memberships."
     },
     "labels": {
-      "unknownCompany": "Unknown Company",
-      "membershipAccount": "Membership Account",
-      "tier": "Tier",
-      "noTier": "No tier",
-      "totalSpend": "Total Spend",
+      "unknownCompany": "Unknown 会社",
+      "membershipAccount": "Membership アカウント",
+      "tier": "ティア",
+      "noTier": "いいえ ティア",
+      "totalSpend": "合計 Spend",
       "current": "Current",
       "lifetime": "Lifetime",
       "pointUnit": "BOBO-POINT",
       "joined": "Joined",
       "expires": "Expires",
-      "noExpiry": "No expiry"
+      "noExpiry": "いいえ expiry"
     },
     "errors": {
       "tablesNotReady": "Membership tables are not ready yet. Run phase migrations to enable this view."
     },
     "empty": {
-      "noMemberships": "No memberships found yet."
+      "noMemberships": "いいえ memberships found yet."
     },
     "redeemHistory": {
-      "title": "My Discount Redemptions",
-      "loading": "Loading redemption history...",
-      "empty": "No discount redemption records yet.",
+      "title": "My 割引 Redemptions",
+      "loading": "Loading redemption 履歴...",
+      "empty": "いいえ 割引 redemption records yet.",
       "signInToView": "Please sign in to view redemption history.",
       "labels": {
         "unknownOffer": "Unknown offer",
-        "points": "Points",
+        "points": "ポイント",
         "requestedAt": "Redeemed At",
         "processedAt": "Processed At",
         "reason": "Reason"
@@ -1237,143 +1237,143 @@
       "status": {
         "redeemed": "Redeemed",
         "used": "Used",
-        "rejected": "Rejected"
+        "rejected": "却下"
       },
       "actions": {
-        "refresh": "Refresh",
+        "refresh": "更新",
         "showQr": "Show Redeem QR",
         "used": "This offer is used",
-        "unavailable": "QR unavailable for this offer"
+        "unavailable": "QR 利用不可 for this offer"
       },
       "errors": {
         "load": "Failed to load redemption history: {message}"
       }
     },
     "redeemQr": {
-      "close": "Close",
-      "download": "Download QR",
-      "copy": "Copy Link",
+      "close": "閉じる",
+      "download": "ダウンロード QR",
+      "copy": "コピー Link",
       "copied": "Copied"
     }
   },
   "discover": {
     "brand": "CardLink",
-    "title": "Discover",
+    "title": "発見",
     "subtitle": "Find people and grow your network.",
     "search": {
       "placeholder": "Search by name, title, or company",
-      "action": "Search"
+      "action": "検索"
     },
     "loading": "Loading results...",
     "empty": {
-      "results": "No results found."
+      "results": "いいえ results found."
     },
     "suggested": {
       "title": "People you may know",
-      "empty": "No suggestions yet."
+      "empty": "いいえ suggestions yet."
     },
     "errors": {
-      "signIn": "Please sign in to search.",
+      "signIn": "Please sign in to 検索.",
       "needCard": "Create a card first to exchange cards."
     },
     "defaults": {
       "user": "CardLink User"
     },
-    "upgradePrompt": "Upgrade to see details",
+    "upgradePrompt": "アップグレード to see 詳細",
     "status": {
       "connected": "Connected",
-      "pending": "Pending",
-      "none": "Not connected"
+      "pending": "保留中",
+      "none": "未接続"
     },
     "actions": {
-      "connect": "Connect",
-      "loadMore": "Load more"
+      "connect": "接続",
+      "loadMore": "Load もっと見る"
     }
   },
   "companyManagementPanel": {
     "header": {
       "brand": "CardLink",
-      "title": "Company Management",
+      "title": "会社 管理",
       "subtitle": "Manage company profile, discounts, members, and coupon redemption approvals."
     },
     "states": {
-      "loading": "Loading company management...",
+      "loading": "Loading 会社 管理...",
       "noAdmin": "You are not a company owner/admin yet."
     },
     "errors": {
       "signIn": "Please sign in to use company management.",
-      "discountTitleRequired": "Discount title is required.",
+      "discountTitleRequired": "割引 タイトル is 必須.",
       "requiredAmountInvalid": "Required amount must be a valid non-negative number.",
       "usageLimitInvalid": "Usage limits must be valid non-negative numbers."
     },
     "messages": {
-      "companyProfileUpdated": "Company profile updated.",
-      "discountUploaded": "Discount uploaded.",
-      "discountDeleted": "Discount deleted.",
-      "discountUpdated": "Discount updated.",
-      "rejectedByOwner": "Rejected by company owner",
-      "couponRedeemed": "Coupon redeemed.",
-      "couponRejected": "Coupon rejected.",
-      "tierRequirementUpdated": "Tier upgrade required amount updated."
+      "companyProfileUpdated": "会社 プロフィール updated.",
+      "discountUploaded": "割引 uploaded.",
+      "discountDeleted": "割引 deleted.",
+      "discountUpdated": "割引 updated.",
+      "rejectedByOwner": "却下 by 会社 オーナー",
+      "couponRedeemed": "クーポン redeemed.",
+      "couponRejected": "クーポン 却下.",
+      "tierRequirementUpdated": "ティア アップグレード 必須 金額 updated."
     },
     "sections": {
       "companyProfile": {
-        "title": "Company Profile",
+        "title": "会社 プロフィール",
         "subtitle": "Update company image and promotion banner URLs."
       },
       "currentDiscounts": {
         "title": "Current Discounts"
       },
       "uploadDiscount": {
-        "title": "Upload New Discount"
+        "title": "アップロード 新規 割引"
       },
       "members": {
-        "title": "Membership Members"
+        "title": "Membership メンバー"
       },
       "tierRules": {
-        "title": "Membership Tier Upgrade Rules",
+        "title": "Membership ティア アップグレード Rules",
         "subtitle": "Set required spend amount for each tier upgrade."
       },
       "transactions": {
-        "title": "Membership Account Transactions",
+        "title": "Membership アカウント 取引",
         "subtitle": "Owner/admin can review each account spending transaction."
       },
       "redemption": {
-        "title": "Coupon / Discount Redemption",
+        "title": "クーポン / 割引 Redemption",
         "subtitle": "Approve or reject pending redemption requests."
       }
     },
     "placeholders": {
-      "companyName": "Company name",
-      "companyDescription": "Company description",
-      "companyLogoUrl": "Company image URL (logo_url)",
+      "companyName": "会社名",
+      "companyDescription": "会社 説明",
+      "companyLogoUrl": "会社 画像 URL (logo_url)",
       "companyCoverUrl": "Promotion banner URL (cover_url)",
-      "discountTitle": "Discount title",
-      "discountDescription": "Discount description",
-      "discountValue": "Discount value",
-      "pointsCostOptional": "Points cost (optional)",
-      "usageLimitOptional": "Total usage limit (optional)",
-      "perMemberLimitOptional": "Per-user usage limit (optional)"
+      "discountTitle": "割引 タイトル",
+      "discountDescription": "割引 説明",
+      "discountValue": "割引 値",
+      "pointsCostOptional": "ポイント cost 任意l)",
+      "usageLimitOptional": "合計 usage limit 任意l)",
+      "perMemberLimitOptional": "Per-user usage limit 任意l)"
     },
     "discountType": {
       "percentage": "Percentage",
-      "fixed": "Fixed amount",
+      "fixed": "Fixed 金額",
       "special": "Special"
     },
     "actions": {
       "saving": "Saving...",
-      "save": "Save",
-      "saveCompanyProfile": "Save company profile",
+      "save": "保存",
+      "saveCompanyProfile": "保存 会社 プロフィール",
       "submitting": "Submitting...",
       "deleting": "Deleting...",
-      "uploadDiscount": "Upload discount",
-      "editDiscount": "Edit discount",
-      "saveDiscount": "Save discount",
-      "deleteDiscount": "Delete discount",
-      "cancel": "Cancel",
-      "scanRedemption": "Scan redemption",
-      "approve": "Approve",
-      "reject": "Reject"
+      "uploadDiscount": "アップロード 割引",
+      "editDiscount": "編集 割引",
+      "saveDiscount": "保存 割引",
+      "deleteDiscount": "削除 割引",
+      "cancel": "キャンセル",
+      "scanRedemption": "スキャン redemption",
+      "approve": "承認",
+      "reject": "却下"
     },
     "offer": {
       "percentageOff": "{value}% off",
@@ -1382,24 +1382,24 @@
       "special": "Special offer"
     },
     "labels": {
-      "status": "Status",
-      "tier": "Tier",
+      "status": "ステータス",
+      "tier": "ティア",
       "spend": "Spend",
       "current": "Current",
       "lifetime": "Lifetime",
       "joined": "Joined",
       "rank": "Rank",
-      "amount": "Amount",
-      "account": "Account",
+      "amount": "金額",
+      "account": "アカウント",
       "user": "User",
-      "points": "Points",
-      "totalLimit": "Total limit",
+      "points": "ポイント",
+      "totalLimit": "合計 limit",
       "perUserLimit": "Per-user limit",
-      "active": "Active"
+      "active": "有効"
     },
     "common": {
-      "active": "Active",
-      "inactive": "Inactive",
+      "active": "有効",
+      "inactive": "無効",
       "na": "N/A",
       "program": "Program",
       "offer": "Offer",
@@ -1410,79 +1410,79 @@
       "deleteDiscount": "Delete this discount? This cannot be undone."
     },
     "empty": {
-      "noDiscount": "No discount yet.",
-      "noMembershipAccount": "No membership account yet.",
-      "noMembershipTiers": "No membership tiers found.",
-      "noMembershipTransactions": "No membership transaction record yet.",
-      "noPendingRedemption": "No pending redemption request."
+      "noDiscount": "いいえ 割引 yet.",
+      "noMembershipAccount": "いいえ membership アカウント yet.",
+      "noMembershipTiers": "いいえ membership tiers found.",
+      "noMembershipTransactions": "いいえ membership transaction record yet.",
+      "noPendingRedemption": "いいえ 保留中 redemption request."
     }
   },
   "companyCardsManagementPanel": {
     "states": {
-      "loading": "Loading company cards...",
+      "loading": "Loading 会社 カード...",
       "noAdmin": "This tab is available for company owner/admin only."
     },
     "errors": {
       "signIn": "Please sign in to use company card management.",
-      "chooseMember": "Choose a team member first.",
-      "selectCompany": "Please select a company.",
+      "chooseMember": "Choose a チーム member first.",
+      "selectCompany": "Please 選択 a 会社.",
       "emailRequired": "Email is required for new account.",
       "passwordMinLength": "Password must be at least 8 characters.",
       "createAccountCardFailed": "Failed to create account and card.",
-      "selectCompanyFirst": "Please select a company first.",
+      "selectCompanyFirst": "Please 選択 a 会社 first.",
       "signInFirst": "Please sign in first.",
       "createCompanyProfileCardFailed": "Failed to create company profile card."
     },
     "messages": {
       "accountCardCreated": "Account and company name card created.",
-      "companyCardCreated": "Company name card created.",
-      "cardDeleted": "Name card deleted."
+      "companyCardCreated": "会社 名前 card created.",
+      "cardDeleted": "名前 card deleted."
     },
     "defaults": {
-      "companyCard": "Company Card",
-      "companyProfile": "Company Profile"
+      "companyCard": "会社 Card",
+      "companyProfile": "会社 プロフィール"
     },
     "confirm": {
-      "deleteCard": "Delete this company name card?"
+      "deleteCard": "削除 this 会社 名前 card?"
     },
     "sections": {
       "companyProfile": {
-        "title": "Company Profile",
+        "title": "会社 プロフィール",
         "subtitle": "Edit in full card editor (same as personal card), with personal name hidden."
       },
       "addCard": {
-        "title": "Add Company Name Card"
+        "title": "追加 会社 名前 Card"
       },
       "performance": {
-        "title": "Company Name Cards Performance"
+        "title": "会社 名前 カード Performance"
       }
     },
     "modes": {
-      "newAccount": "New account + card",
+      "newAccount": "新規 アカウント + card",
       "existingMember": "Existing member only"
     },
     "actions": {
       "preparing": "Preparing...",
-      "openCompanyProfileEdit": "Open company profile edit page",
+      "openCompanyProfileEdit": "オープン 会社 プロフィール 編集 page",
       "generate": "Generate",
       "creating": "Creating...",
-      "createAccountAndCard": "Create account + company card",
-      "addCompanyCard": "Add company card",
-      "openPublicCard": "Open public card",
-      "editPage": "Edit page",
-      "delete": "Delete"
+      "createAccountAndCard": "作成 アカウント + 会社 card",
+      "addCompanyCard": "追加 会社 card",
+      "openPublicCard": "オープン public card",
+      "editPage": "編集 page",
+      "delete": "削除"
     },
     "placeholders": {
-      "loginEmail": "Login email",
-      "password": "Password",
-      "cardName": "Card name",
-      "fullName": "Full name",
-      "title": "Title",
-      "company": "Company"
+      "loginEmail": "Login メールアドレス",
+      "password": "パスワード",
+      "cardName": "Card 名前",
+      "fullName": "氏名",
+      "title": "タイトル",
+      "company": "会社"
     },
     "labels": {
-      "company": "Company",
-      "description": "Description",
+      "company": "会社",
+      "description": "説明",
       "member": "member",
       "untitledCard": "Untitled card",
       "views": "Views",
@@ -1503,14 +1503,14 @@
       "boardNotFound": "Board not found."
     },
     "labels": {
-      "community": "Community",
+      "community": "コミュニティ",
       "replies": "{count} replies",
-      "categories": "{count} categories",
-      "members": "{count} members",
-      "posts": "{count} posts"
+      "categories": "{count}カテゴリー",
+      "members": "{count}人のメンバー",
+      "posts": "{count}件の投稿"
     },
     "actions": {
-      "view": "View"
+      "view": "表示"
     },
     "defaults": {
       "member": "CardLink Member"
@@ -1521,18 +1521,18 @@
   },
   "communityDashboardSubBoard": {
     "states": {
-      "loading": "Loading posts..."
+      "loading": "Loading 投稿..."
     },
     "errors": {
       "boardNotFound": "Board not found.",
       "subBoardNotFound": "Sub-board not found.",
-      "signInToPost": "Please sign in to post."
+      "signInToPost": "Please sign in to 投稿."
     },
     "sections": {
-      "newPost": "New Post"
+      "newPost": "新規投稿"
     },
     "placeholders": {
-      "postTitle": "Post title",
+      "postTitle": "投稿タイトル",
       "postBody": "Write something thoughtful..."
     },
     "actions": {
@@ -1546,30 +1546,30 @@
       "member": "CardLink Member"
     },
     "empty": {
-      "noPosts": "No posts yet."
+      "noPosts": "まだ投稿がありません。"
     }
   },
   "communityDashboardPost": {
     "states": {
-      "loading": "Loading post..."
+      "loading": "Loading 投稿..."
     },
     "errors": {
-      "postNotFound": "Post not found.",
-      "signInToReply": "Please sign in to reply."
+      "postNotFound": "投稿 not found.",
+      "signInToReply": "Please sign in to 返信."
     },
     "sections": {
-      "replies": "Replies",
-      "addReply": "Add a reply"
+      "replies": "返信",
+      "addReply": "追加 a 返信"
     },
     "placeholders": {
-      "replyBody": "Write your reply..."
+      "replyBody": "Write your 返信..."
     },
     "hints": {
       "replyVisibility": "Replies are visible to everyone in this sub-board."
     },
     "actions": {
       "posting": "Posting...",
-      "reply": "Reply"
+      "reply": "返信"
     },
     "labels": {
       "replies": "{count} replies"
@@ -1578,94 +1578,94 @@
       "member": "CardLink Member"
     },
     "empty": {
-      "noReplies": "No replies yet."
+      "noReplies": "いいえ 返信 yet."
     }
   },
   "templateSelector": {
-    "title": "Choose Template",
-    "subtitle": "Choose your card template.",
+    "title": "テンプレートを選択",
+    "subtitle": "Choose your card テンプレート.",
     "templates": {
       "classic-business": {
-        "name": "Classic Business",
-        "category": "Business"
+        "name": "Classic ビジネス",
+        "category": "ビジネス"
       },
       "profile-community": {
-        "name": "Profile Community",
-        "category": "Profile"
+        "name": "プロフィール コミュニティ",
+        "category": "プロフィール"
       },
       "minimal-editorial": {
         "name": "Minimal Editorial",
-        "category": "Profile"
+        "category": "プロフィール"
       },
       "fullscreen-hero-tabs": {
         "name": "Aurora Hero Tabs",
-        "category": "Profile"
+        "category": "プロフィール"
       }
     }
   },
   "communityDashboardList": {
     "header": {
       "brand": "CardLink",
-      "title": "Community",
+      "title": "コミュニティ",
       "subtitle": "Browse boards and join the conversation."
     },
     "states": {
-      "loading": "Loading boards..."
+      "loading": "Loading ボード..."
     },
     "labels": {
       "posts": "{count} posts",
-      "members": "{count} members",
-      "private": "Private"
+      "members": "{count}人のメンバー",
+      "private": "プライベート"
     },
     "sections": {
-      "latest": "Latest from the community"
+      "latest": "コミュニティの最新情報"
     },
     "actions": {
-      "viewPublicFeed": "View public feed"
+      "viewPublicFeed": "公開フィードを見る"
     },
     "defaults": {
       "member": "CardLink Member"
     },
     "empty": {
-      "noPosts": "No posts yet.",
-      "noCommunities": "No communities found"
+      "noPosts": "まだ投稿がありません。",
+      "noCommunities": "コミュニティが見つかりません"
     },
     "filters": {
-      "all": "All Communities",
-      "company": "Company",
-      "public": "Public"
+      "all": "すべてのコミュニティ",
+      "company": "会社",
+      "public": "公開"
     }
   },
   "businessNav": {
-    "business": "Business",
-    "store": "Store",
+    "business": "ビジネス",
+    "store": "ストア",
     "ai": "AI",
-    "notifications": "Notifications",
-    "settings": "Settings"
+    "notifications": "通知",
+    "settings": "設定"
   },
   "businessHandle": {
-    "brand": "Business Interface",
-    "title": "Business Handle",
-    "subtitle": "Your business command center.",
-    "modules": "Modules",
+    "brand": "ビジネス Interface",
+    "title": "ビジネス Handle",
+    "subtitle": "Your ビジネス command center.",
+    "modules": "モジュール",
     "aiSuggestions": {
       "title": "AI Suggestions",
       "empty": "No suggestions yet. Your AI assistant will show action items here.",
-      "viewAll": "View all",
+      "viewAll": "表示 すべて",
       "urgent": "Urgent",
-      "review": "Review",
-      "info": "Info"
+      "review": "レビュー",
+      "info": "情報"
     },
     "moduleNames": {
-      "accounting": "Accounting",
-      "store": "Store",
-      "hr": "HR",
-      "booking": "Booking",
-      "inventory": "Inventory",
+      "accounting": "会計",
+      "store": "ストア",
+      "hr": "人事",
+      "booking": "予約",
+      "inventory": "在庫",
       "pos": "POS",
       "crm": "CRM",
       "procurement": "Procurement",
-      "companyCards": "Company Cards"
+      "companyCards": "会社 カード"
     },
     "moduleStats": {
       "pending": "{count} pending"
@@ -1674,25 +1674,25 @@
     "comingSoonDesc": "This module is under development and will be available soon."
   },
   "businessBooking": {
-    "brand": "Business Interface",
+    "brand": "ビジネス Interface",
     "stats": {
-      "today": "Today",
+      "today": "今日",
       "upcoming": "Upcoming",
       "completionRate": "Completion Rate"
     },
-    "todaySchedule": "Today's Schedule",
+    "todaySchedule": "Today's スケジュール",
     "services": {
-      "title": "Services",
-      "add": "Add",
-      "addTitle": "Add Service",
-      "editTitle": "Edit Service",
+      "title": "サービス",
+      "add": "追加",
+      "addTitle": "追加 サービス",
+      "editTitle": "編集 サービス",
       "fields": {
-        "name": "Service Name",
+        "name": "サービス 名前",
         "namePlaceholder": "e.g. Haircut",
-        "description": "Description",
-        "duration": "Duration (mins)",
-        "price": "Price",
-        "category": "Category",
+        "description": "説明",
+        "duration": "所要時間 (mins)",
+        "price": "価格",
+        "category": "カテゴリー",
         "maxConcurrent": "Max Concurrent",
         "bufferBefore": "Buffer Before (mins)",
         "bufferAfter": "Buffer After (mins)",
@@ -1700,60 +1700,60 @@
         "maxAdvance": "Max Advance (days)"
       },
       "saving": "Saving...",
-      "save": "Save",
-      "emptyTitle": "No services yet",
-      "emptyDesc": "Add your first bookable service.",
+      "save": "保存",
+      "emptyTitle": "いいえ サービス yet",
+      "emptyDesc": "追加 your first bookable サービス.",
       "mins": "mins",
-      "confirmDelete": "Confirm Delete"
+      "confirmDelete": "確認 削除"
     },
     "appointments": {
-      "title": "Appointments",
-      "add": "Add",
-      "addTitle": "New Appointment",
+      "title": "予約",
+      "add": "追加",
+      "addTitle": "新規 予約",
       "fields": {
-        "service": "Service",
-        "selectService": "Select a service",
-        "customerName": "Customer Name",
-        "email": "Email",
-        "phone": "Phone",
-        "date": "Date",
+        "service": "サービス",
+        "selectService": "選択 a サービス",
+        "customerName": "顧客 名前",
+        "email": "メールアドレス",
+        "phone": "電話番号",
+        "date": "日付",
         "time": "Time",
-        "notes": "Notes"
+        "notes": "メモ"
       },
       "saving": "Saving...",
-      "save": "Save",
+      "save": "保存",
       "tabs": {
-        "all": "All",
-        "today": "Today",
+        "all": "すべて",
+        "today": "今日",
         "upcoming": "Upcoming",
         "past": "Past"
       },
-      "empty": "No appointments found.",
-      "confirm": "Confirm",
-      "cancel": "Cancel",
+      "empty": "いいえ 予約 found.",
+      "confirm": "確認",
+      "cancel": "キャンセル",
       "complete": "Complete",
-      "noShow": "No Show",
-      "reschedule": "Reschedule",
-      "rescheduleTitle": "Reschedule Appointment",
-      "confirmReschedule": "Confirm Reschedule",
-      "cancelTitle": "Cancel Appointment",
-      "cancelReasonPlaceholder": "Reason for cancellation (optional)",
-      "confirmCancel": "Confirm Cancel",
-      "back": "Back",
+      "noShow": "いいえ Show",
+      "reschedule": "再スケジュール",
+      "rescheduleTitle": "再スケジュール 予約",
+      "confirmReschedule": "確認 再スケジュール",
+      "cancelTitle": "キャンセル 予約",
+      "cancelReasonPlaceholder": "Reason for キャンセル 任意l)",
+      "confirmCancel": "確認 キャンセル",
+      "back": "戻る",
       "cancelReason": "Reason"
     },
     "statuses": {
-      "pending": "Pending",
+      "pending": "保留中",
       "confirmed": "Confirmed",
-      "completed": "Completed",
-      "cancelled": "Cancelled",
-      "no_show": "No Show"
+      "completed": "完了",
+      "cancelled": "キャンセル済み",
+      "no_show": "いいえ Show"
     },
     "calendar": {
-      "title": "Calendar",
+      "title": "カレンダー",
       "day": "Day",
-      "week": "Week",
-      "empty": "No appointments for this period.",
+      "week": "週",
+      "empty": "いいえ 予約 for this period.",
       "mon": "Mon",
       "tue": "Tue",
       "wed": "Wed",
@@ -1761,7 +1761,7 @@
       "fri": "Fri",
       "sat": "Sat",
       "sun": "Sun",
-      "month": "Month"
+      "month": "月"
     },
     "availability": {
       "title": "Availability",
@@ -1775,82 +1775,82 @@
         "sat": "Sat",
         "sun": "Sun"
       },
-      "open": "Open",
-      "closed": "Closed",
+      "open": "オープン",
+      "closed": "クローズ",
       "saving": "Saving...",
       "saved": "Saved!",
-      "save": "Save",
+      "save": "保存",
       "dateOverrides": "Date-Specific Overrides",
-      "addOverride": "Add",
-      "overrideDate": "Date",
-      "closedAllDay": "Closed all day",
+      "addOverride": "追加",
+      "overrideDate": "日付",
+      "closedAllDay": "クローズ すべて day",
       "reason": "Reason",
-      "reasonPlaceholder": "e.g. Public holiday, renovation",
-      "saveOverride": "Add Override",
-      "noOverrides": "No date overrides configured."
+      "reasonPlaceholder": "e.g. Public 祝日, renovation",
+      "saveOverride": "追加 Override",
+      "noOverrides": "いいえ 日付 overrides configured."
     },
     "settings": {
-      "title": "Booking Settings",
-      "behavior": "Booking Behavior",
-      "autoConfirm": "Auto-confirm appointments",
+      "title": "予約 設定",
+      "behavior": "予約 Behavior",
+      "autoConfirm": "Auto-confirm 予約",
       "autoConfirmDesc": "Automatically confirm new bookings without manual approval",
       "timezone": "Timezone",
-      "slotInterval": "Slot Interval",
-      "cancellationNotice": "Cancellation Notice",
-      "noLimit": "No limit",
-      "requiredFields": "Required Customer Fields",
-      "requireEmail": "Require email address",
-      "requirePhone": "Require phone number",
-      "bookingPage": "Public Booking Page",
-      "pageTitle": "Page Title",
-      "pageTitlePlaceholder": "e.g. Book an Appointment",
-      "pageDescription": "Page Description",
-      "cancellationPolicy": "Cancellation Policy",
+      "slotInterval": "時間枠 Interval",
+      "cancellationNotice": "キャンセル Notice",
+      "noLimit": "いいえ limit",
+      "requiredFields": "必須 顧客 Fields",
+      "requireEmail": "Require メールアドレス 住所",
+      "requirePhone": "Require 電話番号 number",
+      "bookingPage": "Public 予約 Page",
+      "pageTitle": "Page タイトル",
+      "pageTitlePlaceholder": "e.g. Book an 予約",
+      "pageDescription": "Page 説明",
+      "cancellationPolicy": "キャンセル Policy",
       "cancellationPolicyPlaceholder": "e.g. Free cancellation up to 24 hours before",
       "saving": "Saving...",
       "saved": "Saved!",
-      "save": "Save Settings"
+      "save": "保存 設定"
     },
     "customers": {
-      "title": "Customers",
-      "add": "Add",
-      "addTitle": "Add Customer",
-      "editTitle": "Edit Customer",
+      "title": "顧客",
+      "add": "追加",
+      "addTitle": "追加 顧客",
+      "editTitle": "編集 顧客",
       "fields": {
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone",
-        "notes": "Notes"
+        "name": "名前",
+        "email": "メールアドレス",
+        "phone": "電話番号",
+        "notes": "メモ"
       },
       "saving": "Saving...",
-      "save": "Save",
-      "emptyTitle": "No customers yet",
+      "save": "保存",
+      "emptyTitle": "いいえ 顧客 yet",
       "emptyDesc": "Customers are automatically created when they book.",
-      "searchPlaceholder": "Search customers...",
+      "searchPlaceholder": "検索 顧客...",
       "bookings": "bookings",
       "spent": "spent",
       "lastVisit": "Last visit",
-      "confirmDelete": "Confirm Delete"
+      "confirmDelete": "確認 削除"
     },
     "reports": {
-      "title": "Booking Reports",
+      "title": "予約 レポート",
       "empty": "No data for the selected period.",
-      "totalAppointments": "Total Appointments",
-      "revenue": "Revenue",
+      "totalAppointments": "合計 予約",
+      "revenue": "収益",
       "completionRate": "Completion Rate",
       "noShowRate": "No-Show Rate",
-      "statusBreakdown": "Status Breakdown",
-      "byService": "By Service",
-      "dailyBreakdown": "Daily Breakdown",
+      "statusBreakdown": "ステータス Breakdown",
+      "byService": "By サービス",
+      "dailyBreakdown": "毎日 Breakdown",
       "bookings": "bookings"
     }
   },
   "businessHr": {
-    "brand": "Business Interface",
+    "brand": "ビジネス Interface",
     "stats": {
-      "activeEmployees": "Active Employees",
-      "pendingLeave": "Pending Leave Requests",
-      "todayAttendance": "Present Today",
+      "activeEmployees": "有効 従業員",
+      "pendingLeave": "保留中 休暇 Requests",
+      "todayAttendance": "出席 今日",
       "payrollDesc": "Manage salary runs, deductions, and compensation reports.",
       "departmentsDesc": "Organize your company structure with departments and positions.",
       "holidaysDesc": "Track public holidays and company calendar events.",
@@ -1863,204 +1863,204 @@
       "contract": "Contract"
     },
     "employees": {
-      "title": "Employees",
-      "add": "Add",
-      "addTitle": "Add Employee",
-      "editTitle": "Edit Employee",
+      "title": "従業員",
+      "add": "追加",
+      "addTitle": "追加 従業員",
+      "editTitle": "編集 従業員",
       "step1": "Personal Information",
-      "step2": "Job Details",
+      "step2": "Job 詳細",
       "step3": "Compensation",
       "fields": {
-        "fullName": "Full Name",
+        "fullName": "氏名",
         "fullNamePlaceholder": "e.g. John Smith",
-        "email": "Email",
-        "phone": "Phone",
+        "email": "メールアドレス",
+        "phone": "電話番号",
         "position": "Position",
         "department": "Department",
-        "employmentType": "Employment Type",
-        "startDate": "Start Date",
-        "salary": "Salary",
-        "salaryPeriod": "Salary Period",
-        "address": "Address",
-        "nationalId": "National ID / Tax Number",
-        "bankName": "Bank Name",
-        "bankAccount": "Bank Account Number",
-        "emergencyContact": "Emergency Contact",
-        "emergencyName": "Contact Name",
-        "emergencyPhone": "Contact Phone",
+        "employmentType": "Employment タイプ",
+        "startDate": "Start 日付",
+        "salary": "給与",
+        "salaryPeriod": "給与 Period",
+        "address": "住所",
+        "nationalId": "National ID / 税金 Number",
+        "bankName": "Bank 名前",
+        "bankAccount": "Bank アカウント Number",
+        "emergencyContact": "Emergency 連絡先",
+        "emergencyName": "連絡先 名前",
+        "emergencyPhone": "連絡先 電話番号",
         "emergencyRelation": "Relationship"
       },
       "salaryPeriods": {
-        "monthly": "Monthly",
+        "monthly": "月額",
         "hourly": "Hourly"
       },
-      "back": "Back",
-      "next": "Next",
+      "back": "戻る",
+      "next": "次へ",
       "saving": "Saving...",
-      "save": "Save",
-      "emptyTitle": "No employees yet",
+      "save": "保存",
+      "emptyTitle": "いいえ 従業員 yet",
       "emptyDesc": "Add your first employee to get started.",
       "statuses": {
-        "active": "Active",
-        "inactive": "Inactive",
+        "active": "有効",
+        "inactive": "無効",
         "terminated": "Terminated"
       },
-      "toggleStatus": "Toggle Status",
-      "confirmDelete": "Confirm Delete",
+      "toggleStatus": "Toggle ステータス",
+      "confirmDelete": "確認 削除",
       "step4": "Additional Information"
     },
     "leave": {
-      "title": "Leave Requests",
-      "add": "Add",
-      "addTitle": "New Leave Request",
+      "title": "休暇 Requests",
+      "add": "追加",
+      "addTitle": "新規 休暇 Request",
       "fields": {
-        "employee": "Employee",
-        "selectEmployee": "Select employee",
-        "leaveType": "Leave Type",
-        "startDate": "Start Date",
-        "endDate": "End Date",
+        "employee": "従業員",
+        "selectEmployee": "選択 従業員",
+        "leaveType": "休暇 タイプ",
+        "startDate": "Start 日付",
+        "endDate": "End 日付",
         "daysCount": "{count} day(s)",
         "reason": "Reason"
       },
       "types": {
-        "annual": "Annual",
-        "sick": "Sick",
-        "unpaid": "Unpaid",
+        "annual": "年額",
+        "sick": "病欠",
+        "unpaid": "未払い",
         "maternity": "Maternity",
-        "other": "Other",
+        "other": "その他",
         "paternity": "Paternity"
       },
       "tabs": {
-        "pending": "Pending",
-        "approved": "Approved",
-        "rejected": "Rejected",
+        "pending": "保留中",
+        "approved": "承認済み",
+        "rejected": "却下",
         "balances": "Balances"
       },
       "saving": "Submitting...",
-      "submit": "Submit",
-      "empty": "No leave requests.",
-      "unknownEmployee": "Unknown Employee",
+      "submit": "送信",
+      "empty": "いいえ 休暇 requests.",
+      "unknownEmployee": "Unknown 従業員",
       "days": "day(s)",
-      "approve": "Approve",
-      "reject": "Reject",
+      "approve": "承認",
+      "reject": "却下",
       "balancesEmpty": "No leave balances initialized for this year.",
       "initBalances": "Initialize Balances",
       "balanceLeft": "left"
     },
     "attendance": {
-      "title": "Attendance",
-      "present": "Present",
-      "absent": "Absent",
-      "late": "Late",
+      "title": "出勤",
+      "present": "出席",
+      "absent": "欠勤",
+      "late": "遅刻",
       "noEmployees": "No employees found. Add employees first.",
       "clockIn": "In",
       "clockOut": "Out",
       "clockInBtn": "Clock In",
       "clockOutBtn": "Clock Out",
       "statuses": {
-        "present": "Present",
-        "absent": "Absent",
-        "late": "Late",
+        "present": "出席",
+        "absent": "欠勤",
+        "late": "遅刻",
         "half_day": "Half Day"
       }
     },
     "payroll": {
-      "title": "Payroll",
+      "title": "給与",
       "generate": "Generate",
       "statuses": {
-        "draft": "Draft",
-        "approved": "Approved",
-        "paid": "Paid"
+        "draft": "下書き",
+        "approved": "承認済み",
+        "paid": "支払い済み"
       },
-      "bulkApprove": "Approve All",
-      "bulkPaid": "Mark Paid",
+      "bulkApprove": "承認 すべて",
+      "bulkPaid": "Mark 支払い済み",
       "empty": "No payroll records for this period.",
-      "emptyHint": "Generate payroll to create records.",
-      "unknownEmployee": "Unknown Employee",
-      "basic": "Basic",
-      "overtime": "Overtime",
+      "emptyHint": "Generate 給与 to 作成 records.",
+      "unknownEmployee": "Unknown 従業員",
+      "basic": "ベーシック",
+      "overtime": "残業",
       "deductions": "Deductions",
       "allowances": "Allowances",
       "netPay": "Net Pay"
     },
     "departments": {
-      "title": "Departments",
-      "add": "Add",
-      "addTitle": "Add Department",
-      "editTitle": "Edit Department",
+      "title": "部門",
+      "add": "追加",
+      "addTitle": "追加 Department",
+      "editTitle": "編集 Department",
       "fields": {
-        "name": "Department Name",
+        "name": "Department 名前",
         "namePlaceholder": "e.g. Engineering",
-        "description": "Description"
+        "description": "説明"
       },
       "saving": "Saving...",
-      "save": "Save",
-      "emptyTitle": "No departments yet",
+      "save": "保存",
+      "emptyTitle": "いいえ 部門 yet",
       "emptyDesc": "Add your first department to organize your team.",
-      "confirmDelete": "Confirm Delete"
+      "confirmDelete": "確認 削除"
     },
     "holidays": {
       "title": "Public Holidays",
-      "add": "Add",
-      "addTitle": "Add Holiday",
-      "editTitle": "Edit Holiday",
+      "add": "追加",
+      "addTitle": "追加 祝日",
+      "editTitle": "編集 祝日",
       "fields": {
-        "name": "Holiday Name",
-        "namePlaceholder": "e.g. Chinese New Year",
-        "date": "Date",
-        "recurring": "Repeats every year"
+        "name": "祝日 名前",
+        "namePlaceholder": "e.g. Chinese 新規 年",
+        "date": "日付",
+        "recurring": "Repeats every 年"
       },
       "saving": "Saving...",
-      "save": "Save",
-      "emptyTitle": "No holidays yet",
+      "save": "保存",
+      "emptyTitle": "いいえ holidays yet",
       "emptyDesc": "Add public holidays for your company.",
-      "confirmDelete": "Confirm Delete",
-      "recurring": "Yearly"
+      "confirmDelete": "確認 削除",
+      "recurring": "年間"
     },
     "documents": {
-      "title": "Documents",
-      "add": "Upload",
-      "addTitle": "Upload Document",
+      "title": "ドキュメント",
+      "add": "アップロード",
+      "addTitle": "アップロード ドキュメント",
       "fields": {
-        "employee": "Employee",
-        "name": "Document Name",
+        "employee": "従業員",
+        "name": "ドキュメント 名前",
         "namePlaceholder": "e.g. Employment Contract",
-        "docType": "Document Type",
-        "fileUrl": "File URL"
+        "docType": "ドキュメント タイプ",
+        "fileUrl": "ファイル URL"
       },
       "types": {
         "contract": "Contract",
-        "id_document": "ID Document",
+        "id_document": "ID ドキュメント",
         "certificate": "Certificate",
         "payslip": "Payslip",
-        "other": "Other"
+        "other": "その他"
       },
       "saving": "Saving...",
-      "save": "Upload",
-      "emptyTitle": "No documents yet",
+      "save": "アップロード",
+      "emptyTitle": "いいえ ドキュメント yet",
       "emptyDesc": "Upload employee documents to store them securely.",
-      "confirmDelete": "Confirm Delete",
-      "allEmployees": "All Employees"
+      "confirmDelete": "確認 削除",
+      "allEmployees": "すべて 従業員"
     },
     "reports": {
-      "title": "HR Reports",
+      "title": "人事 レポート",
       "tabs": {
         "headcount": "Headcount",
-        "attendance": "Attendance",
-        "leave": "Leave",
-        "payroll": "Payroll"
+        "attendance": "出勤",
+        "leave": "休暇",
+        "payroll": "給与"
       },
       "headcount": {
-        "total": "Total Employees",
-        "active": "Active",
+        "total": "合計 従業員",
+        "active": "有効",
         "byDepartment": "By Department",
-        "byType": "By Employment Type"
+        "byType": "By Employment タイプ"
       },
       "attendance": {
-        "presentDays": "Present Days",
-        "absentDays": "Absent Days",
-        "lateDays": "Late Days",
-        "totalHours": "Total Hours"
+        "presentDays": "出席 Days",
+        "absentDays": "欠勤 Days",
+        "lateDays": "遅刻 Days",
+        "totalHours": "合計 Hours"
       },
       "leave": {
         "entitlement": "Entitlement",
@@ -2069,109 +2069,109 @@
         "empty": "No leave balance data. Initialize leave balances first."
       },
       "payroll": {
-        "totalNetPay": "Total Net Pay",
+        "totalNetPay": "合計 Net Pay",
         "records": "Records"
       }
     }
   },
   "businessStore": {
-    "brand": "Business Interface",
-    "title": "Store",
-    "subtitle": "Build and manage your storefront.",
+    "brand": "ビジネス Interface",
+    "title": "ストア",
+    "subtitle": "Build and 管理 your storefront.",
     "empty": "Your store is not set up yet. Start building your storefront.",
-    "published": "Published",
-    "draft": "Draft",
-    "publishStore": "Publish Store",
-    "unpublishStore": "Unpublish Store",
+    "published": "公開済み",
+    "draft": "下書き",
+    "publishStore": "Publish ストア",
+    "unpublishStore": "Unpublish ストア",
     "publishing": "Updating...",
     "dashboard": {
-      "title": "Store Dashboard",
+      "title": "ストア ダッシュボード",
       "subtitle": "Sales data, metrics, and store performance.",
-      "manage": "Manage Store",
-      "totalProducts": "Total Products",
+      "manage": "管理 ストア",
+      "totalProducts": "合計 商品",
       "inactive": "{count} inactive",
-      "avgPrice": "Avg. Price",
+      "avgPrice": "Avg. 価格",
       "categories": "Categories",
       "uncategorized": "{count} uncategorized",
-      "activeDiscounts": "Active Discounts",
+      "activeDiscounts": "有効 Discounts",
       "scheduled": "{count} scheduled",
-      "catalogValue": "Catalog Value",
+      "catalogValue": "Catalog 値",
       "catalogValueDesc": "Total value of active products based on price × stock",
-      "productMix": "Product Mix",
+      "productMix": "商品 Mix",
       "physical": "Physical",
-      "services": "Services",
+      "services": "サービス",
       "digital": "Digital",
-      "inventoryHealth": "Inventory Health",
-      "inStock": "In Stock",
-      "lowStock": "Low Stock",
-      "outOfStock": "Out of Stock",
-      "lowStockItems": "Low stock items",
+      "inventoryHealth": "在庫 Health",
+      "inStock": "In 在庫",
+      "lowStock": "Low 在庫",
+      "outOfStock": "Out of 在庫",
+      "lowStockItems": "Low 在庫 items",
       "left": "left",
-      "categoryDistribution": "Category Distribution",
+      "categoryDistribution": "カテゴリー Distribution",
       "uncategorizedLabel": "Uncategorized",
-      "discountSummary": "Discount Summary",
-      "active": "Active",
+      "discountSummary": "割引 サマリー",
+      "active": "有効",
       "scheduledLabel": "Scheduled",
-      "expired": "Expired",
+      "expired": "期限切れ",
       "discountedProducts": "{count} products on sale (avg {avg}% off)",
-      "salesOverview": "Sales Overview",
-      "totalOrders": "Total Orders",
-      "netRevenue": "Net Revenue",
-      "avgOrder": "Avg Order",
-      "completedLabel": "Completed",
-      "pendingLabel": "Pending",
-      "cancelledLabel": "Cancelled",
-      "refundedLabel": "Refunded",
+      "salesOverview": "売上 概要",
+      "totalOrders": "合計 注文",
+      "netRevenue": "Net 収益",
+      "avgOrder": "Avg 注文",
+      "completedLabel": "完了",
+      "pendingLabel": "保留中",
+      "cancelledLabel": "キャンセル済み",
+      "refundedLabel": "返金済み",
       "totalCustomers": "{count} customers",
-      "storeReadiness": "Store Readiness",
+      "storeReadiness": "ストア Readiness",
       "readiness": {
-        "hasName": "Store name set",
-        "hasBanner": "Banner image uploaded",
-        "hasProducts": "Products added",
+        "hasName": "ストア 名前 set",
+        "hasBanner": "Banner 画像 uploaded",
+        "hasProducts": "商品 added",
         "hasCategories": "Categories created",
-        "isPublished": "Store published"
+        "isPublished": "ストア 公開済み"
       }
     },
     "stats": {
-      "products": "Products",
+      "products": "商品",
       "categories": "Categories",
       "discounts": "Discounts"
     },
     "quickActions": {
-      "setup": "Store Setup",
-      "setupDesc": "Banner, name & hours",
+      "setup": "ストア セットアップ",
+      "setupDesc": "Banner, 名前 & hours",
       "categories": "Categories",
-      "categoriesDesc": "Organize products",
-      "products": "Products",
-      "productsDesc": "Manage catalog",
+      "categoriesDesc": "Organize 商品",
+      "products": "商品",
+      "productsDesc": "管理 catalog",
       "discounts": "Discounts",
-      "discountsDesc": "Promotions & deals",
-      "settings": "Delivery & Payments",
-      "settingsDesc": "Shipping & payment options"
+      "discountsDesc": "Promotions & 取引",
+      "settings": "配達 & Payments",
+      "settingsDesc": "配送 & 支払い options"
     },
     "preview": {
-      "title": "Store Preview",
-      "noProducts": "No products yet.",
-      "noCategories": "No categories yet.",
-      "allCategories": "All",
+      "title": "ストア プレビュー",
+      "noProducts": "いいえ 商品 yet.",
+      "noCategories": "いいえ categories yet.",
+      "allCategories": "すべて",
       "discountBadge": "{value}% off",
       "discountFixedBadge": "${value} off"
     },
     "setup": {
-      "title": "Store Setup",
+      "title": "ストア セットアップ",
       "subtitle": "Configure your storefront appearance and hours.",
       "step1Title": "Branding",
-      "step2Title": "Hours & Theme",
-      "bannerLabel": "Store Banner",
+      "step2Title": "Hours & テーマ",
+      "bannerLabel": "ストア Banner",
       "bannerHint": "Recommended: 1200×400px",
-      "uploadBanner": "Upload Banner",
+      "uploadBanner": "アップロード Banner",
       "changeBanner": "Change Banner",
-      "removeBanner": "Remove",
-      "storeNameLabel": "Store Name",
-      "storeNamePlaceholder": "My Awesome Store",
-      "descriptionLabel": "Description",
-      "descriptionPlaceholder": "Tell customers about your store...",
-      "themeColorLabel": "Theme Color",
+      "removeBanner": "削除",
+      "storeNameLabel": "ストア 名前",
+      "storeNamePlaceholder": "My Awesome ストア",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "Tell 顧客 about your ストア...",
+      "themeColorLabel": "テーマ カラー",
       "operatingHoursLabel": "Operating Hours",
       "days": {
         "monday": "Monday",
@@ -2182,378 +2182,378 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
       },
-      "closed": "Closed",
-      "open": "Open",
-      "openTime": "Open",
-      "closeTime": "Close",
-      "save": "Save",
+      "closed": "クローズ",
+      "open": "オープン",
+      "openTime": "オープン",
+      "closeTime": "閉じる",
+      "save": "保存",
       "saving": "Saving...",
       "saved": "Saved successfully!",
       "error": "Failed to save. Please try again.",
-      "back": "Back",
-      "next": "Next"
+      "back": "戻る",
+      "next": "次へ"
     },
     "categories": {
       "title": "Categories",
-      "subtitle": "Organize your products into categories.",
-      "addCategory": "Add Category",
-      "editCategory": "Edit Category",
-      "nameLabel": "Name",
+      "subtitle": "Organize your 商品 into categories.",
+      "addCategory": "追加 カテゴリー",
+      "editCategory": "編集 カテゴリー",
+      "nameLabel": "名前",
       "namePlaceholder": "e.g. Electronics",
-      "descriptionLabel": "Description",
-      "descriptionPlaceholder": "Brief category description...",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "Brief カテゴリー 説明...",
       "iconLabel": "Icon (emoji)",
       "iconPlaceholder": "📦",
-      "save": "Save",
+      "save": "保存",
       "saving": "Saving...",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "deleteConfirm": "Delete this category?",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "deleteConfirm": "削除 this カテゴリー?",
       "deleteWarning": "This category has {count} product(s). They will become uncategorized.",
-      "confirmDelete": "Yes, Delete",
-      "cancelDelete": "Cancel",
+      "confirmDelete": "はい, 削除",
+      "cancelDelete": "キャンセル",
       "empty": "No categories yet. Add your first category.",
       "productCount": "{count} product(s)",
-      "active": "Active",
-      "inactive": "Inactive",
-      "saved": "Category saved!",
-      "deleted": "Category deleted!",
+      "active": "有効",
+      "inactive": "無効",
+      "saved": "カテゴリー saved!",
+      "deleted": "カテゴリー deleted!",
       "error": "Something went wrong. Please try again."
     },
     "products": {
-      "title": "Products",
-      "subtitle": "Manage your product catalog.",
-      "addProduct": "Add Product",
-      "editProduct": "Edit Product",
-      "allCategories": "All",
-      "step1Title": "Type & Basics",
-      "step2Title": "Details",
-      "step3Title": "Images & Category",
+      "title": "商品",
+      "subtitle": "管理 your 商品 catalog.",
+      "addProduct": "追加 商品",
+      "editProduct": "編集 商品",
+      "allCategories": "すべて",
+      "step1Title": "タイプ & Basics",
+      "step2Title": "詳細",
+      "step3Title": "画像 & カテゴリー",
       "typePhysical": "Physical",
       "typePhysicalDesc": "Tangible goods that ship",
-      "typeService": "Service",
+      "typeService": "サービス",
       "typeServiceDesc": "Time-based offerings",
       "typeDigital": "Digital",
       "typeDigitalDesc": "Downloadable content",
-      "nameLabel": "Product Name",
+      "nameLabel": "商品 名前",
       "namePlaceholder": "e.g. Wireless Earbuds",
-      "descriptionLabel": "Description",
-      "descriptionPlaceholder": "Describe your product...",
-      "priceLabel": "Price",
-      "compareAtPriceLabel": "Compare-at Price",
-      "compareAtPriceHint": "Original price before discount",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "Describe your 商品...",
+      "priceLabel": "価格",
+      "compareAtPriceLabel": "Compare-at 価格",
+      "compareAtPriceHint": "Original 価格 before 割引",
       "skuLabel": "SKU",
       "skuPlaceholder": "e.g. WEB-001",
-      "stockLabel": "Stock Quantity",
+      "stockLabel": "在庫 数量",
       "weightLabel": "Weight (kg)",
-      "durationLabel": "Duration (minutes)",
-      "availabilityNotesLabel": "Availability Notes",
-      "availabilityNotesPlaceholder": "e.g. Available weekdays 9am-5pm",
-      "fileUrlLabel": "File URL or Upload",
+      "durationLabel": "所要時間 (minutes)",
+      "availabilityNotesLabel": "Availability メモ",
+      "availabilityNotesPlaceholder": "e.g. 利用可能 weekdays 9am-5pm",
+      "fileUrlLabel": "ファイル URL or アップロード",
       "fileUrlPlaceholder": "https://...",
-      "imagesLabel": "Product Images",
-      "uploadImages": "Upload Images",
-      "categoryLabel": "Category",
-      "noCategory": "No category",
-      "save": "Save",
+      "imagesLabel": "商品 画像",
+      "uploadImages": "アップロード 画像",
+      "categoryLabel": "カテゴリー",
+      "noCategory": "いいえ カテゴリー",
+      "save": "保存",
       "saving": "Saving...",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "deleteConfirm": "Delete this product?",
-      "confirmDelete": "Yes, Delete",
-      "cancelDelete": "Cancel",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "deleteConfirm": "削除 this 商品?",
+      "confirmDelete": "はい, 削除",
+      "cancelDelete": "キャンセル",
       "empty": "No products yet. Add your first product.",
       "inStock": "{count} in stock",
       "lowStock": "Low: {count}",
-      "active": "Active",
-      "inactive": "Inactive",
-      "saved": "Product saved!",
-      "deleted": "Product deleted!",
+      "active": "有効",
+      "inactive": "無効",
+      "saved": "商品 saved!",
+      "deleted": "商品 deleted!",
       "error": "Something went wrong. Please try again.",
-      "back": "Back",
-      "next": "Next"
+      "back": "戻る",
+      "next": "次へ"
     },
     "discounts": {
       "title": "Discounts",
-      "subtitle": "Create promotions and deals.",
-      "addDiscount": "Add Discount",
-      "editDiscount": "Edit Discount",
-      "nameLabel": "Discount Name",
-      "namePlaceholder": "e.g. Summer Sale",
-      "typeLabel": "Discount Type",
+      "subtitle": "作成 promotions and 取引.",
+      "addDiscount": "追加 割引",
+      "editDiscount": "編集 割引",
+      "nameLabel": "割引 名前",
+      "namePlaceholder": "e.g. Summer 販売",
+      "typeLabel": "割引 タイプ",
       "typePercentage": "Percentage",
-      "typeFixed": "Fixed Amount",
-      "valueLabel": "Value",
+      "typeFixed": "Fixed 金額",
+      "valueLabel": "値",
       "appliesToLabel": "Applies To",
-      "appliesToAll": "All Products",
-      "appliesToCategory": "Specific Category",
-      "appliesToProduct": "Specific Product",
-      "selectCategory": "Select category",
-      "selectProduct": "Select product",
-      "startDateLabel": "Start Date",
-      "endDateLabel": "End Date (optional)",
-      "noExpiry": "No expiry",
-      "save": "Save",
+      "appliesToAll": "すべて 商品",
+      "appliesToCategory": "Specific カテゴリー",
+      "appliesToProduct": "Specific 商品",
+      "selectCategory": "選択 カテゴリー",
+      "selectProduct": "選択 商品",
+      "startDateLabel": "Start 日付",
+      "endDateLabel": "End 日付 任意l)",
+      "noExpiry": "いいえ expiry",
+      "save": "保存",
       "saving": "Saving...",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "deleteConfirm": "Delete this discount?",
-      "confirmDelete": "Yes, Delete",
-      "cancelDelete": "Cancel",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "deleteConfirm": "削除 this 割引?",
+      "confirmDelete": "はい, 削除",
+      "cancelDelete": "キャンセル",
       "empty": "No discounts yet. Create your first discount.",
       "percentOff": "{value}% off",
       "fixedOff": "${value} off",
-      "allProducts": "All products",
+      "allProducts": "すべて 商品",
       "categoryTarget": "Category: {name}",
       "productTarget": "Product: {name}",
-      "active": "Active",
-      "expired": "Expired",
+      "active": "有効",
+      "expired": "期限切れ",
       "scheduled": "Scheduled",
-      "saved": "Discount saved!",
-      "deleted": "Discount deleted!",
+      "saved": "割引 saved!",
+      "deleted": "割引 deleted!",
       "error": "Something went wrong. Please try again."
     },
     "storeSettings": {
-      "title": "Delivery & Payments",
-      "subtitle": "Configure delivery and payment options.",
-      "deliveryTitle": "Delivery",
-      "enableDelivery": "Enable Delivery",
-      "deliveryFeeLabel": "Delivery Fee",
-      "freeThresholdLabel": "Free Delivery Threshold",
+      "title": "配達 & Payments",
+      "subtitle": "設定 配達 and 支払い options.",
+      "deliveryTitle": "配達",
+      "enableDelivery": "Enable 配達",
+      "deliveryFeeLabel": "配達 Fee",
+      "freeThresholdLabel": "Free 配達 Threshold",
       "freeThresholdHint": "Orders above this amount get free delivery",
-      "paymentTitle": "Payment Methods",
+      "paymentTitle": "支払い Methods",
       "cash": "Cash",
-      "bankTransfer": "Bank Transfer",
-      "onlinePayment": "Online Payment",
-      "policiesTitle": "Store Policies",
-      "policiesPlaceholder": "Return policy, terms and conditions...",
-      "save": "Save",
+      "bankTransfer": "Bank 移動",
+      "onlinePayment": "Online 支払い",
+      "policiesTitle": "ストア Policies",
+      "policiesPlaceholder": "返品 policy, terms and conditions...",
+      "save": "保存",
       "saving": "Saving...",
-      "saved": "Settings saved!",
+      "saved": "設定 saved!",
       "error": "Failed to save. Please try again."
     },
     "orders": {
-      "title": "Orders",
-      "subtitle": "View and manage store orders.",
-      "searchPlaceholder": "Search orders...",
-      "empty": "No orders yet.",
+      "title": "注文",
+      "subtitle": "表示 and 管理 ストア 注文.",
+      "searchPlaceholder": "検索 注文...",
+      "empty": "いいえ 注文 yet.",
       "guest": "Guest",
-      "subtotal": "Subtotal",
-      "discount": "Discount",
-      "tax": "Tax",
-      "shipping": "Shipping",
-      "paymentMethod": "Payment",
-      "shippingMethod": "Shipping",
-      "tracking": "Tracking",
-      "cancel": "Cancel",
-      "refundTitle": "Refund Order",
-      "refundReasonPlaceholder": "Reason for refund...",
-      "confirmRefund": "Confirm Refund",
+      "subtotal": "小計",
+      "discount": "割引",
+      "tax": "税金",
+      "shipping": "配送",
+      "paymentMethod": "支払い",
+      "shippingMethod": "配送",
+      "tracking": "追跡",
+      "cancel": "キャンセル",
+      "refundTitle": "返金 注文",
+      "refundReasonPlaceholder": "Reason for 返金...",
+      "confirmRefund": "確認 返金",
       "statuses": {
-        "all": "All",
-        "pending": "Pending",
+        "all": "すべて",
+        "pending": "保留中",
         "confirmed": "Confirmed",
-        "processing": "Processing",
+        "processing": "処理中",
         "shipped": "Shipped",
         "delivered": "Delivered",
-        "completed": "Completed",
-        "cancelled": "Cancelled",
-        "refunded": "Refunded"
+        "completed": "完了",
+        "cancelled": "キャンセル済み",
+        "refunded": "返金済み"
       },
       "paymentStatus": {
-        "unpaid": "Unpaid",
-        "paid": "Paid",
+        "unpaid": "未払い",
+        "paid": "支払い済み",
         "partial": "Partial",
-        "refunded": "Refunded"
+        "refunded": "返金済み"
       },
       "actions": {
-        "confirmed": "Confirm",
+        "confirmed": "確認",
         "processing": "Process",
         "shipped": "Ship",
         "delivered": "Delivered",
         "completed": "Complete",
-        "cancel": "Cancel",
-        "refund": "Refund"
+        "cancel": "キャンセル",
+        "refund": "返金"
       }
     },
     "customers": {
-      "title": "Customers",
-      "subtitle": "Manage your store customers.",
-      "searchPlaceholder": "Search customers...",
-      "addCustomer": "Add Customer",
-      "editCustomer": "Edit Customer",
-      "empty": "No customers yet.",
-      "nameLabel": "Name",
-      "namePlaceholder": "Customer name",
-      "emailLabel": "Email",
+      "title": "顧客",
+      "subtitle": "管理 your ストア 顧客.",
+      "searchPlaceholder": "検索 顧客...",
+      "addCustomer": "追加 顧客",
+      "editCustomer": "編集 顧客",
+      "empty": "いいえ 顧客 yet.",
+      "nameLabel": "名前",
+      "namePlaceholder": "顧客 名前",
+      "emailLabel": "メールアドレス",
       "emailPlaceholder": "customer@email.com",
-      "phoneLabel": "Phone",
+      "phoneLabel": "電話番号",
       "phonePlaceholder": "+1 234 567 890",
-      "save": "Save",
+      "save": "保存",
       "saving": "Saving...",
-      "cancel": "Cancel",
-      "edit": "Edit",
-      "delete": "Delete",
-      "deleteConfirm": "Delete this customer?",
+      "cancel": "キャンセル",
+      "edit": "編集",
+      "delete": "削除",
+      "deleteConfirm": "削除 this 顧客?",
       "ordersCount": "{count} orders",
-      "lastOrder": "Last order"
+      "lastOrder": "Last 注文"
     },
     "coupons": {
       "title": "Coupons",
-      "subtitle": "Create and manage coupon codes.",
-      "addCoupon": "Add Coupon",
-      "editCoupon": "Edit Coupon",
+      "subtitle": "作成 and 管理 クーポン codes.",
+      "addCoupon": "追加 クーポン",
+      "editCoupon": "編集 クーポン",
       "empty": "No coupons yet. Create your first coupon code.",
       "codeLabel": "Code",
       "codePlaceholder": "e.g. SAVE20",
-      "nameLabel": "Name",
-      "namePlaceholder": "e.g. Summer Sale",
-      "typeLabel": "Type",
+      "nameLabel": "名前",
+      "namePlaceholder": "e.g. Summer 販売",
+      "typeLabel": "タイプ",
       "typePercentage": "Percentage",
-      "typeFixed": "Fixed Amount",
-      "valueLabel": "Value",
-      "minOrderLabel": "Min. Order",
-      "maxDiscountLabel": "Max Discount",
-      "noLimit": "No limit",
+      "typeFixed": "Fixed 金額",
+      "valueLabel": "値",
+      "minOrderLabel": "Min. 注文",
+      "maxDiscountLabel": "Max 割引",
+      "noLimit": "いいえ limit",
       "usageLimitLabel": "Usage Limit",
       "unlimited": "Unlimited",
       "validFromLabel": "Valid From",
       "validUntilLabel": "Valid Until",
-      "activeLabel": "Active",
-      "save": "Save",
+      "activeLabel": "有効",
+      "save": "保存",
       "saving": "Saving...",
-      "cancel": "Cancel",
-      "edit": "Edit",
-      "delete": "Delete",
-      "deleteConfirm": "Delete this coupon?",
+      "cancel": "キャンセル",
+      "edit": "編集",
+      "delete": "削除",
+      "deleteConfirm": "削除 this クーポン?",
       "minOrder": "Min order: ${amount}",
       "used": "{count}/{limit} used",
       "status": {
-        "active": "Active",
-        "inactive": "Inactive",
-        "expired": "Expired",
+        "active": "有効",
+        "inactive": "無効",
+        "expired": "期限切れ",
         "scheduled": "Scheduled",
         "exhausted": "Exhausted"
       }
     }
   },
   "storeManagement": {
-    "brand": "Business Interface",
-    "title": "Store Management",
-    "subtitle": "Configure and manage your storefront.",
-    "published": "Published",
-    "draft": "Draft",
-    "publishStore": "Publish Store",
-    "unpublishStore": "Unpublish Store",
+    "brand": "ビジネス Interface",
+    "title": "ストア 管理",
+    "subtitle": "設定 and 管理 your storefront.",
+    "published": "公開済み",
+    "draft": "下書き",
+    "publishStore": "Publish ストア",
+    "unpublishStore": "Unpublish ストア",
     "publishing": "Updating...",
     "stats": {
-      "products": "Products",
+      "products": "商品",
       "categories": "Categories",
       "discounts": "Discounts"
     },
     "quickActions": {
-      "orders": "Orders",
-      "ordersDesc": "View & manage orders",
-      "customers": "Customers",
-      "customersDesc": "Customer database",
+      "orders": "注文",
+      "ordersDesc": "表示 & 管理 注文",
+      "customers": "顧客",
+      "customersDesc": "顧客 database",
       "coupons": "Coupons",
       "couponsDesc": "Promo codes & offers",
-      "setup": "Store Setup",
-      "setupDesc": "Banner, name & hours",
+      "setup": "ストア セットアップ",
+      "setupDesc": "Banner, 名前 & hours",
       "categories": "Categories",
-      "categoriesDesc": "Organize products",
-      "products": "Products",
-      "productsDesc": "Manage catalog",
+      "categoriesDesc": "Organize 商品",
+      "products": "商品",
+      "productsDesc": "管理 catalog",
       "discounts": "Discounts",
-      "discountsDesc": "Promotions & deals",
-      "settings": "Delivery & Payments",
-      "settingsDesc": "Shipping & payment options"
+      "discountsDesc": "Promotions & 取引",
+      "settings": "配達 & Payments",
+      "settingsDesc": "配送 & 支払い options"
     }
   },
   "businessAi": {
-    "brand": "Business Interface",
-    "title": "AI Assistant",
-    "subtitle": "Your intelligent business companion.",
-    "chatTitle": "Cardlink AI",
-    "newChat": "New Chat",
-    "conversations": "Conversations",
+    "brand": "ビジネス Interface",
+    "title": "AIアシスタント",
+    "subtitle": "Your intelligent ビジネス companion.",
+    "chatTitle": "CardLink AI",
+    "newChat": "新しいチャット",
+    "conversations": "会話",
     "noConversations": "No conversations yet. Start a new chat!",
-    "confirmDelete": "Delete",
-    "cancel": "Cancel",
+    "confirmDelete": "削除",
+    "cancel": "キャンセル",
     "emptyTitle": "Hi! I'm your AI business assistant.",
     "emptyDesc": "Tell me what happened today, or ask me anything about your business.",
     "emptyConvoHint": "Type a message to get started.",
-    "inputPlaceholder": "Type a message...",
+    "inputPlaceholder": "タイプ a メッセージ...",
     "attachmentComingSoon": "Attachments coming soon",
     "mockResponse": "I received your message. AI backend will be connected in Phase 6.",
     "aiError": "Sorry, I couldn't process your request. Please try again.",
     "modelLabel": "Model",
-    "backToPresets": "Back to operations",
-    "presetTitle": "What would you like to do?",
+    "backToPresets": "戻る to オペレーション",
+    "presetTitle": "何をしますか？",
     "presetDesc": "Select an operation below. Fill in the details and AI will handle the rest.",
-    "selectFile": "Click to select a file",
-    "optionalNotes": "Additional notes (optional)...",
-    "processing": "Processing...",
+    "selectFile": "Click to 選択 a ファイル",
+    "optionalNotes": "Additional メモ 任意l)...",
+    "processing": "処理中...",
     "runOperation": "Run Operation",
-    "aiResponse": "AI Response",
+    "aiResponse": "AI応答",
     "presets": {
-      "recordExpense": "Record Expense",
+      "recordExpense": "経費を記録",
       "recordExpenseDesc": "Log a business expense with amount and description",
-      "generateReport": "Generate Report",
+      "generateReport": "レポート生成",
       "generateReportDesc": "Get a detailed business report for any period",
-      "checkInventory": "Check Inventory",
-      "checkInventoryDesc": "Check stock levels for products",
-      "createInvoice": "Create Invoice",
+      "checkInventory": "在庫確認",
+      "checkInventoryDesc": "Check 在庫 levels for 商品",
+      "createInvoice": "請求書作成",
       "createInvoiceDesc": "Generate an invoice for a customer",
-      "recordSale": "Record Sale",
-      "recordSaleDesc": "Log a sales transaction",
-      "uploadData": "Upload Data",
+      "recordSale": "売上を記録",
+      "recordSaleDesc": "Log a 売上 transaction",
+      "uploadData": "データアップロード",
       "uploadDataDesc": "Upload a file to import business data",
-      "crmAddLead": "Add CRM Lead",
+      "crmAddLead": "追加 CRM リード",
       "crmAddLeadDesc": "Add a new lead to your CRM pipeline",
-      "dailyReview": "Daily Review",
+      "dailyReview": "日次レビュー",
       "dailyReviewDesc": "Run a quick daily business health check",
-      "monthlyAudit": "Monthly Audit",
+      "monthlyAudit": "月次監査",
       "monthlyAuditDesc": "Run a comprehensive monthly business audit"
     },
     "fields": {
-      "amount": "Amount",
-      "description": "Description",
-      "date": "Date",
-      "notes": "Additional Notes",
+      "amount": "金額",
+      "description": "説明",
+      "date": "日付",
+      "notes": "Additional メモ",
       "reportType": "Report Type (e.g. Sales, P&L, Inventory)",
       "dateRange": "Date Range (e.g. Last 30 days)",
-      "productName": "Product Name",
-      "customerName": "Customer Name",
-      "item": "Item / Product",
-      "file": "File",
-      "leadName": "Lead Name",
-      "email": "Email"
+      "productName": "商品 名前",
+      "customerName": "顧客 名前",
+      "item": "アイテム / 商品",
+      "file": "ファイル",
+      "leadName": "リード 名前",
+      "email": "メールアドレス"
     },
     "quickActions": {
-      "recordSale": "Record a sale",
-      "checkBalance": "Check my balance",
-      "whatsOverdue": "What's overdue?",
-      "uploadAccounting": "Upload accounting data",
-      "uploadInventory": "Upload inventory list",
-      "uploadContacts": "Upload contacts",
-      "createInvoice": "Create an invoice",
-      "checkInventory": "Check inventory levels",
-      "dailyReview": "Run daily check",
-      "monthlyAudit": "Run monthly audit",
-      "annualReview": "Run annual review"
+      "recordSale": "Record a 販売",
+      "checkBalance": "Check my 残高",
+      "whatsOverdue": "What's 期限超過?",
+      "uploadAccounting": "アップロード 会計 data",
+      "uploadInventory": "アップロード 在庫 リスト",
+      "uploadContacts": "アップロード 連絡先",
+      "createInvoice": "作成 an 請求書",
+      "checkInventory": "Check 在庫 levels",
+      "dailyReview": "Run 毎日 check",
+      "monthlyAudit": "Run 月額 監査",
+      "annualReview": "Run 年額 レビュー"
     },
     "time": {
-      "justNow": "just now",
+      "justNow": "たった今",
       "minsAgo": "{count}m ago",
       "hoursAgo": "{count}h ago",
       "daysAgo": "{count}d ago"
     },
     "agentModes": {
-      "chat": "Chat",
-      "setup": "Setup",
-      "operations": "Operations",
-      "review": "Review"
+      "chat": "チャット",
+      "setup": "セットアップ",
+      "operations": "オペレーション",
+      "review": "レビュー"
     },
     "emptyTitle_chat": "Hi! I'm your AI business assistant.",
     "emptyTitle_setup": "Setup Agent — Onboard your business",
@@ -2563,128 +2563,128 @@
     "emptyDesc_setup": "Upload your business documents (accounting, inventory, contacts) and I'll help you set up your store.",
     "emptyDesc_operations": "Tell me what you need to do and I'll handle it across all your business modules.",
     "emptyDesc_review": "I can run daily, monthly, or annual reviews of your business and provide professional recommendations.",
-    "inputPlaceholder_chat": "Type a message...",
+    "inputPlaceholder_chat": "タイプ a メッセージ...",
     "inputPlaceholder_setup": "Describe the data you're uploading or paste it here...",
     "inputPlaceholder_operations": "Tell me what operation to perform...",
-    "inputPlaceholder_review": "Ask about your business performance...",
-    "uploadFile": "Upload a business document",
+    "inputPlaceholder_review": "Ask about your ビジネス performance...",
+    "uploadFile": "アップロード a ビジネス ドキュメント",
     "reviewTrigger": "Run {type} business review",
     "reviewButtons": {
-      "daily": "Run Daily Check",
-      "monthly": "Run Monthly Audit",
-      "annual": "Run Annual Review"
+      "daily": "Run 毎日 Check",
+      "monthly": "Run 月額 監査",
+      "annual": "Run 年額 レビュー"
     },
-    "executionComplete": "Execution Complete",
-    "operationHistory": "Operation History",
-    "noOperationHistory": "No operations recorded yet"
+    "executionComplete": "実行完了",
+    "operationHistory": "操作履歴",
+    "noOperationHistory": "操作履歴がありません"
   },
   "aiPresetCard": {
-    "title": "AI Action Plan",
-    "actionsLabel": "Actions to perform",
+    "title": "AI Action プラン",
+    "actionsLabel": "アクション to perform",
     "questionsLabel": "Please answer these questions",
-    "other": "Other",
-    "otherPlaceholder": "Type your answer...",
-    "cancel": "Cancel",
-    "confirm": "Confirm & Execute",
+    "other": "その他",
+    "otherPlaceholder": "回答を入力してください...",
+    "cancel": "キャンセル",
+    "confirm": "確認 & 実行",
     "executing": "Executing...",
-    "answerAllQuestions": "Please answer all questions before confirming."
+    "answerAllQuestions": "確認する前にすべての質問にお答えください。"
   },
   "aiActionCard": {
     "aiSuggestion": "AI Suggestion",
     "module": "Module",
-    "general": "General",
+    "general": "一般",
     "suggestedData": "Suggested Data",
     "confidence": "Confidence",
-    "approve": "Approve",
-    "reject": "Reject",
+    "approve": "承認",
+    "reject": "却下",
     "amend": "Amend",
-    "cancel": "Cancel",
-    "confirmApprove": "Approve this action?",
-    "confirmReject": "Confirm Reject",
+    "cancel": "キャンセル",
+    "confirmApprove": "承認 this action?",
+    "confirmReject": "確認 却下",
     "rejectReason": "Reason for rejection:",
     "rejectReasonPlaceholder": "Why are you rejecting this?",
-    "saveAndApprove": "Save & Approve",
+    "saveAndApprove": "保存 & 承認",
     "collapse": "Collapse",
     "rejectionReasons": {
-      "Incorrect amount": "Incorrect amount",
+      "Incorrect amount": "Incorrect 金額",
       "Wrong account": "Wrong account/category",
       "Not applicable": "Not applicable",
       "Duplicate": "Duplicate",
-      "Other": "Other"
+      "Other": "その他"
     },
     "status": {
-      "approved": "Approved",
+      "approved": "承認済み",
       "amended": "Amended",
-      "rejected": "Rejected"
+      "rejected": "却下"
     }
   },
   "planBilling": {
-    "title": "Plan & Billing",
+    "title": "プラン & 請求",
     "subtitle": "Manage your subscription plan and billing details.",
-    "active": "Active",
+    "active": "有効",
     "renewsOn": "Renews on {date}",
-    "changePlan": "Change Plan",
-    "monthly": "Monthly",
-    "yearly": "Yearly",
+    "changePlan": "Change プラン",
+    "monthly": "月額",
+    "yearly": "年間",
     "free": "Free",
     "aiActionsMonth": "AI actions/mo",
-    "noAi": "No AI actions",
-    "teamMembers": "team members",
+    "noAi": "いいえ AI アクション",
+    "teamMembers": "チーム メンバー",
     "storage": "storage",
-    "pdfExport": "PDF export",
-    "currentPlan": "Current plan",
-    "upgrade": "Upgrade",
+    "pdfExport": "PDF エクスポート",
+    "currentPlan": "現在のプラン",
+    "upgrade": "アップグレード",
     "downgrade": "Downgrade",
-    "downgradeWarning": "Some features may be lost.",
+    "downgradeWarning": "Some 機能 may be lost.",
     "meters": {
-      "aiActions": "AI Actions",
+      "aiActions": "AI アクション",
       "storage": "Storage",
       "companies": "Companies",
-      "users": "Team Members",
-      "ocr": "OCR Documents"
+      "users": "チーム メンバー",
+      "ocr": "OCR ドキュメント"
     },
     "credits": {
       "title": "AI Credits",
       "balance": "{count} credits remaining",
       "save": "Save {pct}",
-      "purchase": "Purchase"
+      "purchase": "購入"
     },
     "history": {
-      "title": "Billing History",
-      "empty": "No billing history yet.",
-      "date": "Date",
-      "description": "Description",
-      "amount": "Amount",
-      "type": "Type"
+      "title": "請求 履歴",
+      "empty": "いいえ 請求 履歴 yet.",
+      "date": "日付",
+      "description": "説明",
+      "amount": "金額",
+      "type": "タイプ"
     }
   },
   "aiHistory": {
-    "title": "Action Card History",
+    "title": "Action Card 履歴",
     "subtitle": "Review all AI-suggested actions and their outcomes.",
     "empty": "No action cards yet. AI suggestions will appear here after you chat.",
     "filter": {
-      "all": "All",
-      "pending": "Pending",
-      "approved": "Approved",
+      "all": "すべて",
+      "pending": "保留中",
+      "approved": "承認済み",
       "amended": "Amended",
-      "rejected": "Rejected"
+      "rejected": "却下"
     }
   },
   "actionCardQueue": {
-    "title": "Action Cards",
+    "title": "Action カード",
     "subtitle": "Review and manage AI-suggested actions for your business.",
-    "empty": "No action cards found.",
+    "empty": "いいえ action カード found.",
     "emptyDesc": "AI-generated action items will appear here as your business data grows.",
     "stats": {
-      "pending": "pending",
-      "approvedWeek": "approved this week",
-      "rejectedWeek": "rejected this week"
+      "pending": "保留中",
+      "approvedWeek": "承認済み this 週",
+      "rejectedWeek": "却下 this 週"
     },
     "filter": {
-      "all": "All",
-      "pending": "⏳ Pending",
-      "approved": "✅ Approved",
-      "rejected": "❌ Rejected",
+      "all": "すべて",
+      "pending": "⏳ 保留中",
+      "approved": "✅ 承認済み",
+      "rejected": "❌ 却下",
       "amended": "✏️ Amended"
     },
     "sort": {
@@ -2694,23 +2694,23 @@
     },
     "group": {
       "urgent": "🔴 Urgent",
-      "review": "🟡 Review",
-      "info": "🟢 Info"
+      "review": "🟡 レビュー",
+      "info": "🟢 情報"
     },
-    "approveAll": "Approve All",
-    "dismissAll": "Dismiss All",
+    "approveAll": "承認 すべて",
+    "dismissAll": "Dismiss すべて",
     "bulkApproveConfirm": "Approve all {count} cards in this group?",
     "bulkDismissConfirm": "Dismiss all {count} cards in this group?"
   },
   "aiSettings": {
-    "title": "AI Preferences",
+    "title": "AI 設定",
     "subtitle": "Configure your AI assistant behavior and review performance.",
     "model": {
-      "title": "Default Model",
+      "title": "デフォルト Model",
       "desc": "Choose the AI model for generating suggestions and chat responses."
     },
     "language": {
-      "title": "AI Language",
+      "title": "AI 言語",
       "desc": "Set the language the AI will use for responses."
     },
     "personality": {
@@ -2719,106 +2719,106 @@
       "formal": "Formal",
       "casual": "Casual"
     },
-    "save": "Save Preferences",
+    "save": "保存 設定",
     "saving": "Saving…",
     "saved": "Saved ✓",
     "performance": {
       "title": "AI Performance Stats",
       "noData": "No feedback data yet. Stats will appear after you review action cards.",
-      "totalCards": "Total Cards",
-      "approved": "Approved",
-      "rejected": "Rejected",
+      "totalCards": "合計 カード",
+      "approved": "承認済み",
+      "rejected": "却下",
       "amended": "Amended",
       "ratio": "Approval / Rejection / Amended Ratio",
       "topReasons": "Top Rejection Reasons"
     }
   },
   "businessNotifications": {
-    "brand": "Business Interface",
-    "title": "Notifications",
+    "brand": "ビジネス Interface",
+    "title": "通知",
     "subtitle": "Stay updated on your business activity.",
-    "empty": "No notifications yet.",
+    "empty": "いいえ 通知 yet.",
     "emptyDesc": "Business events like orders, stock alerts, and AI suggestions will appear here.",
-    "markAllRead": "Mark all read",
+    "markAllRead": "Mark すべて read",
     "filters": {
-      "all": "All",
-      "orders": "Orders",
-      "stock": "Stock",
+      "all": "すべて",
+      "orders": "注文",
+      "stock": "在庫",
       "ai": "AI",
       "system": "System"
     },
     "types": {
-      "new_order": "New Order",
-      "low_stock": "Low Stock",
-      "new_connection": "New Connection",
-      "invoice_overdue": "Invoice Overdue",
-      "payment_received": "Payment Received",
-      "booking_new": "New Booking",
+      "new_order": "新規 注文",
+      "low_stock": "Low 在庫",
+      "new_connection": "新規 Connection",
+      "invoice_overdue": "請求書 期限超過",
+      "payment_received": "支払い Received",
+      "booking_new": "新規 予約",
       "ai_suggestion": "AI Suggestion",
       "system": "System"
     },
     "bell": {
-      "viewAll": "View all notifications"
+      "viewAll": "表示 すべて 通知"
     }
   },
   "businessSettingsOverview": {
-    "title": "Settings",
+    "title": "設定",
     "subtitle": "Manage your business app preferences and configuration.",
     "cards": {
       "mainAccount": {
-        "title": "Main Account",
+        "title": "Main アカウント",
         "desc": "Manage your primary business account context."
       },
       "companyProfile": {
-        "title": "Company Profile",
-        "desc": "Update company details and branding."
+        "title": "会社 プロフィール",
+        "desc": "更新 会社 詳細 and branding."
       },
       "planBilling": {
-        "title": "Plan & Billing",
+        "title": "プラン & 請求",
         "desc": "View your subscription and manage billing."
       },
       "aiPreferences": {
-        "title": "AI Preferences",
+        "title": "AI 設定",
         "desc": "Configure AI assistant behavior and defaults."
       },
       "notificationSettings": {
-        "title": "Notifications",
-        "desc": "Control which notifications you receive."
+        "title": "通知",
+        "desc": "Control which 通知 you receive."
       },
       "language": {
-        "title": "Language",
-        "desc": "Change the app display language."
+        "title": "言語",
+        "desc": "Change the app display 言語."
       },
       "integrations": {
-        "title": "Integrations",
-        "desc": "Connect third-party services and tools."
+        "title": "連携",
+        "desc": "接続 third-party サービス and tools."
       },
       "ownerPanel": {
-        "title": "Owner Panel",
-        "desc": "Admin-only settings and controls."
+        "title": "オーナー Panel",
+        "desc": "Admin-only 設定 and controls."
       },
       "stripeConnect": {
         "title": "Stripe Connect",
         "desc": "Receive payments from your platform sales."
       },
       "newCompany": {
-        "title": "Start New Company",
+        "title": "Start 新規 会社",
         "desc": "Register a new business entity under your account."
       }
     },
-    "switchToClient": "Switch to Client GUI"
+    "switchToClient": "Switch to クライアント GUI"
   },
   "businessRegister": {
-    "back": "Back",
+    "back": "戻る",
     "stepIndicator": "Step {current} of {total}",
     "step1": {
-      "title": "Start Your Business",
+      "title": "Start Your ビジネス",
       "subtitle": "Create your business account on Cardlink to unlock powerful tools.",
-      "companyName": "Company Name",
+      "companyName": "会社名",
       "companyNamePlaceholder": "e.g. Acme Corp",
       "companyNameHint": "This is how your business will appear to customers.",
-      "businessType": "Business Type",
-      "businessTypePlaceholder": "Select business type",
+      "businessType": "ビジネス タイプ",
+      "businessTypePlaceholder": "選択 ビジネス タイプ",
       "businessTypes": {
         "sole_proprietorship": "Sole Proprietorship",
         "partnership": "Partnership",
@@ -2827,70 +2827,70 @@
         "nonprofit": "Nonprofit",
         "cooperative": "Cooperative",
         "franchise": "Franchise",
-        "other": "Other"
+        "other": "その他"
       },
       "industry": "Industry",
-      "industryPlaceholder": "Select an industry",
+      "industryPlaceholder": "選択 an industry",
       "industries": {
         "retail": "Retail & E-commerce",
         "food": "Food & Beverage",
-        "services": "Professional Services",
+        "services": "プロフェッショナル サービス",
         "tech": "Technology",
         "health": "Health & Wellness",
-        "education": "Education",
-        "finance": "Finance & Insurance",
+        "education": "学歴",
+        "finance": "Finance & 保険",
         "realestate": "Real Estate",
         "entertainment": "Entertainment & Media",
         "manufacturing": "Manufacturing",
         "logistics": "Logistics & Transportation",
         "agriculture": "Agriculture",
-        "other": "Other"
+        "other": "その他"
       },
-      "next": "Continue"
+      "next": "続ける"
     },
     "step2": {
-      "title": "Business Details",
+      "title": "ビジネス 詳細",
       "subtitle": "Tell us more about your business. These fields are optional — you can complete them later.",
       "registrationNumber": "Registration Number",
       "registrationNumberPlaceholder": "e.g. 12345678",
       "registrationNumberHint": "Your official company registration or business license number.",
-      "taxId": "Tax ID / VAT Number",
+      "taxId": "税金 ID / VAT Number",
       "taxIdPlaceholder": "e.g. XX-XXXXXXX",
-      "foundedDate": "Founded Date",
-      "employeeRange": "Employee Count",
-      "employeeRangePlaceholder": "Select range",
-      "employees": "employees",
-      "website": "Website",
+      "foundedDate": "Founded 日付",
+      "employeeRange": "従業員 カウント",
+      "employeeRangePlaceholder": "選択 range",
+      "employees": "従業員",
+      "website": "ウェブサイト",
       "optional": "All fields on this step are optional. You can update them later in Settings.",
-      "next": "Continue"
+      "next": "続ける"
     },
     "step3": {
-      "title": "Address & Contact",
+      "title": "住所 & 連絡先",
       "subtitle": "How can customers and partners reach your business?",
-      "email": "Business Email",
+      "email": "ビジネス メールアドレス",
       "emailPlaceholder": "hello@company.com",
-      "phone": "Business Phone",
+      "phone": "ビジネス 電話番号",
       "phonePlaceholder": "+1 (555) 000-0000",
-      "addressSection": "Business Address",
-      "addressLine1": "Address Line 1",
-      "addressLine1Placeholder": "Street address",
-      "addressLine2": "Address Line 2",
-      "addressLine2Placeholder": "Suite, unit, floor (optional)",
-      "city": "City",
-      "cityPlaceholder": "City",
-      "stateProvince": "State / Province",
-      "stateProvincePlaceholder": "State",
+      "addressSection": "ビジネス 住所",
+      "addressLine1": "住所 Line 1",
+      "addressLine1Placeholder": "Street 住所",
+      "addressLine2": "住所 Line 2",
+      "addressLine2Placeholder": "Suite, 単位, floor 任意l)",
+      "city": "市区町村",
+      "cityPlaceholder": "市区町村",
+      "stateProvince": "都道府県 / Province",
+      "stateProvincePlaceholder": "都道府県",
       "postalCode": "Postal Code",
-      "postalCodePlaceholder": "Zip / Postal",
-      "country": "Country",
-      "countryPlaceholder": "Country",
-      "next": "Continue"
+      "postalCodePlaceholder": "郵便番号 / Postal",
+      "country": "国",
+      "countryPlaceholder": "国",
+      "next": "続ける"
     },
     "step4": {
-      "title": "Choose Your Plan",
+      "title": "Choose Your プラン",
       "subtitle": "Select a plan that fits your business needs. You can upgrade anytime.",
       "free": {
-        "name": "Starter",
+        "name": "スターター",
         "price": "Free",
         "period": "forever",
         "features": [
@@ -2913,9 +2913,9 @@
         ]
       },
       "enterprise": {
-        "name": "Enterprise",
-        "price": "Custom",
-        "period": "contact us",
+        "name": "エンタープライズ",
+        "price": "カスタム",
+        "period": "連絡先 us",
         "features": [
           "Unlimited team",
           "All modules + API",
@@ -2925,36 +2925,36 @@
         ]
       },
       "popular": "Most Popular",
-      "next": "Continue"
+      "next": "続ける"
     },
     "step5": {
-      "title": "Review & Create",
+      "title": "レビュー & 作成",
       "subtitle": "Review your details and create your business account.",
-      "companySection": "Company Info",
-      "companyNameLabel": "Company Name",
-      "businessTypeLabel": "Business Type",
+      "companySection": "会社 情報",
+      "companyNameLabel": "会社名",
+      "businessTypeLabel": "ビジネス タイプ",
       "industryLabel": "Industry",
-      "contactSection": "Contact & Address",
-      "addressLabel": "Address",
-      "planSection": "Plan",
-      "planLabel": "Plan",
-      "create": "Create Business Account",
+      "contactSection": "連絡先 & 住所",
+      "addressLabel": "住所",
+      "planSection": "プラン",
+      "planLabel": "プラン",
+      "create": "作成 ビジネス アカウント",
       "creating": "Creating...",
       "terms": "By creating an account, you agree to the Cardlink Business Terms of Service.",
-      "success": "Business account created! Redirecting...",
+      "success": "ビジネス アカウント created! Redirecting...",
       "error": "Something went wrong. Please try again."
     }
   },
   "registerCompany": {
-    "pageTitle": "Register Your Company",
-    "back": "Back",
-    "next": "Next",
+    "pageTitle": "登録 Your 会社",
+    "back": "戻る",
+    "next": "次へ",
     "stepOf": "Step {current} of {total}",
     "step1": {
-      "title": "Choose Your Plan",
+      "title": "Choose Your プラン",
       "subtitle": "Select the plan that best fits your business. You can upgrade or downgrade anytime.",
-      "selectPlan": "Select Plan",
-      "selected": "Selected",
+      "selectPlan": "選択 プラン",
+      "selected": "選択済み",
       "perMonth": "/mo",
       "perYear": "/yr",
       "plans": {
@@ -2963,128 +2963,128 @@
           "emoji": "🆓"
         },
         "professional": {
-          "name": "Professional",
+          "name": "プロフェッショナル",
           "emoji": "💼"
         },
         "business": {
-          "name": "Business",
+          "name": "ビジネス",
           "emoji": "🏢"
         }
       },
       "features": {
-        "aiActions": "AI Actions",
-        "aiChat": "AI Chat",
+        "aiActions": "AI アクション",
+        "aiChat": "AI チャット",
         "companies": "Companies",
         "users": "Users",
         "storage": "Storage",
-        "modules": "Modules",
-        "store": "Store",
-        "pdfExport": "PDF Export",
+        "modules": "モジュール",
+        "store": "ストア",
+        "pdfExport": "PDF エクスポート",
         "docOcr": "Doc OCR",
-        "support": "Support"
+        "support": "サポート"
       },
       "featureValues": {
-        "none": "None",
+        "none": "なし",
         "unlimited": "Unlimited",
         "core": "Core",
-        "allPlusAi": "All + AI",
-        "allPlusCustomAi": "All + Custom AI",
-        "basic": "Basic",
+        "allPlusAi": "すべて + AI",
+        "allPlusCustomAi": "すべて + カスタム AI",
+        "basic": "ベーシック",
         "full": "Full",
-        "fullAnalytics": "Full + Analytics",
-        "community": "Community",
-        "email": "Email",
+        "fullAnalytics": "Full + 分析",
+        "community": "コミュニティ",
+        "email": "メールアドレス",
         "priority": "Priority"
       },
       "aiCredits": {
-        "title": "Need more AI power?",
+        "title": "Need もっと見る AI power?",
         "subtitle": "Purchase additional AI action credits anytime.",
-        "pack100": "100 AI Actions",
+        "pack100": "100 AI アクション",
         "pack100Price": "$5",
-        "pack500": "500 AI Actions",
+        "pack500": "500 AI アクション",
         "pack500Price": "$20",
-        "pack500Save": "Save 20%",
-        "pack2000": "2,000 AI Actions",
+        "pack500Save": "保存 20%",
+        "pack2000": "2,000 AI アクション",
         "pack2000Price": "$60",
-        "pack2000Save": "Save 40%"
+        "pack2000Save": "保存 40%"
       }
     },
     "step2a": {
-      "title": "Basic Information",
-      "subtitle": "Tell us about your company.",
-      "companyName": "Company Name",
+      "title": "ベーシック Information",
+      "subtitle": "Tell us about your 会社.",
+      "companyName": "会社名",
       "companyNamePlaceholder": "e.g. Acme Corp Sdn Bhd",
       "registrationNumber": "Registration Number (SSM/BR)",
       "registrationNumberPlaceholder": "e.g. 202301012345",
       "industry": "Industry",
-      "industryPlaceholder": "Select industry",
+      "industryPlaceholder": "選択 industry",
       "industries": {
         "retail": "Retail",
         "fnb": "F&B",
-        "services": "Services",
+        "services": "サービス",
         "manufacturing": "Manufacturing",
         "technology": "Technology",
         "healthcare": "Healthcare",
-        "education": "Education",
+        "education": "学歴",
         "construction": "Construction",
-        "professional": "Professional Services",
-        "other": "Other"
+        "professional": "プロフェッショナル サービス",
+        "other": "その他"
       },
-      "companySize": "Company Size",
-      "companySizePlaceholder": "Select size",
+      "companySize": "会社 サイズ",
+      "companySizePlaceholder": "選択 サイズ",
       "sizes": {
-        "1-5": "1–5 employees",
-        "6-20": "6–20 employees",
-        "21-50": "21–50 employees",
-        "50+": "50+ employees"
+        "1-5": "1–5 従業員",
+        "6-20": "6–20 従業員",
+        "21-50": "21–50 従業員",
+        "50+": "50+ 従業員"
       },
-      "yearEstablished": "Year Established",
+      "yearEstablished": "年 Established",
       "yearEstablishedPlaceholder": "e.g. 2020"
     },
     "step2b": {
-      "title": "Address & Contact",
-      "subtitle": "Where is your company located?",
-      "addressLine1": "Address Line 1",
-      "addressLine1Placeholder": "Street address",
-      "addressLine2": "Address Line 2",
-      "addressLine2Placeholder": "Suite, unit, floor (optional)",
-      "city": "City",
-      "cityPlaceholder": "City",
-      "stateRegion": "State / Region",
-      "stateRegionPlaceholder": "State or region",
+      "title": "住所 & 連絡先",
+      "subtitle": "Where is your 会社 located?",
+      "addressLine1": "住所 Line 1",
+      "addressLine1Placeholder": "Street 住所",
+      "addressLine2": "住所 Line 2",
+      "addressLine2Placeholder": "Suite, 単位, floor 任意l)",
+      "city": "市区町村",
+      "cityPlaceholder": "市区町村",
+      "stateRegion": "都道府県 / 地域",
+      "stateRegionPlaceholder": "都道府県 or 地域",
       "postalCode": "Postal Code",
       "postalCodePlaceholder": "Postal code",
-      "country": "Country",
-      "countryPlaceholder": "Select country",
+      "country": "国",
+      "countryPlaceholder": "選択 国",
       "countries": {
         "MY": "Malaysia",
         "HK": "Hong Kong",
         "SG": "Singapore",
-        "other": "Other"
+        "other": "その他"
       },
-      "phone": "Business Phone",
+      "phone": "ビジネス 電話番号",
       "phonePlaceholder": "+60 12-345 6789",
-      "email": "Business Email",
+      "email": "ビジネス メールアドレス",
       "emailPlaceholder": "hello@company.com",
-      "website": "Website",
+      "website": "ウェブサイト",
       "websitePlaceholder": "https://company.com"
     },
     "step3": {
-      "title": "Financial Settings",
-      "subtitle": "Configure your accounting defaults.",
-      "defaultCurrency": "Default Currency",
+      "title": "Financial 設定",
+      "subtitle": "設定 your 会計 defaults.",
+      "defaultCurrency": "デフォルト Currency",
       "currencies": {
         "MYR": "MYR — Malaysian Ringgit",
         "HKD": "HKD — Hong Kong Dollar",
         "SGD": "SGD — Singapore Dollar",
         "USD": "USD — US Dollar"
       },
-      "taxRegistrationNumber": "Tax Registration Number",
+      "taxRegistrationNumber": "税金 Registration Number",
       "taxRegistrationNumberPlaceholder": "e.g. MY-12345678",
-      "taxRate": "Tax Rate (%)",
+      "taxRate": "税金 Rate (%)",
       "taxRatePlaceholder": "e.g. 6",
-      "fiscalYearEnd": "Fiscal Year End",
-      "fiscalYearEndPlaceholder": "Select month",
+      "fiscalYearEnd": "Fiscal 年 End",
+      "fiscalYearEndPlaceholder": "選択 月",
       "months": {
         "january": "January",
         "february": "February",
@@ -3099,80 +3099,80 @@
         "november": "November",
         "december": "December"
       },
-      "accountingBasis": "Accounting Basis",
-      "accountingBasisPlaceholder": "Select basis",
+      "accountingBasis": "会計 Basis",
+      "accountingBasisPlaceholder": "選択 basis",
       "bases": {
         "cash": "Cash Basis",
         "accrual": "Accrual Basis"
       }
     },
     "step4": {
-      "title": "Branding & Modules",
+      "title": "Branding & モジュール",
       "subtitle": "Upload your logo and choose which modules to enable.",
-      "companyLogo": "Company Logo",
-      "uploadLogo": "Upload Logo",
-      "coverImage": "Cover / Banner Image",
-      "uploadCover": "Upload Banner",
+      "companyLogo": "会社 Logo",
+      "uploadLogo": "アップロード Logo",
+      "coverImage": "Cover / Banner 画像",
+      "uploadCover": "アップロード Banner",
       "changeImage": "Change",
-      "modules": "Enable Modules",
+      "modules": "Enable モジュール",
       "moduleNames": {
-        "accounting": "Accounting",
-        "hr": "HR & Payroll",
-        "booking": "Booking",
-        "inventory": "Inventory",
+        "accounting": "会計",
+        "hr": "人事 & 給与",
+        "booking": "予約",
+        "inventory": "在庫",
         "pos": "POS",
         "crm": "CRM",
         "procurement": "Procurement"
       },
       "alwaysOn": "Always on",
-      "submit": "Register Company",
+      "submit": "会社を登録",
       "submitting": "Registering...",
-      "success": "Company registered! Redirecting...",
-      "error": "Failed to register. Please try again."
+      "success": "会社 registered! Redirecting...",
+      "error": "登録に失敗しました。もう一度お試しください。"
     },
     "validation": {
-      "required": "This field is required",
-      "companyNameMin": "Company name must be at least 2 characters",
-      "invalidEmail": "Invalid email address",
-      "invalidPhone": "Invalid phone number"
+      "required": "この項目は必須です",
+      "companyNameMin": "会社名は2文字以上である必要があります",
+      "invalidEmail": "無効なメールアドレスです",
+      "invalidPhone": "無効な電話番号です"
     }
   },
   "stripeConnect": {
     "kicker": "Payments",
     "title": "Stripe Connect",
-    "subtitle": "Connect your Stripe account to receive payments from sales on the platform.",
-    "learnMore": "Learn more about Stripe Connect",
+    "subtitle": "プラットフォームでの販売からの支払いを受け取るにはStripeアカウントを接続してください。",
+    "learnMore": "Stripe Connectについて詳しく見る",
     "status": {
-      "active": "Stripe Account Active",
+      "active": "Stripeアカウント有効",
       "activeDesc": "Your Stripe account is fully set up. You can receive payments and payouts.",
-      "pending": "Action Required",
+      "pending": "対応が必要です",
       "pendingDesc": "Your Stripe account setup is not yet complete. Please finish the onboarding process.",
-      "notConnected": "Not Connected",
+      "notConnected": "未接続",
       "notConnectedDesc": "Connect your Stripe account to start receiving payments from your platform sales."
     },
     "capabilities": {
-      "detailsSubmitted": "Account details submitted",
+      "detailsSubmitted": "アカウント 詳細 submitted",
       "chargesEnabled": "Charges enabled — can accept payments",
       "payoutsEnabled": "Payouts enabled — can receive transfers"
     },
     "actions": {
-      "connectStripe": "Connect Stripe Account",
-      "completeOnboarding": "Complete Setup",
-      "openDashboard": "Open Stripe Dashboard",
-      "refresh": "Refresh"
+      "connectStripe": "Stripeアカウントを接続",
+      "completeOnboarding": "セットアップを完了",
+      "openDashboard": "Stripeダッシュボードを開く",
+      "refresh": "更新"
     },
     "howItWorks": {
-      "title": "How It Works",
+      "title": "仕組み",
       "step1": {
-        "title": "1. Connect Your Account",
+        "title": "1. 接続 Your アカウント",
         "desc": "Create or link your Stripe Express account through our secure onboarding flow."
       },
       "step2": {
-        "title": "2. Accept Payments",
+        "title": "2. 承諾 Payments",
         "desc": "Customers pay through our platform checkout. Payments are securely processed by Stripe."
       },
       "step3": {
-        "title": "3. Get Paid",
+        "title": "3. Get 支払い済み",
         "desc": "Funds are automatically transferred to your bank account on a rolling basis."
       }
     }

@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
-import RelativeTime from "@/components/RelativeTime";
 
 type BoardRow = {
   id: string;
@@ -14,6 +13,9 @@ type BoardRow = {
   slug: string | null;
   description: string | null;
   icon: string | null;
+  company_id: string | null;
+  logo_url: string | null;
+  member_count: number | null;
 };
 
 type SubBoardRow = {
@@ -23,30 +25,6 @@ type SubBoardRow = {
   description: string | null;
   sort_order: number | null;
 };
-
-type ProfileRow = {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-};
-
-type PostRow = {
-  id: string;
-  sub_board_id: string;
-  title: string;
-  body: string;
-  reply_count: number | null;
-  last_activity_at: string | null;
-  created_at: string;
-  profiles?: ProfileRow[] | ProfileRow | null;
-};
-
-function normalizeSingle<T>(value: T[] | T | null | undefined): T | null {
-  if (!value) {
-    return null;
-  }
-  return Array.isArray(value) ? value[0] ?? null : value;
-}
 
 function getInitials(name: string) {
   const parts = name
@@ -71,9 +49,7 @@ export default function BoardPage() {
   const t = useTranslations("communityDashboardBoard");
   const [board, setBoard] = useState<BoardRow | null>(null);
   const [subBoards, setSubBoards] = useState<SubBoardRow[]>([]);
-  const [postsBySubBoard, setPostsBySubBoard] = useState<
-    Record<string, PostRow[]>
-  >({});
+  const [postCountsBySubBoard, setPostCountsBySubBoard] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -83,7 +59,7 @@ export default function BoardPage() {
 
     const { data: boardData, error: boardError } = await supabase
       .from("boards")
-      .select("id, name, slug, description, icon")
+      .select("id, name, slug, description, icon, company_id, logo_url, member_count")
       .eq("slug", boardSlug)
       .maybeSingle();
 
@@ -99,30 +75,25 @@ export default function BoardPage() {
       .eq("board_id", boardData.id)
       .order("sort_order", { ascending: true });
 
+    // Get post counts per sub-board
     const subBoardIds = (subBoardData ?? []).map((sub) => sub.id);
+    const counts: Record<string, number> = {};
 
-    const { data: postData } = subBoardIds.length
-      ? await supabase
-          .from("forum_posts")
-          .select(
-            "id, sub_board_id, title, body, reply_count, last_activity_at, created_at, profiles!author_id(id, full_name, avatar_url)"
-          )
-          .in("sub_board_id", subBoardIds)
-          .eq("is_banned", false)
-          .order("last_activity_at", { ascending: false, nullsFirst: false })
-          .limit(30)
-      : { data: [] as PostRow[] };
+    if (subBoardIds.length) {
+      const { data: postData } = await supabase
+        .from("forum_posts")
+        .select("id, sub_board_id")
+        .in("sub_board_id", subBoardIds)
+        .eq("is_banned", false);
 
-    const grouped: Record<string, PostRow[]> = {};
-    (postData ?? []).forEach((post) => {
-      const list = grouped[post.sub_board_id] ?? [];
-      list.push(post);
-      grouped[post.sub_board_id] = list;
-    });
+      (postData ?? []).forEach((post) => {
+        counts[post.sub_board_id] = (counts[post.sub_board_id] ?? 0) + 1;
+      });
+    }
 
     setBoard(boardData);
     setSubBoards(subBoardData ?? []);
-    setPostsBySubBoard(grouped);
+    setPostCountsBySubBoard(counts);
     setIsLoading(false);
   };
 
@@ -148,98 +119,86 @@ export default function BoardPage() {
     );
   }
 
+  const colors = ["#6366F1", "#14B8A6", "#F59E0B", "#3B82F6", "#EF4444", "#10B981", "#8B5CF6", "#EC4899"];
+
   return (
     <div className="space-y-6">
-      <div>
-        <Link
-          href="/dashboard/community"
-          className="app-kicker"
-        >
-          {t("labels.community")}
-        </Link>
-        <h1 className="app-title mt-2 text-2xl font-semibold">
-          <span className="mr-2">{board.icon}</span>
-          {board.name}
-        </h1>
-        <p className="app-subtitle mt-2 text-sm">{board.description}</p>
+      {/* Community header card */}
+      <div className="app-card overflow-hidden">
+        <div className="h-2 bg-indigo-600" />
+        <div className="p-5">
+          <Link
+            href="/dashboard/community"
+            className="app-kicker"
+          >
+            {t("labels.community")}
+          </Link>
+          <div className="flex items-start gap-4 mt-3">
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-600 text-xl font-bold text-white shrink-0">
+              {board.logo_url ? (
+                <img
+                  src={board.logo_url}
+                  alt={board.name ?? ""}
+                  className="h-14 w-14 rounded-xl object-cover"
+                />
+              ) : (
+                board.icon || getInitials(board.name ?? "Community")
+              )}
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">
+                {board.name}
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">{board.description}</p>
+              <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                <span>{t("labels.categories", { count: subBoards.length })}</span>
+                <span>{t("labels.members", { count: board.member_count ?? 0 })}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-6">
-        {subBoards.map((subBoard) => {
-          const posts = postsBySubBoard[subBoard.id] ?? [];
+      {/* Sub-board cards grid — community card view */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {subBoards.map((subBoard, idx) => {
+          const count = postCountsBySubBoard[subBoard.id] ?? 0;
+          const color = colors[(subBoard.sort_order ?? idx) % colors.length];
 
           return (
-            <section
+            <Link
               key={subBoard.id}
-              className="app-card p-5"
+              href={`/dashboard/community/${board.slug}/${subBoard.slug}`}
+              className="app-card block p-0 overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md hover:border-indigo-200"
             >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {subBoard.name}
-                  </h2>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {subBoard.description}
-                  </p>
-                </div>
-                <Link
-                  href={`/dashboard/community/${board.slug}/${subBoard.slug}`}
-                  className="app-secondary-btn px-4 py-2 text-xs font-semibold"
-                >
-                  {t("actions.view")}
-                </Link>
-              </div>
-
-              <div className="mt-4 space-y-3">
-                {posts.length === 0 ? (
-                  <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-sm text-gray-500">
-                    {t("empty.noPosts")}
+              <div
+                className="h-1.5"
+                style={{ backgroundColor: color }}
+              />
+              <div className="p-4">
+                <div className="flex items-start gap-3">
+                  <div
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold text-white shrink-0"
+                    style={{ backgroundColor: color }}
+                  >
+                    {getInitials(subBoard.name ?? "C")}
                   </div>
-                ) : null}
-
-                {posts.slice(0, 3).map((post) => {
-                  const author = normalizeSingle(post.profiles);
-                  const authorName = author?.full_name ?? t("defaults.member");
-                  const initials = getInitials(authorName);
-                  const lastActivity = post.last_activity_at ?? post.created_at;
-
-                  return (
-                    <Link
-                      key={post.id}
-                      href={`/dashboard/community/${board.slug}/${subBoard.slug}/${post.id}`}
-                      className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-indigo-200"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
-                            {initials}
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900">
-                              {post.title}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {authorName}
-                            </p>
-                          </div>
-                        </div>
-                        <RelativeTime
-                          className="text-xs text-gray-400"
-                          date={lastActivity}
-                        />
-                      </div>
-                      <p className="mt-3 text-xs text-gray-500">
-                        {(post.body ?? "").slice(0, 140)}
-                        {post.body && post.body.length > 140 ? "..." : ""}
-                      </p>
-                      <div className="mt-3 text-xs text-gray-400">
-                        {t("labels.replies", { count: post.reply_count ?? 0 })}
-                      </div>
-                    </Link>
-                  );
-                })}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      {subBoard.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      {subBoard.description ?? ""}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+                  <span className="text-[10px] text-gray-400">
+                    {t("labels.posts", { count })}
+                  </span>
+                </div>
               </div>
-            </section>
+            </Link>
           );
         })}
       </div>

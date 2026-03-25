@@ -14,26 +14,16 @@ type BoardRow = {
   description: string | null;
   icon: string | null;
   sort_order: number | null;
+  company_id: string | null;
+  logo_url: string | null;
+  member_count: number | null;
+  is_public: boolean | null;
 };
 
-type BoardLite = {
+type CompanyInfo = {
   id: string;
   name: string | null;
-  slug: string | null;
-  icon: string | null;
-};
-
-type ProfileRow = {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-};
-
-type SubBoardRow = {
-  id: string;
-  name: string | null;
-  slug: string | null;
-  board_id: string | null;
+  logo_url: string | null;
 };
 
 type PostRow = {
@@ -45,9 +35,12 @@ type PostRow = {
   created_at: string;
   author_id: string;
   sub_board_id: string;
-  author?: ProfileRow | null;
-  subBoard?: SubBoardRow | null;
-  board?: BoardLite | null;
+};
+
+type ProfileRow = {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
 };
 
 function getInitials(name: string) {
@@ -67,13 +60,11 @@ function getInitials(name: string) {
 export default function CommunityPage() {
   const supabase = useMemo(() => createClient(), []);
   const t = useTranslations("communityDashboardList");
-  const [boards, setBoards] = useState<BoardRow[]>([]);
-  const [posts, setPosts] = useState<PostRow[]>([]);
+  const [boards, setBoards] = useState<(BoardRow & { company?: CompanyInfo | null })[]>([]);
   const [postCounts, setPostCounts] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [activeBoardIndex, setActiveBoardIndex] = useState(0);
-  const boardSliderRef = useRef<HTMLDivElement>(null);
+  const [filter, setFilter] = useState<"all" | "company" | "public">("all");
 
   const loadBoards = useCallback(async () => {
     setIsLoading(true);
@@ -83,7 +74,7 @@ export default function CommunityPage() {
       await Promise.all([
         supabase
           .from("boards")
-          .select("id, name, slug, description, icon, sort_order")
+          .select("id, name, slug, description, icon, sort_order, company_id, logo_url, member_count, is_public")
           .order("sort_order", { ascending: true }),
         supabase
           .from("forum_posts")
@@ -98,6 +89,23 @@ export default function CommunityPage() {
       return;
     }
 
+    // Get company info for company-scoped boards
+    const companyIds = Array.from(
+      new Set((boardData ?? []).map((b) => b.company_id).filter(Boolean))
+    ) as string[];
+
+    const { data: companyData } = companyIds.length
+      ? await supabase
+          .from("companies")
+          .select("id, name, logo_url")
+          .in("id", companyIds)
+      : { data: [] as CompanyInfo[] };
+
+    const companyMap = new Map(
+      (companyData ?? []).map((c) => [c.id, c])
+    );
+
+    // Count posts per board
     const subBoardIds = Array.from(
       new Set((postData ?? []).map((post) => post.sub_board_id).filter(Boolean))
     );
@@ -116,302 +124,151 @@ export default function CommunityPage() {
     const counts: Record<string, number> = {};
     (postData ?? []).forEach((post) => {
       const boardId = subBoardMap.get(post.sub_board_id) ?? null;
-      if (!boardId) {
-        return;
-      }
+      if (!boardId) return;
       counts[boardId] = (counts[boardId] ?? 0) + 1;
     });
 
-    setBoards(boardData ?? []);
+    const enrichedBoards = (boardData ?? []).map((board) => ({
+      ...board,
+      company: board.company_id ? companyMap.get(board.company_id) ?? null : null,
+    }));
+
+    setBoards(enrichedBoards);
     setPostCounts(counts);
     setIsLoading(false);
   }, [supabase]);
 
-  const loadPosts = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("forum_posts")
-      .select(
-        "id, title, body, reply_count, last_activity_at, created_at, author_id, sub_board_id"
-      )
-      .eq("is_banned", false)
-      .order("last_activity_at", { ascending: false, nullsFirst: false })
-      .order("created_at", { ascending: false })
-      .limit(8);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-
-    const rawPosts = (data ?? []) as PostRow[];
-    const authorIds = Array.from(
-      new Set(rawPosts.map((post) => post.author_id).filter(Boolean))
-    );
-    const subBoardIds = Array.from(
-      new Set(rawPosts.map((post) => post.sub_board_id).filter(Boolean))
-    );
-
-    const [{ data: profileData }, { data: subBoardData }] =
-      await Promise.all([
-        authorIds.length
-          ? supabase
-              .from("profiles")
-              .select("id, full_name, avatar_url")
-              .in("id", authorIds)
-          : Promise.resolve({ data: [] as ProfileRow[] }),
-        subBoardIds.length
-          ? supabase
-              .from("sub_boards")
-              .select("id, name, slug, board_id")
-              .in("id", subBoardIds)
-          : Promise.resolve({ data: [] as SubBoardRow[] }),
-      ]);
-
-    const boardIds = Array.from(
-      new Set((subBoardData ?? []).map((sub) => sub.board_id).filter(Boolean))
-    );
-    const { data: boardData } = boardIds.length
-      ? await supabase
-          .from("boards")
-          .select("id, name, slug, icon")
-          .in("id", boardIds)
-      : { data: [] as BoardLite[] };
-
-    const profileMap = new Map(
-      (profileData ?? []).map((profile) => [profile.id, profile])
-    );
-    const subBoardMap = new Map(
-      (subBoardData ?? []).map((sub) => [sub.id, sub])
-    );
-    const boardMap = new Map(
-      (boardData ?? []).map((board) => [board.id, board])
-    );
-
-    const nextPosts = rawPosts.map((post) => {
-      const subBoard = subBoardMap.get(post.sub_board_id) ?? null;
-      const board = subBoard?.board_id
-        ? boardMap.get(subBoard.board_id) ?? null
-        : null;
-
-      return {
-        ...post,
-        author: profileMap.get(post.author_id) ?? null,
-        subBoard,
-        board,
-      };
-    });
-
-    setPosts(nextPosts);
-  }, [supabase]);
-
   useEffect(() => {
     void loadBoards();
-    void loadPosts();
-  }, [loadBoards, loadPosts]);
-
-  const handleBoardScroll = useCallback(() => {
-    const el = boardSliderRef.current;
-    if (!el) return;
-    const idx = Math.round(el.scrollLeft / el.offsetWidth);
-    setActiveBoardIndex(Math.max(0, Math.min(idx, boards.length - 1)));
-  }, [boards.length]);
-
-  const scrollToBoardSlide = useCallback(
-    (index: number) => {
-      const el = boardSliderRef.current;
-      if (!el) return;
-      const clamped = Math.max(0, Math.min(index, boards.length - 1));
-      el.scrollTo({ left: clamped * el.offsetWidth, behavior: "smooth" });
-      setActiveBoardIndex(clamped);
-    },
-    [boards.length]
-  );
+  }, [loadBoards]);
 
   useEffect(() => {
-    const handleFocus = () => {
-      void loadPosts();
-    };
-
+    const handleFocus = () => void loadBoards();
     const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        void loadPosts();
-      }
+      if (document.visibilityState === "visible") void loadBoards();
     };
-
     window.addEventListener("focus", handleFocus);
     document.addEventListener("visibilitychange", handleVisibility);
-
     return () => {
       window.removeEventListener("focus", handleFocus);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [loadPosts]);
+  }, [loadBoards]);
+
+  const filteredBoards = useMemo(() => {
+    if (filter === "company") return boards.filter((b) => b.company_id);
+    if (filter === "public") return boards.filter((b) => !b.company_id);
+    return boards;
+  }, [boards, filter]);
+
+  const colors = ["#6366F1", "#14B8A6", "#F59E0B", "#3B82F6", "#EF4444", "#10B981", "#8B5CF6", "#EC4899"];
 
   return (
     <div className="space-y-6">
       {/* Filter pills */}
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {["All", "My Boards", "Trending", "New"].map((label, i) => (
-          <span
-            key={label}
-            className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
-              i === 0
+        {[
+          { key: "all" as const, label: t("filters.all") },
+          { key: "company" as const, label: t("filters.company") },
+          { key: "public" as const, label: t("filters.public") },
+        ].map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setFilter(key)}
+            className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition ${
+              filter === key
                 ? "bg-indigo-600 text-white"
-                : "bg-gray-100 text-gray-600"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {label}
-          </span>
+          </button>
         ))}
       </div>
 
       {message ? (
-        <p className="app-error px-3 py-2 text-sm">
-          {message}
-        </p>
+        <p className="app-error px-3 py-2 text-sm">{message}</p>
       ) : null}
 
-      {/* Board cards */}
-      <div>
-        {isLoading ? (
-          <div className="rounded-xl bg-gray-50 p-6 text-sm text-gray-500">
-            {t("states.loading")}
-          </div>
-        ) : null}
-
-        {!isLoading && boards.length > 0 && (
-          <>
-            <div
-              ref={boardSliderRef}
-              onScroll={handleBoardScroll}
-              className="flex snap-x snap-mandatory gap-0 overflow-x-auto scroll-smooth scrollbar-hide"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {boards.map((board) => {
-                const count = postCounts[board.id] ?? 0;
-                const colors = ["#6366F1", "#14B8A6", "#F59E0B", "#3B82F6", "#EF4444", "#10B981"];
-                const color = colors[(board.sort_order ?? 0) % colors.length];
-
-                return (
-                  <div key={board.id} className="w-full flex-shrink-0 snap-center px-0">
-                    <Link
-                      href={`/dashboard/community/${board.slug}`}
-                      className="block rounded-xl bg-gray-50 p-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold text-white"
-                          style={{ backgroundColor: color }}
-                        >
-                          {board.icon || (board.name ?? "B").charAt(0)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold text-gray-800">
-                            {board.name}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {count} {t("labels.posts", { count })} • {board.description ?? ""}
-                          </div>
-                        </div>
-                        <span className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-medium text-white">
-                          Join
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                );
-              })}
-            </div>
-            {boards.length > 1 && (
-              <div className="mt-3 flex justify-center gap-1.5">
-                {boards.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => scrollToBoardSlide(idx)}
-                    className={`h-1.5 rounded-full transition-all ${
-                      idx === activeBoardIndex
-                        ? "w-4 bg-indigo-600"
-                        : "w-1.5 bg-gray-300"
-                    }`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {t("sections.latest")}
-          </h2>
-          <Link
-            href="/community"
-            className="text-xs font-semibold text-indigo-600"
-          >
-            {t("actions.viewPublicFeed")}
-          </Link>
+      {/* Community Cards Grid */}
+      {isLoading ? (
+        <div className="rounded-xl bg-gray-50 p-6 text-sm text-gray-500">
+          {t("states.loading")}
         </div>
-
-        <div className="space-y-3">
-          {posts.length === 0 ? (
-            <div className="app-card p-6 text-center text-sm text-gray-500">
-              {t("empty.noPosts")}
-            </div>
-          ) : null}
-
-          {posts.map((post) => {
-            const authorName = post.author?.full_name ?? t("defaults.member");
-            const initials = getInitials(authorName);
-            const lastActivity = post.last_activity_at ?? post.created_at;
+      ) : filteredBoards.length === 0 ? (
+        <div className="app-card p-6 text-center text-sm text-gray-500">
+          {t("empty.noCommunities")}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {filteredBoards.map((board, idx) => {
+            const count = postCounts[board.id] ?? 0;
+            const color = colors[(board.sort_order ?? idx) % colors.length];
+            const companyName = board.company?.name;
 
             return (
               <Link
-                key={post.id}
-                href={`/dashboard/community/${post.board?.slug}/${post.subBoard?.slug}/${post.id}`}
-                className="app-card block p-4 transition hover:-translate-y-0.5 hover:border-indigo-200"
+                key={board.id}
+                href={`/dashboard/community/${board.slug}`}
+                className="app-card block p-0 overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md hover:border-indigo-200"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
-                      {initials}
+                {/* Card header with color band */}
+                <div
+                  className="h-2"
+                  style={{ backgroundColor: color }}
+                />
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Community avatar */}
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold text-white shrink-0"
+                      style={{ backgroundColor: color }}
+                    >
+                      {board.logo_url ? (
+                        <img
+                          src={board.logo_url}
+                          alt={board.name ?? ""}
+                          className="h-12 w-12 rounded-xl object-cover"
+                        />
+                      ) : (
+                        board.icon || getInitials(board.name ?? "Community")
+                      )}
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {post.title}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {authorName}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-gray-900 truncate">
+                        {board.name}
+                      </h3>
+                      {companyName && (
+                        <p className="text-[10px] text-indigo-600 font-medium mt-0.5">
+                          {companyName}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                        {board.description ?? ""}
                       </p>
                     </div>
                   </div>
-                  <RelativeTime
-                    className="text-xs text-gray-400"
-                    date={lastActivity}
-                  />
-                </div>
-                <p className="mt-3 text-xs text-gray-500">
-                  {(post.body ?? "").slice(0, 140)}
-                  {post.body && post.body.length > 140 ? "..." : ""}
-                </p>
-                <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
-                  <span>
-                    {[post.board?.icon, post.board?.name]
-                      .filter(Boolean)
-                      .join(" ")}
-                    {post.subBoard?.name ? ` • ${post.subBoard.name}` : ""}
-                  </span>
-                  <span>{post.reply_count ?? 0} replies</span>
+
+                  {/* Stats row */}
+                  <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+                    <span className="text-[10px] text-gray-400">
+                      {t("labels.posts", { count })}
+                    </span>
+                    <span className="text-[10px] text-gray-400">
+                      {t("labels.members", { count: board.member_count ?? 0 })}
+                    </span>
+                    {board.is_public === false && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 font-medium ml-auto">
+                        {t("labels.private")}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </Link>
             );
           })}
         </div>
-      </section>
+      )}
     </div>
   );
 }

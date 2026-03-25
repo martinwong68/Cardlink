@@ -1504,7 +1504,10 @@
     },
     "labels": {
       "community": "社区",
-      "replies": "{count} 条回复"
+      "replies": "{count} 条回复",
+      "categories": "{count} 个分类",
+      "members": "{count} 位成员",
+      "posts": "{count} 篇帖子"
     },
     "actions": {
       "view": "查看"
@@ -1610,7 +1613,9 @@
       "loading": "正在加载看板..."
     },
     "labels": {
-      "posts": "{count} 条帖子"
+      "posts": "{count} 条帖子",
+      "members": "{count} 位成员",
+      "private": "私密"
     },
     "sections": {
       "latest": "社区最新动态"
@@ -1622,7 +1627,13 @@
       "member": "CardLink 会员"
     },
     "empty": {
-      "noPosts": "当前暂无帖子。"
+      "noPosts": "当前暂无帖子。",
+      "noCommunities": "未找到社区"
+    },
+    "filters": {
+      "all": "所有社区",
+      "company": "公司",
+      "public": "公开"
     }
   },
   "businessNav": {
@@ -2563,7 +2574,9 @@
       "monthly": "运行每月审计",
       "annual": "运行年度审查"
     },
-    "executionComplete": "执行完成"
+    "executionComplete": "执行完成",
+    "operationHistory": "操作记录",
+    "noOperationHistory": "暂无操作记录"
   },
   "aiPresetCard": {
     "title": "AI 操作计划",
