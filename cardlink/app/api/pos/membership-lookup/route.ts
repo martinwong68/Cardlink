@@ -28,6 +28,7 @@ type MembershipTierRow = {
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL_SEARCH_CHARS_REGEX = /^[a-zA-Z0-9@.+_-]+$/;
+/** Matches a valid card slug: 2-120 chars, alphanumeric plus . _ - */
 const SLUG_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,118}[a-zA-Z0-9]$/;
 
 /**

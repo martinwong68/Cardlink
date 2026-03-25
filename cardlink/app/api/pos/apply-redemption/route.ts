@@ -86,14 +86,18 @@ export async function POST(request: Request) {
 
   if (confirmError) {
     // Fallback: try direct update
-    const { error: updateError } = await supabase
+    const { data: updateData, error: updateError } = await supabase
       .from("offer_redemptions")
       .update({ status: "confirmed", confirmed_at: new Date().toISOString() })
       .eq("id", redemption.id)
-      .eq("status", "pending");
+      .eq("status", "pending")
+      .select("id");
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+    if (!updateData || updateData.length === 0) {
+      return NextResponse.json({ error: "Redemption was already processed or modified." }, { status: 409 });
     }
   }
 

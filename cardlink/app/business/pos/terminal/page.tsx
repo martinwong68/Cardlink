@@ -13,6 +13,9 @@ type MemberOffer = { id: string; title: string; description: string | null; offe
 /** Fallback tax rate when no tax config is defined */
 const DEFAULT_TAX_RATE = 0.08;
 
+/** Points awarded per dollar spent — floor(total) gives 1 point per whole dollar */
+const POINTS_PER_DOLLAR = 1;
+
 export default function PosTerminalPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -61,6 +64,9 @@ export default function PosTerminalPage() {
     discount_type: string | null;
     discount_value: number;
   } | null>(null);
+
+  // Prevent duplicate QR scans
+  const scanProcessingRef = useRef(false);
 
   const headers = { "content-type": "application/json", "x-cardlink-app-scope": "business" };
 
@@ -183,6 +189,8 @@ export default function PosTerminalPage() {
    * - Email: try as email
    */
   const handleQrScan = useCallback(async (text: string) => {
+    if (scanProcessingRef.current) return; // prevent duplicate scans
+    scanProcessingRef.current = true;
     stopScanner();
     const trimmed = text.trim();
 
@@ -192,14 +200,16 @@ export default function PosTerminalPage() {
       const rid = parsed.searchParams.get("rid");
       if (rid) {
         // This is a redemption QR - apply it
-        void applyRedemptionQr(rid);
+        await applyRedemptionQr(rid);
+        scanProcessingRef.current = false;
         return;
       }
     } catch { /* not a URL or no rid param */ }
 
     // Otherwise treat as member lookup (handles /c/{slug}, UUID, email)
     setMemberSearch(trimmed);
-    void lookupMember(trimmed);
+    await lookupMember(trimmed);
+    scanProcessingRef.current = false;
   }, []);
 
   const applyRedemptionQr = async (redemptionId: string) => {
@@ -313,7 +323,7 @@ export default function PosTerminalPage() {
         if (linkedMember && linkedMember.status === "active") {
           const orderJson = await res.json().catch(() => null);
           const orderId = orderJson?.order?.id ?? receiptNumber;
-          pointsAwarded = Math.floor(total); // 1 point per dollar spent
+          pointsAwarded = Math.floor(total * POINTS_PER_DOLLAR);
           void fetch("/api/pos/membership-award", {
             method: "POST",
             headers,

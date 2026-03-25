@@ -172,6 +172,7 @@ export async function POST(request: Request) {
     .eq("company_id", companyId)
     .eq("points_balance", currentPointsBalance)
     .eq("lifetime_points", currentLifetimePoints)
+    .eq("total_spend_amount", currentTotalSpend)
     .select("id");
 
   if (updateError) {
