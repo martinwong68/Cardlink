@@ -127,9 +127,13 @@ export async function PATCH(request: Request) {
     if (body.postal_code !== undefined) profileUpdate.postal_code = body.postal_code?.trim() || null;
     if (body.country !== undefined) profileUpdate.country = body.country?.trim() || null;
 
-    await supabase
+    const { error: profileError } = await supabase
       .from("company_profiles")
       .upsert(profileUpdate, { onConflict: "company_id" });
+
+    if (profileError) {
+      return NextResponse.json({ error: profileError.message }, { status: 400 });
+    }
   }
 
   return NextResponse.json(

@@ -67,16 +67,16 @@ type StoreData = {
 function renderContentBlock(content: unknown): React.ReactNode {
   if (!content) return null;
   if (typeof content === "string") {
-    return <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: content }} />;
+    return <div className="prose max-w-none whitespace-pre-wrap">{content}</div>;
   }
   if (typeof content === "object" && content !== null) {
     const obj = content as Record<string, unknown>;
     // Handle JSON content blocks
     if (obj.body && typeof obj.body === "string") {
-      return <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: obj.body }} />;
+      return <div className="prose max-w-none whitespace-pre-wrap">{obj.body}</div>;
     }
     if (obj.text && typeof obj.text === "string") {
-      return <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: obj.text }} />;
+      return <div className="prose max-w-none whitespace-pre-wrap">{obj.text}</div>;
     }
     // Render as formatted text
     return <pre className="text-sm text-gray-600 whitespace-pre-wrap">{JSON.stringify(content, null, 2)}</pre>;
