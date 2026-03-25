@@ -89,7 +89,7 @@ export default function CommunityPage() {
       return;
     }
 
-    // Get company info for company-scoped boards
+    // Get company info for company-scoped boards (only those with community enabled)
     const companyIds = Array.from(
       new Set((boardData ?? []).map((b) => b.company_id).filter(Boolean))
     ) as string[];
@@ -97,13 +97,26 @@ export default function CommunityPage() {
     const { data: companyData } = companyIds.length
       ? await supabase
           .from("companies")
-          .select("id, name, logo_url")
+          .select("id, name, logo_url, community_enabled, community_visibility")
           .in("id", companyIds)
-      : { data: [] as CompanyInfo[] };
+      : { data: [] as (CompanyInfo & { community_enabled?: boolean; community_visibility?: string })[] };
+
+    // Build a set of company IDs that have community enabled and are publicly visible
+    const enabledCompanyIds = new Set(
+      (companyData ?? [])
+        .filter((c) => c.community_enabled === true)
+        .map((c) => c.id)
+    );
 
     const companyMap = new Map(
       (companyData ?? []).map((c) => [c.id, c])
     );
+
+    // Filter out company-scoped boards whose company hasn't enabled community
+    const visibleBoards = (boardData ?? []).filter((board) => {
+      if (!board.company_id) return true; // global/public boards always visible
+      return enabledCompanyIds.has(board.company_id);
+    });
 
     // Count posts per board
     const subBoardIds = Array.from(
@@ -128,7 +141,7 @@ export default function CommunityPage() {
       counts[boardId] = (counts[boardId] ?? 0) + 1;
     });
 
-    const enrichedBoards = (boardData ?? []).map((board) => ({
+    const enrichedBoards = visibleBoards.map((board) => ({
       ...board,
       company: board.company_id ? companyMap.get(board.company_id) ?? null : null,
     }));

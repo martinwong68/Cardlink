@@ -6,6 +6,7 @@ type Product = { id: string; name: string; sku: string | null; price: number; co
 type CartItem = { productId: string; name: string; price: number; quantity: number; inv_product_id?: string | null };
 type TaxConfig = { id: string; name: string; rate: number; is_default: boolean };
 type Discount = { id: string; name: string; discount_type: "percentage" | "fixed"; value: number; min_order: number; is_active: boolean };
+type MemberAccount = { id: string; user_id: string; email: string | null; full_name: string | null; status: string; tier_name: string | null; points_balance: number };
 
 /** Fallback tax rate when no tax config is defined */
 const DEFAULT_TAX_RATE = 0.08;
@@ -36,6 +37,11 @@ export default function PosTerminalPage() {
 
   // Notes
   const [orderNotes, setOrderNotes] = useState("");
+
+  // Member lookup
+  const [memberSearch, setMemberSearch] = useState("");
+  const [memberLoading, setMemberLoading] = useState(false);
+  const [linkedMember, setLinkedMember] = useState<MemberAccount | null>(null);
 
   const headers = { "content-type": "application/json", "x-cardlink-app-scope": "business" };
 
@@ -92,6 +98,27 @@ export default function PosTerminalPage() {
   const cashTenderedNum = Number(cashTendered) || 0;
   const cashChange = payMethod === "cash" && cashTenderedNum > 0 ? cashTenderedNum - total : 0;
 
+  const lookupMember = async (q: string) => {
+    if (!q.trim()) return;
+    setMemberLoading(true);
+    try {
+      const res = await fetch(`/api/pos/membership-lookup?q=${encodeURIComponent(q.trim())}`, {
+        headers: { "x-cardlink-app-scope": "business" },
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const accts = json.accounts ?? [];
+        if (accts.length > 0) {
+          setLinkedMember(accts[0]);
+          setCustomerName(accts[0].full_name || accts[0].email || "");
+        } else {
+          setLinkedMember(null);
+        }
+      }
+    } catch { /* silent */ } finally { setMemberLoading(false); }
+  };
+
   const addToCart = (p: Product) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.productId === p.id);
@@ -143,12 +170,30 @@ export default function PosTerminalPage() {
         }),
       });
       if (res.ok) {
+        // Award membership points if a member is linked
+        if (linkedMember && linkedMember.status === "active") {
+          const orderJson = await res.json().catch(() => null);
+          const orderId = orderJson?.order?.id ?? receiptNumber;
+          const pointsToAward = Math.floor(total); // 1 point per dollar spent
+          void fetch("/api/pos/membership-award", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              account_id: linkedMember.id,
+              order_id: orderId,
+              amount: total,
+              points: pointsToAward,
+            }),
+          });
+        }
         setOrderComplete({ receiptNumber, total, change: Math.max(0, cashChange) });
         setCart([]);
         setCustomerName("");
         setCashTendered("");
         setOrderNotes("");
         setSelectedDiscountId("");
+        setLinkedMember(null);
+        setMemberSearch("");
       }
     } catch { /* silent */ } finally { setProcessing(false); }
   };
@@ -238,6 +283,31 @@ export default function PosTerminalPage() {
             {/* Customer (optional) */}
             <div className="border-t border-gray-100 pt-2 mt-2">
               <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Customer name (optional)" className="w-full rounded-lg border border-gray-100 px-3 py-1.5 text-xs" />
+            </div>
+
+            {/* Member lookup */}
+            <div className="mt-2 space-y-1">
+              <div className="flex gap-1">
+                <input
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") void lookupMember(memberSearch); }}
+                  placeholder="Member email or scan QR…"
+                  className="flex-1 rounded-lg border border-gray-100 px-3 py-1.5 text-xs"
+                />
+                <button onClick={() => void lookupMember(memberSearch)} disabled={memberLoading} className="rounded-lg bg-indigo-100 px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-200 disabled:opacity-50">
+                  {memberLoading ? "…" : "🔍"}
+                </button>
+              </div>
+              {linkedMember && (
+                <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1.5">
+                  <span className="text-xs font-semibold text-emerald-700">
+                    ✓ {linkedMember.full_name || linkedMember.email} · {linkedMember.points_balance} pts
+                    {linkedMember.tier_name ? ` · ${linkedMember.tier_name}` : ""}
+                  </span>
+                  <button onClick={() => { setLinkedMember(null); setMemberSearch(""); }} className="ml-auto text-xs text-red-500 hover:text-red-700">✕</button>
+                </div>
+              )}
             </div>
 
             {/* Discount selector */}

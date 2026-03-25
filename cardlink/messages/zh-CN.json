@@ -3213,7 +3213,21 @@
     "save": "保存设置",
     "saving": "保存中...",
     "saved": "设置已保存！",
-    "error": "保存设置失败。"
+    "error": "保存设置失败。",
+    "themeSection": "社区主题",
+    "themeHint": "为您的社区设定名称和最多4个子主题进行讨论。",
+    "themeName": "主题名称",
+    "themeNamePlaceholder": "例如：我们的咖啡社区",
+    "themeDescription": "描述",
+    "themeDescriptionPlaceholder": "您的社区关于什么？",
+    "themeIcon": "图标 / 表情符号",
+    "subtopics": "子主题",
+    "addSubtopic": "添加子主题",
+    "subtopicNamePlaceholder": "子主题名称",
+    "subtopicDescPlaceholder": "简短描述（可选）",
+    "noSubtopics": "尚未有子主题。最多可添加4个子主题。",
+    "saveTheme": "保存主题",
+    "themeSaved": "主题已保存！"
   },
   "upgradePrompt": {
     "lockedTitle": "{feature} 已锁定",
@@ -3222,5 +3236,33 @@
     "viewPlans": "查看计划",
     "inlineLabel": "{feature} 需要升级",
     "upgrade": "升级"
+  },
+  "crmMembership": {
+    "title": "会员管理",
+    "subtitle": "查看和管理客户会员、积分和消费。",
+    "activeMembers": "活跃",
+    "totalPoints": "总积分",
+    "totalSpend": "总消费",
+    "empty": "未找到会员账户。",
+    "unknownMember": "未知会员",
+    "pointUnit": "BOBO积分",
+    "spent": "已消费",
+    "joinedAt": "加入日期 {date}"
+  },
+  "posMembership": {
+    "title": "会员查询",
+    "subtitle": "通过邮箱搜索会员或扫描二维码。",
+    "scanQr": "扫描二维码",
+    "stopScan": "停止扫描",
+    "searchPlaceholder": "输入邮箱或用户ID...",
+    "search": "搜索",
+    "noResults": "未找到匹配的会员。",
+    "searchError": "搜索会员失败。",
+    "cameraError": "无法访问相机。",
+    "unknownMember": "未知会员",
+    "points": "BOBO积分",
+    "totalSpend": "总消费",
+    "tier": "等级",
+    "noTier": "无等级"
   }
 }
