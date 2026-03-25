@@ -2271,7 +2271,11 @@
       "deleted": "Product deleted!",
       "error": "Something went wrong. Please try again.",
       "back": "Back",
-      "next": "Next"
+      "next": "Next",
+      "visibilityLabel": "Visibility",
+      "visibilityPublic": "Public (Anyone)",
+      "visibilityAllUsers": "All Users (Logged In)",
+      "visibilityMembersOnly": "Members Only"
     },
     "discounts": {
       "title": "Discounts",
@@ -3176,5 +3180,37 @@
         "desc": "Funds are automatically transferred to your bank account on a rolling basis."
       }
     }
+  },
+  "crmMembers": {
+    "title": "Company Members",
+    "subtitle": "View your team members and their roles.",
+    "totalMembers": "Total",
+    "admins": "Admins",
+    "staff": "Staff",
+    "empty": "No members found.",
+    "unknownMember": "Unknown Member",
+    "joinedAt": "Joined {date}"
+  },
+  "communitySettings": {
+    "title": "Community & Visibility",
+    "subtitle": "Control who can access your community and store.",
+    "communitySection": "Community",
+    "enableCommunity": "Enable Community",
+    "enableCommunityHint": "Allow your company to have a community board.",
+    "communityVisibility": "Community Visibility",
+    "storeSection": "Store Visibility",
+    "storeVisibility": "Store Visibility",
+    "storeVisibilityHint": "Control who can browse and purchase from your store.",
+    "itemVisibilitySection": "Per-Item Visibility",
+    "itemVisibilityHint": "You can also set visibility for individual products in the Store → Products section. Each product can be set to Public, All Users, or Members Only.",
+    "visibility": {
+      "public": "Public",
+      "all_users": "All Users",
+      "members_only": "Members Only"
+    },
+    "save": "Save Settings",
+    "saving": "Saving...",
+    "saved": "Settings saved!",
+    "error": "Failed to save settings."
   }
 }

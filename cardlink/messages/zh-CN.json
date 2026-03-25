@@ -2271,7 +2271,11 @@
       "deleted": "商品已删除！",
       "error": "发生错误，请重试。",
       "back": "返回",
-      "next": "下一步"
+      "next": "下一步",
+      "visibilityLabel": "可见性",
+      "visibilityPublic": "公开（任何人）",
+      "visibilityAllUsers": "所有用户（已登录）",
+      "visibilityMembersOnly": "仅限会员"
     },
     "discounts": {
       "title": "优惠",
@@ -3176,5 +3180,37 @@
         "desc": "资金会自动滚动转入您的银行账户。"
       }
     }
+  },
+  "crmMembers": {
+    "title": "公司成员",
+    "subtitle": "查看团队成员及其角色。",
+    "totalMembers": "总计",
+    "admins": "管理员",
+    "staff": "员工",
+    "empty": "未找到成员。",
+    "unknownMember": "未知成员",
+    "joinedAt": "加入于 {date}"
+  },
+  "communitySettings": {
+    "title": "社区及可见性",
+    "subtitle": "控制谁可以访问您的社区和商店。",
+    "communitySection": "社区",
+    "enableCommunity": "启用社区",
+    "enableCommunityHint": "允许您的公司拥有社区讨论板。",
+    "communityVisibility": "社区可见性",
+    "storeSection": "商店可见性",
+    "storeVisibility": "商店可见性",
+    "storeVisibilityHint": "控制谁可以浏览和从您的商店购买。",
+    "itemVisibilitySection": "单品可见性",
+    "itemVisibilityHint": "您也可以在商店→产品中设置个别产品的可见性。每个产品可设为公开、所有用户或仅限会员。",
+    "visibility": {
+      "public": "公开",
+      "all_users": "所有用户",
+      "members_only": "仅限会员"
+    },
+    "save": "保存设置",
+    "saving": "保存中...",
+    "saved": "设置已保存！",
+    "error": "保存设置失败。"
   }
 }

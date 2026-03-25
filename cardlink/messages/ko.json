@@ -2271,7 +2271,11 @@
       "deleted": "제품 deleted!",
       "error": "Something went wrong. Please try again.",
       "back": "뒤로",
-      "next": "다음"
+      "next": "다음",
+      "visibilityLabel": "공개 범위",
+      "visibilityPublic": "공개 (누구나)",
+      "visibilityAllUsers": "모든 사용자 (로그인)",
+      "visibilityMembersOnly": "멤버 전용"
     },
     "discounts": {
       "title": "Discounts",
@@ -3176,5 +3180,37 @@
         "desc": "Funds are automatically transferred to your bank account on a rolling basis."
       }
     }
+  },
+  "crmMembers": {
+    "title": "회사 멤버",
+    "subtitle": "팀 멤버와 역할을 확인하세요.",
+    "totalMembers": "전체",
+    "admins": "관리자",
+    "staff": "직원",
+    "empty": "멤버를 찾을 수 없습니다.",
+    "unknownMember": "알 수 없는 멤버",
+    "joinedAt": "{date}에 가입"
+  },
+  "communitySettings": {
+    "title": "커뮤니티 및 공개 설정",
+    "subtitle": "커뮤니티와 스토어에 대한 접근 권한을 제어하세요.",
+    "communitySection": "커뮤니티",
+    "enableCommunity": "커뮤니티 활성화",
+    "enableCommunityHint": "회사 커뮤니티 게시판을 활성화합니다.",
+    "communityVisibility": "커뮤니티 공개 범위",
+    "storeSection": "스토어 공개 설정",
+    "storeVisibility": "스토어 공개 범위",
+    "storeVisibilityHint": "스토어를 탐색하고 구매할 수 있는 사용자를 제어합니다.",
+    "itemVisibilitySection": "개별 상품 공개 설정",
+    "itemVisibilityHint": "스토어 → 상품에서 개별 상품의 공개 범위를 설정할 수도 있습니다. 각 상품을 공개, 모든 사용자, 멤버 전용으로 설정할 수 있습니다.",
+    "visibility": {
+      "public": "공개",
+      "all_users": "모든 사용자",
+      "members_only": "멤버 전용"
+    },
+    "save": "설정 저장",
+    "saving": "저장 중...",
+    "saved": "설정이 저장되었습니다!",
+    "error": "설정 저장에 실패했습니다."
   }
 }
