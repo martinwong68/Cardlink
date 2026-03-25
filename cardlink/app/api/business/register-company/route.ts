@@ -262,6 +262,52 @@ export async function POST(request: Request) {
     .update({ business_active_company_id: company.id })
     .eq("id", user.id);
 
+  /* 7. Create default accounting chart of accounts */
+  const DEFAULT_ACCOUNTS = [
+    { code: "1100", name: "Cash / Bank", type: "asset" },
+    { code: "1200", name: "Accounts Receivable", type: "asset" },
+    { code: "1400", name: "Inventory", type: "asset" },
+    { code: "2100", name: "Accounts Payable", type: "liability" },
+    { code: "2200", name: "Payroll Withholdings", type: "liability" },
+    { code: "3000", name: "Owner's Equity", type: "equity" },
+    { code: "3100", name: "Retained Earnings", type: "equity" },
+    { code: "4100", name: "Sales Revenue", type: "revenue" },
+    { code: "4200", name: "Service Revenue", type: "revenue" },
+    { code: "5100", name: "Salary Expense", type: "expense" },
+    { code: "5200", name: "Cost of Goods Sold", type: "expense" },
+    { code: "5300", name: "Inventory Adjustment", type: "expense" },
+    { code: "5400", name: "Rent Expense", type: "expense" },
+    { code: "5500", name: "Utilities Expense", type: "expense" },
+    { code: "5600", name: "Office Supplies", type: "expense" },
+    { code: "5700", name: "Marketing Expense", type: "expense" },
+  ];
+
+  // Ensure organization row exists (accounting module uses org_id = company_id)
+  await admin.from("organizations").upsert(
+    { id: company.id, name: companyName, owner_id: user.id, currency: defaultCurrency },
+    { onConflict: "id" }
+  );
+
+  // Insert default chart of accounts
+  const accountRows = DEFAULT_ACCOUNTS.map((a) => ({
+    org_id: company.id,
+    code: a.code,
+    name: a.name,
+    type: a.type,
+    is_active: true,
+  }));
+  await admin.from("accounts").insert(accountRows).select("id");
+
+  /* 8. Create default approval settings */
+  const approvalModules = ["procurement", "hr", "accounting", "inventory"];
+  const approvalRows = approvalModules.map((m) => ({
+    company_id: company.id,
+    module: m,
+    auto_approve: false,
+    approver_role: "owner",
+  }));
+  await admin.from("approval_settings").insert(approvalRows);
+
   return NextResponse.json(
     {
       contract: "business.register-company.v1",

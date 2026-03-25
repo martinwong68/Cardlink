@@ -82,6 +82,7 @@ export default function BusinessNotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterKey>("all");
   const [userId, setUserId] = useState<string | null>(null);
+  const [expandedNotifId, setExpandedNotifId] = useState<string | null>(null);
   const subscriptionRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
 
   // Get current user
@@ -255,44 +256,101 @@ export default function BusinessNotificationsPage() {
           {notifications.map((notif) => {
             const iconInfo = ICON_MAP[notif.type] ?? ICON_MAP.system;
             const Icon = iconInfo.icon;
+            const isExpanded = expandedNotifId === notif.id;
 
             return (
-              <button
-                key={notif.id}
-                type="button"
-                onClick={() => void markAsRead(notif)}
-                className="app-card w-full flex items-center gap-3 p-4 text-left transition hover:border-indigo-200 hover:-translate-y-0.5"
-              >
-                {/* Icon */}
-                <div
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${iconInfo.bg}`}
+              <div key={notif.id} className="app-card transition hover:border-indigo-200">
+                <button
+                  type="button"
+                  onClick={() => {
+                    void markAsRead(notif);
+                    setExpandedNotifId(isExpanded ? null : notif.id);
+                  }}
+                  className="w-full flex items-center gap-3 p-4 text-left"
                 >
-                  <Icon className={`h-5 w-5 ${iconInfo.color}`} />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p
-                    className={`text-sm truncate ${
-                      notif.is_read ? "font-normal text-gray-700" : "font-semibold text-gray-900"
-                    }`}
+                  {/* Icon */}
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${iconInfo.bg}`}
                   >
-                    {notif.title}
-                  </p>
-                  {notif.body && (
-                    <p className="text-xs text-gray-400 truncate mt-0.5">{notif.body}</p>
-                  )}
-                  <RelativeTime
-                    date={notif.created_at}
-                    className="text-[10px] text-gray-400 mt-0.5"
-                  />
-                </div>
+                    <Icon className={`h-5 w-5 ${iconInfo.color}`} />
+                  </div>
 
-                {/* Unread dot */}
-                {!notif.is_read && (
-                  <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-blue-500" />
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={`text-sm ${
+                        notif.is_read ? "font-normal text-gray-700" : "font-semibold text-gray-900"
+                      }`}
+                    >
+                      {notif.title}
+                    </p>
+                    {notif.body && (
+                      <p className="text-xs text-gray-400 truncate mt-0.5">{notif.body}</p>
+                    )}
+                    <RelativeTime
+                      date={notif.created_at}
+                      className="text-[10px] text-gray-400 mt-0.5"
+                    />
+                  </div>
+
+                  {/* Unread dot + expand indicator */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!notif.is_read && (
+                      <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                    )}
+                    <span className="text-xs text-gray-300">{isExpanded ? "▲" : "▼"}</span>
+                  </div>
+                </button>
+
+                {/* Expanded detail view */}
+                {isExpanded && (
+                  <div className="border-t border-gray-100 px-4 py-3 bg-gray-50/50">
+                    <div className="space-y-2 text-xs">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-gray-400">Type:</span>{" "}
+                          <span className="font-medium capitalize">{notif.type.replace(/_/g, " ")}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Priority:</span>{" "}
+                          <span className={`font-medium capitalize ${
+                            notif.priority === "urgent" ? "text-red-600" : notif.priority === "normal" ? "text-gray-700" : "text-blue-600"
+                          }`}>{notif.priority}</span>
+                        </div>
+                        {notif.related_module && (
+                          <div>
+                            <span className="text-gray-400">Module:</span>{" "}
+                            <span className="font-medium capitalize">{notif.related_module}</span>
+                          </div>
+                        )}
+                      </div>
+                      {notif.body && (
+                        <div>
+                          <span className="text-gray-400">Details:</span>
+                          <p className="mt-1 text-gray-600 whitespace-pre-wrap">{notif.body}</p>
+                        </div>
+                      )}
+                      {notif.metadata && Object.keys(notif.metadata).length > 0 && (
+                        <div>
+                          <span className="text-gray-400">Metadata:</span>
+                          <div className="mt-1 rounded-lg bg-white border border-gray-100 p-2 font-mono text-[10px] text-gray-500 overflow-x-auto">
+                            {JSON.stringify(notif.metadata, null, 2)}
+                          </div>
+                        </div>
+                      )}
+                      {notif.related_module && MODULE_ROUTES[notif.related_module] && (
+                        <button
+                          type="button"
+                          onClick={() => router.push(MODULE_ROUTES[notif.related_module!])}
+                          className="mt-1 text-xs font-medium text-indigo-600 hover:underline"
+                        >
+                          Go to {notif.related_module} →
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 )}
-              </button>
+              </div>
             );
           })}
         </div>

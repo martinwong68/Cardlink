@@ -94,7 +94,7 @@ export default function OwnerModulesPage() {
               {record && (
                 <div className="mt-2 flex gap-2">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${enabled ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>{enabled ? "Active" : "Disabled"}</span>
-                  {record.settings?.integration && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">Integrated</span>}
+                  {Boolean(record.settings?.integration) && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">Integrated</span>}
                 </div>
               )}
             </div>
