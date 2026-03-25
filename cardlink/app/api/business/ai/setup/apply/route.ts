@@ -79,17 +79,21 @@ export async function POST(request: Request) {
       }
 
       case "hr": {
-        tableName = "employees";
-        const rows = fullData.map((row) => ({
-          company_id: companyId,
-          first_name: String(row.first_name ?? row.name?.toString().split(" ")[0] ?? ""),
-          last_name: String(row.last_name ?? row.name?.toString().split(" ").slice(1).join(" ") ?? ""),
-          email: String(row.email ?? ""),
-          phone: String(row.phone ?? row.mobile ?? ""),
-          position: String(row.position ?? row.title ?? row.job_title ?? ""),
-          department: String(row.department ?? row.dept ?? ""),
-          status: "active",
-        }));
+        tableName = "hr_employees";
+        const rows = fullData.map((row) => {
+          const firstName = String(row.first_name ?? row.name?.toString().split(" ")[0] ?? "");
+          const lastName = String(row.last_name ?? row.name?.toString().split(" ").slice(1).join(" ") ?? "");
+          const fullName = String(row.full_name ?? `${firstName} ${lastName}`.trim()) || "Unknown";
+          return {
+            company_id: companyId,
+            full_name: fullName,
+            email: String(row.email ?? "") || null,
+            phone: String(row.phone ?? row.mobile ?? "") || null,
+            position: String(row.position ?? row.title ?? row.job_title ?? "") || null,
+            department: String(row.department ?? row.dept ?? "") || null,
+            status: "active",
+          };
+        });
         const { data, error } = await supabase
           .from(tableName)
           .insert(rows)

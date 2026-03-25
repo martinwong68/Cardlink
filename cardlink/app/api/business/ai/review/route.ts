@@ -184,7 +184,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
 
     // Employee count
     const { count: employeeCount } = await supabase
-      .from("employees")
+      .from("hr_employees")
       .select("id", { count: "exact", head: true })
       .eq("company_id", companyId)
       .eq("status", "active");
@@ -243,7 +243,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
 
     // Employee count
     const { count: empCount } = await supabase
-      .from("employees")
+      .from("hr_employees")
       .select("id", { count: "exact", head: true })
       .eq("company_id", companyId)
       .eq("status", "active");
