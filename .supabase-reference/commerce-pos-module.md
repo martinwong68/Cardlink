@@ -242,6 +242,14 @@
 **FK:** company_id → companies.id
 **Description:** Products listed in the online store.
 
+### Notable Columns
+
+| Column | Type | Default | Notes |
+|--------|------|---------|-------|
+| visibility | text | 'public' | `public`, `all_users`, or `members_only` |
+
+> Full column list varies per migration. The `visibility` column (added in migration 044) controls who can see each product.
+
 ---
 
 ## store_discounts
