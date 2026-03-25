@@ -21,9 +21,30 @@ type Product = {
   max_stock_level: number | null;
   image_url: string | null;
   preferred_supplier_id: string | null;
+  show_in_store: boolean;
+  show_in_pos: boolean;
 };
 
 type Category = { id: string; name: string };
+
+type Variant = {
+  id?: string;
+  variant_name: string;
+  sku: string;
+  attributes: Record<string, string>;
+  price_override: string;
+  cost_override: string;
+  is_active: boolean;
+};
+
+const emptyVariant = (): Variant => ({
+  variant_name: "",
+  sku: "",
+  attributes: {},
+  price_override: "",
+  cost_override: "",
+  is_active: true,
+});
 
 export default function InventoryProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,6 +68,11 @@ export default function InventoryProductsPage() {
   const [reorderLevel, setReorderLevel] = useState("5");
   const [maxStock, setMaxStock] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [showInStore, setShowInStore] = useState(false);
+  const [showInPos, setShowInPos] = useState(false);
+  const [hasVariants, setHasVariants] = useState(false);
+  const [variants, setVariants] = useState<Variant[]>([]);
+  const [variantAttrKey, setVariantAttrKey] = useState("Size");
 
   const load = useCallback(async () => {
     try {
@@ -66,6 +92,8 @@ export default function InventoryProductsPage() {
     setCostPrice("0"); setSellPrice("0"); setBarcode("");
     setCategoryId(""); setProductType("physical");
     setReorderLevel("5"); setMaxStock(""); setIsActive(true);
+    setShowInStore(false); setShowInPos(false);
+    setHasVariants(false); setVariants([]); setVariantAttrKey("Size");
     setEditId(null);
   };
 
@@ -76,7 +104,8 @@ export default function InventoryProductsPage() {
     setSellPrice(String(p.sell_price)); setBarcode(p.barcode ?? "");
     setCategoryId(p.category_id ?? ""); setProductType(p.product_type);
     setReorderLevel(String(p.reorder_level)); setMaxStock(p.max_stock_level ? String(p.max_stock_level) : "");
-    setIsActive(p.is_active); setEditId(p.id); setShowForm(true);
+    setIsActive(p.is_active); setShowInStore(p.show_in_store ?? false); setShowInPos(p.show_in_pos ?? false);
+    setEditId(p.id); setShowForm(true);
   };
 
   const handleSubmit = async () => {
@@ -94,6 +123,8 @@ export default function InventoryProductsPage() {
         reorder_level: Number(reorderLevel) || 5,
         max_stock_level: maxStock ? Number(maxStock) : null,
         is_active: isActive,
+        show_in_store: showInStore,
+        show_in_pos: showInPos,
       };
 
       const url = editId ? `/api/inventory/products/${editId}` : "/api/inventory/products";
@@ -186,6 +217,122 @@ export default function InventoryProductsPage() {
             <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="rounded" />
             Active
           </label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={showInStore}
+                onClick={() => setShowInStore(!showInStore)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
+                  showInStore ? "bg-emerald-500" : "bg-gray-300"
+                }`}
+              >
+                <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+                  showInStore ? "translate-x-6" : "translate-x-1"
+                }`} />
+              </button>
+              Show in Store
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={showInPos}
+                onClick={() => setShowInPos(!showInPos)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
+                  showInPos ? "bg-emerald-500" : "bg-gray-300"
+                }`}
+              >
+                <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+                  showInPos ? "translate-x-6" : "translate-x-1"
+                }`} />
+              </button>
+              Show in POS
+            </label>
+          </div>
+          {/* ── Product Variants Section ── */}
+          <div className="border-t border-gray-100 pt-3 space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={hasVariants}
+                onClick={() => {
+                  const newVal = !hasVariants;
+                  setHasVariants(newVal);
+                  if (newVal && variants.length === 0) setVariants([emptyVariant()]);
+                }}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
+                  hasVariants ? "bg-indigo-500" : "bg-gray-300"
+                }`}
+              >
+                <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+                  hasVariants ? "translate-x-6" : "translate-x-1"
+                }`} />
+              </button>
+              Enable Variants
+            </label>
+            {hasVariants && (
+              <div className="space-y-2 pl-2">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-gray-500">Attribute name:</label>
+                  <input
+                    value={variantAttrKey}
+                    onChange={(e) => setVariantAttrKey(e.target.value)}
+                    placeholder="e.g. Size, Color"
+                    className="rounded-lg border border-gray-200 px-2 py-1 text-xs w-32"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setVariants((prev) => [...prev, emptyVariant()])}
+                    className="text-xs text-indigo-600 font-semibold hover:underline"
+                  >
+                    + Add Variant
+                  </button>
+                </div>
+                {variants.map((v, idx) => (
+                  <div key={idx} className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2">
+                    <input
+                      value={v.variant_name}
+                      onChange={(e) => setVariants((prev) => prev.map((item, i) => i === idx ? { ...item, variant_name: e.target.value } : item))}
+                      placeholder="Variant name (e.g. Small)"
+                      className="flex-1 rounded-lg border border-gray-200 px-2 py-1 text-xs"
+                    />
+                    <input
+                      value={v.sku}
+                      onChange={(e) => setVariants((prev) => prev.map((item, i) => i === idx ? { ...item, sku: e.target.value } : item))}
+                      placeholder="SKU"
+                      className="w-24 rounded-lg border border-gray-200 px-2 py-1 text-xs"
+                    />
+                    <input
+                      type="number"
+                      value={v.price_override}
+                      onChange={(e) => setVariants((prev) => prev.map((item, i) => i === idx ? { ...item, price_override: e.target.value } : item))}
+                      placeholder="Price"
+                      className="w-20 rounded-lg border border-gray-200 px-2 py-1 text-xs"
+                    />
+                    <input
+                      type="number"
+                      value={v.cost_override}
+                      onChange={(e) => setVariants((prev) => prev.map((item, i) => i === idx ? { ...item, cost_override: e.target.value } : item))}
+                      placeholder="Cost"
+                      className="w-20 rounded-lg border border-gray-200 px-2 py-1 text-xs"
+                    />
+                    {variants.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setVariants((prev) => prev.filter((_, i) => i !== idx))}
+                        className="text-xs text-red-400 hover:text-red-600"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex gap-2">
             <button onClick={handleSubmit} disabled={saving} className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
               {saving ? "Saving…" : editId ? "Update" : "Create"}
@@ -211,6 +358,8 @@ export default function InventoryProductsPage() {
                     {p.is_active ? "Active" : "Inactive"}
                   </span>
                   <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600">{p.product_type}</span>
+                  {p.show_in_store && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">Store</span>}
+                  {p.show_in_pos && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-orange-50 text-orange-600">POS</span>}
                 </div>
                 <p className="text-xs text-gray-500 mt-0.5">{p.sku} · {p.unit}{p.barcode ? ` · ${p.barcode}` : ""}</p>
                 {p.description && <p className="text-xs text-gray-400 mt-0.5 truncate">{p.description}</p>}

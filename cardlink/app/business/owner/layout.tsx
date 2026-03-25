@@ -7,6 +7,7 @@ const tabs = [
   { href: "/business/owner", label: "Dashboard" },
   { href: "/business/owner/users", label: "Users" },
   { href: "/business/owner/modules", label: "Modules" },
+  { href: "/business/owner/approval-settings", label: "Approvals" },
   { href: "/business/owner/billing", label: "Billing" },
   { href: "/business/owner/security", label: "Security" },
   { href: "/business/owner/audit", label: "Audit" },

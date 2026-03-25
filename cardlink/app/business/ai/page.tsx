@@ -1046,7 +1046,7 @@ The JSON object must have:
         {/* Sidebar header */}
         <div className="flex items-center justify-between p-3 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-800">
-            {t("conversations")}
+            AI Assistant
           </h2>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -1067,129 +1067,151 @@ The JSON object must have:
           </button>
         </div>
 
-        {/* Conversation list */}
-        <div className="flex-1 overflow-y-auto px-2 pb-2">
-          {loadingConvos ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+        {/* ── Previous AI Actions (Primary Section) ── */}
+        <div className="border-b border-gray-100">
+          <div className="flex items-center justify-between px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <History className="h-3.5 w-3.5 text-indigo-500" />
+              <span className="text-xs font-semibold text-gray-700">
+                {t("operationHistory")}
+              </span>
             </div>
-          ) : conversations.length === 0 ? (
-            <p className="px-3 py-6 text-center text-xs text-gray-400">
-              {t("noConversations")}
-            </p>
-          ) : (
-            conversations.map((convo) => (
-              <div key={convo.id} className="relative group">
-                <button
-                  onClick={() => {
-                    setActiveConvoId(convo.id);
-                    setSidebarOpen(false);
-                  }}
-                  className={`flex w-full items-start gap-2 rounded-xl px-3 py-2.5 text-left transition ${
-                    activeConvoId === convo.id
-                      ? "bg-indigo-50 text-indigo-700"
-                      : "hover:bg-gray-50 text-gray-700"
-                  }`}
+            <span className="text-[10px] font-medium text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded-full">
+              {actionRecords.length}
+            </span>
+          </div>
+          <div className="px-2 pb-2 max-h-64 overflow-y-auto space-y-1">
+            {actionRecords.length === 0 ? (
+              <p className="px-3 py-3 text-center text-[10px] text-gray-400">
+                {t("noOperationHistory")}
+              </p>
+            ) : (
+              actionRecords.map((record) => (
+                <div
+                  key={record.id}
+                  className="rounded-lg bg-gray-50 border border-gray-100 px-3 py-2 hover:bg-gray-100 transition cursor-default"
                 >
-                  <MessageSquare className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gray-400" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium">{convo.title}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] text-gray-400">
-                        {relativeTime(convo.updated_at)}
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    {record.status === "approved" ? (
+                      <CheckCircle className="h-3 w-3 text-green-500 shrink-0" />
+                    ) : record.status === "rejected" ? (
+                      <XCircle className="h-3 w-3 text-red-500 shrink-0" />
+                    ) : (
+                      <Clock className="h-3 w-3 text-amber-500 shrink-0" />
+                    )}
+                    <span className="text-[10px] font-medium text-gray-700 truncate">
+                      {record.title}
+                    </span>
+                  </div>
+                  {record.description && (
+                    <p className="text-[9px] text-gray-400 line-clamp-2 pl-4.5 ml-1">
+                      {record.description.slice(0, 120)}
+                      {record.description.length > 120 ? "..." : ""}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-2 mt-1 pl-4.5 ml-1">
+                    {record.source_module && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium">
+                        {record.source_module}
                       </span>
-                      {convo.message_count > 0 && (
-                        <span className="text-[10px] text-gray-400">
-                          · {convo.message_count}
-                        </span>
-                      )}
-                    </div>
+                    )}
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
+                      record.status === "approved" ? "bg-green-50 text-green-600" :
+                      record.status === "rejected" ? "bg-red-50 text-red-600" :
+                      "bg-amber-50 text-amber-600"
+                    }`}>
+                      {record.status}
+                    </span>
+                    <span className="text-[9px] text-gray-400">
+                      {relativeTime(record.created_at)}
+                    </span>
                   </div>
-                </button>
-
-                {/* Delete button */}
-                {deletingId === convo.id ? (
-                  <div className="absolute right-1 top-1 flex gap-1 bg-white rounded-lg shadow-md p-1">
-                    <button
-                      onClick={() => handleDeleteConvo(convo.id)}
-                      className="text-[10px] text-red-600 px-2 py-1 hover:bg-red-50 rounded"
-                    >
-                      {t("confirmDelete")}
-                    </button>
-                    <button
-                      onClick={() => setDeletingId(null)}
-                      className="text-[10px] text-gray-500 px-2 py-1 hover:bg-gray-50 rounded"
-                    >
-                      {t("cancel")}
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setDeletingId(convo.id)}
-                    className="absolute right-2 top-2 hidden group-hover:flex p-1 rounded hover:bg-gray-200"
-                  >
-                    <Trash2 className="h-3 w-3 text-gray-400" />
-                  </button>
-                )}
-              </div>
-            ))
-          )}
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* ── Operation History Section ── */}
-        <div className="border-t border-gray-100">
+        {/* ── Conversations (Secondary Section, Collapsible) ── */}
+        <div className="border-b border-gray-100">
           <button
             onClick={() => setShowHistory((v) => !v)}
             className="flex w-full items-center justify-between px-3 py-2.5 text-left hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-2">
-              <History className="h-3.5 w-3.5 text-gray-400" />
+              <MessageSquare className="h-3.5 w-3.5 text-gray-400" />
               <span className="text-xs font-semibold text-gray-600">
-                {t("operationHistory")}
+                {t("conversations")}
               </span>
             </div>
             <span className="text-[10px] text-gray-400">
-              {actionRecords.length}
+              {conversations.length} {showHistory ? "▲" : "▼"}
             </span>
           </button>
           {showHistory && (
-            <div className="px-2 pb-2 max-h-48 overflow-y-auto space-y-1">
-              {actionRecords.length === 0 ? (
+            <div className="px-2 pb-2 max-h-48 overflow-y-auto">
+              {loadingConvos ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+                </div>
+              ) : conversations.length === 0 ? (
                 <p className="px-3 py-3 text-center text-[10px] text-gray-400">
-                  {t("noOperationHistory")}
+                  {t("noConversations")}
                 </p>
               ) : (
-                actionRecords.map((record) => (
-                  <div
-                    key={record.id}
-                    className="rounded-lg bg-gray-50 border border-gray-100 px-3 py-2"
-                  >
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      {record.status === "approved" ? (
-                        <CheckCircle className="h-3 w-3 text-green-500 shrink-0" />
-                      ) : (
-                        <Clock className="h-3 w-3 text-amber-500 shrink-0" />
-                      )}
-                      <span className="text-[10px] font-medium text-gray-700 truncate">
-                        {record.title}
-                      </span>
-                    </div>
-                    {record.description && (
-                      <p className="text-[9px] text-gray-400 line-clamp-2 pl-4.5 ml-1">
-                        {record.description.slice(0, 80)}
-                        {record.description.length > 80 ? "..." : ""}
-                      </p>
+                conversations.map((convo) => (
+                  <div key={convo.id} className="relative group">
+                    <button
+                      onClick={() => {
+                        setActiveConvoId(convo.id);
+                        setSidebarOpen(false);
+                      }}
+                      className={`flex w-full items-start gap-2 rounded-xl px-3 py-2.5 text-left transition ${
+                        activeConvoId === convo.id
+                          ? "bg-indigo-50 text-indigo-700"
+                          : "hover:bg-gray-50 text-gray-700"
+                      }`}
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gray-400" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-medium">{convo.title}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] text-gray-400">
+                            {relativeTime(convo.updated_at)}
+                          </span>
+                          {convo.message_count > 0 && (
+                            <span className="text-[10px] text-gray-400">
+                              · {convo.message_count}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+
+                    {/* Delete button */}
+                    {deletingId === convo.id ? (
+                      <div className="absolute right-1 top-1 flex gap-1 bg-white rounded-lg shadow-md p-1">
+                        <button
+                          onClick={() => handleDeleteConvo(convo.id)}
+                          className="text-[10px] text-red-600 px-2 py-1 hover:bg-red-50 rounded"
+                        >
+                          {t("confirmDelete")}
+                        </button>
+                        <button
+                          onClick={() => setDeletingId(null)}
+                          className="text-[10px] text-gray-500 px-2 py-1 hover:bg-gray-50 rounded"
+                        >
+                          {t("cancel")}
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setDeletingId(convo.id)}
+                        className="absolute right-2 top-2 hidden group-hover:flex p-1 rounded hover:bg-gray-200"
+                      >
+                        <Trash2 className="h-3 w-3 text-gray-400" />
+                      </button>
                     )}
-                    <div className="flex items-center gap-2 mt-1 pl-4.5 ml-1">
-                      {record.source_module && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium">
-                          {record.source_module}
-                        </span>
-                      )}
-                      <span className="text-[9px] text-gray-400">
-                        {relativeTime(record.created_at)}
-                      </span>
-                    </div>
                   </div>
                 ))
               )}

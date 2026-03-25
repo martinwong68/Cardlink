@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { createAdminClient } from "@/src/lib/supabase/admin";
 
-const VALID_PLAN_SLUGS = new Set(["free", "professional", "business"]);
+const VALID_PLAN_SLUGS = new Set(["starter", "professional", "business"]);
 const VALID_INDUSTRIES = new Set([
   "retail", "fnb", "services", "manufacturing", "technology",
   "healthcare", "education", "construction", "professional", "other",
@@ -261,6 +261,62 @@ export async function POST(request: Request) {
     .from("profiles")
     .update({ business_active_company_id: company.id })
     .eq("id", user.id);
+
+  /* 7. Create default accounting chart of accounts */
+  const DEFAULT_ACCOUNTS = [
+    { code: "1100", name: "Cash / Bank", type: "asset" },
+    { code: "1200", name: "Accounts Receivable", type: "asset" },
+    { code: "1400", name: "Inventory", type: "asset" },
+    { code: "2100", name: "Accounts Payable", type: "liability" },
+    { code: "2200", name: "Payroll Withholdings", type: "liability" },
+    { code: "3000", name: "Owner's Equity", type: "equity" },
+    { code: "3100", name: "Retained Earnings", type: "equity" },
+    { code: "4100", name: "Sales Revenue", type: "revenue" },
+    { code: "4200", name: "Service Revenue", type: "revenue" },
+    { code: "5100", name: "Salary Expense", type: "expense" },
+    { code: "5200", name: "Cost of Goods Sold", type: "expense" },
+    { code: "5300", name: "Inventory Adjustment", type: "expense" },
+    { code: "5400", name: "Rent Expense", type: "expense" },
+    { code: "5500", name: "Utilities Expense", type: "expense" },
+    { code: "5600", name: "Office Supplies", type: "expense" },
+    { code: "5700", name: "Marketing Expense", type: "expense" },
+  ];
+
+  // Ensure organization row exists (accounting module uses org_id = company_id)
+  const { error: orgError } = await admin.from("organizations").upsert(
+    { id: company.id, name: companyName, owner_id: user.id, currency: defaultCurrency },
+    { onConflict: "id" }
+  );
+
+  if (orgError) {
+    console.error("register-company.org_upsert_failed", orgError);
+  }
+
+  // Insert default chart of accounts (non-blocking, best-effort)
+  const accountRows = DEFAULT_ACCOUNTS.map((a) => ({
+    org_id: company.id,
+    code: a.code,
+    name: a.name,
+    type: a.type,
+    is_active: true,
+  }));
+  const { error: acctError } = await admin.from("accounts").insert(accountRows).select("id");
+  if (acctError) {
+    console.error("register-company.default_accounts_failed", acctError);
+  }
+
+  /* 8. Create default approval settings (non-blocking, best-effort) */
+  const approvalModules = ["procurement", "hr", "accounting", "inventory"];
+  const approvalRows = approvalModules.map((m) => ({
+    company_id: company.id,
+    module: m,
+    auto_approve: false,
+    approver_role: "owner",
+  }));
+  const { error: approvalError } = await admin.from("approval_settings").insert(approvalRows);
+  if (approvalError) {
+    console.error("register-company.default_approvals_failed", approvalError);
+  }
 
   return NextResponse.json(
     {

@@ -136,10 +136,10 @@ BEGIN
    LIMIT 1;
 
   IF v_pro_plan_id IS NULL THEN
-    -- Fallback to free plan
+    -- Fallback to starter plan
     SELECT id INTO v_pro_plan_id
       FROM subscription_plans
-     WHERE slug = 'free' AND is_active = true
+     WHERE slug = 'starter' AND is_active = true
      LIMIT 1;
   END IF;
 
