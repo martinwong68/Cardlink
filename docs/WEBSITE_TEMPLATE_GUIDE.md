@@ -540,10 +540,37 @@ async headers() {
 ## Summary
 
 Your website template needs:
-1. **A new Next.js project** (separate Git repo)
-2. **Two env vars**: `NEXT_PUBLIC_CARDLINK_API_URL` and `NEXT_PUBLIC_COMPANY_ID`
-3. **API client** (`lib/cardlink.ts`) that calls the public API
+1. **A new Next.js project** (separate Git repo) — or use the **ready-made template** in `company-website-template/`
+2. **Environment variables**: `NEXT_PUBLIC_CARDLINK_API_URL`, `NEXT_PUBLIC_COMPANY_ID` (+ optional Supabase keys)
+3. **API client** (`lib/cardlink-api.ts`) that calls the public API
 4. **Dynamic page rendering** based on CMS content
 5. **Contact form** that submits to Cardlink
+6. **Store** with cart (React Context), product grid, and checkout
+7. **Booking** with service selection, date/time picker, and appointment creation
 
 All content is managed from **Cardlink Business Dashboard → Settings → Website**.
+
+### Using the Pre-Built Template
+
+Instead of building from scratch, you can use the pre-built template:
+
+```bash
+cp -r company-website-template my-company-website
+cd my-company-website
+./setup.sh     # Interactive setup wizard
+npm run dev    # Start development server
+```
+
+The template includes:
+- Homepage with CMS content, store preview, and booking preview
+- Dynamic CMS page routes (`/page/[slug]`)
+- Full online store with cart (React Context), checkout, and order confirmation
+- Appointment booking with service → date → time slot → customer info → confirm flow
+- Contact form
+- Blog listing
+- Mobile-responsive layout
+- SEO metadata
+- AI customization prompt (`AI_PROMPT.md`)
+- Health check endpoint (`/api/health`)
+
+See `company-website-template/README.md` for complete documentation.

@@ -202,8 +202,16 @@ Cardlink/
 │   ├── messages/                # i18n translation files (6 locales)
 │   ├── supabase/migrations/     # 56 database migration files
 │   └── public/                  # Static assets
+├── company-website-template/    # Standalone website template (separate repo per company)
+│   ├── src/app/                 # Website pages (home, store, booking, contact, blog)
+│   ├── src/components/          # SiteLayout, ShoppingCart, BookingWidget, ContactForm
+│   ├── src/lib/                 # API client, cart context, Supabase client
+│   ├── setup.sh                 # Interactive setup wizard
+│   ├── AI_PROMPT.md             # AI customization prompt
+│   └── README.md                # Template documentation
 ├── docs/                        # Documentation
 │   ├── APP_GUIDE.md             # Application guide
+│   ├── WEBSITE_TEMPLATE_GUIDE.md # Website template guide
 │   ├── UAT_CHECKLIST.md         # UAT testing checklist
 │   ├── DATABASE_SCHEMA.md       # Database schema
 │   └── contracts/               # Module contracts

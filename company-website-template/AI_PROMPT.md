@@ -36,6 +36,7 @@ company-website-template/
 │   │   └── BookingWidget.tsx   # Service selection, date/time picker
 │   └── lib/
 │       ├── cardlink-api.ts     # All API calls to Cardlink
+│       ├── cart-context.tsx     # React Context for shopping cart state
 │       └── supabase.ts         # Direct Supabase client (optional)
 ├── .env.example                # Environment variables template
 ├── package.json
@@ -130,7 +131,7 @@ When customizing this template, you should:
 
 2. **Layout**: Customize `SiteLayout.tsx` for header/footer design. The nav is built from either `website_nav_items` or pages with `show_in_nav: true`.
 
-3. **Store**: The `ShoppingCart.tsx` component handles cart state and checkout. `StoreGrid.tsx` renders products with "Add to Cart" buttons that call `window.__cartAddItem`.
+3. **Store**: Cart state is managed via React Context (`CartProvider` in `cart-context.tsx`). `StoreGrid.tsx` uses `useCart()` to get `addItem`. `ShoppingCart.tsx` uses `useCart()` for items, quantities, and checkout. Both are wrapped in `<CartProvider>` on the store page.
 
 4. **Booking**: `BookingWidget.tsx` handles the full flow: service → date → time → customer info → confirm.
 
