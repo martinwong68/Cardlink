@@ -1,6 +1,7 @@
 "use client";
 
 import type { StoreProduct } from "@/lib/cardlink-api";
+import { useCart } from "@/lib/cart-context";
 
 type Props = {
   products: StoreProduct[];
@@ -8,11 +9,7 @@ type Props = {
 };
 
 export default function StoreGrid({ products, primaryColor }: Props) {
-  const addToCart = (product: StoreProduct) => {
-    // Call the globally registered cart function
-    const fn = (window as unknown as Record<string, unknown>).__cartAddItem;
-    if (typeof fn === "function") fn(product);
-  };
+  const { addItem } = useCart();
 
   if (products.length === 0) {
     return (
@@ -47,7 +44,7 @@ export default function StoreGrid({ products, primaryColor }: Props) {
                 )}
               </div>
               <button
-                onClick={() => addToCart(product)}
+                onClick={() => addItem(product)}
                 className="rounded-lg px-3 py-1.5 text-xs font-medium text-white transition hover:opacity-90"
                 style={{ backgroundColor: primaryColor }}
               >

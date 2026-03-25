@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { fetchSiteData, fetchStoreData, fetchBookingServices } from "@/lib/cardlink-api";
+import { CartProvider } from "@/lib/cart-context";
 import SiteLayout from "@/components/SiteLayout";
 import ShoppingCart from "@/components/ShoppingCart";
 import StoreGrid from "./StoreGrid";
@@ -32,6 +33,7 @@ export default async function StorePage() {
 
   return (
     <SiteLayout settings={settings} navigation={navigation} pages={pages} hasStore={true} hasBooking={bookingData.services.length > 0}>
+      <CartProvider>
       {/* Banner */}
       {storeData.store.banner_url && (
         <div className="relative h-48 sm:h-64 bg-gray-100">
@@ -68,6 +70,7 @@ export default async function StorePage() {
       </div>
 
       <ShoppingCart primaryColor={primaryColor} />
+      </CartProvider>
     </SiteLayout>
   );
 }

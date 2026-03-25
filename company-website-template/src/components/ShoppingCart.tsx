@@ -1,44 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type { StoreProduct, CheckoutPayload } from "@/lib/cardlink-api";
+import type { CheckoutPayload } from "@/lib/cardlink-api";
 import { submitCheckout } from "@/lib/cardlink-api";
-
-type CartItem = {
-  product: StoreProduct;
-  qty: number;
-};
+import { useCart } from "@/lib/cart-context";
 
 export default function ShoppingCart({ primaryColor }: { primaryColor: string }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const { items, removeItem, updateQty, clearCart, totalItems, subtotal } = useCart();
   const [open, setOpen] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
   const [orderResult, setOrderResult] = useState<{ order_number?: string; total?: number } | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
-
-  const addItem = (product: StoreProduct) => {
-    setItems((prev) => {
-      const idx = prev.findIndex((i) => i.product.id === product.id);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = { ...next[idx], qty: next[idx].qty + 1 };
-        return next;
-      }
-      return [...prev, { product, qty: 1 }];
-    });
-    setOpen(true);
-  };
-
-  const removeItem = (productId: string) => {
-    setItems((prev) => prev.filter((i) => i.product.id !== productId));
-  };
-
-  const updateQty = (productId: string, qty: number) => {
-    if (qty < 1) return removeItem(productId);
-    setItems((prev) => prev.map((i) => (i.product.id === productId ? { ...i, qty } : i)));
-  };
-
-  const subtotal = items.reduce((s, i) => s + Number(i.product.price) * i.qty, 0);
 
   const handleCheckout = async () => {
     if (items.length === 0 || !form.name) return;
@@ -52,17 +24,10 @@ export default function ShoppingCart({ primaryColor }: { primaryColor: string })
     const result = await submitCheckout(payload);
     if (result.order) {
       setOrderResult(result.order);
-      setItems([]);
+      clearCart();
     }
     setCheckingOut(false);
   };
-
-  // Expose addItem globally so store page can call it
-  if (typeof window !== "undefined") {
-    (window as unknown as Record<string, unknown>).__cartAddItem = addItem;
-  }
-
-  const totalItems = items.reduce((s, i) => s + i.qty, 0);
 
   return (
     <>

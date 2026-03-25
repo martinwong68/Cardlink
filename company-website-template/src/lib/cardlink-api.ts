@@ -196,10 +196,18 @@ export type BookingSlot = {
   end: string;
 };
 
+const DEFAULT_BOOKING_SETTINGS: BookingSettings = {
+  booking_page_title: null,
+  booking_page_description: null,
+  require_phone: false,
+  require_email: true,
+  timezone: "UTC",
+};
+
 /** Fetch active booking services. */
 export async function fetchBookingServices(): Promise<{ services: BookingService[]; settings: BookingSettings }> {
   const res = await fetch(apiUrl("/api/public/booking/services"), { next: { revalidate: 60 } });
-  if (!res.ok) return { services: [], settings: { booking_page_title: null, booking_page_description: null, require_phone: false, require_email: true, timezone: "UTC" } };
+  if (!res.ok) return { services: [], settings: DEFAULT_BOOKING_SETTINGS };
   return res.json();
 }
 
