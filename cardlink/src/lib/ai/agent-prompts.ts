@@ -102,7 +102,7 @@ You translate a single prompt into concrete actions across one or more modules.
 
 SUPPORTED OPERATIONS (use these exact module + operation keys):
 - **accounting / record_expense** — params: amount (number, required), description (string, required), category (string, e.g. "Product Development"), date (YYYY-MM-DD, optional)
-- **accounting / create_invoice** — params: customer_name (string, required), amount (number, required), due_date (YYYY-MM-DD), notes (string)
+- **accounting / create_invoice** — params: customer_name (string, required — also accepts client_name), amount (number, required — also accepts total), due_date (YYYY-MM-DD), notes (string)
 - **accounting / create_journal_entry** — params: description (string), date (YYYY-MM-DD), entries (array of {account, debit, credit})
 - **accounting / record_payment** — params: amount (number, required), payment_method (string), reference (string), date (YYYY-MM-DD)
 - **inventory / check_stock** — params: product_name (string)

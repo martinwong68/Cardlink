@@ -42,6 +42,7 @@ type StepResult = {
 const MAX_AMOUNT = 999_999_999_999.99;
 const MAX_TEXT_LENGTH = 2000;
 const MAX_STEPS_PER_REQUEST = 20;
+const MAX_JOURNAL_ENTRY_LINES = 50;
 
 function sanitizeText(value: unknown, maxLen = MAX_TEXT_LENGTH): string {
   const s = String(value ?? "");
@@ -92,17 +93,20 @@ async function ensureOrgExists(
 }
 
 /**
- * Find an expense account for the given category, or create one if missing.
+ * Find an account for the given name/category and type, or create one if missing.
  * Returns the account id.
  */
-async function ensureExpenseAccount(
+async function ensureAccount(
   supabase: ReturnType<typeof createAdminClient>,
   orgId: string,
   category: string,
+  accountType: "asset" | "liability" | "equity" | "revenue" | "expense" = "expense",
 ): Promise<string> {
+  const prefix = accountType.slice(0, 3).toUpperCase(); // EXP, REV, ASS, LIA, EQU
   const normalised = sanitizeText(category, 100).toLowerCase().replace(/[^a-z0-9 _-]/g, "");
-  const accountCode = `EXP-${normalised.replace(/\s+/g, "-").slice(0, 20)}`;
-  const accountName = category.slice(0, 100) || "General Expenses";
+  const slug = normalised.replace(/\s+/g, "-").slice(0, 20) || "general";
+  const accountCode = `${prefix}-${slug}`;
+  const accountName = category.slice(0, 100) || `General ${accountType.charAt(0).toUpperCase() + accountType.slice(1)}`;
 
   // Try to find existing account by code
   const { data: existing } = await supabase
@@ -121,7 +125,7 @@ async function ensureExpenseAccount(
       org_id: orgId,
       code: accountCode,
       name: accountName,
-      type: "expense",
+      type: accountType,
       is_active: true,
     })
     .select("id")
@@ -271,7 +275,7 @@ async function executeAccountingStep(
         : new Date().toISOString().slice(0, 10);
 
       // Ensure the expense account exists for this category
-      const accountId = await ensureExpenseAccount(supabase, companyId, category);
+      const accountId = await ensureAccount(supabase, companyId, category, "expense");
 
       // Insert the transaction with org_id (accounting schema FK)
       const { data: txn, error: txnError } = await supabase
@@ -346,13 +350,17 @@ async function executeAccountingStep(
       const entries = Array.isArray(params.entries) ? params.entries : [];
       if (entries.length > 0) {
         const lines = [];
-        for (const entry of entries.slice(0, 50)) {
-          const e = entry as { account?: string; debit?: number; credit?: number };
+        for (const entry of entries.slice(0, MAX_JOURNAL_ENTRY_LINES)) {
+          const e = entry as { account?: string; debit?: number; credit?: number; type?: string };
           const accountName = sanitizeText(e.account, 100);
           if (!accountName) continue;
 
-          // Find or create the referenced account
-          const accountId = await ensureExpenseAccount(supabase, companyId, accountName);
+          // Determine account type from the entry or default to expense
+          const entryType = (e.type === "asset" || e.type === "liability" || e.type === "equity" || e.type === "revenue")
+            ? e.type as "asset" | "liability" | "equity" | "revenue"
+            : "expense";
+
+          const accountId = await ensureAccount(supabase, companyId, accountName, entryType);
           lines.push({
             transaction_id: txn.id,
             account_id: accountId,
@@ -440,12 +448,12 @@ async function executeInventoryStep(
       const name = sanitizeText(params.name ?? params.product_name, 200);
       if (!name) throw new Error("Product name is required.");
 
-      // Check if product already exists
+      // Check if product already exists (exact match, case insensitive)
       const { data: existing } = await supabase
         .from("inventory_products")
         .select("id")
         .eq("company_id", companyId)
-        .ilike("name", name)
+        .ilike("name", name.replace(/%/g, "\\%"))
         .limit(1)
         .maybeSingle();
       if (existing) throw new Error(`Product "${name}" already exists.`);
