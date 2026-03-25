@@ -1,6 +1,7 @@
 # Core Identity Module
 
 > Auto-generated from Supabase database on 2025-07-21
+> Updated 2026-03-25 with Stripe Connect and visibility columns
 > 3 tables | All verified ✅ in live DB
 
 ---
@@ -86,7 +87,7 @@
 **Status:** ✅ Exists (5 rows)
 **Description:** Central company/business entity. Hub for all B2B modules — every module references this via `company_id`.
 
-### Columns (35)
+### Columns (35+)
 
 | Column | Type | Default | Notes |
 |--------|------|---------|-------|
@@ -123,6 +124,13 @@
 | default_currency | text | 'USD' | |
 | timezone | text | 'UTC' | |
 | onboarding_completed | boolean | false | |
+| stripe_connect_account_id | text | — | Stripe Connect Express account ID |
+| stripe_connect_onboarding_complete | boolean | — | Connect onboarding status |
+| stripe_connect_charges_enabled | boolean | — | Can receive payments |
+| stripe_connect_payouts_enabled | boolean | — | Can receive payouts |
+| community_enabled | boolean | false | Enable company community |
+| community_visibility | text | 'public' | `public`, `all_users`, or `members_only` |
+| store_visibility | text | 'public' | `public`, `all_users`, or `members_only` |
 | created_at | timestamptz | now() | |
 | updated_at | timestamptz | now() | |
 

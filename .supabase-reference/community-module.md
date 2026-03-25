@@ -1,6 +1,7 @@
 # Community & Social Module
 
 > Auto-generated from Supabase database on 2025-07-21
+> Updated 2026-03-25 with company-scope and visibility columns
 > 6 tables | All verified ✅ in live DB
 
 ---
@@ -19,9 +20,9 @@
 ## boards
 
 **Status:** ✅ Exists (5 rows)
-**Description:** Top-level forum categories.
+**Description:** Top-level forum categories. Supports company-scoped communities.
 
-### Columns (7)
+### Columns (12)
 
 | Column | Type | Default | Notes |
 |--------|------|---------|-------|
@@ -31,7 +32,25 @@
 | description | text | | |
 | icon | text | | |
 | sort_order | int | | |
+| company_id | uuid | NULL | FK → companies.id (NULL = global/public board) |
+| logo_url | text | | Company community logo |
+| member_count | int | | Cached member count |
+| is_public | boolean | | Legacy public flag |
+| visibility | text | 'public' | `public`, `all_users`, or `members_only` |
 | created_at | timestamptz | now() | |
+
+### Company Scope
+
+- `company_id = NULL` → global/public board (visible to all)
+- `company_id = <uuid>` → company-scoped board (visibility controlled by `visibility` column)
+
+### Visibility Values
+
+| Value | Who Can See |
+|-------|-------------|
+| `public` | Anyone (no login required) |
+| `all_users` | Any logged-in user |
+| `members_only` | Only company members |
 
 ### Referenced By
 

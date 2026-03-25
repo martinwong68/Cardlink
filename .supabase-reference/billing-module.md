@@ -1,7 +1,8 @@
 # Billing & Subscriptions Module
 
 > Auto-generated from Supabase database on 2025-07-21
-> 6 tables | All verified ✅ in live DB
+> Updated 2026-03-25 with complete column definitions and RPC functions
+> 6 tables + 2 RPC functions | All verified ✅ in live DB
 
 ---
 
@@ -130,7 +131,45 @@
 ## billing_history
 
 **Status:** ✅ Exists (0 rows)
-**Description:** Billing history records for display.
+**Description:** Billing history records for company charges (subscriptions, credits, add-ons).
+
+### Columns (7)
+
+| Column | Type | Default | Notes |
+|--------|------|---------|-------|
+| id | uuid PK | gen_random_uuid() | |
+| company_id | uuid | | FK → companies.id (ON DELETE CASCADE) |
+| description | text | | Charge description |
+| amount | numeric | | Charge amount |
+| currency | text | 'USD' | Currency code |
+| type | text | | `subscription`, `credits`, or `addon` |
+| created_at | timestamptz | now() | |
+
+### Constraints
+
+- `type IN ('subscription','credits','addon')` — Enforced by CHECK constraint
+
+### RLS
+
+- **SELECT:** Users can read billing for companies they belong to (`company_id IN (SELECT company_id FROM company_members WHERE user_id = auth.uid())`)
+
+---
+
+## RPC Functions
+
+### increment_ai_actions_used(p_company_id uuid)
+
+**Returns:** void
+**Security:** DEFINER (runs with owner privileges)
+
+Atomically increments the AI usage counter for a company. If the monthly limit is exceeded, automatically deducts from purchased credit packs (oldest first from `ai_credits` table).
+
+### recompute_profile_premium(p_user_id uuid)
+
+**Returns:** void
+**Security:** DEFINER (runs with owner privileges)
+
+Recomputes the `plan` and `premium_until` fields on `profiles` based on the user's Stripe subscription status. Sets plan to `premium` if subscription is active/trialing/past_due with a valid period end, otherwise resets to `free`.
 
 ---
 
