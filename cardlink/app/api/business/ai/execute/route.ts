@@ -449,11 +449,13 @@ async function executeInventoryStep(
       if (!name) throw new Error("Product name is required.");
 
       // Check if product already exists (exact match, case insensitive)
+      // Escape ilike special chars: backslash, percent, underscore
+      const escapedName = name.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
       const { data: existing } = await supabase
         .from("inventory_products")
         .select("id")
         .eq("company_id", companyId)
-        .ilike("name", name.replace(/%/g, "\\%"))
+        .ilike("name", escapedName)
         .limit(1)
         .maybeSingle();
       if (existing) throw new Error(`Product "${name}" already exists.`);
