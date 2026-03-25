@@ -38,13 +38,17 @@ export async function POST(request: Request) {
     switch (targetModule) {
       case "inventory": {
         tableName = "inv_products";
-        const rows = fullData.map((row) => ({
-          company_id: companyId,
-          name: String(row.name ?? row.product_name ?? row.item_name ?? ""),
-          sku: String(row.sku ?? row.code ?? row.item_code ?? `SKU-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6)}`),
-          unit: String(row.unit ?? row.uom ?? row.unit_of_measure ?? "pcs"),
-          is_active: true,
-        }));
+        let skuCounter = 0;
+        const rows = fullData.map((row) => {
+          skuCounter++;
+          return {
+            company_id: companyId,
+            name: String(row.name ?? row.product_name ?? row.item_name ?? ""),
+            sku: String(row.sku ?? row.code ?? row.item_code ?? `SKU-${Date.now().toString(36).toUpperCase()}-${skuCounter}`),
+            unit: String(row.unit ?? row.uom ?? row.unit_of_measure ?? "pcs"),
+            is_active: true,
+          };
+        });
         const { data, error } = await supabase
           .from(tableName)
           .insert(rows)

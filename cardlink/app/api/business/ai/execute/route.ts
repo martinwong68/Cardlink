@@ -63,6 +63,13 @@ function escapeIlikePattern(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
 }
 
+/** Generate a short unique identifier (prefix + timestamp + random) */
+function generateUniqueCode(prefix: string): string {
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `${prefix}-${ts}-${rand}`;
+}
+
 /* ── Pre-flight helpers ── */
 
 /**
@@ -322,7 +329,7 @@ async function executeAccountingStep(
       if (!clientName) throw new Error("Customer / client name is required for an invoice.");
 
       const today = new Date().toISOString().slice(0, 10);
-      const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
+      const invoiceNumber = generateUniqueCode("INV");
 
       const { error } = await supabase.from("invoices").insert({
         org_id: companyId,
@@ -406,7 +413,7 @@ async function executeAccountingStep(
       const relatedId = params.related_id ? String(params.related_id) : null;
 
       if (relatedType && relatedId && ["invoice", "vendor_bill"].includes(relatedType)) {
-        const paymentNumber = `PAY-${Date.now().toString(36).toUpperCase()}`;
+        const paymentNumber = generateUniqueCode("PAY");
         const paymentType = relatedType === "invoice" ? "received" : "made";
 
         const { error } = await supabase.from("payments").insert({
@@ -546,7 +553,7 @@ async function executeInventoryStep(
       if (existing) throw new Error(`Product "${name}" already exists.`);
 
       // Generate a SKU if not provided (required NOT NULL)
-      const sku = sanitizeText(params.sku, 100) || `SKU-${Date.now().toString(36).toUpperCase()}`;
+      const sku = sanitizeText(params.sku, 100) || generateUniqueCode("SKU");
 
       const { data: created, error } = await supabase
         .from("inv_products")
@@ -635,7 +642,7 @@ async function executePosStep(
       const taxRate = sanitizeAmount(params.tax_rate ?? 0);
       const subtotal = taxRate > 0 ? +(total / (1 + taxRate)).toFixed(2) : total;
       const tax = +(total - subtotal).toFixed(2);
-      const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}`;
+      const orderNumber = generateUniqueCode("ORD");
 
       const { data: order, error } = await supabase
         .from("pos_orders")
