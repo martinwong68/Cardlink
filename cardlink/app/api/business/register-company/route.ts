@@ -283,12 +283,16 @@ export async function POST(request: Request) {
   ];
 
   // Ensure organization row exists (accounting module uses org_id = company_id)
-  await admin.from("organizations").upsert(
+  const { error: orgError } = await admin.from("organizations").upsert(
     { id: company.id, name: companyName, owner_id: user.id, currency: defaultCurrency },
     { onConflict: "id" }
   );
 
-  // Insert default chart of accounts
+  if (orgError) {
+    console.error("register-company.org_upsert_failed", orgError);
+  }
+
+  // Insert default chart of accounts (non-blocking, best-effort)
   const accountRows = DEFAULT_ACCOUNTS.map((a) => ({
     org_id: company.id,
     code: a.code,
@@ -296,9 +300,12 @@ export async function POST(request: Request) {
     type: a.type,
     is_active: true,
   }));
-  await admin.from("accounts").insert(accountRows).select("id");
+  const { error: acctError } = await admin.from("accounts").insert(accountRows).select("id");
+  if (acctError) {
+    console.error("register-company.default_accounts_failed", acctError);
+  }
 
-  /* 8. Create default approval settings */
+  /* 8. Create default approval settings (non-blocking, best-effort) */
   const approvalModules = ["procurement", "hr", "accounting", "inventory"];
   const approvalRows = approvalModules.map((m) => ({
     company_id: company.id,
@@ -306,7 +313,10 @@ export async function POST(request: Request) {
     auto_approve: false,
     approver_role: "owner",
   }));
-  await admin.from("approval_settings").insert(approvalRows);
+  const { error: approvalError } = await admin.from("approval_settings").insert(approvalRows);
+  if (approvalError) {
+    console.error("register-company.default_approvals_failed", approvalError);
+  }
 
   return NextResponse.json(
     {

@@ -258,7 +258,11 @@ export default function InventoryProductsPage() {
                 type="button"
                 role="switch"
                 aria-checked={hasVariants}
-                onClick={() => { setHasVariants(!hasVariants); if (!hasVariants && variants.length === 0) setVariants([emptyVariant()]); }}
+                onClick={() => {
+                  const newVal = !hasVariants;
+                  setHasVariants(newVal);
+                  if (newVal && variants.length === 0) setVariants([emptyVariant()]);
+                }}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
                   hasVariants ? "bg-indigo-500" : "bg-gray-300"
                 }`}

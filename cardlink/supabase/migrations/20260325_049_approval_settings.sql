@@ -35,8 +35,12 @@ CREATE POLICY "Members can update approval settings" ON approval_settings
 
 -- Insert default approval settings for existing companies
 -- The owner can approve all requests by default
+-- Note: New companies get defaults via register-company API
 INSERT INTO approval_settings (company_id, module, auto_approve, approver_role)
 SELECT c.id, m.module, false, 'owner'
 FROM companies c
 CROSS JOIN (VALUES ('procurement'), ('hr'), ('accounting'), ('inventory')) AS m(module)
+WHERE NOT EXISTS (
+  SELECT 1 FROM approval_settings a WHERE a.company_id = c.id AND a.module = m.module
+)
 ON CONFLICT (company_id, module) DO NOTHING;
