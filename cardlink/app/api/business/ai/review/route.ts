@@ -144,8 +144,7 @@ async function gatherBusinessData(supabase: SupabaseClient, companyId: string, r
       .limit(10);
     sections.push(`LOW STOCK ITEMS: ${lowStock?.length ?? 0}`);
     if (lowStock?.length) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      sections.push(`  Items: ${lowStock.map((i: any) => (i.inv_products as any)?.name ?? "unknown").join(", ")}`);
+      sections.push(`  Items: ${lowStock.map((i: { inv_products: { name: string; sku: string }[] }) => i.inv_products?.[0]?.name ?? "unknown").join(", ")}`);
     }
 
   } else if (reviewType === "monthly") {

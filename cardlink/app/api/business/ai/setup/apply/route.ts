@@ -39,12 +39,13 @@ export async function POST(request: Request) {
       case "inventory": {
         tableName = "inv_products";
         let skuCounter = 0;
+        const batchTimestamp = Date.now().toString(36).toUpperCase();
         const rows = fullData.map((row) => {
           skuCounter++;
           return {
             company_id: companyId,
             name: String(row.name ?? row.product_name ?? row.item_name ?? ""),
-            sku: String(row.sku ?? row.code ?? row.item_code ?? `SKU-${Date.now().toString(36).toUpperCase()}-${skuCounter}`),
+            sku: String(row.sku ?? row.code ?? row.item_code ?? `SKU-${batchTimestamp}-${skuCounter}`),
             unit: String(row.unit ?? row.uom ?? row.unit_of_measure ?? "pcs"),
             is_active: true,
           };
