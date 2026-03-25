@@ -2496,6 +2496,8 @@
     "presetTitle": "你想做什麼？",
     "presetDesc": "選擇下面的操作，填寫詳情，AI 會幫你處理。",
     "selectFile": "點擊選擇檔案",
+    "attachFile": "附加檔案",
+    "attachFileHint": "附加照片、PDF 或文件（可選）",
     "optionalNotes": "附加備註（可選）...",
     "processing": "處理中...",
     "runOperation": "執行操作",

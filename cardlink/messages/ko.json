@@ -2496,6 +2496,8 @@
     "presetTitle": "무엇을 하시겠습니까?",
     "presetDesc": "Select an operation below. Fill in the details and AI will handle the rest.",
     "selectFile": "Click to 선택 a 파일",
+    "attachFile": "파일 첨부",
+    "attachFileHint": "사진, PDF 또는 문서 첨부 (선택 사항)",
     "optionalNotes": "Additional 메모 선택l)...",
     "processing": "처리중...",
     "runOperation": "실행 Operation",

@@ -2496,6 +2496,8 @@
     "presetTitle": "What would you like to do?",
     "presetDesc": "Select an operation below. Fill in the details and AI will handle the rest.",
     "selectFile": "Click to select a file",
+    "attachFile": "Attach File",
+    "attachFileHint": "Attach a photo, PDF, or document (optional)",
     "optionalNotes": "Additional notes (optional)...",
     "processing": "Processing...",
     "runOperation": "Run Operation",

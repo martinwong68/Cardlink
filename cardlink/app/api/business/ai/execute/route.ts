@@ -12,6 +12,10 @@ import { createAdminClient } from "@/src/lib/supabase/admin";
  *
  * Uses service-role (admin) client to bypass RLS and avoid PostgREST
  * schema-cache issues that caused "0 actions completed" errors.
+ *
+ * Pre-validation:
+ * - Ensures dependent records (organization, accounts) exist before inserting.
+ * - Validates data (amounts, string lengths) to prevent DB overflow.
  */
 
 type ActionStep = {
@@ -34,6 +38,123 @@ type StepResult = {
   error?: string;
 };
 
+/* ── Data validation limits ── */
+const MAX_AMOUNT = 999_999_999_999.99;
+const MAX_TEXT_LENGTH = 2000;
+const MAX_STEPS_PER_REQUEST = 20;
+const MAX_JOURNAL_ENTRY_LINES = 50;
+
+const VALID_ACCOUNT_TYPES = ["asset", "liability", "equity", "revenue", "expense"] as const;
+type AccountType = (typeof VALID_ACCOUNT_TYPES)[number];
+
+function sanitizeText(value: unknown, maxLen = MAX_TEXT_LENGTH): string {
+  const s = String(value ?? "");
+  return s.slice(0, maxLen);
+}
+
+function sanitizeAmount(value: unknown): number {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0) return 0;
+  return Math.min(n, MAX_AMOUNT);
+}
+
+/** Escape special characters for PostgreSQL ilike patterns */
+function escapeIlikePattern(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
+/* ── Pre-flight helpers ── */
+
+/**
+ * Ensure the `organizations` row exists for a company.
+ * The accounting module uses organizations.id = companies.id (1:1 overlay).
+ * Without this row, inserts into transactions/invoices with org_id FK will fail.
+ */
+async function ensureOrgExists(
+  supabase: ReturnType<typeof createAdminClient>,
+  companyId: string,
+): Promise<void> {
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("id", companyId)
+    .maybeSingle();
+
+  if (!org) {
+    // Fetch company name to populate the organization record
+    const { data: company } = await supabase
+      .from("companies")
+      .select("name")
+      .eq("id", companyId)
+      .single();
+
+    const { error } = await supabase.from("organizations").insert({
+      id: companyId,
+      name: company?.name ?? "My Business",
+      currency: "USD",
+    });
+    // Ignore duplicate key errors (race condition safe)
+    if (error && !error.message.includes("duplicate key")) {
+      throw new Error(`Failed to initialise accounting organisation: ${error.message}`);
+    }
+  }
+}
+
+/**
+ * Find an account for the given name/category and type, or create one if missing.
+ * Returns the account id.
+ */
+async function ensureAccount(
+  supabase: ReturnType<typeof createAdminClient>,
+  orgId: string,
+  category: string,
+  accountType: AccountType = "expense",
+): Promise<string> {
+  const prefix = accountType.slice(0, 3).toUpperCase(); // EXP, REV, ASS, LIA, EQU
+  const normalised = sanitizeText(category, 100).toLowerCase().replace(/[^a-z0-9 _-]/g, "");
+  const slug = normalised.replace(/\s+/g, "-").slice(0, 20) || "general";
+  const accountCode = `${prefix}-${slug}`;
+  const accountName = category.slice(0, 100) || `General ${accountType.charAt(0).toUpperCase() + accountType.slice(1)}`;
+
+  // Try to find existing account by code
+  const { data: existing } = await supabase
+    .from("accounts")
+    .select("id")
+    .eq("org_id", orgId)
+    .eq("code", accountCode)
+    .maybeSingle();
+
+  if (existing) return existing.id as string;
+
+  // Create the expense account
+  const { data: created, error } = await supabase
+    .from("accounts")
+    .insert({
+      org_id: orgId,
+      code: accountCode,
+      name: accountName,
+      type: accountType,
+      is_active: true,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    // If duplicate key, another request created it — fetch it
+    if (error.message.includes("duplicate key")) {
+      const { data: retry } = await supabase
+        .from("accounts")
+        .select("id")
+        .eq("org_id", orgId)
+        .eq("code", accountCode)
+        .single();
+      if (retry) return retry.id as string;
+    }
+    throw new Error(`Failed to create expense account "${accountName}": ${error.message}`);
+  }
+  return created.id as string;
+}
+
 export async function POST(request: Request) {
   const guard = await requireBusinessActiveCompanyContext({ request });
   if (!guard.ok) return guard.response;
@@ -46,6 +167,13 @@ export async function POST(request: Request) {
 
   if (!body.steps || body.steps.length === 0) {
     return NextResponse.json({ error: "No steps to execute." }, { status: 400 });
+  }
+
+  if (body.steps.length > MAX_STEPS_PER_REQUEST) {
+    return NextResponse.json(
+      { error: `Too many steps (max ${MAX_STEPS_PER_REQUEST}).` },
+      { status: 400 },
+    );
   }
 
   const results: StepResult[] = [];
@@ -68,8 +196,10 @@ export async function POST(request: Request) {
   const { error: historyError } = await supabase.from("ai_action_cards").insert({
     company_id: companyId,
     card_type: "general",
-    title: `Executed ${results.length} action(s)`,
-    description: results.map((r) => `${r.success ? "✓" : "✗"} ${r.label}`).join("\n"),
+    title: sanitizeText(`Executed ${results.length} action(s)`, 200),
+    description: sanitizeText(
+      results.map((r) => `${r.success ? "✓" : "✗"} ${r.label}`).join("\n"),
+    ),
     suggested_data: { steps: body.steps, answers: body.answers, results },
     status: allSuccess ? "approved" : "pending",
     source_module: body.steps[0]?.module ?? "ai",
@@ -136,40 +266,139 @@ async function executeAccountingStep(
   operation: string,
   params: Record<string, unknown>,
 ) {
+  // All accounting operations require the organizations row to exist
+  await ensureOrgExists(supabase, companyId);
+
   switch (operation) {
     case "record_expense": {
-      const { error } = await supabase.from("transactions").insert({
-        company_id: companyId,
-        type: "expense",
-        amount: Number(params.amount ?? 0),
-        description: String(params.description ?? ""),
-        date: params.date ?? new Date().toISOString().slice(0, 10),
-        category: params.category ?? "general",
-        created_by: userId,
-      });
-      if (error) throw new Error(error.message);
+      const amount = sanitizeAmount(params.amount);
+      if (amount <= 0) throw new Error("Expense amount must be greater than zero.");
+
+      const description = sanitizeText(params.description);
+      if (!description) throw new Error("Expense description is required.");
+
+      const category = sanitizeText(params.category || "general", 100);
+      const date = params.date
+        ? String(params.date).slice(0, 10)
+        : new Date().toISOString().slice(0, 10);
+
+      // Ensure the expense account exists for this category
+      const accountId = await ensureAccount(supabase, companyId, category, "expense");
+
+      // Insert the transaction with org_id (accounting schema FK)
+      const { data: txn, error: txnError } = await supabase
+        .from("transactions")
+        .insert({
+          org_id: companyId,
+          description,
+          date,
+          reference_number: sanitizeText(params.reference_number, 100) || null,
+          status: "posted",
+          created_by: userId,
+        })
+        .select("id")
+        .single();
+      if (txnError) throw new Error(txnError.message);
+
+      // Create the transaction line linking to the expense account
+      const { error: lineError } = await supabase
+        .from("transaction_lines")
+        .insert({
+          transaction_id: txn.id,
+          account_id: accountId,
+          debit: amount,
+          credit: 0,
+          description,
+        });
+      if (lineError) throw new Error(lineError.message);
+
       return;
     }
     case "create_invoice": {
+      const amount = sanitizeAmount(params.amount ?? params.total);
+      if (amount <= 0) throw new Error("Invoice amount must be greater than zero.");
+
+      const clientName = sanitizeText(params.customer_name ?? params.customer ?? params.client_name, 200);
+      if (!clientName) throw new Error("Customer / client name is required for an invoice.");
+
       const { error } = await supabase.from("invoices").insert({
-        company_id: companyId,
-        customer_name: String(params.customer_name ?? params.customer ?? ""),
-        amount: Number(params.amount ?? params.total ?? 0),
-        due_date: params.due_date ?? null,
+        org_id: companyId,
+        client_name: clientName,
+        client_email: sanitizeText(params.client_email ?? params.email, 200) || null,
+        total: amount,
+        due_date: params.due_date ? String(params.due_date).slice(0, 10) : null,
         status: "draft",
-        notes: params.notes ?? null,
+        notes: sanitizeText(params.notes, 500) || null,
         created_by: userId,
       });
       if (error) throw new Error(error.message);
       return;
     }
     case "create_journal_entry": {
-      const entries = (params.entries ?? []) as Array<{ account: string; debit: number; credit: number }>;
-      const { error } = await supabase.from("journal_entries").insert({
-        company_id: companyId,
-        description: String(params.description ?? "AI-generated journal entry"),
-        entries,
-        date: params.date ?? new Date().toISOString().slice(0, 10),
+      const description = sanitizeText(params.description || "AI-generated journal entry");
+      const date = params.date
+        ? String(params.date).slice(0, 10)
+        : new Date().toISOString().slice(0, 10);
+
+      // Create the parent transaction
+      const { data: txn, error: txnError } = await supabase
+        .from("transactions")
+        .insert({
+          org_id: companyId,
+          description,
+          date,
+          status: "posted",
+          created_by: userId,
+        })
+        .select("id")
+        .single();
+      if (txnError) throw new Error(txnError.message);
+
+      // Insert transaction lines if provided
+      const entries = Array.isArray(params.entries) ? params.entries : [];
+      if (entries.length > 0) {
+        const lines = [];
+        for (const entry of entries.slice(0, MAX_JOURNAL_ENTRY_LINES)) {
+          const e = entry as { account?: string; debit?: number; credit?: number; type?: string };
+          const accountName = sanitizeText(e.account, 100);
+          if (!accountName) continue;
+
+          // Determine account type from the entry or default to expense
+          const entryType: AccountType = (VALID_ACCOUNT_TYPES as readonly string[]).includes(e.type ?? "")
+            ? (e.type as AccountType)
+            : "expense";
+
+          const accountId = await ensureAccount(supabase, companyId, accountName, entryType);
+          lines.push({
+            transaction_id: txn.id,
+            account_id: accountId,
+            debit: sanitizeAmount(e.debit),
+            credit: sanitizeAmount(e.credit),
+            description: accountName,
+          });
+        }
+        if (lines.length > 0) {
+          const { error: lineError } = await supabase.from("transaction_lines").insert(lines);
+          if (lineError) throw new Error(lineError.message);
+        }
+      }
+      return;
+    }
+    case "record_payment": {
+      const amount = sanitizeAmount(params.amount);
+      if (amount <= 0) throw new Error("Payment amount must be greater than zero.");
+
+      const { error } = await supabase.from("payments").insert({
+        org_id: companyId,
+        amount,
+        payment_date: params.date
+          ? String(params.date).slice(0, 10)
+          : new Date().toISOString().slice(0, 10),
+        payment_method: sanitizeText(params.payment_method || "cash", 50),
+        reference: sanitizeText(params.reference, 200) || null,
+        notes: sanitizeText(params.notes, 500) || null,
+        related_type: sanitizeText(params.related_type, 50) || null,
+        related_id: params.related_id ? String(params.related_id) : null,
         created_by: userId,
       });
       if (error) throw new Error(error.message);
@@ -189,34 +418,62 @@ async function executeInventoryStep(
   switch (operation) {
     case "check_stock": {
       // Read-only — no mutation. Just validate we can find the product.
+      const searchName = sanitizeText(params.product ?? params.product_name, 200);
       const { data, error } = await supabase
         .from("inventory_products")
         .select("id, name, stock_quantity")
         .eq("company_id", companyId)
-        .ilike("name", String(params.product ?? params.product_name ?? ""))
+        .ilike("name", `%${searchName}%`)
         .limit(1)
         .maybeSingle();
       if (error) throw new Error(error.message);
-      if (!data) throw new Error(`Product not found: ${String(params.product ?? params.product_name ?? "")}`);
+      if (!data) throw new Error(`Product not found: ${searchName}`);
       return;
     }
     case "adjust_stock": {
-      // First find the product by name to get its unique ID
-      const productName = String(params.product ?? params.product_name ?? "");
+      const productName = sanitizeText(params.product ?? params.product_name, 200);
+      if (!productName) throw new Error("Product name is required for stock adjustment.");
+
       const { data: product, error: findError } = await supabase
         .from("inventory_products")
         .select("id")
         .eq("company_id", companyId)
-        .ilike("name", productName)
+        .ilike("name", `%${productName}%`)
         .limit(1)
         .maybeSingle();
       if (findError) throw new Error(findError.message);
       if (!product) throw new Error(`Product not found: ${productName}`);
 
+      const qty = sanitizeAmount(params.quantity ?? params.stock_quantity);
       const { error } = await supabase
         .from("inventory_products")
-        .update({ stock_quantity: Number(params.quantity ?? params.stock_quantity ?? 0) })
+        .update({ stock_quantity: qty })
         .eq("id", product.id);
+      if (error) throw new Error(error.message);
+      return;
+    }
+    case "add_product": {
+      const name = sanitizeText(params.name ?? params.product_name, 200);
+      if (!name) throw new Error("Product name is required.");
+
+      // Check if product already exists (exact match, case insensitive)
+      const { data: existing } = await supabase
+        .from("inventory_products")
+        .select("id")
+        .eq("company_id", companyId)
+        .ilike("name", escapeIlikePattern(name))
+        .limit(1)
+        .maybeSingle();
+      if (existing) throw new Error(`Product "${name}" already exists.`);
+
+      const { error } = await supabase.from("inventory_products").insert({
+        company_id: companyId,
+        name,
+        sku: sanitizeText(params.sku, 100) || null,
+        stock_quantity: sanitizeAmount(params.quantity ?? params.stock_quantity),
+        price: sanitizeAmount(params.price ?? params.unit_price),
+        description: sanitizeText(params.description, 500) || null,
+      });
       if (error) throw new Error(error.message);
       return;
     }
@@ -233,23 +490,29 @@ async function executeCrmStep(
 ) {
   switch (operation) {
     case "add_lead": {
+      const name = sanitizeText(params.name ?? params.lead_name, 200);
+      if (!name) throw new Error("Lead name is required.");
+
       const { error } = await supabase.from("crm_leads").insert({
         company_id: companyId,
-        name: String(params.name ?? params.lead_name ?? ""),
-        email: params.email ?? null,
-        phone: params.phone ?? null,
-        source: params.source ?? "ai",
-        status: params.status ?? "new",
+        name,
+        email: sanitizeText(params.email, 200) || null,
+        phone: sanitizeText(params.phone, 50) || null,
+        source: sanitizeText(params.source || "ai", 50),
+        status: sanitizeText(params.status || "new", 50),
       });
       if (error) throw new Error(error.message);
       return;
     }
     case "add_contact": {
+      const name = sanitizeText(params.name, 200);
+      if (!name) throw new Error("Contact name is required.");
+
       const { error } = await supabase.from("crm_contacts").insert({
         company_id: companyId,
-        name: String(params.name ?? ""),
-        email: params.email ?? null,
-        phone: params.phone ?? null,
+        name,
+        email: sanitizeText(params.email, 200) || null,
+        phone: sanitizeText(params.phone, 50) || null,
       });
       if (error) throw new Error(error.message);
       return;
@@ -267,12 +530,15 @@ async function executePosStep(
 ) {
   switch (operation) {
     case "record_sale": {
+      const total = sanitizeAmount(params.amount ?? params.total);
+      if (total <= 0) throw new Error("Sale total must be greater than zero.");
+
       const { error } = await supabase.from("pos_orders").insert({
         company_id: companyId,
-        total: Number(params.amount ?? params.total ?? 0),
-        items: params.items ?? [],
+        total,
+        items: Array.isArray(params.items) ? params.items.slice(0, 100) : [],
         status: "completed",
-        payment_method: params.payment_method ?? "cash",
+        payment_method: sanitizeText(params.payment_method || "cash", 50),
       });
       if (error) throw new Error(error.message);
       return;
@@ -292,8 +558,8 @@ async function executeGenericStep(
   await supabase.from("ai_action_cards").insert({
     company_id: companyId,
     card_type: "general",
-    title: `Pending: ${operation}`,
-    description: `This operation requires manual execution.`,
+    title: sanitizeText(`Pending: ${operation}`, 200),
+    description: "This operation requires manual execution.",
     suggested_data: _params,
     status: "pending",
     source_module: "ai",
