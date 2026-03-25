@@ -2496,6 +2496,8 @@
     "presetTitle": "何をしますか？",
     "presetDesc": "Select an operation below. Fill in the details and AI will handle the rest.",
     "selectFile": "Click to 選択 a ファイル",
+    "attachFile": "ファイルを添付",
+    "attachFileHint": "写真、PDF、または文書を添付（任意）",
     "optionalNotes": "Additional メモ 任意l)...",
     "processing": "処理中...",
     "runOperation": "Run Operation",

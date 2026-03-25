@@ -25,7 +25,6 @@ import {
   Package,
   Users,
   ShoppingCart,
-  FileUp,
   ArrowLeft,
   Loader2,
   History,
@@ -124,30 +123,6 @@ const PRESET_OPERATIONS: PresetOperation[] = [
     ],
   },
   {
-    key: "generateReport",
-    labelKey: "presets.generateReport",
-    descKey: "presets.generateReportDesc",
-    icon: BarChart3,
-    category: "report",
-    fields: [
-      { key: "reportType", labelKey: "fields.reportType", type: "text" },
-      { key: "dateRange", labelKey: "fields.dateRange", type: "text" },
-      { key: "notes", labelKey: "fields.notes", type: "textarea" },
-    ],
-    complex: true,
-  },
-  {
-    key: "checkInventory",
-    labelKey: "presets.checkInventory",
-    descKey: "presets.checkInventoryDesc",
-    icon: Package,
-    category: "inventory",
-    fields: [
-      { key: "productName", labelKey: "fields.productName", type: "text" },
-      { key: "notes", labelKey: "fields.notes", type: "textarea" },
-    ],
-  },
-  {
     key: "createInvoice",
     labelKey: "presets.createInvoice",
     descKey: "presets.createInvoiceDesc",
@@ -174,13 +149,13 @@ const PRESET_OPERATIONS: PresetOperation[] = [
     ],
   },
   {
-    key: "uploadData",
-    labelKey: "presets.uploadData",
-    descKey: "presets.uploadDataDesc",
-    icon: FileUp,
-    category: "setup",
+    key: "checkInventory",
+    labelKey: "presets.checkInventory",
+    descKey: "presets.checkInventoryDesc",
+    icon: Package,
+    category: "inventory",
     fields: [
-      { key: "file", labelKey: "fields.file", type: "file" },
+      { key: "productName", labelKey: "fields.productName", type: "text" },
       { key: "notes", labelKey: "fields.notes", type: "textarea" },
     ],
   },
@@ -195,6 +170,19 @@ const PRESET_OPERATIONS: PresetOperation[] = [
       { key: "email", labelKey: "fields.email", type: "text" },
       { key: "notes", labelKey: "fields.notes", type: "textarea" },
     ],
+  },
+  {
+    key: "generateReport",
+    labelKey: "presets.generateReport",
+    descKey: "presets.generateReportDesc",
+    icon: BarChart3,
+    category: "report",
+    fields: [
+      { key: "reportType", labelKey: "fields.reportType", type: "text" },
+      { key: "dateRange", labelKey: "fields.dateRange", type: "text" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+    complex: true,
   },
   {
     key: "dailyReview",
@@ -563,15 +551,31 @@ export default function BusinessAiPage() {
     const autoModel = selectModelForFile(file.size);
     setModel(autoModel);
 
+    const ext = file.name.toLowerCase().split(".").pop() ?? "";
+    const isText = ["csv", "tsv", "txt", "json", "xml"].includes(ext);
+
     const reader = new FileReader();
     reader.onload = () => {
-      setUploadedFile({
-        name: file.name,
-        content: reader.result as string,
-        size: file.size,
-      });
+      if (isText) {
+        setUploadedFile({
+          name: file.name,
+          content: reader.result as string,
+          size: file.size,
+        });
+      } else {
+        // For binary files (images, PDFs, xlsx) store base64 data-URL
+        setUploadedFile({
+          name: file.name,
+          content: reader.result as string,
+          size: file.size,
+        });
+      }
     };
-    reader.readAsText(file);
+    if (isText) {
+      reader.readAsText(file);
+    } else {
+      reader.readAsDataURL(file);
+    }
 
     // Reset input so the same file can be re-uploaded
     e.target.value = "";
@@ -609,7 +613,30 @@ export default function BusinessAiPage() {
       }
     }
 
-    const prompt = `You are Cardlink AI assistant. The user wants to perform the following operation:
+    // Prepare file context for the prompt
+    let fileContext = "";
+    if (uploadedFile) {
+      const ext = uploadedFile.name.toLowerCase().split(".").pop() ?? "";
+      const isImage = ["png", "jpg", "jpeg", "gif", "webp", "heic"].includes(ext);
+      const isPdf = ext === "pdf";
+      const isBinary = isImage || isPdf || ext === "xlsx";
+
+      if (isBinary) {
+        // For binary files, include metadata and let AI know it's an attachment
+        fileContext = `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB, ${ext.toUpperCase()} format)
+NOTE: This is a ${isImage ? "image" : isPdf ? "PDF document" : "binary"} file. The file data is attached as base64.
+If you can read the content, extract relevant data from it. If you cannot fully read it, mention in the summary what you found or that the file could not be fully processed and suggest the user enter the data manually.
+FILE DATA (base64):
+${uploadedFile.content.slice(0, 15000)}`;
+      } else {
+        // For text files, include the raw content
+        fileContext = `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB)
+FILE CONTENT:
+${uploadedFile.content.slice(0, 15000)}${uploadedFile.content.length > 15000 ? "\n... (truncated)" : ""}`;
+      }
+    }
+
+    const prompt = `You are Cardlink AI assistant. The user wants to perform this operation:
 
 OPERATION: ${activePreset.key}
 CATEGORY: ${activePreset.category}
@@ -617,25 +644,36 @@ CATEGORY: ${activePreset.category}
 USER INPUT:
 ${fieldSummary || "(No additional input provided)"}
 
-${uploadedFile ? `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB)\nFILE CONTENT:\n${uploadedFile.content.slice(0, 10000)}` : ""}
+${fileContext}
 
-You MUST respond with a JSON object wrapped in \`\`\`json ... \`\`\` containing:
-1. "summary" — A short sentence explaining what the user wants to do.
-2. "actions" — An array of action steps to execute. Each step has:
-   - "label": Human-readable description of the step
-   - "module": The business module (accounting, inventory, crm, pos)
-   - "operation": The specific operation (e.g. record_expense, create_invoice, add_lead, adjust_stock, record_sale, check_stock, create_journal_entry, add_contact)
-   - "params": Object with the parameters for the operation (use the user input values)
-3. "questions" — An array of clarification questions (if any info is missing or ambiguous). Each question has:
-   - "id": A unique identifier (e.g. "q1", "q2")
+SUPPORTED OPERATIONS (use ONLY these exact module + operation combinations):
+- module: "accounting", operation: "record_expense" — params: { amount: number (required), description: string (required), category: string (optional, e.g. "Office Supplies"), date: "YYYY-MM-DD" (optional) }
+- module: "accounting", operation: "create_invoice" — params: { customer_name: string (required), amount: number (required), due_date: "YYYY-MM-DD" (optional), notes: string (optional) }
+- module: "accounting", operation: "create_journal_entry" — params: { description: string, date: "YYYY-MM-DD", entries: [{account: string, debit: number, credit: number}] }
+- module: "accounting", operation: "record_payment" — params: { amount: number (required), payment_method: string, reference: string, date: "YYYY-MM-DD" }
+- module: "inventory", operation: "check_stock" — params: { product_name: string }
+- module: "inventory", operation: "adjust_stock" — params: { product_name: string, quantity: number }
+- module: "inventory", operation: "add_product" — params: { name: string (required), sku: string, quantity: number, price: number, description: string }
+- module: "pos", operation: "record_sale" — params: { amount: number (required), items: array, payment_method: string }
+- module: "crm", operation: "add_lead" — params: { name: string (required), email: string, phone: string, source: string }
+- module: "crm", operation: "add_contact" — params: { name: string (required), email: string, phone: string }
+
+You MUST respond with ONLY a JSON object wrapped in \`\`\`json ... \`\`\` code fences. No text before or after.
+
+The JSON object must have:
+1. "summary" — Short sentence describing what will be done. If a file was attached but had issues, mention it here.
+2. "actions" — Array of action steps. Each step:
+   - "label": Human-readable description
+   - "module": One of: accounting, inventory, crm, pos
+   - "operation": One of the exact operation names listed above
+   - "params": Object with parameter values matching the schema above
+3. "questions" — Array of clarification questions (empty array [] if all info is provided). Each:
+   - "id": e.g. "q1"
    - "question": The question text
-   - "options": An array of 2-5 multiple-choice options (best-fit suggestions)
-   - "allowOther": true (always allow the user to type a custom answer)
-   If a question answer should fill a param in an action step, set that param value to "{{question_id}}" as a placeholder.
+   - "options": Array of 2-5 suggested options
+   - "allowOther": true
+   If a question answer should fill a param, set that param to "{{question_id}}".
 
-If all required info is provided, set "questions" to an empty array.
-
-Example response format:
 \`\`\`json
 {
   "summary": "Record a $150 office supply expense",
@@ -644,29 +682,18 @@ Example response format:
       "label": "Record expense of $150 for office supplies",
       "module": "accounting",
       "operation": "record_expense",
-      "params": { "amount": 150, "description": "Office supplies", "category": "{{q1}}" }
+      "params": { "amount": 150, "description": "Office supplies", "category": "Office Supplies" }
     }
   ],
-  "questions": [
-    {
-      "id": "q1",
-      "question": "What expense category should this be filed under?",
-      "options": ["Office Supplies", "Equipment", "General Expenses", "Operating Costs"],
-      "allowOther": true
-    }
-  ]
+  "questions": []
 }
-\`\`\`
-
-IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` code fences. Do not include any text outside the fences.`;
+\`\`\``;
 
     const messages = [{ role: "user" as const, content: prompt }];
 
     // Determine endpoint based on category
-    let apiUrl = "/api/business/ai/chat";
-    if (activePreset.category === "setup") apiUrl = "/api/business/ai/setup";
-    else if (activePreset.category === "review") apiUrl = "/api/business/ai/review";
-    else apiUrl = "/api/business/ai/operations";
+    let apiUrl = "/api/business/ai/operations";
+    if (activePreset.category === "review") apiUrl = "/api/business/ai/review";
 
     // For review category, use the review endpoint format
     if (activePreset.category === "review") {
@@ -688,19 +715,13 @@ IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` 
         setPresetResult(t("aiError"));
       }
     } else {
-      // Use operations or chat endpoint
+      // Use operations endpoint for all non-review presets
       try {
-        const bodyPayload = activePreset.category === "setup"
-          ? {
-              messages,
-              model: selectedModel,
-              ...(uploadedFile ? { fileContent: uploadedFile.content, fileName: uploadedFile.name } : {}),
-            }
-          : {
-              messages,
-              model: selectedModel,
-              includeBusinessContext: true,
-            };
+        const bodyPayload = {
+          messages,
+          model: selectedModel,
+          includeBusinessContext: true,
+        };
 
         const response = await fetch(apiUrl, {
           method: "POST",
@@ -1204,7 +1225,7 @@ IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` 
           <input
             ref={fileInputRef}
             type="file"
-            accept=".csv,.tsv,.txt,.json,.xml,.xlsx,.pdf"
+            accept=".csv,.tsv,.txt,.json,.xml,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp,.heic"
             onChange={handleFileUpload}
             className="hidden"
           />
@@ -1248,34 +1269,7 @@ IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` 
                     <label className="block text-xs font-medium text-gray-700 mb-1">
                       {t(field.labelKey)}
                     </label>
-                    {field.type === "file" ? (
-                      <div>
-                        <button
-                          onClick={() => fileInputRef.current?.click()}
-                          className="flex items-center gap-2 px-4 py-3 w-full rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition text-sm text-gray-500"
-                        >
-                          <FileUp className="h-4 w-4 text-indigo-500" />
-                          {uploadedFile ? uploadedFile.name : t("selectFile")}
-                        </button>
-                        {uploadedFile && (
-                          <div className="flex items-center gap-2 mt-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
-                            <FileText className="h-3.5 w-3.5" />
-                            <span className="truncate flex-1">
-                              {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
-                            </span>
-                            <span className="text-[10px] text-indigo-500">
-                              → {MODEL_OPTIONS.find((m) => m.value === model)?.label}
-                            </span>
-                            <button
-                              onClick={handleClearUploadedFile}
-                              className="p-0.5 hover:bg-indigo-100 rounded"
-                            >
-                              <XCircle className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ) : field.type === "textarea" ? (
+                    {field.type === "textarea" ? (
                       <textarea
                         value={presetFields[field.key] ?? ""}
                         onChange={(e) => setPresetFields((prev) => ({ ...prev, [field.key]: e.target.value }))}
@@ -1293,6 +1287,37 @@ IMPORTANT: Always respond with a valid JSON object inside \`\`\`json ... \`\`\` 
                     )}
                   </div>
                 ))}
+
+                {/* File attachment — available on all presets */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    {t("attachFile")}
+                  </label>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2 px-4 py-3 w-full rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition text-sm text-gray-500"
+                  >
+                    <Paperclip className="h-4 w-4 text-indigo-500" />
+                    {uploadedFile ? uploadedFile.name : t("attachFileHint")}
+                  </button>
+                  {uploadedFile && (
+                    <div className="flex items-center gap-2 mt-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
+                      <FileText className="h-3.5 w-3.5" />
+                      <span className="truncate flex-1">
+                        {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
+                      </span>
+                      <span className="text-[10px] text-indigo-500">
+                        → {MODEL_OPTIONS.find((m) => m.value === model)?.label}
+                      </span>
+                      <button
+                        onClick={handleClearUploadedFile}
+                        className="p-0.5 hover:bg-indigo-100 rounded"
+                      >
+                        <XCircle className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Run button */}
