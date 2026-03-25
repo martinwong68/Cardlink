@@ -3,12 +3,13 @@ import { useEffect, useState, useCallback } from "react";
 import {
   Globe, Plus, Edit2, Trash2, Eye, EyeOff, Save,
   FileText, Settings, Layout, Mail, Image, ChevronDown, ChevronUp,
+  Link2, ExternalLink, CheckCircle, AlertCircle, Clock,
 } from "lucide-react";
 
 const HEADERS: Record<string, string> = { "content-type": "application/json", "x-cardlink-app-scope": "business" };
 
 type Page = { id: string; slug: string; title: string; page_type: string; is_published: boolean; sort_order: number; content: unknown; show_in_nav: boolean; meta_title?: string; meta_description?: string };
-type SiteSettings = { id?: string; site_title: string; tagline: string; logo_url: string; primary_color: string; secondary_color: string; contact_email: string; contact_phone: string; contact_address: string; social_facebook: string; social_instagram: string; footer_text: string; is_published: boolean; meta_title: string; meta_description: string };
+type SiteSettings = { id?: string; site_title: string; tagline: string; logo_url: string; primary_color: string; secondary_color: string; contact_email: string; contact_phone: string; contact_address: string; social_facebook: string; social_instagram: string; footer_text: string; is_published: boolean; meta_title: string; meta_description: string; linked_website_url?: string; last_heartbeat_at?: string };
 type Submission = { id: string; form_type: string; data: Record<string, unknown>; is_read: boolean; created_at: string };
 
 const defaultSettings: SiteSettings = {
@@ -120,6 +121,49 @@ export default function WebsiteCMSPage() {
         </span>
       </div>
       {msg && <div className="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg text-sm">{msg}</div>}
+
+      {/* Connected Website Status */}
+      <div className="bg-white border rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Link2 className="w-5 h-5 text-gray-500" />
+          <h3 className="font-semibold text-sm">Connected Website</h3>
+        </div>
+        {settings.linked_website_url ? (() => {
+          const heartbeatAge = settings.last_heartbeat_at
+            ? Date.now() - new Date(settings.last_heartbeat_at).getTime()
+            : Infinity;
+          const isRecent = heartbeatAge < 24 * 60 * 60 * 1000; // < 24 hours
+          return (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {isRecent
+                  ? <CheckCircle className="w-5 h-5 text-green-500" />
+                  : <AlertCircle className="w-5 h-5 text-amber-500" />}
+                <div>
+                  <a href={settings.linked_website_url} target="_blank" rel="noopener noreferrer"
+                    className="text-sm font-medium text-indigo-600 hover:underline flex items-center gap-1">
+                    {settings.linked_website_url} <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <Clock className="w-3 h-3 text-gray-400" />
+                    <span className="text-xs text-gray-400">
+                      Last seen: {settings.last_heartbeat_at ? new Date(settings.last_heartbeat_at).toLocaleString() : "Never"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <span className={`text-xs px-2 py-1 rounded-full ${isRecent ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+                {isRecent ? "Connected" : "Stale"}
+              </span>
+            </div>
+          );
+        })() : (
+          <div className="text-sm text-gray-400 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" />
+            No website connected yet. Deploy the company-website-template with your Company ID to connect.
+          </div>
+        )}
+      </div>
 
       {/* Tabs */}
       <div className="flex gap-2 border-b">
