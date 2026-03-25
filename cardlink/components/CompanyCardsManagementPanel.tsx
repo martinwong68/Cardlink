@@ -582,14 +582,15 @@ export default function CompanyCardsManagementPanel() {
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() =>
+            onClick={() => {
               setDraft((prev) => ({
                 ...prev,
                 mode: "new-account",
                 passwordMode: prev.passwordMode,
                 password: prev.password || generatePassword(),
-              }))
-            }
+              }));
+              setShowPassword(false);
+            }}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               draft.mode === "new-account"
                 ? "bg-indigo-600 text-white"
@@ -600,7 +601,7 @@ export default function CompanyCardsManagementPanel() {
           </button>
           <button
             type="button"
-            onClick={() => setDraft((prev) => ({ ...prev, mode: "existing-member" }))}
+            onClick={() => { setDraft((prev) => ({ ...prev, mode: "existing-member" })); setShowPassword(false); }}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               draft.mode === "existing-member"
                 ? "bg-indigo-600 text-white"

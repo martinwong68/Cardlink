@@ -1,3 +1,5 @@
+// In-memory rate limiter. Suitable for single-instance deployments.
+// For production serverless/multi-instance environments, replace with Redis or database-backed storage.
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 export function rateLimit(options: { windowMs: number; max: number }) {
