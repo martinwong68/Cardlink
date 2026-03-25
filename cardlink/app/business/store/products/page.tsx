@@ -31,6 +31,7 @@ type Product = {
   is_active: boolean;
   category_id: string | null;
   category_name?: string;
+  visibility: "public" | "all_users" | "members_only";
 };
 
 type CategoryOption = { id: string; name: string };
@@ -115,6 +116,7 @@ export default function StoreProductsPage() {
   const [formImages, setFormImages] = useState<string[]>([]);
   const [formNewImages, setFormNewImages] = useState<File[]>([]);
   const [formCategory, setFormCategory] = useState<string>("");
+  const [formVisibility, setFormVisibility] = useState<"public" | "all_users" | "members_only">("public");
 
   // Delete
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -128,7 +130,7 @@ export default function StoreProductsPage() {
 
     const [productsRes, catsRes, discountsRes] = await Promise.all([
       supabase.from("store_products")
-        .select("id, name, slug, description, price, compare_at_price, product_type, sku, stock_quantity, weight, duration_minutes, file_url, images, is_active, category_id")
+        .select("id, name, slug, description, price, compare_at_price, product_type, sku, stock_quantity, weight, duration_minutes, file_url, images, is_active, category_id, visibility")
         .eq("company_id", companyId)
         .order("created_at", { ascending: false }),
       supabase.from("store_categories")
@@ -190,6 +192,7 @@ export default function StoreProductsPage() {
     setFormImages([]);
     setFormNewImages([]);
     setFormCategory("");
+    setFormVisibility("public");
     setEditingId(null);
     setMessage(null);
   };
@@ -214,6 +217,7 @@ export default function StoreProductsPage() {
     setFormFileUrl(p.file_url || "");
     setFormImages(p.images);
     setFormCategory(p.category_id || "");
+    setFormVisibility(p.visibility ?? "public");
     setShowForm(true);
   };
 
@@ -267,6 +271,7 @@ export default function StoreProductsPage() {
       images: uploadedUrls,
       category_id: formCategory || null,
       is_active: true,
+      visibility: formVisibility,
       updated_at: new Date().toISOString(),
     };
 
@@ -503,6 +508,16 @@ export default function StoreProductsPage() {
                 <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)} className="app-input mt-1 w-full">
                   <option value="">{t("noCategory")}</option>
                   {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+
+              {/* Visibility */}
+              <div>
+                <label className="text-xs font-medium text-gray-600">{t("visibilityLabel")}</label>
+                <select value={formVisibility} onChange={(e) => setFormVisibility(e.target.value as "public" | "all_users" | "members_only")} className="app-input mt-1 w-full">
+                  <option value="public">{t("visibilityPublic")}</option>
+                  <option value="all_users">{t("visibilityAllUsers")}</option>
+                  <option value="members_only">{t("visibilityMembersOnly")}</option>
                 </select>
               </div>
 

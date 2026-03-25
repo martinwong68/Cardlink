@@ -2271,7 +2271,11 @@
       "deleted": "商品 deleted!",
       "error": "Something went wrong. Please try again.",
       "back": "戻る",
-      "next": "次へ"
+      "next": "次へ",
+      "visibilityLabel": "公開範囲",
+      "visibilityPublic": "公開（誰でも）",
+      "visibilityAllUsers": "全ユーザー（ログイン）",
+      "visibilityMembersOnly": "メンバー限定"
     },
     "discounts": {
       "title": "Discounts",
@@ -3176,5 +3180,37 @@
         "desc": "Funds are automatically transferred to your bank account on a rolling basis."
       }
     }
+  },
+  "crmMembers": {
+    "title": "会社メンバー",
+    "subtitle": "チームメンバーと役割を確認してください。",
+    "totalMembers": "合計",
+    "admins": "管理者",
+    "staff": "スタッフ",
+    "empty": "メンバーが見つかりません。",
+    "unknownMember": "不明なメンバー",
+    "joinedAt": "{date}に参加"
+  },
+  "communitySettings": {
+    "title": "コミュニティと公開設定",
+    "subtitle": "コミュニティとストアへのアクセスを制御します。",
+    "communitySection": "コミュニティ",
+    "enableCommunity": "コミュニティを有効にする",
+    "enableCommunityHint": "会社のコミュニティ掲示板を有効にします。",
+    "communityVisibility": "コミュニティの公開範囲",
+    "storeSection": "ストアの公開設定",
+    "storeVisibility": "ストアの公開範囲",
+    "storeVisibilityHint": "ストアを閲覧・購入できるユーザーを制御します。",
+    "itemVisibilitySection": "商品別公開設定",
+    "itemVisibilityHint": "ストア→商品で個別商品の公開範囲も設定できます。各商品を公開、全ユーザー、メンバー限定に設定できます。",
+    "visibility": {
+      "public": "公開",
+      "all_users": "全ユーザー",
+      "members_only": "メンバー限定"
+    },
+    "save": "設定を保存",
+    "saving": "保存中...",
+    "saved": "設定が保存されました！",
+    "error": "設定の保存に失敗しました。"
   }
 }

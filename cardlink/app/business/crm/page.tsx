@@ -8,6 +8,8 @@ import {
   Activity,
   Megaphone,
   BarChart3,
+  UserCircle,
+  Globe,
 } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
@@ -70,6 +72,24 @@ const crmFunctions: ModuleFunctionDefinition[] = [
     ctaLabel: "View Reports",
     ctaHref: "/business/crm/reports",
   },
+  {
+    id: "members",
+    title: "Members",
+    description: "View and manage your company team members",
+    icon: UserCircle,
+    color: "bg-emerald-50 text-emerald-600",
+    ctaLabel: "View Members",
+    ctaHref: "/business/crm/members",
+  },
+  {
+    id: "communitySettings",
+    title: "Community & Visibility",
+    description: "Manage community access and store publicity settings",
+    icon: Globe,
+    color: "bg-cyan-50 text-cyan-600",
+    ctaLabel: "Manage Settings",
+    ctaHref: "/business/crm/community-settings",
+  },
 ];
 
 type CrmData = {
@@ -77,6 +97,7 @@ type CrmData = {
   deals: Array<{ id: string; title: string; stage: string; value: number }>;
   activities: Array<{ id: string; type: string; title: string; created_at: string }>;
   campaigns: Array<{ id: string; name?: string; status?: string }>;
+  members: Array<{ user_id: string; role: string; full_name?: string; email?: string }>;
 };
 
 const HEADERS = { "x-cardlink-app-scope": "business" };
@@ -89,23 +110,26 @@ export default function CrmLandingPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [leadsRes, dealsRes, actRes, campRes] = await Promise.all([
+        const [leadsRes, dealsRes, actRes, campRes, membersRes] = await Promise.all([
           fetch("/api/crm/leads", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/crm/deals", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/crm/activities", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/crm/campaigns", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/crm/members", { headers: HEADERS, cache: "no-store" }),
         ]);
-        const [ld, dd, ad, cd] = await Promise.all([
+        const [ld, dd, ad, cd, md] = await Promise.all([
           leadsRes.ok ? leadsRes.json() : ({} as Record<string, unknown>),
           dealsRes.ok ? dealsRes.json() : ({} as Record<string, unknown>),
           actRes.ok ? actRes.json() : ({} as Record<string, unknown>),
           campRes.ok ? campRes.json() : ({} as Record<string, unknown>),
+          membersRes.ok ? membersRes.json() : ({} as Record<string, unknown>),
         ]);
         setData({
           leads: ld.leads ?? [],
           deals: dd.deals ?? [],
           activities: ad.activities ?? [],
           campaigns: cd.campaigns ?? [],
+          members: md.members ?? [],
         });
       } catch { /* silent */ } finally { setLoading(false); }
     })();
@@ -126,6 +150,10 @@ export default function CrmLandingPage() {
       if (fn.id === "deals") {
         const open = data.deals.filter((d) => d.stage !== "won" && d.stage !== "lost").length;
         return open > 0 ? { ...fn, badgeText: `${open} open` } : fn;
+      }
+      if (fn.id === "members") {
+        const count = data.members.length;
+        return count > 0 ? { ...fn, badgeText: `${count}` } : fn;
       }
       return fn;
     });
@@ -157,6 +185,8 @@ function hasContent(id: string, data: CrmData | null): boolean {
     case "activities": return data.activities.length > 0;
     case "campaigns": return data.campaigns.length > 0;
     case "reports": return data.deals.length > 0 || data.leads.length > 0;
+    case "members": return data.members.length > 0;
+    case "communitySettings": return true;
     default: return false;
   }
 }
@@ -258,6 +288,36 @@ function DetailContent({ activeId, data }: { activeId: string; data: CrmData | n
               <p className="text-[10px] text-gray-500">Won</p>
             </div>
           </div>
+        </div>
+      );
+    }
+    case "members": {
+      const roles = ["owner", "admin", "manager", "staff", "member"];
+      const grouped = roles.map((r) => ({
+        label: r,
+        count: data.members.filter((m) => m.role === r).length,
+      })).filter((g) => g.count > 0);
+      return (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Team members</p>
+          <div className="grid grid-cols-3 gap-2">
+            {grouped.map((g) => (
+              <div key={g.label} className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+                <p className="text-lg font-bold text-gray-900">{g.count}</p>
+                <p className="text-[10px] text-gray-500 capitalize">{g.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    case "communitySettings": {
+      return (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Visibility settings</p>
+          <p className="text-xs text-gray-500">
+            Control who can access your community and store. Set visibility to public, all users, or members only.
+          </p>
         </div>
       );
     }
