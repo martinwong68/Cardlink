@@ -18,6 +18,9 @@ const defaultSettings: SiteSettings = {
   footer_text: "", is_published: false, meta_title: "", meta_description: "",
 };
 
+/** Heartbeat older than this is considered stale (24 hours). */
+const HEARTBEAT_STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
+
 const PAGE_TYPES = ["home", "about", "services", "contact", "blog", "custom", "faq", "gallery", "testimonials"];
 
 export default function WebsiteCMSPage() {
@@ -132,7 +135,7 @@ export default function WebsiteCMSPage() {
           const heartbeatAge = settings.last_heartbeat_at
             ? Date.now() - new Date(settings.last_heartbeat_at).getTime()
             : Infinity;
-          const isRecent = heartbeatAge < 24 * 60 * 60 * 1000; // < 24 hours
+          const isRecent = heartbeatAge < HEARTBEAT_STALE_THRESHOLD_MS;
           return (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

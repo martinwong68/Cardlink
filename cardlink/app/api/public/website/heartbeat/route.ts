@@ -4,7 +4,7 @@ import { createClient } from "@/src/lib/supabase/server";
 /**
  * POST /api/public/website/heartbeat
  *
- * Called by the company-website-template on every page load.
+ * Called by the company-website-template on page load.
  * Registers the website URL and updates last_heartbeat_at so the
  * Cardlink dashboard can show which website is connected to which company.
  *
@@ -37,31 +37,20 @@ export async function POST(request: Request) {
 
   const supabase = await createClient();
 
-  // Update the website_settings row for this company
+  // Upsert directly — single round trip for both new and existing rows
   const { error } = await supabase
     .from("website_settings")
-    .update({
-      linked_website_url: websiteUrl,
-      last_heartbeat_at: new Date().toISOString(),
-    })
-    .eq("company_id", companyId);
+    .upsert(
+      {
+        company_id: companyId,
+        linked_website_url: websiteUrl,
+        last_heartbeat_at: new Date().toISOString(),
+      },
+      { onConflict: "company_id" },
+    );
 
   if (error) {
-    // If no row exists yet, try to upsert one
-    const { error: upsertError } = await supabase
-      .from("website_settings")
-      .upsert(
-        {
-          company_id: companyId,
-          linked_website_url: websiteUrl,
-          last_heartbeat_at: new Date().toISOString(),
-        },
-        { onConflict: "company_id" },
-      );
-
-    if (upsertError) {
-      return NextResponse.json({ error: upsertError.message }, { status: 500 });
-    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   return NextResponse.json({ status: "ok" });
