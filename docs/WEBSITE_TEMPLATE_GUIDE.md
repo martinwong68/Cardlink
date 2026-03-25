@@ -468,23 +468,147 @@ When creating pages in the Cardlink CMS, use this JSON content structure:
 
 ---
 
-## 8. Deployment
+## 8. Deployment & Verification
 
-### Vercel (recommended)
+### Step-by-Step Deployment
+
+#### 1. Prepare Your Project
+
+```bash
+# Copy template (if using the pre-built template)
+cp -r company-website-template my-company-website
+cd my-company-website
+
+# Run the interactive setup wizard
+./setup.sh
+# OR manually create .env.local (see Section 1)
+```
+
+#### 2. Set Environment Variables
+
+| Variable | Required | Value |
+|----------|----------|-------|
+| `NEXT_PUBLIC_CARDLINK_API_URL` | ✅ | URL of your Cardlink app (e.g. `https://myapp.vercel.app`) |
+| `NEXT_PUBLIC_COMPANY_ID` | ✅ | Your company UUID from Cardlink dashboard |
+| `NEXT_PUBLIC_SUPABASE_URL` | Optional | Supabase project URL (for direct DB read access) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Optional | Supabase anon key (for direct DB read access) |
+
+> **Finding your Company ID:** Go to Cardlink Dashboard → Settings → Company Profile. Your Company ID (UUID) is shown at the top of the page.
+
+#### 3. Test Locally
+
+```bash
+npm install
+npm run dev
+# Open http://localhost:3000
+```
+
+#### 4. Deploy to Production
+
+**Vercel (recommended):**
 ```bash
 npx vercel --prod
 ```
 
-### Netlify
+**Netlify:**
 ```bash
 npx netlify deploy --prod
 ```
 
-### Environment variables to set:
-| Variable | Value |
-|----------|-------|
-| `NEXT_PUBLIC_CARDLINK_API_URL` | Your Cardlink instance URL |
-| `NEXT_PUBLIC_COMPANY_ID` | Your company UUID from Cardlink |
+Set the same environment variables in your hosting platform's project settings.
+
+### Post-Deployment Verification
+
+After deploying, follow these steps to confirm everything is connected and working:
+
+#### Step 1: Check the Health Endpoint
+
+```bash
+# Replace with your deployed URL
+curl https://my-company-website.vercel.app/api/health | python3 -m json.tool
+```
+
+Expected response when everything is working:
+```json
+{
+  "status": "ok",
+  "company_id": "your-company-uuid",
+  "cardlink_api": "https://your-cardlink-app.vercel.app",
+  "checks": {
+    "website": { "status": "ok", "message": "Site: My Company" },
+    "store": { "status": "ok", "message": "Store: My Store — 12 products" },
+    "booking": { "status": "ok", "message": "3 booking services available" },
+    "supabase": { "status": "configured", "message": "Supabase URL: abc..." }
+  },
+  "timestamp": "2026-03-25T06:00:00.000Z"
+}
+```
+
+Check that:
+- `status` is `"ok"` (all services reachable)
+- `checks.website.status` is `"ok"` (CMS content loading)
+- `checks.store.status` is `"ok"` or `"not_published"` (expected if store not set up yet)
+- `checks.booking.status` is `"ok"` (booking services loading)
+
+#### Step 2: Verify Connection in Cardlink Dashboard
+
+The website template includes a **Heartbeat** component that automatically pings the Cardlink app on every page load (throttled to once per hour). This tells Cardlink which website is connected to your company.
+
+1. Open your deployed website in a browser (triggers the heartbeat)
+2. Go to **Cardlink Dashboard → Settings → Website**
+3. Look at the **Connected Website** card at the top of the page
+
+You should see:
+- ✅ **Green "Connected" badge** — your website URL with a "Last seen" timestamp
+- The URL should match your deployed website
+
+If you see:
+- ⚠️ **"No website connected yet"** — open your deployed website to trigger the first heartbeat
+- 🟡 **"Stale" badge** — the last heartbeat was more than 24 hours ago; visit your website to refresh it
+
+#### Step 3: Verify Content Rendering
+
+1. Open your deployed website
+2. Check that the homepage loads with your CMS content
+3. Navigate to published pages (About, Services, Contact, etc.)
+4. Verify the store page shows your products (if store is published)
+5. Verify the booking page shows your services (if booking is set up)
+6. Submit a test contact form and check it appears in Dashboard → Settings → Website → Submissions
+
+### How the Connection Works
+
+```
+┌─────────────────────────┐                        ┌────────────────────────┐
+│  Company Website         │   Heartbeat (1x/hour)  │  Cardlink App          │
+│  (Next.js template)      │ ──POST /api/public/──► │  (Dashboard)           │
+│                          │  website/heartbeat      │                        │
+│  NEXT_PUBLIC_COMPANY_ID  │  {company_id, url}      │  website_settings      │
+│  identifies the company  │                         │  .linked_website_url   │
+│                          │                         │  .last_heartbeat_at    │
+│  /api/health checks all  │ ◄──JSON responses───── │                        │
+│  connections              │                         │  Dashboard shows       │
+└─────────────────────────┘                         │  "Connected" status    │
+                                                     └────────────────────────┘
+```
+
+The website knows which company it belongs to via the `NEXT_PUBLIC_COMPANY_ID` environment variable. This ID is sent with every API call to scope data to your company. The heartbeat mechanism then reports back to the Cardlink dashboard so you can see your website's connection status.
+
+### Deployment Checklist
+
+- [ ] Copy template to new repo for the company
+- [ ] Run `./setup.sh` or manually configure `.env.local`
+- [ ] Test locally with `npm run dev`
+- [ ] Verify `/api/health` returns `"status": "ok"` locally
+- [ ] Publish website content in Cardlink Dashboard → Settings → Website
+- [ ] Add products to store in Cardlink Dashboard (if using store)
+- [ ] Set up booking services in Cardlink Dashboard (if using booking)
+- [ ] Deploy to Vercel/Netlify with environment variables set
+- [ ] Verify `/api/health` returns `"status": "ok"` on production
+- [ ] Open website in browser to trigger heartbeat
+- [ ] Check Cardlink Dashboard → Settings → Website shows **"Connected"** with correct URL
+- [ ] Test all pages render correctly
+- [ ] Submit a test contact form and verify it shows in Submissions tab
+- [ ] Point custom domain to deployment (optional)
 
 ---
 

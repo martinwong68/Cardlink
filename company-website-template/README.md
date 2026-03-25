@@ -91,7 +91,43 @@ curl http://localhost:3000/api/health | python3 -m json.tool
 # http://localhost:3000/api/health
 ```
 
-This returns the status of each connection (website API, store API, booking API, Supabase).
+Expected healthy response:
+```json
+{
+  "status": "ok",
+  "company_id": "your-company-uuid",
+  "cardlink_api": "https://your-cardlink-app.vercel.app",
+  "checks": {
+    "website": { "status": "ok", "message": "Site: My Company" },
+    "store": { "status": "ok", "message": "Store: My Store — 5 products" },
+    "booking": { "status": "ok", "message": "2 booking services available" },
+    "supabase": { "status": "configured" }
+  }
+}
+```
+
+### How the App Knows Which Company This Website Belongs To
+
+The connection between this website and a Cardlink company is established through:
+
+1. **Environment variable (`NEXT_PUBLIC_COMPANY_ID`)** — set during setup, this UUID is sent with every API call to scope all data to your company
+2. **Heartbeat** — a built-in `Heartbeat` component in the root layout automatically pings the Cardlink app on each page load (throttled to once per hour). This tells the Cardlink dashboard:
+   - **Which URL** this website is running on (`linked_website_url`)
+   - **When it last checked in** (`last_heartbeat_at`)
+3. **Dashboard status** — in Cardlink Dashboard → Settings → Website, the "Connected Website" card shows:
+   - ✅ **Green "Connected"** — heartbeat received within the last 24 hours
+   - 🟡 **Amber "Stale"** — heartbeat is older than 24 hours
+   - ⚪ **"No website connected"** — no heartbeat ever received
+
+```
+Website (page load) → POST /api/public/website/heartbeat
+                       { company_id, website_url }
+                       ↓
+Cardlink DB           → website_settings.linked_website_url = "https://..."
+                       → website_settings.last_heartbeat_at = now()
+                       ↓
+Dashboard             → Shows "Connected" with URL and timestamp
+```
 
 ## Architecture
 
@@ -145,7 +181,7 @@ All endpoints require `company_id` as a query/body parameter. **No authenticatio
 ```
 src/
 ├── app/                         # Next.js pages
-│   ├── layout.tsx               # Root layout (meta, fonts)
+│   ├── layout.tsx               # Root layout (meta, fonts, Heartbeat)
 │   ├── page.tsx                 # Homepage
 │   ├── page/[slug]/page.tsx     # Dynamic CMS pages
 │   ├── store/                   # Online store
@@ -159,7 +195,8 @@ src/
 │   ├── SiteLayout.tsx           # Header + navigation + footer
 │   ├── ShoppingCart.tsx         # Cart sidebar with checkout
 │   ├── ContactForm.tsx          # Contact form component
-│   └── BookingWidget.tsx        # Full booking flow
+│   ├── BookingWidget.tsx        # Full booking flow
+│   └── Heartbeat.tsx            # Connection heartbeat (auto-pings Cardlink)
 └── lib/
     ├── cardlink-api.ts          # Cardlink API client (typed)
     ├── cart-context.tsx         # React Context for cart state
@@ -220,15 +257,29 @@ Set these environment variables in your Vercel project settings:
 
 ### Deployment Checklist
 
-- [ ] Copy template to new repo for the company
+#### Before Deploying
+- [ ] Copy template to a new repo for the company
 - [ ] Run `./setup.sh` or manually configure `.env.local`
-- [ ] Verify connection at `/api/health`
+- [ ] Run `npm run dev` and verify site loads at `http://localhost:3000`
+- [ ] Check `/api/health` returns `"status": "ok"` locally
+- [ ] Publish website content in Cardlink Dashboard → Settings → Website
+- [ ] Add products to store in Cardlink Dashboard (if using store)
+- [ ] Set up booking services in Cardlink Dashboard (if using booking)
 - [ ] Customize branding/theme using AI or manual edits
-- [ ] Publish website content in Cardlink dashboard
-- [ ] Add products to store in Cardlink dashboard
-- [ ] Set up booking services if needed
-- [ ] Deploy to Vercel/Netlify
-- [ ] Point custom domain to deployment
+
+#### Deploy
+- [ ] Deploy to Vercel/Netlify with all environment variables set
+- [ ] Point custom domain to deployment (optional)
+
+#### After Deploying — Verify Everything
+- [ ] Open `/api/health` on your production URL — all checks should be `"ok"`
+- [ ] Open the website home page in a browser (triggers heartbeat)
+- [ ] Go to **Cardlink Dashboard → Settings → Website** — confirm **"Connected"** badge shows with correct URL
+- [ ] Navigate through published pages and verify content renders
+- [ ] Test store: browse products, add to cart, complete test checkout
+- [ ] Test booking: select service, pick date/time, submit test booking
+- [ ] Submit a test contact form → verify it appears in Dashboard → Website → Submissions tab
+- [ ] Check that orders and bookings appear in the Cardlink Dashboard
 
 ## Troubleshooting
 
@@ -240,6 +291,10 @@ Set these environment variables in your Vercel project settings:
 | "Failed to fetch site data" | Check `NEXT_PUBLIC_CARDLINK_API_URL` is correct and reachable |
 | Empty homepage | Create a page with `page_type: "home"` in Cardlink CMS |
 | No booking slots showing | Set up business hours in Cardlink → Booking → Settings |
+| Dashboard shows "No website connected" | Open your deployed website in a browser to trigger the first heartbeat |
+| Dashboard shows "Stale" | The website hasn't been visited in 24+ hours; open it to refresh the heartbeat |
+| `/api/health` returns `"status": "error"` | Check that `NEXT_PUBLIC_CARDLINK_API_URL` and `NEXT_PUBLIC_COMPANY_ID` are set correctly |
+| `/api/health` returns `"status": "degraded"` | One or more API checks failed; review the `checks` object for details |
 
 ## License
 
