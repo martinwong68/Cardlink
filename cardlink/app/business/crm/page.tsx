@@ -10,6 +10,7 @@ import {
   BarChart3,
   UserCircle,
   Globe,
+  Crown,
 } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
@@ -82,6 +83,15 @@ const crmFunctions: ModuleFunctionDefinition[] = [
     ctaHref: "/business/crm/members",
   },
   {
+    id: "membership",
+    title: "Membership",
+    description: "View customer memberships, points balance, and spending",
+    icon: Crown,
+    color: "bg-amber-50 text-amber-600",
+    ctaLabel: "View Membership",
+    ctaHref: "/business/crm/membership",
+  },
+  {
     id: "communitySettings",
     title: "Community & Visibility",
     description: "Manage community access and store publicity settings",
@@ -98,6 +108,7 @@ type CrmData = {
   activities: Array<{ id: string; type: string; title: string; created_at: string }>;
   campaigns: Array<{ id: string; name?: string; status?: string }>;
   members: Array<{ user_id: string; role: string; full_name?: string; email?: string }>;
+  membershipAccounts: Array<{ id: string; status: string; points_balance: number; total_spend_amount: number; tier_name: string | null }>;
 };
 
 const HEADERS = { "x-cardlink-app-scope": "business" };
@@ -110,19 +121,21 @@ export default function CrmLandingPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [leadsRes, dealsRes, actRes, campRes, membersRes] = await Promise.all([
+        const [leadsRes, dealsRes, actRes, campRes, membersRes, membershipRes] = await Promise.all([
           fetch("/api/crm/leads", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/crm/deals", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/crm/activities", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/crm/campaigns", { headers: HEADERS, cache: "no-store" }),
           fetch("/api/crm/members", { headers: HEADERS, cache: "no-store" }),
+          fetch("/api/crm/membership-accounts", { headers: HEADERS, cache: "no-store" }),
         ]);
-        const [ld, dd, ad, cd, md] = await Promise.all([
+        const [ld, dd, ad, cd, md, msd] = await Promise.all([
           leadsRes.ok ? leadsRes.json() : ({} as Record<string, unknown>),
           dealsRes.ok ? dealsRes.json() : ({} as Record<string, unknown>),
           actRes.ok ? actRes.json() : ({} as Record<string, unknown>),
           campRes.ok ? campRes.json() : ({} as Record<string, unknown>),
           membersRes.ok ? membersRes.json() : ({} as Record<string, unknown>),
+          membershipRes.ok ? membershipRes.json() : ({} as Record<string, unknown>),
         ]);
         setData({
           leads: ld.leads ?? [],
@@ -130,6 +143,7 @@ export default function CrmLandingPage() {
           activities: ad.activities ?? [],
           campaigns: cd.campaigns ?? [],
           members: md.members ?? [],
+          membershipAccounts: msd.accounts ?? [],
         });
       } catch { /* silent */ } finally { setLoading(false); }
     })();
@@ -153,6 +167,10 @@ export default function CrmLandingPage() {
       }
       if (fn.id === "members") {
         const count = data.members.length;
+        return count > 0 ? { ...fn, badgeText: `${count}` } : fn;
+      }
+      if (fn.id === "membership") {
+        const count = data.membershipAccounts.length;
         return count > 0 ? { ...fn, badgeText: `${count}` } : fn;
       }
       return fn;
@@ -186,6 +204,7 @@ function hasContent(id: string, data: CrmData | null): boolean {
     case "campaigns": return data.campaigns.length > 0;
     case "reports": return data.deals.length > 0 || data.leads.length > 0;
     case "members": return data.members.length > 0;
+    case "membership": return data.membershipAccounts.length > 0;
     case "communitySettings": return true;
     default: return false;
   }
@@ -307,6 +326,30 @@ function DetailContent({ activeId, data }: { activeId: string; data: CrmData | n
                 <p className="text-[10px] text-gray-500 capitalize">{g.label}</p>
               </div>
             ))}
+          </div>
+        </div>
+      );
+    }
+    case "membership": {
+      const active = data.membershipAccounts.filter((a) => a.status === "active").length;
+      const totalPts = data.membershipAccounts.reduce((s, a) => s + (a.points_balance ?? 0), 0);
+      const totalSpend = data.membershipAccounts.reduce((s, a) => s + Number(a.total_spend_amount ?? 0), 0);
+      return (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Membership overview</p>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-xl bg-gray-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-gray-900">{active}</p>
+              <p className="text-[10px] text-gray-500">Active</p>
+            </div>
+            <div className="rounded-xl bg-indigo-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-indigo-700">{totalPts}</p>
+              <p className="text-[10px] text-indigo-500">Total Points</p>
+            </div>
+            <div className="rounded-xl bg-emerald-50 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-emerald-700">${totalSpend.toLocaleString()}</p>
+              <p className="text-[10px] text-emerald-500">Total Spend</p>
+            </div>
           </div>
         </div>
       );

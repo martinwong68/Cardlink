@@ -1,14 +1,20 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
 
 type Product = { id: string; name: string; sku: string | null; price: number; cost?: number; stock: number; is_active: boolean; inv_product_id?: string | null };
 type CartItem = { productId: string; name: string; price: number; quantity: number; inv_product_id?: string | null };
 type TaxConfig = { id: string; name: string; rate: number; is_default: boolean };
 type Discount = { id: string; name: string; discount_type: "percentage" | "fixed"; value: number; min_order: number; is_active: boolean };
+type MemberAccount = { id: string; user_id: string; email: string | null; full_name: string | null; status: string; tier_name: string | null; points_balance: number };
+type MemberOffer = { id: string; title: string; description: string | null; offer_type: string; discount_type: string | null; discount_value: number; points_cost: number };
 
 /** Fallback tax rate when no tax config is defined */
 const DEFAULT_TAX_RATE = 0.08;
+
+/** Points awarded per dollar spent — floor(total) gives 1 point per whole dollar */
+const POINTS_PER_DOLLAR = 1;
 
 export default function PosTerminalPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -18,7 +24,7 @@ export default function PosTerminalPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [noShift, setNoShift] = useState(false);
-  const [orderComplete, setOrderComplete] = useState<{ receiptNumber: string; total: number; change: number } | null>(null);
+  const [orderComplete, setOrderComplete] = useState<{ receiptNumber: string; total: number; change: number; pointsAwarded?: number; memberName?: string } | null>(null);
 
   // Dynamic tax
   const [taxConfigs, setTaxConfigs] = useState<TaxConfig[]>([]);
@@ -36,6 +42,31 @@ export default function PosTerminalPage() {
 
   // Notes
   const [orderNotes, setOrderNotes] = useState("");
+
+  // Member lookup
+  const [memberSearch, setMemberSearch] = useState("");
+  const [memberLoading, setMemberLoading] = useState(false);
+  const [linkedMember, setLinkedMember] = useState<MemberAccount | null>(null);
+
+  // QR scanner for member lookup
+  const [scannerActive, setScannerActive] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const controlsRef = useRef<IScannerControls | null>(null);
+
+  // Membership offers (company_offers)
+  const [memberOffers, setMemberOffers] = useState<MemberOffer[]>([]);
+  const [selectedMemberOfferId, setSelectedMemberOfferId] = useState<string>("");
+
+  // Applied redemption discount (from scanning a redemption QR)
+  const [appliedRedemption, setAppliedRedemption] = useState<{
+    redemption_id: string;
+    offer_title: string;
+    discount_type: string | null;
+    discount_value: number;
+  } | null>(null);
+
+  // Prevent duplicate QR scans
+  const scanProcessingRef = useRef(false);
 
   const headers = { "content-type": "application/json", "x-cardlink-app-scope": "business" };
 
@@ -73,15 +104,37 @@ export default function PosTerminalPage() {
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
 
-  // Discount calculation
+  // Discount calculation — considers store discounts, membership offers, and applied redemptions
   const activeDiscount = discounts.find((d) => d.id === selectedDiscountId);
+  const activeMemberOffer = memberOffers.find((o) => o.id === selectedMemberOfferId);
+
   let discountAmount = 0;
-  if (activeDiscount && subtotal >= activeDiscount.min_order) {
+  let discountLabel = "";
+
+  if (appliedRedemption) {
+    // Applied redemption takes priority
+    if (appliedRedemption.discount_type === "percentage") {
+      discountAmount = subtotal * (appliedRedemption.discount_value / 100);
+    } else {
+      discountAmount = Math.min(appliedRedemption.discount_value, subtotal);
+    }
+    discountLabel = `🎟 ${appliedRedemption.offer_title}`;
+  } else if (activeMemberOffer && linkedMember) {
+    // Membership offer discount
+    if (activeMemberOffer.discount_type === "percentage") {
+      discountAmount = subtotal * (activeMemberOffer.discount_value / 100);
+    } else if (activeMemberOffer.discount_type === "fixed") {
+      discountAmount = Math.min(activeMemberOffer.discount_value, subtotal);
+    }
+    discountLabel = `👑 ${activeMemberOffer.title}`;
+  } else if (activeDiscount && subtotal >= activeDiscount.min_order) {
+    // Store-level discount
     if (activeDiscount.discount_type === "percentage") {
       discountAmount = subtotal * (activeDiscount.value / 100);
     } else {
       discountAmount = Math.min(activeDiscount.value, subtotal);
     }
+    discountLabel = activeDiscount.name;
   }
 
   const afterDiscount = subtotal - discountAmount;
@@ -91,6 +144,127 @@ export default function PosTerminalPage() {
   // Cash change
   const cashTenderedNum = Number(cashTendered) || 0;
   const cashChange = payMethod === "cash" && cashTenderedNum > 0 ? cashTenderedNum - total : 0;
+
+  const lookupMember = async (q: string) => {
+    if (!q.trim()) return;
+    setMemberLoading(true);
+    try {
+      const res = await fetch(`/api/pos/membership-lookup?q=${encodeURIComponent(q.trim())}`, {
+        headers: { "x-cardlink-app-scope": "business" },
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const accts = json.accounts ?? [];
+        if (accts.length > 0) {
+          setLinkedMember(accts[0]);
+          setCustomerName(accts[0].full_name || accts[0].email || "");
+          // Fetch membership offers when member is linked
+          void fetchMemberOffers();
+        } else {
+          setLinkedMember(null);
+        }
+      }
+    } catch { /* silent */ } finally { setMemberLoading(false); }
+  };
+
+  const fetchMemberOffers = async () => {
+    try {
+      const res = await fetch("/api/pos/member-offers", {
+        headers: { "x-cardlink-app-scope": "business" },
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setMemberOffers(json.offers ?? []);
+      }
+    } catch { /* silent */ }
+  };
+
+  /**
+   * Parse a scanned QR code value:
+   * - Namecard URL: /c/{slug}
+   * - Redemption URL: /dashboard/scan?rid={uuid}
+   * - Direct UUID: try as user_id
+   * - Email: try as email
+   */
+  const handleQrScan = useCallback(async (text: string) => {
+    if (scanProcessingRef.current) return; // prevent duplicate scans
+    scanProcessingRef.current = true;
+    stopScanner();
+    const trimmed = text.trim();
+
+    // Check if it's a redemption QR
+    try {
+      const parsed = new URL(trimmed);
+      const rid = parsed.searchParams.get("rid");
+      if (rid) {
+        // This is a redemption QR - apply it
+        await applyRedemptionQr(rid);
+        scanProcessingRef.current = false;
+        return;
+      }
+    } catch { /* not a URL or no rid param */ }
+
+    // Otherwise treat as member lookup (handles /c/{slug}, UUID, email)
+    setMemberSearch(trimmed);
+    await lookupMember(trimmed);
+    scanProcessingRef.current = false;
+  }, []);
+
+  const applyRedemptionQr = async (redemptionId: string) => {
+    try {
+      const res = await fetch("/api/pos/apply-redemption", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ redemption_id: redemptionId }),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setAppliedRedemption({
+          redemption_id: json.redemption_id,
+          offer_title: json.offer.title,
+          discount_type: json.offer.discount_type,
+          discount_value: json.offer.discount_value,
+        });
+        // Also link the member if we got a user_id
+        if (json.member_user_id) {
+          void lookupMember(json.member_user_id);
+        }
+      }
+    } catch { /* silent */ }
+  };
+
+  const startScanner = useCallback(async () => {
+    setScannerActive(true);
+    try {
+      const reader = new BrowserMultiFormatReader();
+      if (videoRef.current) {
+        const controls = await reader.decodeFromVideoDevice(
+          undefined,
+          videoRef.current,
+          (result) => {
+            if (result) {
+              void handleQrScan(result.getText());
+            }
+          }
+        );
+        controlsRef.current = controls;
+      }
+    } catch {
+      setScannerActive(false);
+    }
+  }, [handleQrScan]);
+
+  const stopScanner = () => {
+    controlsRef.current?.stop();
+    controlsRef.current = null;
+    setScannerActive(false);
+  };
+
+  useEffect(() => {
+    return () => { controlsRef.current?.stop(); };
+  }, []);
 
   const addToCart = (p: Product) => {
     setCart((prev) => {
@@ -125,7 +299,7 @@ export default function PosTerminalPage() {
           tax_amount: tax,
           total,
           discount_amount: discountAmount,
-          discount_name: activeDiscount?.name ?? null,
+          discount_name: discountLabel || null,
           payment_method: payMethod,
           status: "completed",
           customer_name: customerName.trim() || null,
@@ -143,12 +317,35 @@ export default function PosTerminalPage() {
         }),
       });
       if (res.ok) {
-        setOrderComplete({ receiptNumber, total, change: Math.max(0, cashChange) });
+        // Award membership points if a member is linked
+        let pointsAwarded: number | undefined;
+        const memberName = linkedMember?.full_name || linkedMember?.email || undefined;
+        if (linkedMember && linkedMember.status === "active") {
+          const orderJson = await res.json().catch(() => null);
+          const orderId = orderJson?.order?.id ?? receiptNumber;
+          pointsAwarded = Math.floor(total * POINTS_PER_DOLLAR);
+          void fetch("/api/pos/membership-award", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              account_id: linkedMember.id,
+              order_id: orderId,
+              amount: total,
+              points: pointsAwarded,
+            }),
+          });
+        }
+        setOrderComplete({ receiptNumber, total, change: Math.max(0, cashChange), pointsAwarded, memberName });
         setCart([]);
         setCustomerName("");
         setCashTendered("");
         setOrderNotes("");
         setSelectedDiscountId("");
+        setSelectedMemberOfferId("");
+        setAppliedRedemption(null);
+        setMemberOffers([]);
+        setLinkedMember(null);
+        setMemberSearch("");
       }
     } catch { /* silent */ } finally { setProcessing(false); }
   };
@@ -170,6 +367,12 @@ export default function PosTerminalPage() {
         {orderComplete.change > 0 && (
           <div className="rounded-xl bg-amber-50 px-4 py-2 text-center">
             <p className="text-sm text-amber-700 font-semibold">Change Due: ${orderComplete.change.toFixed(2)}</p>
+          </div>
+        )}
+        {orderComplete.pointsAwarded != null && orderComplete.pointsAwarded > 0 && (
+          <div className="rounded-xl bg-indigo-50 px-4 py-2 text-center space-y-0.5">
+            <p className="text-sm text-indigo-700 font-semibold">+{orderComplete.pointsAwarded} BOBO Points Awarded</p>
+            {orderComplete.memberName && <p className="text-xs text-indigo-500">to {orderComplete.memberName}</p>}
           </div>
         )}
         <button onClick={() => setOrderComplete(null)} className="mt-4 rounded-xl bg-purple-600 px-8 py-3 text-sm font-bold text-white hover:bg-purple-700">
@@ -240,10 +443,84 @@ export default function PosTerminalPage() {
               <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Customer name (optional)" className="w-full rounded-lg border border-gray-100 px-3 py-1.5 text-xs" />
             </div>
 
-            {/* Discount selector */}
-            {discounts.length > 0 && (
+            {/* Member lookup with QR scanner */}
+            <div className="mt-2 space-y-1">
+              <div className="flex gap-1">
+                <input
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") void lookupMember(memberSearch); }}
+                  placeholder="Member email, card slug, or scan QR…"
+                  className="flex-1 rounded-lg border border-gray-100 px-3 py-1.5 text-xs"
+                />
+                <button onClick={() => void lookupMember(memberSearch)} disabled={memberLoading} className="rounded-lg bg-indigo-100 px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-200 disabled:opacity-50">
+                  {memberLoading ? "…" : "🔍"}
+                </button>
+                <button
+                  onClick={() => scannerActive ? stopScanner() : startScanner()}
+                  className={`rounded-lg px-2 py-1.5 text-xs font-semibold ${scannerActive ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700 hover:bg-amber-200"}`}
+                >
+                  {scannerActive ? "⏹" : "📷"}
+                </button>
+              </div>
+
+              {/* QR Scanner Camera */}
+              {scannerActive && (
+                <div className="rounded-lg overflow-hidden border border-gray-200">
+                  <video ref={videoRef} className="w-full aspect-video object-cover" />
+                  <p className="text-[10px] text-center text-gray-500 py-1">Scan member namecard or redemption QR…</p>
+                </div>
+              )}
+
+              {linkedMember && (
+                <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1.5">
+                  <span className="text-xs font-semibold text-emerald-700">
+                    ✓ {linkedMember.full_name || linkedMember.email} · {linkedMember.points_balance} pts
+                    {linkedMember.tier_name ? ` · ${linkedMember.tier_name}` : ""}
+                  </span>
+                  <button onClick={() => { setLinkedMember(null); setMemberSearch(""); setMemberOffers([]); setSelectedMemberOfferId(""); setAppliedRedemption(null); }} className="ml-auto text-xs text-red-500 hover:text-red-700">✕</button>
+                </div>
+              )}
+
+              {/* Applied redemption badge */}
+              {appliedRedemption && (
+                <div className="flex items-center gap-2 rounded-lg bg-purple-50 px-3 py-1.5">
+                  <span className="text-xs font-semibold text-purple-700">
+                    🎟 {appliedRedemption.offer_title} ({appliedRedemption.discount_type === "percentage" ? `${appliedRedemption.discount_value}%` : `$${appliedRedemption.discount_value}`} off)
+                  </span>
+                  <button onClick={() => setAppliedRedemption(null)} className="ml-auto text-xs text-red-500 hover:text-red-700">✕</button>
+                </div>
+              )}
+            </div>
+
+            {/* Membership offer selector (when member is linked) */}
+            {linkedMember && memberOffers.length > 0 && !appliedRedemption && (
               <div className="mt-2">
-                <select value={selectedDiscountId} onChange={(e) => setSelectedDiscountId(e.target.value)} className="w-full rounded-lg border border-gray-100 px-3 py-1.5 text-xs text-gray-700">
+                <label className="text-[10px] text-gray-500 font-semibold">👑 Membership Offers</label>
+                <select
+                  value={selectedMemberOfferId}
+                  onChange={(e) => { setSelectedMemberOfferId(e.target.value); if (e.target.value) setSelectedDiscountId(""); }}
+                  className="w-full rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-gray-700"
+                >
+                  <option value="">No membership offer</option>
+                  {memberOffers.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.title} ({o.discount_type === "percentage" ? `${o.discount_value}%` : `$${o.discount_value}`} off{o.points_cost > 0 ? ` · ${o.points_cost} pts` : ""})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Store discount selector */}
+            {discounts.length > 0 && !appliedRedemption && (
+              <div className="mt-2">
+                <label className="text-[10px] text-gray-500 font-semibold">🏷 Store Discounts</label>
+                <select
+                  value={selectedDiscountId}
+                  onChange={(e) => { setSelectedDiscountId(e.target.value); if (e.target.value) setSelectedMemberOfferId(""); }}
+                  className="w-full rounded-lg border border-gray-100 px-3 py-1.5 text-xs text-gray-700"
+                >
                   <option value="">No discount</option>
                   {discounts.map((d) => (
                     <option key={d.id} value={d.id}>
@@ -274,7 +551,7 @@ export default function PosTerminalPage() {
             <div className="space-y-1 border-t border-gray-100 pt-3 mt-3">
               <div className="flex justify-between"><span className="text-xs text-gray-500">Subtotal</span><span className="text-xs text-gray-900">${subtotal.toFixed(2)}</span></div>
               {discountAmount > 0 && (
-                <div className="flex justify-between"><span className="text-xs text-emerald-600">Discount ({activeDiscount?.name})</span><span className="text-xs text-emerald-600">−${discountAmount.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span className="text-xs text-emerald-600">Discount ({discountLabel})</span><span className="text-xs text-emerald-600">−${discountAmount.toFixed(2)}</span></div>
               )}
               <div className="flex justify-between"><span className="text-xs text-gray-500">{taxLabel}</span><span className="text-xs text-gray-900">${tax.toFixed(2)}</span></div>
               <div className="flex justify-between pt-1"><span className="text-base font-bold text-gray-900">Total</span><span className="text-base font-bold text-gray-900">${total.toFixed(2)}</span></div>

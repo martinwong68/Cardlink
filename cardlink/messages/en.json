@@ -3213,7 +3213,21 @@
     "save": "Save Settings",
     "saving": "Saving...",
     "saved": "Settings saved!",
-    "error": "Failed to save settings."
+    "error": "Failed to save settings.",
+    "themeSection": "Community Theme",
+    "themeHint": "Give your community a custom name and up to 4 subtopics for discussion.",
+    "themeName": "Theme Name",
+    "themeNamePlaceholder": "e.g. Our Coffee Community",
+    "themeDescription": "Description",
+    "themeDescriptionPlaceholder": "What is your community about?",
+    "themeIcon": "Icon / Emoji",
+    "subtopics": "Subtopics",
+    "addSubtopic": "Add Subtopic",
+    "subtopicNamePlaceholder": "Subtopic name",
+    "subtopicDescPlaceholder": "Short description (optional)",
+    "noSubtopics": "No subtopics yet. Add up to 4 subtopics.",
+    "saveTheme": "Save Theme",
+    "themeSaved": "Theme saved!"
   },
   "upgradePrompt": {
     "lockedTitle": "{feature} is locked",
@@ -3222,5 +3236,33 @@
     "viewPlans": "View Plans",
     "inlineLabel": "{feature} requires an upgrade",
     "upgrade": "Upgrade"
+  },
+  "crmMembership": {
+    "title": "Customer Membership",
+    "subtitle": "View and manage customer memberships, points, and spending.",
+    "activeMembers": "Active",
+    "totalPoints": "Total Points",
+    "totalSpend": "Total Spend",
+    "empty": "No membership accounts found.",
+    "unknownMember": "Unknown Member",
+    "pointUnit": "BOBO-POINT",
+    "spent": "spent",
+    "joinedAt": "Joined {date}"
+  },
+  "posMembership": {
+    "title": "Member Lookup",
+    "subtitle": "Search members by email or scan their QR code.",
+    "scanQr": "Scan QR Code",
+    "stopScan": "Stop Scanner",
+    "searchPlaceholder": "Enter email or user ID...",
+    "search": "Search",
+    "noResults": "No matching members found.",
+    "searchError": "Failed to search members.",
+    "cameraError": "Could not access camera.",
+    "unknownMember": "Unknown Member",
+    "points": "BOBO-POINT",
+    "totalSpend": "Total Spend",
+    "tier": "Tier",
+    "noTier": "No tier"
   }
 }

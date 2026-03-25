@@ -3213,7 +3213,21 @@
     "save": "保存設置",
     "saving": "保存中...",
     "saved": "設置已保存！",
-    "error": "保存設置失敗。"
+    "error": "保存設置失敗。",
+    "themeSection": "社區主題",
+    "themeHint": "為您的社區設定名稱和最多4個子主題進行討論。",
+    "themeName": "主題名稱",
+    "themeNamePlaceholder": "例如：我們的咖啡社區",
+    "themeDescription": "描述",
+    "themeDescriptionPlaceholder": "您的社區關於什麼？",
+    "themeIcon": "圖標 / 表情符號",
+    "subtopics": "子主題",
+    "addSubtopic": "添加子主題",
+    "subtopicNamePlaceholder": "子主題名稱",
+    "subtopicDescPlaceholder": "簡短描述（可選）",
+    "noSubtopics": "尚未有子主題。最多可添加4個子主題。",
+    "saveTheme": "保存主題",
+    "themeSaved": "主題已保存！"
   },
   "upgradePrompt": {
     "lockedTitle": "{feature} 已鎖定",
@@ -3222,5 +3236,33 @@
     "viewPlans": "查看計劃",
     "inlineLabel": "{feature} 需要升級",
     "upgrade": "升級"
+  },
+  "crmMembership": {
+    "title": "會員管理",
+    "subtitle": "查看和管理客戶會員、積分和消費。",
+    "activeMembers": "活躍",
+    "totalPoints": "總積分",
+    "totalSpend": "總消費",
+    "empty": "未找到會員帳戶。",
+    "unknownMember": "未知會員",
+    "pointUnit": "BOBO積分",
+    "spent": "已消費",
+    "joinedAt": "加入日期 {date}"
+  },
+  "posMembership": {
+    "title": "會員查詢",
+    "subtitle": "通過電郵搜索會員或掃描QR碼。",
+    "scanQr": "掃描QR碼",
+    "stopScan": "停止掃描",
+    "searchPlaceholder": "輸入電郵或用戶ID...",
+    "search": "搜索",
+    "noResults": "未找到匹配的會員。",
+    "searchError": "搜索會員失敗。",
+    "cameraError": "無法訪問相機。",
+    "unknownMember": "未知會員",
+    "points": "BOBO積分",
+    "totalSpend": "總消費",
+    "tier": "等級",
+    "noTier": "無等級"
   }
 }

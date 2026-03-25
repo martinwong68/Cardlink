@@ -3213,7 +3213,21 @@
     "save": "設定を保存",
     "saving": "保存中...",
     "saved": "設定が保存されました！",
-    "error": "設定の保存に失敗しました。"
+    "error": "設定の保存に失敗しました。",
+    "themeSection": "コミュニティテーマ",
+    "themeHint": "コミュニティに名前と最大4つのサブトピックを設定します。",
+    "themeName": "テーマ名",
+    "themeNamePlaceholder": "例：私たちのコーヒーコミュニティ",
+    "themeDescription": "説明",
+    "themeDescriptionPlaceholder": "コミュニティは何についてですか？",
+    "themeIcon": "アイコン / 絵文字",
+    "subtopics": "サブトピック",
+    "addSubtopic": "サブトピック追加",
+    "subtopicNamePlaceholder": "サブトピック名",
+    "subtopicDescPlaceholder": "短い説明（任意）",
+    "noSubtopics": "まだサブトピックがありません。最大4つまで追加できます。",
+    "saveTheme": "テーマ保存",
+    "themeSaved": "テーマが保存されました！"
   },
   "upgradePrompt": {
     "lockedTitle": "{feature} はロックされています",
@@ -3222,5 +3236,33 @@
     "viewPlans": "プランを見る",
     "inlineLabel": "{feature} にはアップグレードが必要です",
     "upgrade": "アップグレード"
+  },
+  "crmMembership": {
+    "title": "会員管理",
+    "subtitle": "顧客の会員、ポイント、支出を管理します。",
+    "activeMembers": "アクティブ",
+    "totalPoints": "合計ポイント",
+    "totalSpend": "合計支出",
+    "empty": "会員アカウントが見つかりません。",
+    "unknownMember": "不明な会員",
+    "pointUnit": "BOBOポイント",
+    "spent": "支出済み",
+    "joinedAt": "加入日 {date}"
+  },
+  "posMembership": {
+    "title": "会員検索",
+    "subtitle": "メールで会員を検索するかQRコードをスキャンします。",
+    "scanQr": "QRコードスキャン",
+    "stopScan": "スキャン停止",
+    "searchPlaceholder": "メールまたはユーザーIDを入力...",
+    "search": "検索",
+    "noResults": "一致する会員が見つかりません。",
+    "searchError": "会員の検索に失敗しました。",
+    "cameraError": "カメラにアクセスできません。",
+    "unknownMember": "不明な会員",
+    "points": "BOBOポイント",
+    "totalSpend": "合計支出",
+    "tier": "ティア",
+    "noTier": "ティアなし"
   }
 }
