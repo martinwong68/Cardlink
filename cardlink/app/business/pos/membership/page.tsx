@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Loader2, Search, User, Star, Crown, Camera, QrCode } from "lucide-react";
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
-import { createClient } from "@/src/lib/supabase/client";
 
 type MemberAccount = {
   id: string;
@@ -59,16 +58,25 @@ export default function PosMembershipPage() {
   }, [t]);
 
   const handleScanResult = useCallback((text: string) => {
-    // Extract user_id from QR code — supports direct UUID or cardlink URL with uid param
-    let userId = text;
+    // Extract search value from QR code:
+    //  - Namecard URL: /c/{slug} → pass entire URL or slug to API (API handles both)
+    //  - Redemption URL: /dashboard/scan?rid={uuid} → not used here, pass as-is
+    //  - Direct UUID or email → pass as-is
+    let searchValue = text;
     try {
       const url = new URL(text);
-      userId = url.searchParams.get("uid") ?? url.pathname.split("/").pop() ?? text;
+      const cardSlugMatch = url.pathname.match(/^\/c\/([^/]+)$/);
+      if (cardSlugMatch?.[1]) {
+        // Pass the full URL so the API can extract /c/{slug}
+        searchValue = text;
+      } else {
+        searchValue = url.searchParams.get("uid") ?? url.pathname.split("/").pop() ?? text;
+      }
     } catch {
       // Not a URL, use as-is
     }
-    setSearch(userId);
-    void doSearch(userId);
+    setSearch(searchValue);
+    void doSearch(searchValue);
     stopCamera();
   }, [doSearch]);
 
