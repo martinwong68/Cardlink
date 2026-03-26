@@ -221,40 +221,43 @@ export default function RegisterCompanyPage() {
 
   /* ─── Check for payment return from Stripe ─── */
   useEffect(() => {
-    const checkout = searchParams.get("checkout");
-    const planParam = searchParams.get("plan");
-    const sessionId = searchParams.get("session_id");
-    if (checkout === "success") {
-      if (planParam && (["starter", "professional", "business"] as PlanSlug[]).includes(planParam as PlanSlug)) {
-        setSelectedPlan(planParam as PlanSlug);
+    const handleCheckoutReturn = async () => {
+      const checkout = searchParams.get("checkout");
+      const planParam = searchParams.get("plan");
+      const sessionId = searchParams.get("session_id");
+      if (checkout !== "success") return;
+
+      if (!sessionId) {
+        /* No session_id — treat as unverified, stay on payment step */
+        setStep(2);
+        return;
       }
-      /* Verify payment with backend before confirming */
-      if (sessionId) {
-        fetch("/api/stripe/checkout/confirm", {
+
+      try {
+        const res = await fetch("/api/stripe/checkout/confirm", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ sessionId }),
-        })
-          .then((res) => {
-            if (res.ok) {
-              setPaymentConfirmed(true);
-              setStep(3);
-              setSubStep("3a");
-            } else {
-              setError(t("step2.paymentError"));
-              setStep(2);
-            }
-          })
-          .catch(() => {
-            setError(t("step2.paymentError"));
-            setStep(2);
-          });
-      } else {
-        /* No session_id — treat as unverified, stay on payment step */
+        });
+        if (res.ok) {
+          if (planParam && (["starter", "professional", "business"] as PlanSlug[]).includes(planParam as PlanSlug)) {
+            setSelectedPlan(planParam as PlanSlug);
+          }
+          setPaymentConfirmed(true);
+          setStep(3);
+          setSubStep("3a");
+        } else {
+          const body = await res.json().catch(() => null) as { error?: string } | null;
+          setError(body?.error || t("step2.paymentError"));
+          setStep(2);
+        }
+      } catch {
+        setError(t("step2.paymentError"));
         setStep(2);
       }
-    }
-  }, [searchParams]);
+    };
+    void handleCheckoutReturn();
+  }, [searchParams, t]);
 
   /* ─── Validation ─── */
   function validateStep3a(): boolean {
@@ -326,9 +329,9 @@ export default function RegisterCompanyPage() {
           cancelUrl: `${origin}/register-company?checkout=cancelled`,
         }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        setError(data.error || t("step2.paymentError"));
+      const data = await res.json().catch(() => null) as { url?: string; error?: string } | null;
+      if (!res.ok || !data?.url) {
+        setError(data?.error || t("step2.paymentError"));
         setPaymentLoading(false);
         return;
       }
