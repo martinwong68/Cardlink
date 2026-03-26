@@ -33,7 +33,7 @@ export default function AccountingInventoryPage() {
       try {
         await accountingPost("/api/accounting/inventory-items", {
           name: item.name,
-          sku: item.sku || `${item.name.slice(0, 3).toUpperCase()}-${Date.now()}`,
+          sku: item.sku || `ITEM-${Date.now()}`,
           quantity: 0,
           unit_cost: item.cost_price || 0,
           category: item.category || null,

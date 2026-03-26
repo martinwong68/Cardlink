@@ -206,7 +206,7 @@ export default function StoreProductsPage() {
   const handleImportFromItems = async (masterItems: { id: string; name: string; sku: string | null; description: string | null; category: string | null; unit_price: number; cost_price: number; unit: string }[]) => {
     if (!companyId) return;
     for (const item of masterItems) {
-      const slug = (item.name || "").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + "-" + Date.now();
+      const slug = (item.name || "item").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") + "-" + Date.now();
       await supabase.from("store_products").insert({
         company_id: companyId,
         name: item.name,

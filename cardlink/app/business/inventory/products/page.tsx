@@ -152,7 +152,7 @@ export default function InventoryProductsPage() {
           headers: { ...HEADERS, "content-type": "application/json" },
           body: JSON.stringify({
             name: item.name,
-            sku: item.sku || `${item.name.slice(0, 3).toUpperCase()}-${Date.now()}`,
+            sku: item.sku || `ITEM-${Date.now()}`,
             unit: item.unit || "pcs",
             description: item.description || null,
             cost_price: item.cost_price || 0,
