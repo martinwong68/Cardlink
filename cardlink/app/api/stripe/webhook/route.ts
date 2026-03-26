@@ -266,6 +266,18 @@ export async function POST(request: Request) {
               .eq("stripe_customer_id", customerId);
             throwIfSupabaseError("update last_payment_at", updateError);
           }
+
+          // Save actual plan slug from checkout metadata
+          const planSlug = session.metadata?.plan_slug;
+          if (planSlug) {
+            const { error: planError } = await supabaseAdmin
+              .from("profiles")
+              .update({ plan: planSlug })
+              .eq("stripe_customer_id", customerId);
+            if (planError) {
+              console.error("[stripe-webhook] failed to update plan slug", planError);
+            }
+          }
         }
         break;
       }

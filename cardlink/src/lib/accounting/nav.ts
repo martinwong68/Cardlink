@@ -6,6 +6,7 @@ export type AccountingNavItem = {
 };
 
 export const accountingNavItems: AccountingNavItem[] = [
+  { id: "setup", href: "/business/accounting/setup", label: "Setup", shortLabel: "Setup" },
   { id: "dashboard", href: "/business/accounting/dashboard", label: "Dashboard", shortLabel: "Dashboard" },
   { id: "accounts", href: "/business/accounting/accounts", label: "Chart of Accounts", shortLabel: "Accounts" },
   { id: "transactions", href: "/business/accounting/transactions", label: "Transactions", shortLabel: "Txns" },
