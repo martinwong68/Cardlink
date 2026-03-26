@@ -578,17 +578,15 @@ export default function BusinessAiPage() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    const fileArray = Array.from(files);
+
     // Auto-select model tier based on the largest file size
-    let maxSize = 0;
-    for (let i = 0; i < files.length; i++) {
-      if (files[i].size > maxSize) maxSize = files[i].size;
-    }
+    const maxSize = Math.max(...fileArray.map((f) => f.size));
     const autoModel = selectModelForFile(maxSize);
     setModel(autoModel);
 
     // Read all files
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+    for (const file of fileArray) {
       const ext = file.name.toLowerCase().split(".").pop() ?? "";
       const isText = ["csv", "tsv", "txt", "json", "xml"].includes(ext);
 
@@ -1039,11 +1037,16 @@ The JSON object must have:
 
   const handleClearUploadedFile = (index?: number) => {
     if (index !== undefined) {
-      setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+      setUploadedFiles((prev) => {
+        const updated = prev.filter((_, i) => i !== index);
+        // Reset model if no files left after removal
+        if (updated.length === 0) {
+          setModel(activePreset?.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5");
+        }
+        return updated;
+      });
     } else {
       setUploadedFiles([]);
-    }
-    if (uploadedFiles.length <= 1) {
       setModel(activePreset?.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5");
     }
   };

@@ -18,6 +18,12 @@ type BusinessEligibilityState = {
   reasonCode: string;
 };
 
+type ProfileData = {
+  plan?: string | null;
+  premium_until?: string | null;
+  purchased_card_slots?: number | null;
+};
+
 export default function SettingsPage() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
@@ -46,11 +52,12 @@ export default function SettingsPage() {
       .select("plan, premium_until, purchased_card_slots")
       .eq("id", userData.user.id)
       .maybeSingle();
+    const profile = data as ProfileData | null;
     return {
-      plan: resolveEffectiveViewerPlan(data),
-      premiumUntil: data?.premium_until ?? null,
-      slug: data?.plan ?? "free",
-      purchasedCardSlots: (data as { purchased_card_slots?: number | null } | null)?.purchased_card_slots ?? 0,
+      plan: resolveEffectiveViewerPlan(profile),
+      premiumUntil: profile?.premium_until ?? null,
+      slug: profile?.plan ?? "free",
+      purchasedCardSlots: profile?.purchased_card_slots ?? 0,
     };
   };
 
@@ -257,17 +264,26 @@ export default function SettingsPage() {
       const updateSlots = async () => {
         const { data: userData } = await supabase.auth.getUser();
         if (userData?.user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("purchased_card_slots")
-            .eq("id", userData.user.id)
-            .maybeSingle();
-          const currentSlots = (profile as { purchased_card_slots?: number | null } | null)?.purchased_card_slots ?? 0;
-          await supabase
-            .from("profiles")
-            .update({ purchased_card_slots: currentSlots + 1 })
-            .eq("id", userData.user.id);
-          setPurchasedSlots(currentSlots + 1);
+          // Use a raw SQL increment to avoid race conditions
+          const { data: updated, error } = await supabase.rpc("increment_purchased_card_slots" as string, {
+            p_user_id: userData.user.id,
+          });
+          if (error) {
+            // Fallback: read-then-write if RPC doesn't exist
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("purchased_card_slots")
+              .eq("id", userData.user.id)
+              .maybeSingle();
+            const currentSlots = (profile as ProfileData | null)?.purchased_card_slots ?? 0;
+            await supabase
+              .from("profiles")
+              .update({ purchased_card_slots: currentSlots + 1 })
+              .eq("id", userData.user.id);
+            setPurchasedSlots(currentSlots + 1);
+          } else {
+            setPurchasedSlots(typeof updated === "number" ? updated : purchasedSlots + 1);
+          }
           setMessage("Extra card slot purchased successfully!");
         }
       };
