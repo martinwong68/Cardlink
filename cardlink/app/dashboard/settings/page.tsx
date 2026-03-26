@@ -410,7 +410,7 @@ export default function SettingsPage() {
           </Link>
 
           <Link
-            href={businessEligibility?.eligible ? "/business" : "/business/register-company"}
+            href={businessEligibility?.eligible ? "/business" : "/register-company"}
             onClick={businessEligibility?.eligible ? handleSwitchToBusiness : undefined}
             className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
           >

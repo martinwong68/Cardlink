@@ -167,27 +167,46 @@ export async function POST(request: Request) {
         .eq("id", user.id);
       throwIfSupabaseError("update stripe subscription fields", profileUpdateError);
 
-      const { error: recomputeError } = await supabaseAdmin.rpc("recompute_profile_premium", {
-        p_user_id: user.id,
-      });
-      throwIfSupabaseError("recompute_profile_premium", recomputeError);
+      // recompute_profile_premium is non-fatal — the webhook will also call it
+      try {
+        const { error: recomputeError } = await supabaseAdmin.rpc("recompute_profile_premium", {
+          p_user_id: user.id,
+        });
+        if (recomputeError) {
+          console.error("[stripe-checkout-confirm] recompute_profile_premium failed (non-fatal)", {
+            userId: user.id,
+            error: recomputeError.message,
+          });
+        }
+      } catch (recomputeErr) {
+        console.error("[stripe-checkout-confirm] recompute_profile_premium threw (non-fatal)", recomputeErr);
+      }
 
       // Activate any pending company subscriptions for this user
       if (ACTIVE_STRIPE_STATUSES.has(subscription.status)) {
-        const { data: activeCompany } = await supabaseAdmin
-          .from("profiles")
-          .select("business_active_company_id")
-          .eq("id", user.id)
-          .maybeSingle();
-        if (activeCompany?.business_active_company_id) {
-          const { error: subActivateError } = await supabaseAdmin
-            .from("company_subscriptions")
-            .update({ status: "active" })
-            .eq("company_id", activeCompany.business_active_company_id)
-            .eq("status", "pending");
-          if (subActivateError) {
-            console.error("[stripe-checkout-confirm] failed to activate company subscription", subActivateError);
+        try {
+          const { data: activeCompany } = await supabaseAdmin
+            .from("profiles")
+            .select("business_active_company_id")
+            .eq("id", user.id)
+            .maybeSingle();
+          if (activeCompany?.business_active_company_id) {
+            const { error: subActivateError } = await supabaseAdmin
+              .from("company_subscriptions")
+              .update({ status: "active" })
+              .eq("company_id", activeCompany.business_active_company_id)
+              .eq("status", "pending");
+            if (subActivateError) {
+              console.error("[stripe-checkout-confirm] failed to activate company subscription", {
+                companyId: activeCompany.business_active_company_id,
+                error: subActivateError.message,
+                code: subActivateError.code,
+                details: subActivateError.details,
+              });
+            }
           }
+        } catch (activateErr) {
+          console.error("[stripe-checkout-confirm] unexpected error activating company subscription", activateErr);
         }
       }
     } else {
@@ -230,10 +249,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
+    const errMessage = error instanceof Error ? error.message : String(error);
     console.error("[stripe-checkout-confirm] failed", {
       sessionId,
       userId: user.id,
-      error,
+      error: errMessage,
     });
     return NextResponse.json({ error: "Failed to confirm checkout" }, { status: 500 });
   }

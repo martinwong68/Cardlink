@@ -32,7 +32,7 @@ const settingsCards = [
   { key: "integrations" as const, icon: Plug, color: "bg-pink-50 text-pink-600", href: "/business/settings/integrations" },
   { key: "stripeConnect" as const, icon: Banknote, color: "bg-green-50 text-green-600", href: "/business/settings/stripe-connect" },
   { key: "websiteSettings" as const, icon: Monitor, color: "bg-sky-50 text-sky-600", href: "/business/settings/website" },
-  { key: "newCompany" as const, icon: PlusCircle, color: "bg-cyan-50 text-cyan-600", href: "/business/register-company" },
+  { key: "newCompany" as const, icon: PlusCircle, color: "bg-cyan-50 text-cyan-600", href: "/register-company" },
 ];
 
 const ownerCard = {
