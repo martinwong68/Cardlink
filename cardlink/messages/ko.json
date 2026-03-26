@@ -3008,9 +3008,9 @@
       "perMonth": "/mo",
       "perYear": "/yr",
       "plans": {
-        "free": {
-          "name": "Free",
-          "emoji": "🆓"
+        "starter": {
+          "name": "스타터",
+          "emoji": "🚀"
         },
         "professional": {
           "name": "프로페셔널",

@@ -34,6 +34,27 @@ BEGIN
     NULL;
   END;
 
+  -- ── Fix accounting FKs that may lack CASCADE ──────────────
+  -- transaction_lines.account_id → accounts.id may have been created without CASCADE
+  BEGIN
+    ALTER TABLE transaction_lines
+      DROP CONSTRAINT IF EXISTS transaction_lines_account_id_fkey;
+    ALTER TABLE transaction_lines
+      ADD CONSTRAINT transaction_lines_account_id_fkey
+      FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE;
+  EXCEPTION WHEN undefined_table THEN NULL;
+  END;
+
+  -- acct_bank_accounts.account_id → accounts.id may lack CASCADE
+  BEGIN
+    ALTER TABLE acct_bank_accounts
+      DROP CONSTRAINT IF EXISTS acct_bank_accounts_account_id_fkey;
+    ALTER TABLE acct_bank_accounts
+      ADD CONSTRAINT acct_bank_accounts_account_id_fkey
+      FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE;
+  EXCEPTION WHEN undefined_table THEN NULL;
+  END;
+
   -- ── Delete ALL companies (cascades to 100+ dependent tables) ──
   DELETE FROM companies;
 
