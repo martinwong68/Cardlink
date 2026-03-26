@@ -357,8 +357,8 @@ export default function SettingsPage() {
             >
               <CreditCard className="h-4 w-4 text-indigo-600" />
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">Company Cards</div>
-                <div className="text-xs text-gray-500">View and manage company name cards</div>
+                <div className="text-sm font-medium text-gray-800">{t("links.companyCards")}</div>
+                <div className="text-xs text-gray-500">{t("links.companyCardsDesc")}</div>
               </div>
               <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
             </Link>
@@ -368,8 +368,8 @@ export default function SettingsPage() {
             >
               <Building2 className="h-4 w-4 text-indigo-600" />
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">Company Management</div>
-                <div className="text-xs text-gray-500">Manage company settings and members</div>
+                <div className="text-sm font-medium text-gray-800">{t("links.companyManagement")}</div>
+                <div className="text-xs text-gray-500">{t("links.companyManagementDesc")}</div>
               </div>
               <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
             </Link>

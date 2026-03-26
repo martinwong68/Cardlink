@@ -804,7 +804,11 @@
       "orderNfc": "订购 NFC 名片",
       "export": "导出联系人",
       "support": "帮助与支持",
-      "language": "语言"
+      "language": "语言",
+      "companyCards": "公司名片",
+      "companyCardsDesc": "查看和管理公司名片",
+      "companyManagement": "公司管理",
+      "companyManagementDesc": "管理公司设置和成员"
     },
     "actions": {
       "logout": "退出登录"

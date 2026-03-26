@@ -804,7 +804,11 @@
       "orderNfc": "注文 NFC Card",
       "export": "エクスポート 連絡先",
       "support": "Help & サポート",
-      "language": "言語"
+      "language": "言語",
+      "companyCards": "会社名刺",
+      "companyCardsDesc": "会社名刺の表示と管理",
+      "companyManagement": "会社管理",
+      "companyManagementDesc": "会社の設定とメンバーの管理"
     },
     "actions": {
       "logout": "Log Out"
