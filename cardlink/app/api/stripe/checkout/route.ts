@@ -178,6 +178,6 @@ export async function POST(request: Request) {
   } catch (error) {
     const errMessage = error instanceof Error ? error.message : String(error);
     console.error("[stripe-checkout] failed", { userId: user.id, error: errMessage });
-    return NextResponse.json({ error: errMessage }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create checkout session" }, { status: 500 });
   }
 }

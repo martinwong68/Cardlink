@@ -245,6 +245,6 @@ export async function POST(request: Request) {
       userId: user.id,
       error: errMessage,
     });
-    return NextResponse.json({ error: `Failed to confirm checkout: ${errMessage}` }, { status: 500 });
+    return NextResponse.json({ error: "Failed to confirm checkout" }, { status: 500 });
   }
 }
