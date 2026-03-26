@@ -171,6 +171,22 @@ export async function POST(request: Request) {
         p_user_id: user.id,
       });
       throwIfSupabaseError("recompute_profile_premium", recomputeError);
+
+      // Activate any pending company subscriptions for this user
+      if (ACTIVE_STRIPE_STATUSES.has(subscription.status)) {
+        const { data: activeCompany } = await supabaseAdmin
+          .from("profiles")
+          .select("business_active_company_id")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (activeCompany?.business_active_company_id) {
+          await supabaseAdmin
+            .from("company_subscriptions")
+            .update({ status: "active" })
+            .eq("company_id", activeCompany.business_active_company_id)
+            .eq("status", "pending");
+        }
+      }
     } else {
       const { error: paymentUpdateError } = await supabaseAdmin
         .from("profiles")

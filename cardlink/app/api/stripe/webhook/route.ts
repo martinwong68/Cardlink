@@ -278,6 +278,23 @@ export async function POST(request: Request) {
               console.error("[stripe-webhook] failed to update plan slug", planError);
             }
           }
+
+          // Activate any pending company subscriptions for this user
+          const userId = await getUserIdByCustomer(customerId);
+          if (userId) {
+            const { data: activeCompany } = await supabaseAdmin
+              .from("profiles")
+              .select("business_active_company_id")
+              .eq("id", userId)
+              .maybeSingle();
+            if (activeCompany?.business_active_company_id) {
+              await supabaseAdmin
+                .from("company_subscriptions")
+                .update({ status: "active" })
+                .eq("company_id", activeCompany.business_active_company_id)
+                .eq("status", "pending");
+            }
+          }
         }
         break;
       }

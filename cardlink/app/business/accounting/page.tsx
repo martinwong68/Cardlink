@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   FileText,
   BookOpen,
@@ -10,6 +11,7 @@ import {
   Wallet,
   Users,
   FolderOpen,
+  Settings,
 } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
@@ -152,8 +154,31 @@ export default function AccountingLandingPage() {
     });
   }, [data]);
 
+  const needsSetup = !loading && data && data.accounts.length === 0;
+
   return (
     <div className="space-y-4 pb-28">
+      {/* Setup banner — shown when no accounts are configured */}
+      {needsSetup && (
+        <Link
+          href="/business/accounting/setup"
+          className="flex items-center gap-3 rounded-2xl border border-indigo-200 bg-indigo-50 p-4 transition hover:bg-indigo-100"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100">
+            <Settings className="h-5 w-5 text-indigo-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-indigo-800">Complete Accounting Setup</p>
+            <p className="text-xs text-indigo-600">
+              Set up your default currency and chart of accounts to get started with accounting.
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white">
+            Setup
+          </span>
+        </Link>
+      )}
+
       {/* Function slider */}
       <ModuleFunctionSlider
         items={functionsWithBadges}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, HelpCircle, Loader2 } from "lucide-react";
 import { accountingGet, accountingPost } from "@/src/lib/accounting/client";
 
 type DefaultAccount = { code: string; name: string; type: string };
@@ -140,6 +140,18 @@ export default function AccountingSetupPage() {
         <div className="app-card space-y-5 rounded-2xl p-5">
           <h2 className="text-sm font-semibold text-gray-700">Organization Settings</h2>
 
+          {/* Help text */}
+          <div className="flex gap-2 rounded-xl border border-blue-100 bg-blue-50 p-3">
+            <HelpCircle className="h-4 w-4 shrink-0 text-blue-500 mt-0.5" />
+            <div className="text-xs text-blue-700 space-y-1">
+              <p className="font-medium">Getting started with Accounting</p>
+              <p>
+                Choose the default currency for your transactions. This will be applied to all new invoices,
+                expenses, and journal entries. You can still record individual transactions in other currencies later.
+              </p>
+            </div>
+          </div>
+
           <div>
             <label className="text-xs font-medium text-gray-600">Default Currency</label>
             <select
@@ -169,6 +181,27 @@ export default function AccountingSetupPage() {
       {step === 2 && (
         <div className="app-card space-y-5 rounded-2xl p-5">
           <h2 className="text-sm font-semibold text-gray-700">Default Chart of Accounts</h2>
+
+          {/* Help text */}
+          <div className="flex gap-2 rounded-xl border border-blue-100 bg-blue-50 p-3">
+            <HelpCircle className="h-4 w-4 shrink-0 text-blue-500 mt-0.5" />
+            <div className="text-xs text-blue-700 space-y-1">
+              <p className="font-medium">What is a Chart of Accounts?</p>
+              <p>
+                A chart of accounts is the foundation of your accounting system. It organises all financial
+                transactions into five categories:
+              </p>
+              <ul className="ml-3 list-disc space-y-0.5">
+                <li><strong>Assets</strong> — What your business owns (cash, receivables, equipment)</li>
+                <li><strong>Liabilities</strong> — What your business owes (payables, loans)</li>
+                <li><strong>Equity</strong> — Owner&apos;s investment and retained earnings</li>
+                <li><strong>Revenue</strong> — Income from sales and services</li>
+                <li><strong>Expenses</strong> — Costs of running your business</li>
+              </ul>
+              <p>You can add, edit, or remove accounts later from the Chart of Accounts page.</p>
+            </div>
+          </div>
+
           <p className="text-xs text-gray-500">
             {isSetupComplete
               ? `You already have ${accountsCount} accounts configured. You can still add more from the Chart of Accounts page.`
