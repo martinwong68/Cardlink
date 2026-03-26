@@ -1093,6 +1093,7 @@
     "sections": {
       "promotion": "活动轮播",
       "partners": "合作公司",
+      "stores": "门店",
       "discounts": "优惠列表"
     },
     "labels": {
@@ -1107,6 +1108,8 @@
     },
     "actions": {
       "view": "查看",
+      "viewStore": "访问",
+      "manage": "管理",
       "join": "加入",
       "joined": "已加入",
       "addToMembership": "加入会员",
@@ -1117,6 +1120,7 @@
     "empty": {
       "promotions": "目前没有进行中的活动。",
       "partners": "目前没有合作公司。",
+      "stores": "目前没有开放的门店。",
       "discounts": "该公司目前没有可用优惠。"
     },
     "messages": {

@@ -144,6 +144,8 @@ export default function CardsDashboardPage() {
   const [isOwner, setIsOwner] = useState(false);
   const [companyAccountCompanyId, setCompanyAccountCompanyId] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [nfcExtraSlots, setNfcExtraSlots] = useState(0);
+  const [purchasedSlots, setPurchasedSlots] = useState(0);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -186,6 +188,7 @@ export default function CardsDashboardPage() {
       { data: companyRoleData },
       { data: createdCompanyData },
       { data: adminCompanyIdsData },
+      { data: nfcData },
     ] = await Promise.all([
       supabase
         .from("business_cards")
@@ -197,7 +200,7 @@ export default function CardsDashboardPage() {
         .order("created_at", { ascending: false }),
       supabase
         .from("profiles")
-        .select("plan, premium_until, avatar_url")
+        .select("plan, premium_until, avatar_url, purchased_card_slots")
         .eq("id", userData.user.id)
         .maybeSingle(),
       supabase
@@ -210,10 +213,18 @@ export default function CardsDashboardPage() {
         .select("id")
         .eq("created_by", userData.user.id),
       supabase.rpc("get_my_admin_company_ids"),
+      supabase
+        .from("nfc_cards")
+        .select("id, premium_granted_until")
+        .eq("owner_id", userData.user.id)
+        .eq("status", "active")
+        .gt("premium_granted_until", new Date().toISOString()),
     ]);
 
     setViewerPlan(resolveEffectiveViewerPlan(profileData));
     setAvatarUrl((profileData as { avatar_url?: string | null } | null)?.avatar_url ?? null);
+    setPurchasedSlots((profileData as { purchased_card_slots?: number | null } | null)?.purchased_card_slots ?? 0);
+    setNfcExtraSlots(((nfcData ?? []) as { id: string }[]).length);
     const ownerByRole = ((companyRoleData ?? []) as { role: string }[]).some(
       (item) =>
         ["owner", "admin", "manager", "company_owner", "company_admin"].includes(
@@ -259,7 +270,13 @@ export default function CardsDashboardPage() {
       return;
     }
 
-    const maxCardsForCurrentUser = viewerPlan === "premium" ? Number.POSITIVE_INFINITY : companyAccountCompanyId ? 2 : 1;
+    /* Card slot logic: base 1 free + NFC extra slots + purchased slots ($8/mo each).
+       Premium users get unlimited, company-managed accounts get 2. */
+    const maxCardsForCurrentUser = viewerPlan === "premium"
+      ? Number.POSITIVE_INFINITY
+      : companyAccountCompanyId
+        ? 2
+        : 1 + nfcExtraSlots + purchasedSlots;
 
     if (cards.length >= maxCardsForCurrentUser) {
       setMessage(

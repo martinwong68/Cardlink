@@ -1093,6 +1093,7 @@
     "sections": {
       "promotion": "Promotion Carousel",
       "partners": "Partner 会社",
+      "stores": "Shops & Stores",
       "discounts": "割引 リスト"
     },
     "labels": {
@@ -1107,6 +1108,8 @@
     },
     "actions": {
       "view": "表示",
+      "viewStore": "Visit",
+      "manage": "Manage",
       "join": "参加",
       "joined": "Joined",
       "addToMembership": "追加 to Membership",
@@ -1117,6 +1120,7 @@
     "empty": {
       "promotions": "いいえ 有効 promotions right now.",
       "partners": "いいえ partner companies 利用可能.",
+      "stores": "No shops are open right now.",
       "discounts": "No discounts available for this company."
     },
     "messages": {

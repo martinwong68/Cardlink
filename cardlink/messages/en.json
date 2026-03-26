@@ -1093,6 +1093,7 @@
     "sections": {
       "promotion": "Promotion Carousel",
       "partners": "Partner Company",
+      "stores": "Shops & Stores",
       "discounts": "Discount List"
     },
     "labels": {
@@ -1107,6 +1108,8 @@
     },
     "actions": {
       "view": "View",
+      "viewStore": "Visit",
+      "manage": "Manage",
       "join": "Join",
       "joined": "Joined",
       "addToMembership": "Add to Membership",
@@ -1117,6 +1120,7 @@
     "empty": {
       "promotions": "No active promotions right now.",
       "partners": "No partner companies available.",
+      "stores": "No shops are open right now.",
       "discounts": "No discounts available for this company."
     },
     "messages": {
