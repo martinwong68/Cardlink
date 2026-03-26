@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import { accountingGet } from "@/src/lib/accounting/client";
+import { accountingGet, accountingPost } from "@/src/lib/accounting/client";
 import type { InventoryItemRow } from "@/src/lib/accounting/types";
+import ImportFromItems from "@/components/business/ImportFromItems";
 
 export default function AccountingInventoryPage() {
   const [items, setItems] = useState<InventoryItemRow[]>([]);
@@ -27,11 +28,29 @@ export default function AccountingInventoryPage() {
     void loadData();
   }, []);
 
+  const handleImportFromItems = async (masterItems: { id: string; name: string; sku: string | null; unit_price: number; cost_price: number; category: string | null }[]) => {
+    for (const item of masterItems) {
+      try {
+        await accountingPost("/api/accounting/inventory-items", {
+          name: item.name,
+          sku: item.sku || `ITEM-${Date.now()}`,
+          quantity: 0,
+          unit_cost: item.cost_price || 0,
+          category: item.category || null,
+        });
+      } catch { /* continue on error */ }
+    }
+    await loadData();
+  };
+
   return (
     <section className="app-card p-4 md:p-5 pb-28">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-800">Inventory</h2>
-        <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>
+        <div className="flex items-center gap-2">
+          <ImportFromItems onImport={handleImportFromItems} />
+          <button type="button" onClick={() => void loadData()} className="app-secondary-btn px-3 py-1.5 text-xs font-semibold">Refresh</button>
+        </div>
       </div>
 
       {isLoading ? <p className="text-sm text-gray-500">Loading inventory...</p> : null}

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Plus, Search, Edit2 } from "lucide-react";
+import ImportFromItems from "@/components/business/ImportFromItems";
 
 const HEADERS = { "x-cardlink-app-scope": "business" };
 
@@ -143,6 +144,29 @@ export default function InventoryProductsPage() {
     p.sku.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleImportFromItems = async (masterItems: { id: string; name: string; sku: string | null; description: string | null; category: string | null; unit_price: number; cost_price: number; unit: string }[]) => {
+    for (const item of masterItems) {
+      try {
+        await fetch("/api/inventory/products", {
+          method: "POST",
+          headers: { ...HEADERS, "content-type": "application/json" },
+          body: JSON.stringify({
+            name: item.name,
+            sku: item.sku || `ITEM-${Date.now()}`,
+            unit: item.unit || "pcs",
+            description: item.description || null,
+            cost_price: item.cost_price || 0,
+            sell_price: item.unit_price || 0,
+            is_active: true,
+            product_type: "physical",
+            reorder_level: 5,
+          }),
+        });
+      } catch { /* continue on error */ }
+    }
+    await load();
+  };
+
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-20 text-gray-400">
       <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-indigo-500" />
@@ -155,9 +179,12 @@ export default function InventoryProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-900">Products ({products.length})</h2>
-        <button onClick={openCreate} className="flex items-center gap-1 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
-          <Plus className="h-4 w-4" /> Add
-        </button>
+        <div className="flex items-center gap-2">
+          <ImportFromItems onImport={handleImportFromItems} />
+          <button onClick={openCreate} className="flex items-center gap-1 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            <Plus className="h-4 w-4" /> Add
+          </button>
+        </div>
       </div>
 
       {/* Search */}

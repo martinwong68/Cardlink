@@ -58,14 +58,12 @@ type BillingRow = {
 
 const PLAN_ICONS: Record<string, typeof Rocket> = {
   starter: Rocket,
-  free: Rocket,
   professional: Zap,
   business: Crown,
 };
 
 const PLAN_COLORS: Record<string, { ring: string; bg: string; icon: string }> = {
   starter: { ring: "ring-gray-200", bg: "bg-gray-50", icon: "text-gray-500" },
-  free: { ring: "ring-gray-200", bg: "bg-gray-50", icon: "text-gray-500" },
   professional: { ring: "ring-indigo-300", bg: "bg-indigo-50", icon: "text-indigo-600" },
   business: { ring: "ring-amber-300", bg: "bg-amber-50", icon: "text-amber-600" },
 };
@@ -319,7 +317,7 @@ export default function PlanBillingSettingsPage() {
 
   const planSlug = currentPlan?.slug ?? "starter";
   const PlanIcon = PLAN_ICONS[planSlug] ?? Rocket;
-  const planColor = PLAN_COLORS[planSlug] ?? PLAN_COLORS.free;
+  const planColor = PLAN_COLORS[planSlug] ?? PLAN_COLORS.starter;
 
   return (
     <div className="space-y-6">
@@ -338,7 +336,7 @@ export default function PlanBillingSettingsPage() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-800">
-              {currentPlan?.name ?? "Free"}{" "}
+              {currentPlan?.name ?? "No Plan"}{" "}
               <span className="ml-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
                 {subscription?.status === "active" ? t("active") : (subscription?.status ?? t("active"))}
               </span>
@@ -433,7 +431,7 @@ export default function PlanBillingSettingsPage() {
           {plans.map((plan) => {
             const slug = plan.slug;
             const Icon = PLAN_ICONS[slug] ?? Rocket;
-            const colors = PLAN_COLORS[slug] ?? PLAN_COLORS.free;
+            const colors = PLAN_COLORS[slug] ?? PLAN_COLORS.starter;
             const isCurrent = plan.id === currentPlan?.id;
             const isDowngrade =
               currentPlan && plan.sort_order < currentPlan.sort_order;

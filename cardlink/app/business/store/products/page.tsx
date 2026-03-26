@@ -8,6 +8,7 @@ import {
   Package, Calendar, HardDrive, AlertTriangle,
 } from "lucide-react";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
+import ImportFromItems from "@/components/business/ImportFromItems";
 
 const IMAGE_MAX_DIMENSION = 1024;
 const IMAGE_JPEG_QUALITY = 0.8;
@@ -202,6 +203,25 @@ export default function StoreProductsPage() {
     setShowForm(true);
   };
 
+  const handleImportFromItems = async (masterItems: { id: string; name: string; sku: string | null; description: string | null; category: string | null; unit_price: number; cost_price: number; unit: string }[]) => {
+    if (!companyId) return;
+    for (const item of masterItems) {
+      const slug = (item.name || "item").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") + "-" + Date.now();
+      await supabase.from("store_products").insert({
+        company_id: companyId,
+        name: item.name,
+        slug,
+        description: item.description || null,
+        price: item.unit_price || 0,
+        product_type: "physical",
+        sku: item.sku || null,
+        is_active: true,
+        master_item_id: item.id,
+      });
+    }
+    await loadData();
+  };
+
   const openEditForm = (p: Product) => {
     resetForm();
     setEditingId(p.id);
@@ -341,9 +361,12 @@ export default function StoreProductsPage() {
           <h1 className="app-title text-xl font-semibold">{t("title")}</h1>
           <p className="app-subtitle text-sm">{t("subtitle")}</p>
         </div>
-        <button onClick={openNewForm} className="app-primary-btn flex items-center gap-1.5 text-xs px-3 py-2">
-          <Plus className="h-3.5 w-3.5" /> {t("addProduct")}
-        </button>
+        <div className="flex items-center gap-2">
+          <ImportFromItems onImport={handleImportFromItems} />
+          <button onClick={openNewForm} className="app-primary-btn flex items-center gap-1.5 text-xs px-3 py-2">
+            <Plus className="h-3.5 w-3.5" /> {t("addProduct")}
+          </button>
+        </div>
       </div>
 
       {/* Delete Confirmation */}

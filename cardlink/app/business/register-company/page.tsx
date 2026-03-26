@@ -44,7 +44,7 @@ const months = [
 ] as const;
 const accountingBases = ["cash", "accrual"] as const;
 
-type PlanSlug = "free" | "professional" | "business";
+type PlanSlug = "starter" | "professional" | "business";
 
 type ModuleKey = "accounting" | "hr" | "booking" | "inventory" | "pos" | "crm" | "procurement" | "store" | "cards";
 
@@ -63,25 +63,25 @@ const moduleConfig: { key: ModuleKey; icon: typeof BookOpen; defaultOn: boolean;
 /* ─── Plan Feature Data ─── */
 type FeatureRow = {
   key: string;
-  free: string;
+  starter: string;
   professional: string;
   business: string;
 };
 
 const planFeatures: FeatureRow[] = [
-  { key: "aiActions", free: "none", professional: "200/mo", business: "2,000/mo" },
-  { key: "aiChat", free: "none", professional: "✅", business: "✅ Priority" },
-  { key: "companies", free: "1", professional: "3", business: "unlimited" },
-  { key: "users", free: "1", professional: "5", business: "20" },
-  { key: "storage", free: "500MB", professional: "5GB", business: "50GB" },
-  { key: "modules", free: "core", professional: "allPlusAi", business: "allPlusCustomAi" },
-  { key: "store", free: "basic", professional: "full", business: "fullAnalytics" },
-  { key: "pdfExport", free: "none", professional: "✅", business: "✅" },
-  { key: "docOcr", free: "none", professional: "20/mo", business: "200/mo" },
-  { key: "support", free: "community", professional: "email", business: "priority" },
+  { key: "aiActions", starter: "50/mo", professional: "200/mo", business: "2,000/mo" },
+  { key: "aiChat", starter: "✅", professional: "✅", business: "✅ Priority" },
+  { key: "companies", starter: "1", professional: "3", business: "unlimited" },
+  { key: "users", starter: "3", professional: "5", business: "20" },
+  { key: "storage", starter: "1GB", professional: "5GB", business: "50GB" },
+  { key: "modules", starter: "core", professional: "allPlusAi", business: "allPlusCustomAi" },
+  { key: "store", starter: "basic", professional: "full", business: "fullAnalytics" },
+  { key: "pdfExport", starter: "none", professional: "✅", business: "✅" },
+  { key: "docOcr", starter: "5/mo", professional: "20/mo", business: "200/mo" },
+  { key: "support", starter: "email", professional: "email", business: "priority" },
 ];
 
-const planPrices: Record<PlanSlug, number> = { free: 0, professional: 29, business: 79 };
+const planPrices: Record<PlanSlug, number> = { starter: 20, professional: 40, business: 60 };
 
 /* ─── Helper Components ─── */
 
@@ -161,7 +161,7 @@ export default function RegisterCompanyPage() {
   const [subStep, setSubStep] = useState<"2a" | "2b">("2a");
 
   /* Step 1: Plan */
-  const [selectedPlan, setSelectedPlan] = useState<PlanSlug>("free");
+  const [selectedPlan, setSelectedPlan] = useState<PlanSlug>("starter");
 
   /* Step 2a: Basic Info */
   const [companyName, setCompanyName] = useState("");
@@ -467,7 +467,7 @@ export default function RegisterCompanyPage() {
 
           {/* Plan cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(["free", "professional", "business"] as PlanSlug[]).map((slug) => {
+            {(["starter", "professional", "business"] as PlanSlug[]).map((slug) => {
               const isSelected = selectedPlan === slug;
               return (
                 <button
