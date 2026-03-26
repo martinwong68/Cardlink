@@ -223,13 +223,36 @@ export default function RegisterCompanyPage() {
   useEffect(() => {
     const checkout = searchParams.get("checkout");
     const planParam = searchParams.get("plan");
+    const sessionId = searchParams.get("session_id");
     if (checkout === "success") {
-      setPaymentConfirmed(true);
       if (planParam && (["starter", "professional", "business"] as PlanSlug[]).includes(planParam as PlanSlug)) {
         setSelectedPlan(planParam as PlanSlug);
       }
-      setStep(3);
-      setSubStep("3a");
+      /* Verify payment with backend before confirming */
+      if (sessionId) {
+        fetch("/api/stripe/checkout/confirm", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        })
+          .then((res) => {
+            if (res.ok) {
+              setPaymentConfirmed(true);
+              setStep(3);
+              setSubStep("3a");
+            } else {
+              setError(t("step2.paymentError"));
+              setStep(2);
+            }
+          })
+          .catch(() => {
+            setError(t("step2.paymentError"));
+            setStep(2);
+          });
+      } else {
+        /* No session_id — treat as unverified, stay on payment step */
+        setStep(2);
+      }
     }
   }, [searchParams]);
 
@@ -299,7 +322,7 @@ export default function RegisterCompanyPage() {
           planSlug: selectedPlan,
           interval: "monthly",
           mode: "subscription",
-          successUrl: `${origin}/business/register-company?checkout=success&plan=${selectedPlan}`,
+          successUrl: `${origin}/business/register-company?checkout=success&plan=${selectedPlan}&session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${origin}/business/register-company?checkout=cancelled`,
         }),
       });
