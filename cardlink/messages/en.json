@@ -804,7 +804,11 @@
       "orderNfc": "Order NFC Card",
       "export": "Export Contacts",
       "support": "Help & Support",
-      "language": "Language"
+      "language": "Language",
+      "companyCards": "Company Cards",
+      "companyCardsDesc": "View and manage company name cards",
+      "companyManagement": "Company Management",
+      "companyManagementDesc": "Manage company settings and members"
     },
     "actions": {
       "logout": "Log Out"
@@ -2856,6 +2860,10 @@
       "stripeConnect": {
         "title": "Stripe Connect",
         "desc": "Receive payments from your platform sales."
+      },
+      "websiteSettings": {
+        "title": "Website Settings",
+        "desc": "Manage your business website and content."
       },
       "newCompany": {
         "title": "Start New Company",

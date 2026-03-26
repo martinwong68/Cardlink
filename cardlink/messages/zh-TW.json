@@ -804,7 +804,11 @@
       "orderNfc": "訂購 NFC 名片",
       "export": "匯出聯絡人",
       "support": "協助與支援",
-      "language": "語言"
+      "language": "語言",
+      "companyCards": "公司名片",
+      "companyCardsDesc": "查看和管理公司名片",
+      "companyManagement": "公司管理",
+      "companyManagementDesc": "管理公司設定和成員"
     },
     "actions": {
       "logout": "登出"
@@ -2856,6 +2860,10 @@
       "stripeConnect": {
         "title": "Stripe Connect",
         "desc": "接收平台銷售付款。"
+      },
+      "websiteSettings": {
+        "title": "網站設定",
+        "desc": "管理您的商業網站和內容。"
       },
       "newCompany": {
         "title": "建立新公司",

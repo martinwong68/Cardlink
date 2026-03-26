@@ -804,7 +804,11 @@
       "orderNfc": "주문 NFC Card",
       "export": "내보내기 연락처",
       "support": "도움말 & 고객지원",
-      "language": "언어"
+      "language": "언어",
+      "companyCards": "회사 명함",
+      "companyCardsDesc": "회사 명함 보기 및 관리",
+      "companyManagement": "회사 관리",
+      "companyManagementDesc": "회사 설정 및 구성원 관리"
     },
     "actions": {
       "logout": "로그 Out"
@@ -2856,6 +2860,10 @@
       "stripeConnect": {
         "title": "Stripe Connect",
         "desc": "Receive payments from your platform sales."
+      },
+      "websiteSettings": {
+        "title": "웹사이트 설정",
+        "desc": "비즈니스 웹사이트와 콘텐츠를 관리합니다."
       },
       "newCompany": {
         "title": "시작 새로운 회사",
