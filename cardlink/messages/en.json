@@ -2538,7 +2538,9 @@
       "item": "Item / Product",
       "file": "File",
       "leadName": "Lead Name",
-      "email": "Email"
+      "email": "Email",
+      "debitAccount": "Debit Account",
+      "creditAccount": "Credit Account"
     },
     "quickActions": {
       "recordSale": "Record a sale",

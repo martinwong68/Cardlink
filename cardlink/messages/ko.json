@@ -2538,7 +2538,9 @@
       "item": "항목 / 제품",
       "file": "파일",
       "leadName": "리드 이름",
-      "email": "이메일"
+      "email": "이메일",
+      "debitAccount": "차변 계정",
+      "creditAccount": "대변 계정"
     },
     "quickActions": {
       "recordSale": "Record a 판매",

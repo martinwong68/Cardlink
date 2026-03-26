@@ -86,10 +86,16 @@ export default function UpgradePage() {
     setMessage(null);
     setIsLoading(`${planSlug}-${billingInterval}`);
 
+    const origin = window.location.origin;
     const response = await fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planSlug, interval: billingInterval }),
+      body: JSON.stringify({
+        planSlug,
+        interval: billingInterval,
+        successUrl: `${origin}/dashboard/settings/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${origin}/dashboard/settings/upgrade`,
+      }),
     });
 
     if (!response.ok) {
