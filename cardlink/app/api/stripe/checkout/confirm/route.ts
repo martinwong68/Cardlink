@@ -190,8 +190,8 @@ export async function POST(request: Request) {
               console.error("[stripe-checkout-confirm] failed to activate company subscription", {
                 companyId: activeCompany.business_active_company_id,
                 error: subActivateError.message,
-                code: (subActivateError as Record<string, unknown>).code,
-                details: (subActivateError as Record<string, unknown>).details,
+                code: subActivateError.code,
+                details: subActivateError.details,
               });
             }
           }
