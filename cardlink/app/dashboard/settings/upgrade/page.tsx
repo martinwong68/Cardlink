@@ -26,7 +26,7 @@ type Plan = {
 };
 
 const PLAN_ACCENT: Record<string, { border: string; badge: string; btn: string; icon: typeof Rocket }> = {
-  free: { border: "border-neutral-200", badge: "", btn: "", icon: Rocket },
+  starter: { border: "border-neutral-200", badge: "", btn: "bg-neutral-800 text-white hover:bg-neutral-900", icon: Rocket },
   professional: {
     border: "border-primary-600 border-2",
     badge: "bg-primary-600",
@@ -174,11 +174,10 @@ export default function UpgradePage() {
       {/* Plan cards */}
       <div className="grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => {
-          const accent = PLAN_ACCENT[plan.slug] ?? PLAN_ACCENT.free;
+          const accent = PLAN_ACCENT[plan.slug] ?? PLAN_ACCENT.starter;
           const Icon = accent.icon;
           const price = interval === "yearly" ? plan.price_yearly : plan.price_monthly;
-          const isFree = plan.slug === "free";
-          const isCurrentPlan = isFree && viewerPlan === "free";
+          const isCurrentPlan = false;
           const isPremium = viewerPlan === "premium";
           const loadingKey = `${plan.slug}-${interval}`;
 
@@ -205,22 +204,16 @@ export default function UpgradePage() {
 
               {/* Price */}
               <div className="mt-4">
-                {isFree ? (
-                  <p className="text-3xl font-semibold text-neutral-900">$0</p>
-                ) : (
-                  <>
-                    <p className="text-3xl font-semibold text-neutral-900">
-                      ${price}
-                      <span className="text-base font-normal text-neutral-400">
-                        /{interval === "yearly" ? t("toggle.yr") : t("toggle.mo")}
-                      </span>
-                    </p>
-                    {interval === "yearly" && (
-                      <p className="mt-1 text-xs text-neutral-400">
-                        ${(price / 12).toFixed(2)}/{t("toggle.mo")}
-                      </p>
-                    )}
-                  </>
+                <p className="text-3xl font-semibold text-neutral-900">
+                  ${price}
+                  <span className="text-base font-normal text-neutral-400">
+                    /{interval === "yearly" ? t("toggle.yr") : t("toggle.mo")}
+                  </span>
+                </p>
+                {interval === "yearly" && (
+                  <p className="mt-1 text-xs text-neutral-400">
+                    ${(price / 12).toFixed(2)}/{t("toggle.mo")}
+                  </p>
                 )}
               </div>
 
@@ -263,9 +256,9 @@ export default function UpgradePage() {
 
               {/* Action */}
               <div className="mt-6">
-                {isFree ? (
+                {isCurrentPlan ? (
                   <p className="text-center text-sm font-medium text-neutral-400">
-                    {isCurrentPlan ? t("actions.currentPlan") : t("free.badge")}
+                    {t("actions.currentPlan")}
                   </p>
                 ) : isPremium ? (
                   <div className="space-y-2 text-center">

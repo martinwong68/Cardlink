@@ -5,8 +5,8 @@ import { useEffect, useState, useCallback } from "react";
 type PaymentOrder = { id: string; order_type: string; currency: string; total_amount: number; status: string; created_at: string };
 type SubscriptionPlan = { id: string; name: string; slug: string; price_monthly: number; price_yearly: number; features: Record<string, unknown> };
 
-const PLAN_LABELS: Record<string, string> = { free: "Free", starter: "Starter", professional: "Professional", business: "Business" };
-const PLAN_PRICES: Record<string, number> = { free: 0, starter: 20, professional: 40, business: 60 };
+const PLAN_LABELS: Record<string, string> = { starter: "Starter", professional: "Professional", business: "Business" };
+const PLAN_PRICES: Record<string, number> = { starter: 20, professional: 40, business: 60 };
 
 function statusColor(s: string) {
   if (s === "paid") return "bg-emerald-100 text-emerald-700";
@@ -16,14 +16,14 @@ function statusColor(s: string) {
 }
 
 function nextPlanSlug(currentPlan: string): string | null {
-  if (currentPlan === "free") return "starter";
+  if (!currentPlan || currentPlan === "free") return "starter";
   if (currentPlan === "starter") return "professional";
   if (currentPlan === "professional") return "business";
   return null;
 }
 
 export default function OwnerBillingPage() {
-  const [plan, setPlan] = useState("free");
+  const [plan, setPlan] = useState("");
   const [planStatus, setPlanStatus] = useState("active");
   const [stripeSubId, setStripeSubId] = useState<string | null>(null);
   const [orders, setOrders] = useState<PaymentOrder[]>([]);
@@ -42,7 +42,7 @@ export default function OwnerBillingPage() {
         fetch("/api/owner/payment-orders", { headers, cache: "no-store" }),
         fetch("/api/owner/billing/plans", { headers, cache: "no-store" }),
       ]);
-      if (billingRes.ok) { const d = await billingRes.json(); setPlan(d.plan ?? "free"); setPlanStatus(d.plan_status ?? "active"); setStripeSubId(d.stripe_subscription_id ?? null); }
+      if (billingRes.ok) { const d = await billingRes.json(); setPlan(d.plan ?? ""); setPlanStatus(d.plan_status ?? "active"); setStripeSubId(d.stripe_subscription_id ?? null); }
       if (ordersRes.ok) { const d = await ordersRes.json(); setOrders(d.orders ?? []); }
       if (plansRes.ok) { const d = await plansRes.json(); setPlans(d.plans ?? []); }
     } catch { /* silent */ } finally { setLoading(false); }
@@ -82,7 +82,7 @@ export default function OwnerBillingPage() {
     setUpgrading(null);
   };
 
-  const isActive = planStatus === "active" || plan === "free";
+  const isActive = planStatus === "active";
   const currentPrice = PLAN_PRICES[plan] ?? 0;
   const upgrade = nextPlanSlug(plan);
 
@@ -97,7 +97,7 @@ export default function OwnerBillingPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-500">Current Plan</p>
-            <p className="text-lg font-bold text-gray-900">{PLAN_LABELS[plan] ?? plan}</p>
+            <p className="text-lg font-bold text-gray-900">{PLAN_LABELS[plan] ?? "No Active Plan"}</p>
           </div>
           <div className="text-right">
             <p className="text-lg font-bold text-purple-600">${currentPrice}<span className="text-xs font-normal text-gray-500">/ month</span></p>

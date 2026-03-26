@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     .maybeSingle();
 
   const plan = profile?.plan ?? "free";
-  const planStatus = profile?.stripe_subscription_status ?? (plan === "free" ? "active" : "inactive");
+  const planStatus = profile?.stripe_subscription_status ?? "inactive";
 
   return NextResponse.json({
     plan,
