@@ -288,11 +288,14 @@ export async function POST(request: Request) {
               .eq("id", userId)
               .maybeSingle();
             if (activeCompany?.business_active_company_id) {
-              await supabaseAdmin
+              const { error: subActivateError } = await supabaseAdmin
                 .from("company_subscriptions")
                 .update({ status: "active" })
                 .eq("company_id", activeCompany.business_active_company_id)
                 .eq("status", "pending");
+              if (subActivateError) {
+                console.error("[stripe-webhook] failed to activate company subscription", subActivateError);
+              }
             }
           }
         }

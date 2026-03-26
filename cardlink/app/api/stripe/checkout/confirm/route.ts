@@ -180,11 +180,14 @@ export async function POST(request: Request) {
           .eq("id", user.id)
           .maybeSingle();
         if (activeCompany?.business_active_company_id) {
-          await supabaseAdmin
+          const { error: subActivateError } = await supabaseAdmin
             .from("company_subscriptions")
             .update({ status: "active" })
             .eq("company_id", activeCompany.business_active_company_id)
             .eq("status", "pending");
+          if (subActivateError) {
+            console.error("[stripe-checkout-confirm] failed to activate company subscription", subActivateError);
+          }
         }
       }
     } else {

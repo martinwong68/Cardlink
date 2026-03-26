@@ -188,7 +188,7 @@ export default function AccountingSetupPage() {
             <div className="text-xs text-blue-700 space-y-1">
               <p className="font-medium">What is a Chart of Accounts?</p>
               <p>
-                A chart of accounts is the foundation of your accounting system. It organises all financial
+                A chart of accounts is the foundation of your accounting system. It organizes all financial
                 transactions into five categories:
               </p>
               <ul className="ml-3 list-disc space-y-0.5">
