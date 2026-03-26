@@ -174,20 +174,29 @@ export async function POST(request: Request) {
 
       // Activate any pending company subscriptions for this user
       if (ACTIVE_STRIPE_STATUSES.has(subscription.status)) {
-        const { data: activeCompany } = await supabaseAdmin
-          .from("profiles")
-          .select("business_active_company_id")
-          .eq("id", user.id)
-          .maybeSingle();
-        if (activeCompany?.business_active_company_id) {
-          const { error: subActivateError } = await supabaseAdmin
-            .from("company_subscriptions")
-            .update({ status: "active" })
-            .eq("company_id", activeCompany.business_active_company_id)
-            .eq("status", "pending");
-          if (subActivateError) {
-            console.error("[stripe-checkout-confirm] failed to activate company subscription", subActivateError);
+        try {
+          const { data: activeCompany } = await supabaseAdmin
+            .from("profiles")
+            .select("business_active_company_id")
+            .eq("id", user.id)
+            .maybeSingle();
+          if (activeCompany?.business_active_company_id) {
+            const { error: subActivateError } = await supabaseAdmin
+              .from("company_subscriptions")
+              .update({ status: "active" })
+              .eq("company_id", activeCompany.business_active_company_id)
+              .eq("status", "pending");
+            if (subActivateError) {
+              console.error("[stripe-checkout-confirm] failed to activate company subscription", {
+                companyId: activeCompany.business_active_company_id,
+                error: subActivateError.message,
+                code: (subActivateError as Record<string, unknown>).code,
+                details: (subActivateError as Record<string, unknown>).details,
+              });
+            }
           }
+        } catch (activateErr) {
+          console.error("[stripe-checkout-confirm] unexpected error activating company subscription", activateErr);
         }
       }
     } else {
@@ -230,11 +239,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
+    const errMessage = error instanceof Error ? error.message : String(error);
     console.error("[stripe-checkout-confirm] failed", {
       sessionId,
       userId: user.id,
-      error,
+      error: errMessage,
     });
-    return NextResponse.json({ error: "Failed to confirm checkout" }, { status: 500 });
+    return NextResponse.json({ error: `Failed to confirm checkout: ${errMessage}` }, { status: 500 });
   }
 }

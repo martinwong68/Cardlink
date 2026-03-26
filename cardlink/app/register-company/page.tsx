@@ -322,8 +322,8 @@ export default function RegisterCompanyPage() {
           planSlug: selectedPlan,
           interval: "monthly",
           mode: "subscription",
-          successUrl: `${origin}/business/register-company?checkout=success&plan=${selectedPlan}&session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: `${origin}/business/register-company?checkout=cancelled`,
+          successUrl: `${origin}/register-company?checkout=success&plan=${selectedPlan}&session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${origin}/register-company?checkout=cancelled`,
         }),
       });
       const data = await res.json();
