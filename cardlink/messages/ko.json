@@ -3059,6 +3059,16 @@
         "pack2000Save": "저장 40%"
       }
     },
+    "step2": {
+      "title": "Complete Payment",
+      "subtitle": "Pay for your selected plan to continue with company setup.",
+      "paymentRequired": "Payment is required before proceeding to company setup.",
+      "paymentConfirmed": "Payment confirmed! You can now proceed.",
+      "payNow": "Pay Now",
+      "redirecting": "Redirecting to payment…",
+      "continueSetup": "Continue Setup",
+      "paymentError": "Payment could not be initiated. Please try again."
+    },
     "step2a": {
       "title": "기본 Information",
       "subtitle": "Tell us about your 회사.",
@@ -3172,7 +3182,9 @@
         "inventory": "재고",
         "pos": "POS",
         "crm": "CRM",
-        "procurement": "Procurement"
+        "procurement": "Procurement",
+        "store": "Online Store",
+        "cards": "Name Cards"
       },
       "alwaysOn": "Always on",
       "submit": "회사 등록",

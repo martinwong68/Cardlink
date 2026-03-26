@@ -3059,6 +3059,16 @@
         "pack2000Save": "Save 40%"
       }
     },
+    "step2": {
+      "title": "Complete Payment",
+      "subtitle": "Pay for your selected plan to continue with company setup.",
+      "paymentRequired": "Payment is required before proceeding to company setup.",
+      "paymentConfirmed": "Payment confirmed! You can now proceed.",
+      "payNow": "Pay Now",
+      "redirecting": "Redirecting to payment…",
+      "continueSetup": "Continue Setup",
+      "paymentError": "Payment could not be initiated. Please try again."
+    },
     "step2a": {
       "title": "Basic Information",
       "subtitle": "Tell us about your company.",
@@ -3172,7 +3182,9 @@
         "inventory": "Inventory",
         "pos": "POS",
         "crm": "CRM",
-        "procurement": "Procurement"
+        "procurement": "Procurement",
+        "store": "Online Store",
+        "cards": "Name Cards"
       },
       "alwaysOn": "Always on",
       "submit": "Register Company",

@@ -3059,6 +3059,16 @@
         "pack2000Save": "省 40%"
       }
     },
+    "step2": {
+      "title": "Complete Payment",
+      "subtitle": "Pay for your selected plan to continue with company setup.",
+      "paymentRequired": "Payment is required before proceeding to company setup.",
+      "paymentConfirmed": "Payment confirmed! You can now proceed.",
+      "payNow": "Pay Now",
+      "redirecting": "Redirecting to payment…",
+      "continueSetup": "Continue Setup",
+      "paymentError": "Payment could not be initiated. Please try again."
+    },
     "step2a": {
       "title": "基本資訊",
       "subtitle": "告訴我們關於您的公司。",
@@ -3172,7 +3182,9 @@
         "inventory": "庫存",
         "pos": "POS",
         "crm": "CRM",
-        "procurement": "採購"
+        "procurement": "採購",
+        "store": "Online Store",
+        "cards": "Name Cards"
       },
       "alwaysOn": "永遠開啟",
       "submit": "註冊公司",
