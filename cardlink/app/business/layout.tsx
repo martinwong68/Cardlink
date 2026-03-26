@@ -27,7 +27,7 @@ export default async function BusinessLayout({
 
   const eligibility = await resolveBusinessEligibility(supabase, user);
   if (!eligibility.eligible) {
-    redirect("/register-business");
+    redirect("/business/register-company");
   }
 
   const { data: profileData } = await supabase

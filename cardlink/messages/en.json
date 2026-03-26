@@ -2857,6 +2857,10 @@
         "title": "Stripe Connect",
         "desc": "Receive payments from your platform sales."
       },
+      "websiteSettings": {
+        "title": "Website Settings",
+        "desc": "Manage your business website and CMS."
+      },
       "newCompany": {
         "title": "Start New Company",
         "desc": "Register a new business entity under your account."

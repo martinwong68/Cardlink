@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BriefcaseBusiness, ChevronRight, CreditCard, Download, Globe, HelpCircle, Loader2, Lock, LogOut, Mail, Plus, Shield, User } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { BriefcaseBusiness, Building2, ChevronRight, CreditCard, Download, Globe, HelpCircle, Loader2, Lock, LogOut, Plus, Shield, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
 import { canAccessCRM, resolveEffectiveViewerPlan } from "@/src/lib/visibility";
@@ -28,14 +28,9 @@ export default function SettingsPage() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const locale = useLocale();
   const t = useTranslations("settings");
   const [message, setMessage] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
-  const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
-  const [planSlug, setPlanSlug] = useState<string>("free");
-  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const [purchasedSlots, setPurchasedSlots] = useState(0);
   const [purchasingSlot, setPurchasingSlot] = useState(false);
   const [businessEligibility, setBusinessEligibility] =
@@ -117,9 +112,6 @@ export default function SettingsPage() {
   useEffect(() => {
     const loadPlan = async () => {
       const planState = await getViewerPlan();
-      setViewerPlan(planState.plan);
-      setPremiumUntil(planState.premiumUntil);
-      setPlanSlug(planState.slug);
       setPurchasedSlots(planState.purchasedCardSlots);
     };
 
@@ -174,51 +166,6 @@ export default function SettingsPage() {
     searchParams.get("notice") === "business-access-denied"
       ? t("notices.businessAccessDenied")
       : null;
-
-  const formatDateOnly = (value: string | null) => {
-    if (!value) {
-      return null;
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return null;
-    }
-
-    return new Intl.DateTimeFormat(locale, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(date);
-  };
-
-  const handleDowngrade = async () => {
-    setMessage(null);
-    setIsOpeningPortal(true);
-
-    const response = await fetch("/api/stripe/portal", { method: "POST" });
-    if (!response.ok) {
-      setMessage(t("errors.openPortal"));
-      setIsOpeningPortal(false);
-      return;
-    }
-
-    const data = (await response.json()) as { url?: string };
-    if (!data.url) {
-      setMessage(t("errors.openPortal"));
-      setIsOpeningPortal(false);
-      return;
-    }
-
-    window.location.href = data.url;
-  };
-
-  const premiumUntilDateLabel = formatDateOnly(premiumUntil);
-
-  const PLAN_DISPLAY_NAMES: Record<string, string> = {
-    free: "Free",
-  };
-  const displayPlanName = PLAN_DISPLAY_NAMES[planSlug] ?? (viewerPlan === "premium" ? "Premium" : "Free");
 
   const handlePurchaseCardSlot = async () => {
     setMessage(null);
@@ -353,42 +300,6 @@ export default function SettingsPage() {
           Subscription
         </span>
         <div className="mt-1 space-y-1">
-          {viewerPlan === "premium" ? (
-            <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
-              <CreditCard className="h-4 w-4 text-indigo-600" />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-800">
-                  {displayPlanName} Plan
-                </div>
-                <div className="text-xs text-gray-500">
-                  {premiumUntilDateLabel
-                    ? t("links.premiumUntil", { date: premiumUntilDateLabel })
-                    : t("links.premiumBadge")}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleDowngrade}
-                disabled={isOpeningPortal}
-                className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isOpeningPortal ? t("links.openingPortal") : t("links.downgrade")}
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/dashboard/settings/upgrade"
-              className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
-            >
-              <CreditCard className="h-4 w-4 text-indigo-600" />
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">{t("links.subscription")}</div>
-                <div className="text-xs text-gray-500">Current: {displayPlanName}</div>
-              </div>
-              <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
-            </Link>
-          )}
-
           {/* Extra card slot purchase */}
           <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
             <Plus className="h-4 w-4 text-indigo-600" />
@@ -413,18 +324,6 @@ export default function SettingsPage() {
               )}
             </button>
           </div>
-
-          <Link
-            href="/dashboard/cards?tab=nfc"
-            className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
-          >
-            <CreditCard className="h-4 w-4 text-indigo-600" />
-            <div className="flex-1">
-              <div className="text-sm font-medium text-gray-800">{t("links.orderNfc")}</div>
-              <div className="text-xs text-gray-500">Order physical NFC card</div>
-            </div>
-            <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
-          </Link>
         </div>
       </div>
 
@@ -444,6 +343,39 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Company Section */}
+      {businessEligibility?.eligible && (
+        <div>
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Company
+          </span>
+          <div className="mt-1 space-y-1">
+            <Link
+              href="/dashboard/company-cards"
+              className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+            >
+              <CreditCard className="h-4 w-4 text-indigo-600" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-800">Company Cards</div>
+                <div className="text-xs text-gray-500">View and manage company name cards</div>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+            </Link>
+            <Link
+              href="/dashboard/company-management"
+              className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+            >
+              <Building2 className="h-4 w-4 text-indigo-600" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-800">Company Management</div>
+                <div className="text-xs text-gray-500">Manage company settings and members</div>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Support Section */}
       <div>
@@ -478,7 +410,7 @@ export default function SettingsPage() {
           </Link>
 
           <Link
-            href={businessEligibility?.eligible ? "/business" : "/register-business"}
+            href={businessEligibility?.eligible ? "/business" : "/business/register-company"}
             onClick={businessEligibility?.eligible ? handleSwitchToBusiness : undefined}
             className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
           >

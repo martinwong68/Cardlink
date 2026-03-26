@@ -2857,6 +2857,10 @@
         "title": "Stripe Connect",
         "desc": "Receive payments from your platform sales."
       },
+      "websiteSettings": {
+        "title": "웹사이트 설정",
+        "desc": "비즈니스 웹사이트와 콘텐츠를 관리합니다."
+      },
       "newCompany": {
         "title": "시작 새로운 회사",
         "desc": "Register a new business entity under your account."

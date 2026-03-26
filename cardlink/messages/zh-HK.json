@@ -2857,6 +2857,10 @@
         "title": "Stripe Connect",
         "desc": "接收平台銷售付款。"
       },
+      "websiteSettings": {
+        "title": "網站設定",
+        "desc": "管理您的商業網站和內容。"
+      },
       "newCompany": {
         "title": "建立新公司",
         "desc": "在您的帳戶下註冊新的業務實體。"

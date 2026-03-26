@@ -2857,6 +2857,10 @@
         "title": "Stripe Connect",
         "desc": "Receive payments from your platform sales."
       },
+      "websiteSettings": {
+        "title": "ウェブサイト設定",
+        "desc": "ビジネスウェブサイトとコンテンツを管理します。"
+      },
       "newCompany": {
         "title": "Start 新規 会社",
         "desc": "Register a new business entity under your account."
