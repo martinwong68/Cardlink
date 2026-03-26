@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BriefcaseBusiness, ChevronRight, CreditCard, Download, Globe, HelpCircle, Lock, LogOut, Mail, Shield, User } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, CreditCard, Download, Globe, HelpCircle, Loader2, Lock, LogOut, Mail, Plus, Shield, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -28,24 +28,29 @@ export default function SettingsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
+  const [planSlug, setPlanSlug] = useState<string>("free");
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const [purchasedSlots, setPurchasedSlots] = useState(0);
+  const [purchasingSlot, setPurchasingSlot] = useState(false);
   const [businessEligibility, setBusinessEligibility] =
     useState<BusinessEligibilityState | null>(null);
 
   const getViewerPlan = async () => {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData?.user) {
-      return { plan: "free" as const, premiumUntil: null as string | null };
+      return { plan: "free" as const, premiumUntil: null as string | null, slug: "free", purchasedCardSlots: 0 };
     }
 
     const { data } = await supabase
       .from("profiles")
-      .select("plan, premium_until")
+      .select("plan, premium_until, purchased_card_slots")
       .eq("id", userData.user.id)
       .maybeSingle();
     return {
       plan: resolveEffectiveViewerPlan(data),
       premiumUntil: data?.premium_until ?? null,
+      slug: data?.plan ?? "free",
+      purchasedCardSlots: (data as { purchased_card_slots?: number | null } | null)?.purchased_card_slots ?? 0,
     };
   };
 
@@ -107,6 +112,8 @@ export default function SettingsPage() {
       const planState = await getViewerPlan();
       setViewerPlan(planState.plan);
       setPremiumUntil(planState.premiumUntil);
+      setPlanSlug(planState.slug);
+      setPurchasedSlots(planState.purchasedCardSlots);
     };
 
     void loadPlan();
@@ -201,6 +208,73 @@ export default function SettingsPage() {
 
   const premiumUntilDateLabel = formatDateOnly(premiumUntil);
 
+  const PLAN_DISPLAY_NAMES: Record<string, string> = {
+    starter: "Starter",
+    professional: "Professional",
+    business: "Business",
+    free: "Free",
+  };
+  const displayPlanName = PLAN_DISPLAY_NAMES[planSlug] ?? (viewerPlan === "premium" ? "Premium" : "Free");
+
+  const handlePurchaseCardSlot = async () => {
+    setMessage(null);
+    setPurchasingSlot(true);
+
+    try {
+      const origin = window.location.origin;
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "payment",
+          amount: 8,
+          description: "Extra Namecard Slot",
+          successUrl: `${origin}/dashboard/settings?card_slot=success`,
+          cancelUrl: `${origin}/dashboard/settings`,
+        }),
+      });
+
+      if (!response.ok) {
+        setMessage("Failed to start checkout");
+        setPurchasingSlot(false);
+        return;
+      }
+
+      const data = (await response.json()) as { url?: string };
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch {
+      setMessage("Failed to start checkout");
+    }
+    setPurchasingSlot(false);
+  };
+
+  // Handle card slot purchase success
+  useEffect(() => {
+    if (searchParams.get("card_slot") === "success") {
+      const updateSlots = async () => {
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData?.user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("purchased_card_slots")
+            .eq("id", userData.user.id)
+            .maybeSingle();
+          const currentSlots = (profile as { purchased_card_slots?: number | null } | null)?.purchased_card_slots ?? 0;
+          await supabase
+            .from("profiles")
+            .update({ purchased_card_slots: currentSlots + 1 })
+            .eq("id", userData.user.id);
+          setPurchasedSlots(currentSlots + 1);
+          setMessage("Extra card slot purchased successfully!");
+        }
+      };
+      void updateSlots();
+    }
+  }, [searchParams, supabase]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
@@ -270,7 +344,9 @@ export default function SettingsPage() {
             <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
               <CreditCard className="h-4 w-4 text-indigo-600" />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-800">{t("links.subscriptionActive")}</div>
+                <div className="text-sm font-medium text-gray-800">
+                  {displayPlanName} Plan
+                </div>
                 <div className="text-xs text-gray-500">
                   {premiumUntilDateLabel
                     ? t("links.premiumUntil", { date: premiumUntilDateLabel })
@@ -294,11 +370,36 @@ export default function SettingsPage() {
               <CreditCard className="h-4 w-4 text-indigo-600" />
               <div className="flex-1">
                 <div className="text-sm font-medium text-gray-800">{t("links.subscription")}</div>
-                <div className="text-xs text-gray-500">Current: Free</div>
+                <div className="text-xs text-gray-500">Current: {displayPlanName}</div>
               </div>
               <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
             </Link>
           )}
+
+          {/* Extra card slot purchase */}
+          <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
+            <Plus className="h-4 w-4 text-indigo-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800">Extra Card Slots</div>
+              <div className="text-xs text-gray-500">
+                {purchasedSlots > 0
+                  ? `${purchasedSlots} extra slot${purchasedSlots > 1 ? "s" : ""} purchased`
+                  : "Purchase additional namecard slots ($8 each)"}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handlePurchaseCardSlot}
+              disabled={purchasingSlot}
+              className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {purchasingSlot ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                "+1 Slot"
+              )}
+            </button>
+          </div>
 
           <Link
             href="/dashboard/cards?tab=nfc"

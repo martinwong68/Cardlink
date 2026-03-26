@@ -2538,7 +2538,9 @@
       "item": "アイテム / 商品",
       "file": "ファイル",
       "leadName": "リード 名前",
-      "email": "メールアドレス"
+      "email": "メールアドレス",
+      "debitAccount": "借方勘定",
+      "creditAccount": "貸方勘定"
     },
     "quickActions": {
       "recordSale": "Record a 販売",

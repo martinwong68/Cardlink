@@ -2538,7 +2538,9 @@
       "item": "项目 / 产品",
       "file": "文件",
       "leadName": "潜在客户名称",
-      "email": "邮箱"
+      "email": "邮箱",
+      "debitAccount": "借方账户",
+      "creditAccount": "贷方账户"
     },
     "quickActions": {
       "recordSale": "记录销售",

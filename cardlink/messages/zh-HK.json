@@ -2538,7 +2538,9 @@
       "item": "項目 / 產品",
       "file": "檔案",
       "leadName": "潛在客戶名稱",
-      "email": "電郵"
+      "email": "電郵",
+      "debitAccount": "借方賬戶",
+      "creditAccount": "貸方賬戶"
     },
     "quickActions": {
       "recordSale": "記錄銷售",

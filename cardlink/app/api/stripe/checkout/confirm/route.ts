@@ -149,14 +149,21 @@ export async function POST(request: Request) {
           ? toIsoFromUnix(getSubscriptionPeriodEndUnix(subscription))
           : null;
 
+      // Save plan slug from checkout session metadata
+      const planSlug = session.metadata?.plan_slug;
+      const profilePayload: Record<string, string | null> = {
+        stripe_subscription_id: subscription.id,
+        stripe_subscription_status: nextStripeStatus,
+        stripe_subscription_current_period_end: nextStripePeriodEnd,
+        last_payment_at: new Date().toISOString(),
+      };
+      if (planSlug && ["starter", "professional", "business"].includes(planSlug)) {
+        profilePayload.plan = planSlug;
+      }
+
       const { error: profileUpdateError } = await supabaseAdmin
         .from("profiles")
-        .update({
-          stripe_subscription_id: subscription.id,
-          stripe_subscription_status: nextStripeStatus,
-          stripe_subscription_current_period_end: nextStripePeriodEnd,
-          last_payment_at: new Date().toISOString(),
-        })
+        .update(profilePayload)
         .eq("id", user.id);
       throwIfSupabaseError("update stripe subscription fields", profileUpdateError);
 

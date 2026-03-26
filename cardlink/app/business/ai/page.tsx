@@ -98,6 +98,8 @@ function selectModelForFile(fileSize: number): string {
   return "claude-haiku-4.5";
 }
 
+type UploadedFile = { name: string; content: string; size: number };
+
 /* ── Preset operation definitions ── */
 type PresetOperation = {
   key: string;
@@ -106,7 +108,7 @@ type PresetOperation = {
   icon: typeof Bot;
   category: "accounting" | "inventory" | "report" | "crm" | "setup" | "review";
   /** Additional fields the user can fill in before running */
-  fields: { key: string; labelKey: string; type: "text" | "number" | "date" | "textarea" | "file" }[];
+  fields: { key: string; labelKey: string; type: "text" | "number" | "date" | "textarea" | "file" | "account-select" }[];
   /** If true this is a "hard" operation that defaults to sonnet */
   complex?: boolean;
 };
@@ -122,6 +124,8 @@ const PRESET_OPERATIONS: PresetOperation[] = [
       { key: "amount", labelKey: "fields.amount", type: "number" },
       { key: "description", labelKey: "fields.description", type: "text" },
       { key: "date", labelKey: "fields.date", type: "date" },
+      { key: "debitAccount", labelKey: "fields.debitAccount", type: "account-select" },
+      { key: "creditAccount", labelKey: "fields.creditAccount", type: "account-select" },
       { key: "notes", labelKey: "fields.notes", type: "textarea" },
     ],
   },
@@ -235,7 +239,7 @@ export default function BusinessAiPage() {
 
   /* ── Agent mode state ── */
   const [agentMode, setAgentMode] = useState<AgentMode>("chat");
-  const [uploadedFile, setUploadedFile] = useState<{ name: string; content: string; size: number } | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [reviewLoading, setReviewLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -246,6 +250,9 @@ export default function BusinessAiPage() {
   const [presetRunning, setPresetRunning] = useState(false);
   const [presetCard, setPresetCard] = useState<PresetCardData | null>(null);
   const [presetExecuted, setPresetExecuted] = useState<string | null>(null);
+
+  /* ── Accounts list for debit/credit selection ── */
+  const [accountsList, setAccountsList] = useState<{ id: string; code: string; name: string; type: string }[]>([]);
 
   /* ── Plan enforcement ── */
   const [aiAccess, setAiAccess] = useState<PlanCheckResult | null>(null);
@@ -276,6 +283,26 @@ export default function BusinessAiPage() {
     })();
     return () => { cancelled = true; };
   }, [companyId, companyLoading, supabase]);
+
+  /* ── Load accounts for debit/credit selection ── */
+  useEffect(() => {
+    if (companyLoading || !companyId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/accounting/accounts", {
+          headers: { "x-cardlink-app-scope": "business" },
+        });
+        if (res.ok) {
+          const json = await res.json() as { accounts?: { id: string; code: string; name: string; type: string }[] };
+          if (!cancelled && json.accounts) setAccountsList(json.accounts);
+        }
+      } catch {
+        // Accounts may not be set up yet - that's okay
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [companyId, companyLoading]);
 
   /* ── Helpers ── */
   const scrollToBottom = useCallback(() => {
@@ -451,10 +478,11 @@ export default function BusinessAiPage() {
 
     if (currentMode === "setup") {
       apiUrl = "/api/business/ai/setup";
+      const firstFile = uploadedFiles[0] ?? null;
       apiBody = {
         messages: chatHistory,
         model,
-        ...(uploadedFile ? { fileContent: uploadedFile.content, fileName: uploadedFile.name } : {}),
+        ...(firstFile ? { fileContent: firstFile.content, fileName: firstFile.name } : {}),
       };
     } else if (currentMode === "operations") {
       apiUrl = "/api/business/ai/operations";
@@ -487,8 +515,8 @@ export default function BusinessAiPage() {
       aiContent = t("aiError");
     }
 
-    // Clear uploaded file after first use
-    if (uploadedFile) setUploadedFile(null);
+    // Clear uploaded files after first use
+    if (uploadedFiles.length > 0) setUploadedFiles([]);
 
     // Insert AI response
     const { data: aiMsg } = await supabase
@@ -545,34 +573,40 @@ export default function BusinessAiPage() {
     }
   };
 
-  /* ── File upload handler — auto-selects model based on file size ── */
+  /* ── File upload handler — auto-selects model based on file size, supports multiple files ── */
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    // Auto-select model tier based on file size
-    const autoModel = selectModelForFile(file.size);
+    // Auto-select model tier based on the largest file size
+    let maxSize = 0;
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].size > maxSize) maxSize = files[i].size;
+    }
+    const autoModel = selectModelForFile(maxSize);
     setModel(autoModel);
 
-    const ext = file.name.toLowerCase().split(".").pop() ?? "";
-    const isText = ["csv", "tsv", "txt", "json", "xml"].includes(ext);
+    // Read all files
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const ext = file.name.toLowerCase().split(".").pop() ?? "";
+      const isText = ["csv", "tsv", "txt", "json", "xml"].includes(ext);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setUploadedFile({
-        name: file.name,
-        content: reader.result as string,
-        size: file.size,
-      });
-    };
-    // Use text reader for text files, base64 data-URL for binary (images, PDFs, xlsx)
-    if (isText) {
-      reader.readAsText(file);
-    } else {
-      reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setUploadedFiles((prev) => [
+          ...prev,
+          { name: file.name, content: reader.result as string, size: file.size },
+        ]);
+      };
+      if (isText) {
+        reader.readAsText(file);
+      } else {
+        reader.readAsDataURL(file);
+      }
     }
 
-    // Reset input so the same file can be re-uploaded
+    // Reset input so the same files can be re-uploaded
     e.target.value = "";
   };
 
@@ -600,35 +634,38 @@ export default function BusinessAiPage() {
       selectedModel = "claude-sonnet-4.6";
       setModel(selectedModel);
     }
-    if (uploadedFile) {
-      const fileModel = selectModelForFile(uploadedFile.size);
+    if (uploadedFiles.length > 0) {
+      const maxFileSize = Math.max(...uploadedFiles.map((f) => f.size));
+      const fileModel = selectModelForFile(maxFileSize);
       if (fileModel !== "claude-haiku-4.5") {
         selectedModel = fileModel;
         setModel(selectedModel);
       }
     }
 
-    // Prepare file context for the prompt
+    // Prepare file context for the prompt (all uploaded files)
     let fileContext = "";
-    if (uploadedFile) {
-      const ext = uploadedFile.name.toLowerCase().split(".").pop() ?? "";
-      const isImage = ["png", "jpg", "jpeg", "gif", "webp", "heic"].includes(ext);
-      const isPdf = ext === "pdf";
-      const isBinary = isImage || isPdf || ext === "xlsx";
+    if (uploadedFiles.length > 0) {
+      const perFileLimit = Math.floor(MAX_FILE_CONTENT_IN_PROMPT / uploadedFiles.length);
+      const fileContextParts = uploadedFiles.map((file, idx) => {
+        const ext = file.name.toLowerCase().split(".").pop() ?? "";
+        const isImage = ["png", "jpg", "jpeg", "gif", "webp", "heic"].includes(ext);
+        const isPdf = ext === "pdf";
+        const isBinary = isImage || isPdf || ext === "xlsx";
 
-      if (isBinary) {
-        // For binary files, include metadata and let AI know it's an attachment
-        fileContext = `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB, ${ext.toUpperCase()} format)
+        if (isBinary) {
+          return `ATTACHED FILE ${idx + 1}: ${file.name} (${(file.size / 1024).toFixed(1)} KB, ${ext.toUpperCase()} format)
 NOTE: This is a ${isImage ? "image" : isPdf ? "PDF document" : "binary"} file. The file data is attached as base64.
 If you can read the content, extract relevant data from it. If you cannot fully read it, mention in the summary what you found or that the file could not be fully processed and suggest the user enter the data manually.
 FILE DATA (base64):
-${uploadedFile.content.slice(0, MAX_FILE_CONTENT_IN_PROMPT)}`;
-      } else {
-        // For text files, include the raw content
-        fileContext = `ATTACHED FILE: ${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(1)} KB)
+${file.content.slice(0, perFileLimit)}`;
+        } else {
+          return `ATTACHED FILE ${idx + 1}: ${file.name} (${(file.size / 1024).toFixed(1)} KB)
 FILE CONTENT:
-${uploadedFile.content.slice(0, MAX_FILE_CONTENT_IN_PROMPT)}${uploadedFile.content.length > MAX_FILE_CONTENT_IN_PROMPT ? "\n... (truncated)" : ""}`;
-      }
+${file.content.slice(0, perFileLimit)}${file.content.length > perFileLimit ? "\n... (truncated)" : ""}`;
+        }
+      });
+      fileContext = fileContextParts.join("\n\n");
     }
 
     const prompt = `You are Cardlink AI assistant. The user wants to perform this operation:
@@ -749,8 +786,8 @@ The JSON object must have:
       }
     }
 
-    // Clear file after use
-    if (uploadedFile) setUploadedFile(null);
+    // Clear files after use
+    if (uploadedFiles.length > 0) setUploadedFiles([]);
     setPresetRunning(false);
   };
 
@@ -981,7 +1018,7 @@ The JSON object must have:
     setPresetResult(null);
     setPresetCard(null);
     setPresetExecuted(null);
-    setUploadedFile(null);
+    setUploadedFiles([]);
     // Set default model based on complexity
     if (preset.complex) {
       setModel("claude-sonnet-4.6");
@@ -996,13 +1033,19 @@ The JSON object must have:
     setPresetResult(null);
     setPresetCard(null);
     setPresetExecuted(null);
-    setUploadedFile(null);
+    setUploadedFiles([]);
     setModel("claude-haiku-4.5");
   };
 
-  const handleClearUploadedFile = () => {
-    setUploadedFile(null);
-    setModel(activePreset?.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5");
+  const handleClearUploadedFile = (index?: number) => {
+    if (index !== undefined) {
+      setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      setUploadedFiles([]);
+    }
+    if (uploadedFiles.length <= 1) {
+      setModel(activePreset?.complex ? "claude-sonnet-4.6" : "claude-haiku-4.5");
+    }
   };
 
   if (companyLoading || enforcementLoading) {
@@ -1263,6 +1306,7 @@ The JSON object must have:
             type="file"
             accept=".csv,.tsv,.txt,.json,.xml,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp,.heic"
             onChange={handleFileUpload}
+            multiple
             className="hidden"
           />
 
@@ -1313,6 +1357,19 @@ The JSON object must have:
                         rows={3}
                         className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-300"
                       />
+                    ) : field.type === "account-select" ? (
+                      <select
+                        value={presetFields[field.key] ?? ""}
+                        onChange={(e) => setPresetFields((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-indigo-300"
+                      >
+                        <option value="">Auto (let AI decide)</option>
+                        {accountsList.map((acct) => (
+                          <option key={acct.id} value={`${acct.code} – ${acct.name}`}>
+                            {acct.code} – {acct.name} ({acct.type})
+                          </option>
+                        ))}
+                      </select>
                     ) : (
                       <input
                         type={field.type}
@@ -1324,7 +1381,7 @@ The JSON object must have:
                   </div>
                 ))}
 
-                {/* File attachment — available on all presets */}
+                {/* File attachment — available on all presets, supports multiple files */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     {t("attachFile")}
@@ -1334,23 +1391,31 @@ The JSON object must have:
                     className="flex items-center gap-2 px-4 py-3 w-full rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition text-sm text-gray-500"
                   >
                     <Paperclip className="h-4 w-4 text-indigo-500" />
-                    {uploadedFile ? uploadedFile.name : t("attachFileHint")}
+                    {uploadedFiles.length > 0
+                      ? `${uploadedFiles.length} file${uploadedFiles.length > 1 ? "s" : ""} attached`
+                      : t("attachFileHint")}
                   </button>
-                  {uploadedFile && (
-                    <div className="flex items-center gap-2 mt-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
-                      <FileText className="h-3.5 w-3.5" />
-                      <span className="truncate flex-1">
-                        {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
-                      </span>
-                      <span className="text-[10px] text-indigo-500">
-                        → {MODEL_OPTIONS.find((m) => m.value === model)?.label}
-                      </span>
-                      <button
-                        onClick={handleClearUploadedFile}
-                        className="p-0.5 hover:bg-indigo-100 rounded"
-                      >
-                        <XCircle className="h-3.5 w-3.5" />
-                      </button>
+                  {uploadedFiles.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {uploadedFiles.map((file, idx) => (
+                        <div key={idx} className="flex items-center gap-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
+                          <FileText className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate flex-1">
+                            {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                          </span>
+                          {idx === 0 && (
+                            <span className="text-[10px] text-indigo-500 shrink-0">
+                              → {MODEL_OPTIONS.find((m) => m.value === model)?.label}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => handleClearUploadedFile(idx)}
+                            className="p-0.5 hover:bg-indigo-100 rounded shrink-0"
+                          >
+                            <XCircle className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -1519,18 +1584,22 @@ The JSON object must have:
             ) : (
             <>
             {/* File upload indicator */}
-            {uploadedFile && (
-              <div className="flex items-center gap-2 mb-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
-                <FileText className="h-3.5 w-3.5" />
-                <span className="truncate flex-1">
-                  {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
-                </span>
-                <button
-                  onClick={() => setUploadedFile(null)}
-                  className="p-0.5 hover:bg-indigo-100 rounded"
-                >
-                  <XCircle className="h-3.5 w-3.5" />
-                </button>
+            {uploadedFiles.length > 0 && (
+              <div className="space-y-1 mb-2">
+                {uploadedFiles.map((file, idx) => (
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700">
+                    <FileText className="h-3.5 w-3.5" />
+                    <span className="truncate flex-1">
+                      {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                    </span>
+                    <button
+                      onClick={() => handleClearUploadedFile(idx)}
+                      className="p-0.5 hover:bg-indigo-100 rounded"
+                    >
+                      <XCircle className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
             <div className="flex items-end gap-2">
