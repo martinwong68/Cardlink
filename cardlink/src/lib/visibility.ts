@@ -18,10 +18,17 @@ type ProfilePlanLike = {
   premium_until?: string | Date | null;
 };
 
+/** Paid business plan slugs that grant premium access */
+const PAID_PLAN_SLUGS = new Set(["starter", "professional", "business"]);
+
 export function resolveEffectiveViewerPlan(
   profile: ProfilePlanLike | null | undefined
 ): "free" | "premium" {
   if (profile?.plan === "premium") {
+    return "premium";
+  }
+
+  if (profile?.plan && PAID_PLAN_SLUGS.has(profile.plan)) {
     return "premium";
   }
 

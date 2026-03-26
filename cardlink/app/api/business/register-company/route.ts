@@ -222,11 +222,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create company profile." }, { status: 500 });
   }
 
-  /* 4. Create company_subscriptions (pending until payment) */
+  /* 4. Create company_subscriptions — check if Stripe payment is already confirmed */
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("stripe_subscription_status")
+    .eq("id", user.id)
+    .maybeSingle();
+  const stripeActive = profile?.stripe_subscription_status === "active" || profile?.stripe_subscription_status === "trialing";
   const { error: subError } = await admin.from("company_subscriptions").insert({
     company_id: company.id,
     plan_id: plan.id,
-    status: "pending",
+    status: stripeActive ? "active" : "pending",
     ai_actions_limit: plan.ai_actions_monthly,
     storage_limit_mb: plan.storage_mb,
   });

@@ -216,9 +216,6 @@ export default function SettingsPage() {
   const premiumUntilDateLabel = formatDateOnly(premiumUntil);
 
   const PLAN_DISPLAY_NAMES: Record<string, string> = {
-    starter: "Starter",
-    professional: "Professional",
-    business: "Business",
     free: "Free",
   };
   const displayPlanName = PLAN_DISPLAY_NAMES[planSlug] ?? (viewerPlan === "premium" ? "Premium" : "Free");
