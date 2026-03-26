@@ -222,11 +222,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create company profile." }, { status: 500 });
   }
 
-  /* 4. Create company_subscriptions */
+  /* 4. Create company_subscriptions (pending until payment) */
   const { error: subError } = await admin.from("company_subscriptions").insert({
     company_id: company.id,
     plan_id: plan.id,
-    status: "active",
+    status: "pending",
     ai_actions_limit: plan.ai_actions_monthly,
     storage_limit_mb: plan.storage_mb,
   });
@@ -262,24 +262,43 @@ export async function POST(request: Request) {
     .update({ business_active_company_id: company.id })
     .eq("id", user.id);
 
-  /* 7. Create default accounting chart of accounts */
+  /* 7. Create default accounting chart of accounts (full 30-account setup) */
   const DEFAULT_ACCOUNTS = [
-    { code: "1100", name: "Cash / Bank", type: "asset" },
-    { code: "1200", name: "Accounts Receivable", type: "asset" },
-    { code: "1400", name: "Inventory", type: "asset" },
-    { code: "2100", name: "Accounts Payable", type: "liability" },
-    { code: "2200", name: "Payroll Withholdings", type: "liability" },
-    { code: "3000", name: "Owner's Equity", type: "equity" },
+    // Assets
+    { code: "1000", name: "Cash", type: "asset" },
+    { code: "1010", name: "Petty Cash", type: "asset" },
+    { code: "1100", name: "Accounts Receivable", type: "asset" },
+    { code: "1200", name: "Inventory", type: "asset" },
+    { code: "1300", name: "Prepaid Expenses", type: "asset" },
+    { code: "1500", name: "Fixed Assets", type: "asset" },
+    { code: "1510", name: "Accumulated Depreciation", type: "asset" },
+    // Liabilities
+    { code: "2000", name: "Accounts Payable", type: "liability" },
+    { code: "2100", name: "Accrued Liabilities", type: "liability" },
+    { code: "2200", name: "Sales Tax Payable", type: "liability" },
+    { code: "2300", name: "Wages Payable", type: "liability" },
+    { code: "2500", name: "Short-Term Loans", type: "liability" },
+    { code: "2600", name: "Long-Term Loans", type: "liability" },
+    // Equity
+    { code: "3000", name: "Owner\u2019s Equity", type: "equity" },
     { code: "3100", name: "Retained Earnings", type: "equity" },
-    { code: "4100", name: "Sales Revenue", type: "revenue" },
-    { code: "4200", name: "Service Revenue", type: "revenue" },
-    { code: "5100", name: "Salary Expense", type: "expense" },
-    { code: "5200", name: "Cost of Goods Sold", type: "expense" },
-    { code: "5300", name: "Inventory Adjustment", type: "expense" },
-    { code: "5400", name: "Rent Expense", type: "expense" },
-    { code: "5500", name: "Utilities Expense", type: "expense" },
-    { code: "5600", name: "Office Supplies", type: "expense" },
-    { code: "5700", name: "Marketing Expense", type: "expense" },
+    { code: "3200", name: "Drawing / Distributions", type: "equity" },
+    // Revenue
+    { code: "4000", name: "Sales Revenue", type: "revenue" },
+    { code: "4100", name: "Service Revenue", type: "revenue" },
+    { code: "4200", name: "Other Income", type: "revenue" },
+    { code: "4300", name: "Interest Income", type: "revenue" },
+    // Expenses
+    { code: "5000", name: "Cost of Goods Sold", type: "expense" },
+    { code: "5100", name: "Salaries & Wages", type: "expense" },
+    { code: "5200", name: "Rent Expense", type: "expense" },
+    { code: "5300", name: "Utilities Expense", type: "expense" },
+    { code: "5400", name: "Office Supplies", type: "expense" },
+    { code: "5500", name: "Advertising & Marketing", type: "expense" },
+    { code: "5600", name: "Depreciation Expense", type: "expense" },
+    { code: "5700", name: "Insurance Expense", type: "expense" },
+    { code: "5800", name: "Bank Fees", type: "expense" },
+    { code: "5900", name: "Miscellaneous Expense", type: "expense" },
   ];
 
   // Ensure organization row exists (accounting module uses org_id = company_id)
@@ -305,7 +324,23 @@ export async function POST(request: Request) {
     console.error("register-company.default_accounts_failed", acctError);
   }
 
-  /* 8. Create default approval settings (non-blocking, best-effort) */
+  /* 8. Sync enabled modules into company_modules table */
+  const ALL_KNOWN_MODULES = [
+    "accounting", "hr", "booking", "inventory", "pos", "crm", "procurement", "store", "cards",
+  ];
+  const moduleRows = ALL_KNOWN_MODULES.map((m) => ({
+    company_id: company.id,
+    module_name: m,
+    is_enabled: enabledModules.includes(m),
+    enabled_at: enabledModules.includes(m) ? new Date().toISOString() : null,
+    enabled_by: enabledModules.includes(m) ? user.id : null,
+  }));
+  const { error: moduleError } = await admin.from("company_modules").insert(moduleRows);
+  if (moduleError) {
+    console.error("register-company.modules_sync_failed", moduleError);
+  }
+
+  /* 9. Create default approval settings (non-blocking, best-effort) */
   const approvalModules = ["procurement", "hr", "accounting", "inventory"];
   const approvalRows = approvalModules.map((m) => ({
     company_id: company.id,

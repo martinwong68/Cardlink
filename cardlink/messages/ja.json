@@ -1093,6 +1093,7 @@
     "sections": {
       "promotion": "Promotion Carousel",
       "partners": "Partner 会社",
+      "stores": "Shops & Stores",
       "discounts": "割引 リスト"
     },
     "labels": {
@@ -1107,6 +1108,8 @@
     },
     "actions": {
       "view": "表示",
+      "viewStore": "Visit",
+      "manage": "Manage",
       "join": "参加",
       "joined": "Joined",
       "addToMembership": "追加 to Membership",
@@ -1117,6 +1120,7 @@
     "empty": {
       "promotions": "いいえ 有効 promotions right now.",
       "partners": "いいえ partner companies 利用可能.",
+      "stores": "No shops are open right now.",
       "discounts": "No discounts available for this company."
     },
     "messages": {
@@ -3059,6 +3063,16 @@
         "pack2000Save": "保存 40%"
       }
     },
+    "step2": {
+      "title": "Complete Payment",
+      "subtitle": "Pay for your selected plan to continue with company setup.",
+      "paymentRequired": "Payment is required before proceeding to company setup.",
+      "paymentConfirmed": "Payment confirmed! You can now proceed.",
+      "payNow": "Pay Now",
+      "redirecting": "Redirecting to payment…",
+      "continueSetup": "Continue Setup",
+      "paymentError": "Payment could not be initiated. Please try again."
+    },
     "step2a": {
       "title": "ベーシック Information",
       "subtitle": "Tell us about your 会社.",
@@ -3172,7 +3186,9 @@
         "inventory": "在庫",
         "pos": "POS",
         "crm": "CRM",
-        "procurement": "Procurement"
+        "procurement": "Procurement",
+        "store": "Online Store",
+        "cards": "Name Cards"
       },
       "alwaysOn": "Always on",
       "submit": "会社を登録",

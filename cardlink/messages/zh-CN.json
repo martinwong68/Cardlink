@@ -1093,6 +1093,7 @@
     "sections": {
       "promotion": "活动轮播",
       "partners": "合作公司",
+      "stores": "门店",
       "discounts": "优惠列表"
     },
     "labels": {
@@ -1107,6 +1108,8 @@
     },
     "actions": {
       "view": "查看",
+      "viewStore": "访问",
+      "manage": "管理",
       "join": "加入",
       "joined": "已加入",
       "addToMembership": "加入会员",
@@ -1117,6 +1120,7 @@
     "empty": {
       "promotions": "目前没有进行中的活动。",
       "partners": "目前没有合作公司。",
+      "stores": "目前没有开放的门店。",
       "discounts": "该公司目前没有可用优惠。"
     },
     "messages": {
@@ -3059,6 +3063,16 @@
         "pack2000Save": "省 40%"
       }
     },
+    "step2": {
+      "title": "Complete Payment",
+      "subtitle": "Pay for your selected plan to continue with company setup.",
+      "paymentRequired": "Payment is required before proceeding to company setup.",
+      "paymentConfirmed": "Payment confirmed! You can now proceed.",
+      "payNow": "Pay Now",
+      "redirecting": "Redirecting to payment…",
+      "continueSetup": "Continue Setup",
+      "paymentError": "Payment could not be initiated. Please try again."
+    },
     "step2a": {
       "title": "基本信息",
       "subtitle": "告诉我们关于您的公司。",
@@ -3172,7 +3186,9 @@
         "inventory": "库存",
         "pos": "POS",
         "crm": "CRM",
-        "procurement": "采购"
+        "procurement": "采购",
+        "store": "Online Store",
+        "cards": "Name Cards"
       },
       "alwaysOn": "永远开启",
       "submit": "注册公司",

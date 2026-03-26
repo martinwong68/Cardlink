@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
@@ -24,7 +24,7 @@ import {
 import { createClient } from "@/src/lib/supabase/client";
 
 /* ─── Constants ─── */
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 const LOGO_MAX_DIMENSION = 512;
 const COVER_MAX_DIMENSION = 1920;
@@ -154,23 +154,28 @@ async function compressImage(file: File, maxDimension: number, fileName: string)
 /* ─── Main Page Component ─── */
 export default function RegisterCompanyPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations("registerCompany");
 
   const [step, setStep] = useState(1);
-  /* Sub-step for step 2: "2a" = basic info, "2b" = address & contact */
-  const [subStep, setSubStep] = useState<"2a" | "2b">("2a");
+  /* Sub-step for step 3: "3a" = basic info, "3b" = address & contact */
+  const [subStep, setSubStep] = useState<"3a" | "3b">("3a");
 
   /* Step 1: Plan */
   const [selectedPlan, setSelectedPlan] = useState<PlanSlug>("starter");
 
-  /* Step 2a: Basic Info */
+  /* Step 2: Payment confirmation */
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+
+  /* Step 3a: Basic Info */
   const [companyName, setCompanyName] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [industry, setIndustry] = useState("");
   const [companySize, setCompanySize] = useState("");
   const [yearEstablished, setYearEstablished] = useState("");
 
-  /* Step 2b: Address & Contact */
+  /* Step 3b: Address & Contact */
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [city, setCity] = useState("");
@@ -181,14 +186,14 @@ export default function RegisterCompanyPage() {
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
 
-  /* Step 3: Financial */
+  /* Step 4: Financial */
   const [defaultCurrency, setDefaultCurrency] = useState("USD");
   const [taxRegNumber, setTaxRegNumber] = useState("");
   const [taxRate, setTaxRate] = useState("");
   const [fiscalYearEnd, setFiscalYearEnd] = useState("");
   const [accountingBasis, setAccountingBasis] = useState("");
 
-  /* Step 4: Branding + Modules */
+  /* Step 5: Branding + Modules */
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -214,8 +219,45 @@ export default function RegisterCompanyPage() {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
+  /* ─── Check for payment return from Stripe ─── */
+  useEffect(() => {
+    const checkout = searchParams.get("checkout");
+    const planParam = searchParams.get("plan");
+    const sessionId = searchParams.get("session_id");
+    if (checkout === "success") {
+      if (planParam && (["starter", "professional", "business"] as PlanSlug[]).includes(planParam as PlanSlug)) {
+        setSelectedPlan(planParam as PlanSlug);
+      }
+      /* Verify payment with backend before confirming */
+      if (sessionId) {
+        fetch("/api/stripe/checkout/confirm", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        })
+          .then((res) => {
+            if (res.ok) {
+              setPaymentConfirmed(true);
+              setStep(3);
+              setSubStep("3a");
+            } else {
+              setError(t("step2.paymentError"));
+              setStep(2);
+            }
+          })
+          .catch(() => {
+            setError(t("step2.paymentError"));
+            setStep(2);
+          });
+      } else {
+        /* No session_id — treat as unverified, stay on payment step */
+        setStep(2);
+      }
+    }
+  }, [searchParams]);
+
   /* ─── Validation ─── */
-  function validateStep2a(): boolean {
+  function validateStep3a(): boolean {
     const errors: Record<string, string> = {};
     if (companyName.trim().length < 2) errors.companyName = t("validation.companyNameMin");
     if (!industry) errors.industry = t("validation.required");
@@ -224,7 +266,7 @@ export default function RegisterCompanyPage() {
     return Object.keys(errors).length === 0;
   }
 
-  function validateStep2b(): boolean {
+  function validateStep3b(): boolean {
     const errors: Record<string, string> = {};
     if (!addressLine1.trim()) errors.addressLine1 = t("validation.required");
     if (!city.trim()) errors.city = t("validation.required");
@@ -238,7 +280,7 @@ export default function RegisterCompanyPage() {
     return Object.keys(errors).length === 0;
   }
 
-  function validateStep3(): boolean {
+  function validateStep4(): boolean {
     const errors: Record<string, string> = {};
     if (!fiscalYearEnd) errors.fiscalYearEnd = t("validation.required");
     if (!accountingBasis) errors.accountingBasis = t("validation.required");
@@ -252,37 +294,67 @@ export default function RegisterCompanyPage() {
     setError(null);
     if (step === 1) {
       router.push("/business");
-    } else if (step === 2 && subStep === "2b") {
-      setSubStep("2a");
-    } else if (step === 2 && subStep === "2a") {
+    } else if (step === 2) {
       setStep(1);
+    } else if (step === 3 && subStep === "3b") {
+      setSubStep("3a");
+    } else if (step === 3 && subStep === "3a") {
+      setStep(2);
     } else {
       setStep(step - 1);
     }
   }
 
-  function handleNextFromStep1() {
+  async function handleNextFromStep1() {
     setFieldErrors({});
     setStep(2);
-    setSubStep("2a");
   }
 
-  function handleNextFromStep2a() {
-    if (!validateStep2a()) return;
+  async function handlePayAndContinue() {
+    setPaymentLoading(true);
+    setError(null);
+    try {
+      const origin = window.location.origin;
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          planSlug: selectedPlan,
+          interval: "monthly",
+          mode: "subscription",
+          successUrl: `${origin}/business/register-company?checkout=success&plan=${selectedPlan}&session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${origin}/business/register-company?checkout=cancelled`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        setError(data.error || t("step2.paymentError"));
+        setPaymentLoading(false);
+        return;
+      }
+      window.location.href = data.url;
+    } catch {
+      setError(t("step2.paymentError"));
+      setPaymentLoading(false);
+    }
+  }
+
+  function handleNextFromStep3a() {
+    if (!validateStep3a()) return;
     setFieldErrors({});
-    setSubStep("2b");
+    setSubStep("3b");
   }
 
-  function handleNextFromStep2b() {
-    if (!validateStep2b()) return;
-    setFieldErrors({});
-    setStep(3);
-  }
-
-  function handleNextFromStep3() {
-    if (!validateStep3()) return;
+  function handleNextFromStep3b() {
+    if (!validateStep3b()) return;
     setFieldErrors({});
     setStep(4);
+  }
+
+  function handleNextFromStep4() {
+    if (!validateStep4()) return;
+    setFieldErrors({});
+    setStep(5);
   }
 
   /* ─── Image Handlers ─── */
@@ -403,7 +475,7 @@ export default function RegisterCompanyPage() {
     }
   }
 
-  /* ─── Render the visual step number (step 2 has sub-steps but shows as step 2) ─── */
+  /* ─── Render the visual step number (step 3 has sub-steps but shows as step 3) ─── */
   const visualStep = step;
 
   /* ─── Feature value display helper ─── */
@@ -556,7 +628,7 @@ export default function RegisterCompanyPage() {
 
           <button
             type="button"
-            onClick={handleNextFromStep1}
+            onClick={() => void handleNextFromStep1()}
             className="app-primary-btn w-full py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
           >
             {t("next")}
@@ -566,9 +638,76 @@ export default function RegisterCompanyPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* STEP 2A: Basic Info */}
+      {/* STEP 2: Payment */}
       {/* ══════════════════════════════════════════════════════════ */}
-      {step === 2 && subStep === "2a" && !success && (
+      {step === 2 && !success && (
+        <div className="app-card rounded-2xl p-6 space-y-5">
+          <div className="text-center">
+            <h1 className="app-title text-xl font-semibold">{t("step2.title")}</h1>
+            <p className="app-subtitle mt-1 text-sm">{t("step2.subtitle")}</p>
+          </div>
+
+          <div className="rounded-xl bg-indigo-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-800">
+                  {t(`step1.plans.${selectedPlan}.name`)}
+                </p>
+                <p className="text-xs text-gray-500">
+                  ${planPrices[selectedPlan]}/{t("step1.perMonth")}
+                </p>
+              </div>
+              <CreditCard className="h-6 w-6 text-indigo-500" />
+            </div>
+          </div>
+
+          {paymentConfirmed ? (
+            <div className="rounded-xl bg-green-50 border border-green-200 p-4 text-center">
+              <Check className="h-6 w-6 text-green-600 mx-auto mb-2" />
+              <p className="text-sm font-medium text-green-700">{t("step2.paymentConfirmed")}</p>
+            </div>
+          ) : (
+            <p className="text-xs text-gray-500 text-center">
+              {t("step2.paymentRequired")}
+            </p>
+          )}
+
+          {paymentConfirmed ? (
+            <button
+              type="button"
+              onClick={() => { setStep(3); setSubStep("3a"); }}
+              className="app-primary-btn w-full py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
+            >
+              {t("step2.continueSetup")}
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void handlePayAndContinue()}
+              disabled={paymentLoading}
+              className="app-primary-btn w-full py-2.5 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {paymentLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("step2.redirecting")}
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-4 w-4" />
+                  {t("step2.payNow")}
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* STEP 3A: Basic Info */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      {step === 3 && subStep === "3a" && !success && (
         <div className="app-card rounded-2xl p-6 space-y-5">
           <div className="text-center">
             <h1 className="app-title text-xl font-semibold">{t("step2a.title")}</h1>
@@ -647,7 +786,7 @@ export default function RegisterCompanyPage() {
 
           <button
             type="button"
-            onClick={handleNextFromStep2a}
+            onClick={handleNextFromStep3a}
             className="app-primary-btn w-full py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
           >
             {t("next")}
@@ -657,9 +796,9 @@ export default function RegisterCompanyPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* STEP 2B: Address & Contact */}
+      {/* STEP 3B: Address & Contact */}
       {/* ══════════════════════════════════════════════════════════ */}
-      {step === 2 && subStep === "2b" && !success && (
+      {step === 3 && subStep === "3b" && !success && (
         <div className="app-card rounded-2xl p-6 space-y-5">
           <div className="text-center">
             <h1 className="app-title text-xl font-semibold">{t("step2b.title")}</h1>
@@ -782,7 +921,7 @@ export default function RegisterCompanyPage() {
 
           <button
             type="button"
-            onClick={handleNextFromStep2b}
+            onClick={handleNextFromStep3b}
             className="app-primary-btn w-full py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
           >
             {t("next")}
@@ -792,9 +931,9 @@ export default function RegisterCompanyPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* STEP 3: Financial Settings */}
+      {/* STEP 4: Financial Settings */}
       {/* ══════════════════════════════════════════════════════════ */}
-      {step === 3 && !success && (
+      {step === 4 && !success && (
         <div className="app-card rounded-2xl p-6 space-y-5">
           <div className="text-center">
             <h1 className="app-title text-xl font-semibold">{t("step3.title")}</h1>
@@ -873,7 +1012,7 @@ export default function RegisterCompanyPage() {
 
           <button
             type="button"
-            onClick={handleNextFromStep3}
+            onClick={handleNextFromStep4}
             className="app-primary-btn w-full py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
           >
             {t("next")}
@@ -883,9 +1022,9 @@ export default function RegisterCompanyPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* STEP 4: Branding + Modules */}
+      {/* STEP 5: Branding + Modules */}
       {/* ══════════════════════════════════════════════════════════ */}
-      {step === 4 && !success && (
+      {step === 5 && !success && (
         <div className="app-card rounded-2xl p-6 space-y-5">
           <div className="text-center">
             <h1 className="app-title text-xl font-semibold">{t("step4.title")}</h1>

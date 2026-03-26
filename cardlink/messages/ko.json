@@ -1093,6 +1093,7 @@
     "sections": {
       "promotion": "Promotion Carousel",
       "partners": "Partner 회사",
+      "stores": "Shops & Stores",
       "discounts": "할인 목록"
     },
     "labels": {
@@ -1107,6 +1108,8 @@
     },
     "actions": {
       "view": "보기",
+      "viewStore": "Visit",
+      "manage": "Manage",
       "join": "참여",
       "joined": "Joined",
       "addToMembership": "추가 to Membership",
@@ -1117,6 +1120,7 @@
     "empty": {
       "promotions": "아니오 활성 promotions right now.",
       "partners": "아니오 partner companies 이용가능.",
+      "stores": "No shops are open right now.",
       "discounts": "No discounts available for this company."
     },
     "messages": {
@@ -3059,6 +3063,16 @@
         "pack2000Save": "저장 40%"
       }
     },
+    "step2": {
+      "title": "Complete Payment",
+      "subtitle": "Pay for your selected plan to continue with company setup.",
+      "paymentRequired": "Payment is required before proceeding to company setup.",
+      "paymentConfirmed": "Payment confirmed! You can now proceed.",
+      "payNow": "Pay Now",
+      "redirecting": "Redirecting to payment…",
+      "continueSetup": "Continue Setup",
+      "paymentError": "Payment could not be initiated. Please try again."
+    },
     "step2a": {
       "title": "기본 Information",
       "subtitle": "Tell us about your 회사.",
@@ -3172,7 +3186,9 @@
         "inventory": "재고",
         "pos": "POS",
         "crm": "CRM",
-        "procurement": "Procurement"
+        "procurement": "Procurement",
+        "store": "Online Store",
+        "cards": "Name Cards"
       },
       "alwaysOn": "Always on",
       "submit": "회사 등록",

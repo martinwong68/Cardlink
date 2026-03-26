@@ -19,6 +19,16 @@ type Company = {
   is_active: boolean;
   is_banned: boolean;
   deleted_at: string | null;
+  store_visibility: string | null;
+};
+
+type StoreInfo = {
+  company_id: string;
+  store_name: string | null;
+  description: string | null;
+  banner_url: string | null;
+  theme_color: string;
+  is_published: boolean;
 };
 
 type Offer = {
@@ -78,6 +88,7 @@ export default function ExplorePanel() {
 
   const [userId, setUserId] = useState<string | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [stores, setStores] = useState<StoreInfo[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [accounts, setAccounts] = useState<MembershipAccount[]>([]);
   const [partnerCompanyIds, setPartnerCompanyIds] = useState<string[]>([]);
@@ -123,10 +134,10 @@ export default function ExplorePanel() {
 
     setUserId(user?.id ?? null);
 
-    const [companiesRes, offersRes, programsRes, accountsRes, ownerRolesRes, adminCompanyIdsRes] = await Promise.all([
+    const [companiesRes, offersRes, programsRes, accountsRes, ownerRolesRes, adminCompanyIdsRes, storesRes] = await Promise.all([
       supabase
         .from("companies")
-        .select("id, name, slug, profile_card_slug, description, logo_url, cover_url, created_by, is_active, is_banned, deleted_at")
+        .select("id, name, slug, profile_card_slug, description, logo_url, cover_url, created_by, is_active, is_banned, deleted_at, store_visibility")
         .eq("is_active", true)
         .eq("is_banned", false)
         .is("deleted_at", null)
@@ -157,6 +168,10 @@ export default function ExplorePanel() {
       user
         ? supabase.rpc("get_my_admin_company_ids")
         : Promise.resolve({ data: [] as AdminCompanyIdRow[], error: null }),
+      supabase
+        .from("store_settings")
+        .select("company_id, store_name, description, banner_url, theme_color, is_published")
+        .eq("is_published", true),
     ]);
 
     if (companiesRes.error) {
@@ -200,6 +215,14 @@ export default function ExplorePanel() {
     setCompanies(companyRows);
     setOffers(offerRows);
     setAccounts((accountsRes.data ?? []) as MembershipAccount[]);
+    /* Filter stores to only those from visible companies with public/all_users visibility */
+    const storeRows = ((storesRes.data ?? []) as StoreInfo[]).filter((store) => {
+      if (!visibleCompanyIdSet.has(store.company_id)) return false;
+      const company = companyRows.find((c) => c.id === store.company_id);
+      const visibility = company?.store_visibility ?? "public";
+      return visibility === "public" || visibility === "all_users";
+    });
+    setStores(storeRows);
     const programCompanyIds = Array.from(new Set(activePrograms.map((item) => item.company_id)));
     setPartnerCompanyIds(programCompanyIds.length ? programCompanyIds : companyRows.map((company) => company.id));
     setOwnerCompanyIds(Array.from(new Set([...createdByOwnerIds, ...roleOwnerIds, ...rpcAdminIds])));
@@ -624,6 +647,65 @@ export default function ExplorePanel() {
           ) : (
             <div className="rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
               {t("empty.partners")}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Stores — published shops */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-800">{t("sections.stores")}</span>
+        </div>
+        <div className="space-y-2">
+          {stores.length ? (
+            stores.map((store) => {
+              const company = companyMap.get(store.company_id);
+              if (!company) return null;
+              const isOwner = ownerCompanyIds.includes(store.company_id);
+              return (
+                <article
+                  key={store.company_id}
+                  className="flex items-center gap-3 rounded-xl bg-gray-50 p-3"
+                >
+                  <div
+                    className="h-10 w-10 shrink-0 rounded-lg bg-cover bg-center flex items-center justify-center"
+                    style={store.banner_url
+                      ? { backgroundImage: `url(${store.banner_url})` }
+                      : { backgroundColor: store.theme_color || "#6366f1" }}
+                  >
+                    {!store.banner_url && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">
+                      {store.store_name || company.name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {store.description || company.name}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/api/public/store/products?company_id=${store.company_id}`}
+                    className="rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-100 transition-colors"
+                  >
+                    {t("actions.viewStore")}
+                  </Link>
+                  {isOwner && (
+                    <Link
+                      href="/business/store-management"
+                      className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 transition-colors"
+                    >
+                      {t("actions.manage")}
+                    </Link>
+                  )}
+                </article>
+              );
+            })
+          ) : (
+            <div className="rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+              {t("empty.stores")}
             </div>
           )}
         </div>

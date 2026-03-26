@@ -1093,6 +1093,7 @@
     "sections": {
       "promotion": "活動輪播",
       "partners": "合作公司",
+      "stores": "門店",
       "discounts": "優惠列表"
     },
     "labels": {
@@ -1107,6 +1108,8 @@
     },
     "actions": {
       "view": "查看",
+      "viewStore": "訪問",
+      "manage": "管理",
       "join": "加入",
       "joined": "已加入",
       "addToMembership": "加入會員",
@@ -1117,6 +1120,7 @@
     "empty": {
       "promotions": "目前沒有進行中的活動。",
       "partners": "目前沒有合作公司。",
+      "stores": "目前沒有開放的門店。",
       "discounts": "此公司目前沒有可用優惠。"
     },
     "messages": {
@@ -3059,6 +3063,16 @@
         "pack2000Save": "慳 40%"
       }
     },
+    "step2": {
+      "title": "Complete Payment",
+      "subtitle": "Pay for your selected plan to continue with company setup.",
+      "paymentRequired": "Payment is required before proceeding to company setup.",
+      "paymentConfirmed": "Payment confirmed! You can now proceed.",
+      "payNow": "Pay Now",
+      "redirecting": "Redirecting to payment…",
+      "continueSetup": "Continue Setup",
+      "paymentError": "Payment could not be initiated. Please try again."
+    },
     "step2a": {
       "title": "基本資料",
       "subtitle": "話畀我哋知關於您嘅公司。",
@@ -3172,7 +3186,9 @@
         "inventory": "庫存",
         "pos": "POS",
         "crm": "CRM",
-        "procurement": "採購"
+        "procurement": "採購",
+        "store": "Online Store",
+        "cards": "Name Cards"
       },
       "alwaysOn": "永遠開啟",
       "submit": "註冊公司",

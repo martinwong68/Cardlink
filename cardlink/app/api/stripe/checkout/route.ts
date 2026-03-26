@@ -21,6 +21,10 @@ type CheckoutBody = {
   credits?: number;
   /** For credit purchases: company the credits belong to */
   companyId?: string;
+  /** Custom success URL (e.g. for registration flow) */
+  successUrl?: string;
+  /** Custom cancel URL */
+  cancelUrl?: string;
 } | null;
 
 export async function POST(request: Request) {
@@ -140,6 +144,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing app URL" }, { status: 400 });
   }
 
+  const defaultSuccessUrl = `${origin}/business/settings/plan?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
+  const defaultCancelUrl = `${origin}/business/settings/plan?checkout=cancelled`;
+
+  // Allow custom return URLs (for registration flow) — only same-origin allowed
+  let successUrl = defaultSuccessUrl;
+  let cancelUrl = defaultCancelUrl;
+  if (body?.successUrl && body.successUrl.startsWith(origin)) {
+    successUrl = body.successUrl;
+  }
+  if (body?.cancelUrl && body.cancelUrl.startsWith(origin)) {
+    cancelUrl = body.cancelUrl;
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: checkoutMode,
     customer: customerId,
@@ -151,8 +168,8 @@ export async function POST(request: Request) {
       credits: body?.credits ? String(body.credits) : "",
       company_id: body?.companyId ?? "",
     },
-    success_url: `${origin}/business/settings/plan?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/business/settings/plan?checkout=cancelled`,
+    success_url: successUrl,
+    cancel_url: cancelUrl,
     allow_promotion_codes: true,
   });
 
