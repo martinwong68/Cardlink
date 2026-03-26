@@ -167,10 +167,20 @@ export async function POST(request: Request) {
         .eq("id", user.id);
       throwIfSupabaseError("update stripe subscription fields", profileUpdateError);
 
-      const { error: recomputeError } = await supabaseAdmin.rpc("recompute_profile_premium", {
-        p_user_id: user.id,
-      });
-      throwIfSupabaseError("recompute_profile_premium", recomputeError);
+      // recompute_profile_premium is non-fatal — the webhook will also call it
+      try {
+        const { error: recomputeError } = await supabaseAdmin.rpc("recompute_profile_premium", {
+          p_user_id: user.id,
+        });
+        if (recomputeError) {
+          console.error("[stripe-checkout-confirm] recompute_profile_premium failed (non-fatal)", {
+            userId: user.id,
+            error: recomputeError.message,
+          });
+        }
+      } catch (recomputeErr) {
+        console.error("[stripe-checkout-confirm] recompute_profile_premium threw (non-fatal)", recomputeErr);
+      }
 
       // Activate any pending company subscriptions for this user
       if (ACTIVE_STRIPE_STATUSES.has(subscription.status)) {
