@@ -8,3 +8,4 @@ scripts/dump-schema.js
 .vscode/tasks.json
 node_modules/
 
+node_modules/

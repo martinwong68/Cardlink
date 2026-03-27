@@ -75,3 +75,22 @@ export async function POST(request: Request) {
     { status: 201 },
   );
 }
+
+export async function DELETE(request: Request) {
+  const guard = await requireBusinessActiveCompanyContext({ request });
+  if (!guard.ok) return guard.response;
+
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "id is required." }, { status: 400 });
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("pos_tax_config")
+    .delete()
+    .eq("id", id)
+    .eq("company_id", guard.context.activeCompanyId);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  return NextResponse.json({ status: "deleted" });
+}

@@ -1,11 +1,53 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Building, ChevronLeft, Image, Mail, MapPin, Briefcase } from "lucide-react";
+import { Building, ChevronLeft, Image as ImageIcon, Mail, MapPin, Briefcase, Upload, Loader2 } from "lucide-react";
 import Link from "next/link";
+import NextImage from "next/image";
 
 import { useActiveCompany } from "@/components/business/useActiveCompany";
+import { createClient } from "@/src/lib/supabase/client";
+
+const COMPANY_ASSETS_BUCKET = "company-assets";
+const LOGO_MAX_DIMENSION = 512;
+const COVER_MAX_DIMENSION = 1920;
+const IMAGE_JPEG_QUALITY = 0.8;
+
+const compressImage = async (file: File, maxDimension: number, fileName: string): Promise<File> => {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new window.Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Failed to load image."));
+      img.src = objectUrl;
+    });
+
+    const longestSide = Math.max(image.width, image.height);
+    const scale = longestSide > maxDimension ? maxDimension / longestSide : 1;
+    const width = Math.max(1, Math.round(image.width * scale));
+    const height = Math.max(1, Math.round(image.height * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Failed to process image.");
+    context.drawImage(image, 0, 0, width, height);
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("Failed to compress image."))),
+        "image/jpeg",
+        IMAGE_JPEG_QUALITY,
+      );
+    });
+    return new File([blob], fileName, { type: "image/jpeg" });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
 
 type CompanyData = {
   name: string;
@@ -61,6 +103,11 @@ export default function CompanyProfileSettingsPage() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const loadData = useCallback(async () => {
     if (!companyId) return;
@@ -133,6 +180,52 @@ export default function CompanyProfileSettingsPage() {
       setError(t("error"));
     }
     setSaving(false);
+  };
+
+  const handleUploadImage = async (file: File, kind: "logo" | "cover") => {
+    if (!companyId) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file.");
+      return;
+    }
+
+    const setter = kind === "logo" ? setUploadingLogo : setUploadingCover;
+    setter(true);
+    setError(null);
+
+    try {
+      const maxDim = kind === "logo" ? LOGO_MAX_DIMENSION : COVER_MAX_DIMENSION;
+      const fileName = kind === "logo" ? "logo.jpg" : "cover.jpg";
+      const compressed = await compressImage(file, maxDim, fileName);
+
+      const supabase = createClient();
+      const storagePath = `${companyId}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(COMPANY_ASSETS_BUCKET)
+        .upload(storagePath, compressed, { upsert: true, contentType: "image/jpeg" });
+
+      if (uploadError) {
+        setError(uploadError.message);
+        setter(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from(COMPANY_ASSETS_BUCKET)
+        .getPublicUrl(storagePath);
+
+      const publicUrl = urlData.publicUrl;
+
+      if (kind === "logo") {
+        setCompany((prev) => ({ ...prev, logo_url: publicUrl }));
+      } else {
+        setCompany((prev) => ({ ...prev, cover_url: publicUrl }));
+      }
+    } catch {
+      setError("Failed to upload image.");
+    }
+    setter(false);
   };
 
   if (loading) {
@@ -227,29 +320,98 @@ export default function CompanyProfileSettingsPage() {
       {/* Branding */}
       <div className="app-card p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <Image className="h-4 w-4 text-pink-500" />
+          <ImageIcon className="h-4 w-4 text-pink-500" />
           <h2 className="text-sm font-semibold text-gray-800">{t("branding")}</h2>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
+          {/* Logo Upload */}
           <div>
             <label className="text-xs font-medium text-gray-600 mb-1 block">{t("logoUrl")}</label>
-            <input
-              type="text"
-              value={company.logo_url}
-              onChange={(e) => setCompany({ ...company, logo_url: e.target.value })}
-              placeholder={t("logoUrlPlaceholder")}
-              className="app-input text-sm w-full"
-            />
+            <div className="flex items-start gap-3">
+              {company.logo_url && (
+                <NextImage
+                  src={company.logo_url}
+                  alt="Company logo"
+                  width={64}
+                  height={64}
+                  unoptimized
+                  className="h-16 w-16 rounded-xl object-cover border border-gray-100"
+                />
+              )}
+              <div className="flex-1 space-y-2">
+                <input
+                  type="text"
+                  value={company.logo_url}
+                  onChange={(e) => setCompany({ ...company, logo_url: e.target.value })}
+                  placeholder={t("logoUrlPlaceholder")}
+                  className="app-input text-sm w-full"
+                />
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleUploadImage(file, "logo");
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={uploadingLogo}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {uploadingLogo ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                  {uploadingLogo ? "Uploading…" : "Upload Logo"}
+                </button>
+              </div>
+            </div>
           </div>
+
+          {/* Cover Upload */}
           <div>
             <label className="text-xs font-medium text-gray-600 mb-1 block">{t("coverUrl")}</label>
-            <input
-              type="text"
-              value={company.cover_url}
-              onChange={(e) => setCompany({ ...company, cover_url: e.target.value })}
-              placeholder={t("coverUrlPlaceholder")}
-              className="app-input text-sm w-full"
-            />
+            <div className="space-y-2">
+              {company.cover_url && (
+                <NextImage
+                  src={company.cover_url}
+                  alt="Company cover"
+                  width={800}
+                  height={200}
+                  unoptimized
+                  className="h-32 w-full rounded-xl object-cover border border-gray-100"
+                />
+              )}
+              <input
+                type="text"
+                value={company.cover_url}
+                onChange={(e) => setCompany({ ...company, cover_url: e.target.value })}
+                placeholder={t("coverUrlPlaceholder")}
+                className="app-input text-sm w-full"
+              />
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void handleUploadImage(file, "cover");
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                disabled={uploadingCover}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                {uploadingCover ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                {uploadingCover ? "Uploading…" : "Upload Background"}
+              </button>
+            </div>
           </div>
         </div>
       </div>

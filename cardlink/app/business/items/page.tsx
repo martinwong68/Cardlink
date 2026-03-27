@@ -26,7 +26,12 @@ type Item = {
   synced_to_pos: boolean;
   synced_to_store: boolean;
   synced_to_inventory: boolean;
+  // Accounting
+  credit_account_id: string | null;
+  debit_account_id: string | null;
 };
+
+type Account = { id: string; code: string; name: string; type: string };
 
 const SCOPE_HEADERS = { "x-cardlink-app-scope": "business" };
 
@@ -61,6 +66,9 @@ export default function ItemMasterPage() {
   const [syncPos, setSyncPos] = useState(true);
   const [syncStore, setSyncStore] = useState(true);
   const [syncInventory, setSyncInventory] = useState(true);
+  const [creditAccountId, setCreditAccountId] = useState("");
+  const [debitAccountId, setDebitAccountId] = useState("");
+  const [accounts, setAccounts] = useState<Account[]>([]);
 
   const loadItems = useCallback(async () => {
     setLoading(true);
@@ -76,6 +84,21 @@ export default function ItemMasterPage() {
   }, []);
 
   useEffect(() => { if (!companyLoading) void loadItems(); }, [companyLoading, loadItems]);
+
+  // Load chart-of-accounts for credit/debit selectors
+  useEffect(() => {
+    if (companyLoading) return;
+    const fn = async () => {
+      try {
+        const res = await fetch("/api/accounting/accounts", { headers: SCOPE_HEADERS, cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          setAccounts(data.accounts ?? []);
+        }
+      } catch { /* silent — accounting module may not be enabled */ }
+    };
+    void fn();
+  }, [companyLoading]);
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
@@ -102,6 +125,7 @@ export default function ItemMasterPage() {
     setUnitPrice(""); setCostPrice(""); setUnit("pcs"); setTaxRate("");
     setStockQuantity(""); setReorderLevel(""); setTrackInventory(true);
     setIsActive(true); setSyncPos(true); setSyncStore(true); setSyncInventory(true);
+    setCreditAccountId(""); setDebitAccountId("");
     setEditingId(null); setShowForm(false);
   };
 
@@ -124,6 +148,8 @@ export default function ItemMasterPage() {
       sync_to_pos: syncPos,
       sync_to_store: syncStore,
       sync_to_inventory: syncInventory,
+      credit_account_id: creditAccountId || null,
+      debit_account_id: debitAccountId || null,
       ...(editingId ? { id: editingId } : {}),
     };
 
@@ -178,6 +204,8 @@ export default function ItemMasterPage() {
     setSyncPos(item.synced_to_pos ?? true);
     setSyncStore(item.synced_to_store ?? true);
     setSyncInventory(item.synced_to_inventory ?? true);
+    setCreditAccountId(item.credit_account_id ?? "");
+    setDebitAccountId(item.debit_account_id ?? "");
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -350,6 +378,33 @@ export default function ItemMasterPage() {
               </label>
             </div>
           </div>
+
+          {/* Accounting */}
+          {accounts.length > 0 && (
+            <div>
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Accounting</h3>
+              <div className="grid gap-2 md:grid-cols-2">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Credit Account (Revenue)</label>
+                  <select value={creditAccountId} onChange={(e) => setCreditAccountId(e.target.value)} className="app-input px-3 py-2 text-sm w-full">
+                    <option value="">— Select Credit Account —</option>
+                    {accounts.filter((a) => a.type === "revenue" || a.type === "liability").map((a) => (
+                      <option key={a.id} value={a.id}>{a.code} — {a.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Debit Account (Expense / Asset)</label>
+                  <select value={debitAccountId} onChange={(e) => setDebitAccountId(e.target.value)} className="app-input px-3 py-2 text-sm w-full">
+                    <option value="">— Select Debit Account —</option>
+                    {accounts.filter((a) => a.type === "asset" || a.type === "expense").map((a) => (
+                      <option key={a.id} value={a.id}>{a.code} — {a.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-2 pt-2">
             <button onClick={() => void handleSave()} disabled={!name.trim()} className="app-primary-btn px-5 py-2 text-sm font-semibold disabled:opacity-50">
