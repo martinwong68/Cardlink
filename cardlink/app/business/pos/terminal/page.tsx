@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
 
 type Product = { id: string; name: string; sku: string | null; price: number; cost?: number; stock: number; is_active: boolean; inv_product_id?: string | null };
-type CartItem = { productId: string; name: string; price: number; quantity: number; inv_product_id?: string | null };
+type CartItem = { productId: string; name: string; price: number; cost?: number; quantity: number; inv_product_id?: string | null };
 type TaxConfig = { id: string; name: string; rate: number; is_default: boolean };
 type Discount = { id: string; name: string; discount_type: "percentage" | "fixed"; value: number; min_order: number; is_active: boolean };
 type MemberAccount = { id: string; user_id: string; email: string | null; full_name: string | null; status: string; tier_name: string | null; points_balance: number };
@@ -235,11 +235,29 @@ export default function PosTerminalPage() {
     } catch { /* silent */ }
   };
 
-  const startScanner = useCallback(async () => {
+  const startScanner = useCallback(() => {
     setScannerActive(true);
-    try {
-      const reader = new BrowserMultiFormatReader();
-      if (videoRef.current) {
+  }, []);
+
+  const stopScanner = useCallback(() => {
+    controlsRef.current?.stop();
+    controlsRef.current = null;
+    setScannerActive(false);
+  }, []);
+
+  // Initialize camera AFTER React renders the <video> element
+  useEffect(() => {
+    if (!scannerActive) return;
+    let cancelled = false;
+    const initCamera = async () => {
+      // Small delay to ensure the video element is mounted in the DOM
+      await new Promise((r) => setTimeout(r, 100));
+      if (cancelled || !videoRef.current) {
+        if (!cancelled) setScannerActive(false);
+        return;
+      }
+      try {
+        const reader = new BrowserMultiFormatReader();
         const controls = await reader.decodeFromVideoDevice(
           undefined,
           videoRef.current,
@@ -249,19 +267,24 @@ export default function PosTerminalPage() {
             }
           }
         );
-        controlsRef.current = controls;
+        if (cancelled) {
+          controls.stop();
+        } else {
+          controlsRef.current = controls;
+        }
+      } catch {
+        if (!cancelled) setScannerActive(false);
       }
-    } catch {
-      setScannerActive(false);
-    }
-  }, [handleQrScan]);
+    };
+    void initCamera();
+    return () => {
+      cancelled = true;
+      controlsRef.current?.stop();
+      controlsRef.current = null;
+    };
+  }, [scannerActive, handleQrScan]);
 
-  const stopScanner = () => {
-    controlsRef.current?.stop();
-    controlsRef.current = null;
-    setScannerActive(false);
-  };
-
+  // Cleanup on unmount
   useEffect(() => {
     return () => { controlsRef.current?.stop(); };
   }, []);
@@ -270,7 +293,7 @@ export default function PosTerminalPage() {
     setCart((prev) => {
       const existing = prev.find((i) => i.productId === p.id);
       if (existing) return prev.map((i) => i.productId === p.id ? { ...i, quantity: i.quantity + 1 } : i);
-      return [...prev, { productId: p.id, name: p.name, price: p.price, quantity: 1, inv_product_id: p.inv_product_id }];
+      return [...prev, { productId: p.id, name: p.name, price: p.price, cost: p.cost ?? 0, quantity: 1, inv_product_id: p.inv_product_id }];
     });
   };
 
@@ -312,6 +335,7 @@ export default function PosTerminalPage() {
             name: i.name,
             quantity: i.quantity,
             unitPrice: i.price,
+            cost: i.cost ?? 0,
             total: i.price * i.quantity,
           })),
         }),

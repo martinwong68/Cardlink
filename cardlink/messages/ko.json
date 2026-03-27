@@ -1673,7 +1673,8 @@
       "pos": "POS",
       "crm": "CRM",
       "procurement": "Procurement",
-      "companyCards": "회사 카드"
+      "companyCards": "회사 카드",
+      "items": "아이템 마스터"
     },
     "moduleStats": {
       "pending": "{count} pending"

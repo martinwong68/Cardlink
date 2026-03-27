@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Eye,
   Info,
+  Boxes,
 } from "lucide-react";
 
 import { useActiveCompany } from "@/components/business/useActiveCompany";
@@ -35,6 +36,7 @@ const modules = [
   { key: "crm" as const, icon: Handshake, color: "bg-indigo-50 text-indigo-600", route: "/business/crm", exists: true, moduleName: "crm" },
   { key: "procurement" as const, icon: ClipboardList, color: "bg-amber-50 text-amber-600", route: "/business/procurement", exists: true, moduleName: "procurement" },
   { key: "companyCards" as const, icon: CreditCard, color: "bg-slate-100 text-slate-600", route: "/business/company-cards", exists: true, moduleName: "cards" },
+  { key: "items" as const, icon: Boxes, color: "bg-cyan-50 text-cyan-600", route: "/business/items", exists: true, moduleName: "items" },
 ];
 
 export default function BusinessHandlePage() {

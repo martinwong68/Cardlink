@@ -15,6 +15,7 @@ const ACCOUNT_WITHHOLDINGS = { code: "2200", name: "Payroll Withholdings",   typ
 const ACCOUNT_REVENUE      = { code: "4100", name: "Sales Revenue",          type: "revenue"   as const };
 const ACCOUNT_SALARY       = { code: "5100", name: "Salary Expense",         type: "expense"   as const };
 const ACCOUNT_ADJUSTMENT   = { code: "5300", name: "Inventory Adjustment",   type: "expense"   as const };
+const ACCOUNT_COGS         = { code: "5200", name: "Cost of Goods Sold",      type: "expense"   as const };
 
 /**
  * When a procurement receipt is processed (goods received),
@@ -143,8 +144,12 @@ export async function createInvoicePaidJournalEntry(
 /**
  * When a POS order is completed,
  * create a journal entry + optional inventory movement.
- *   Debit: Cash (asset)
- *   Credit: Sales Revenue (revenue)
+ *   Entry 1 — Revenue recognition:
+ *     Debit:  Cash / Bank (asset)
+ *     Credit: Sales Revenue (revenue)
+ *   Entry 2 — Cost of Goods Sold (if totalCost > 0):
+ *     Debit:  COGS (expense)
+ *     Credit: Inventory (asset)
  */
 export async function createPosOrderJournalEntry(
   supabase: SupabaseClient,
@@ -153,6 +158,7 @@ export async function createPosOrderJournalEntry(
   orderId: string,
   totalAmount: number,
   orderNumber: string,
+  totalCost: number = 0,
 ) {
   const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
   const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
@@ -181,7 +187,7 @@ export async function createPosOrderJournalEntry(
     return null;
   }
 
-  await supabase.from("transaction_lines").insert([
+  const lines = [
     {
       transaction_id: tx.id,
       account_id: cashAccount,
@@ -196,7 +202,33 @@ export async function createPosOrderJournalEntry(
       credit: totalAmount,
       description: `POS Revenue: ${orderNumber}`,
     },
-  ]);
+  ];
+
+  // COGS entry: Debit COGS, Credit Inventory
+  if (totalCost > 0) {
+    const cogsAccount = await ensureAccount(supabase, orgId, ACCOUNT_COGS.code, ACCOUNT_COGS.name, ACCOUNT_COGS.type);
+    const inventoryAccount = await ensureAccount(supabase, orgId, ACCOUNT_INVENTORY.code, ACCOUNT_INVENTORY.name, ACCOUNT_INVENTORY.type);
+    if (cogsAccount && inventoryAccount) {
+      lines.push(
+        {
+          transaction_id: tx.id,
+          account_id: cogsAccount,
+          debit: totalCost,
+          credit: 0,
+          description: `COGS: ${orderNumber}`,
+        },
+        {
+          transaction_id: tx.id,
+          account_id: inventoryAccount,
+          debit: 0,
+          credit: totalCost,
+          description: `Inventory sold: ${orderNumber}`,
+        },
+      );
+    }
+  }
+
+  await supabase.from("transaction_lines").insert(lines);
 
   return tx.id;
 }
@@ -583,8 +615,12 @@ async function ensureAccount(
 /**
  * When a store order is completed (online sale),
  * create an accounting journal entry:
- *   Debit:  Cash / Bank (asset)
- *   Credit: Sales Revenue (revenue)
+ *   Entry 1 — Revenue recognition:
+ *     Debit:  Cash / Bank (asset)
+ *     Credit: Sales Revenue (revenue)
+ *   Entry 2 — Cost of Goods Sold (if totalCost > 0):
+ *     Debit:  COGS (expense)
+ *     Credit: Inventory (asset)
  */
 export async function createStoreOrderJournalEntry(
   supabase: SupabaseClient,
@@ -593,6 +629,7 @@ export async function createStoreOrderJournalEntry(
   orderId: string,
   totalAmount: number,
   orderNumber: string,
+  totalCost: number = 0,
 ) {
   const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
   const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
@@ -621,10 +658,24 @@ export async function createStoreOrderJournalEntry(
     return null;
   }
 
-  await supabase.from("transaction_lines").insert([
+  const lines = [
     { transaction_id: tx.id, account_id: cashAccount, debit: totalAmount, credit: 0, description: `Cash received — ${orderNumber}` },
     { transaction_id: tx.id, account_id: revenueAccount, debit: 0, credit: totalAmount, description: `Store sale — ${orderNumber}` },
-  ]);
+  ];
+
+  // COGS entry: Debit COGS, Credit Inventory
+  if (totalCost > 0) {
+    const cogsAccount = await ensureAccount(supabase, orgId, ACCOUNT_COGS.code, ACCOUNT_COGS.name, ACCOUNT_COGS.type);
+    const inventoryAccount = await ensureAccount(supabase, orgId, ACCOUNT_INVENTORY.code, ACCOUNT_INVENTORY.name, ACCOUNT_INVENTORY.type);
+    if (cogsAccount && inventoryAccount) {
+      lines.push(
+        { transaction_id: tx.id, account_id: cogsAccount, debit: totalCost, credit: 0, description: `COGS — ${orderNumber}` },
+        { transaction_id: tx.id, account_id: inventoryAccount, debit: 0, credit: totalCost, description: `Inventory sold — ${orderNumber}` },
+      );
+    }
+  }
+
+  await supabase.from("transaction_lines").insert(lines);
 
   return tx.id;
 }

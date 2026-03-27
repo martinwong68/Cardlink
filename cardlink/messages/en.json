@@ -1673,7 +1673,8 @@
       "pos": "POS",
       "crm": "CRM",
       "procurement": "Procurement",
-      "companyCards": "Company Cards"
+      "companyCards": "Company Cards",
+      "items": "Item Master"
     },
     "moduleStats": {
       "pending": "{count} pending"

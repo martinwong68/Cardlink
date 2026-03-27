@@ -18,6 +18,7 @@ import {
   Handshake,
   ClipboardList,
   CreditCard,
+  Boxes,
 } from "lucide-react";
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -41,6 +42,7 @@ const moduleItems = [
   { href: "/business/cards", label: "Cards", icon: CreditCard },
   { href: "/business/hr", label: "HR", icon: Users },
   { href: "/business/booking", label: "Booking", icon: Calendar },
+  { href: "/business/items", label: "Item Master", icon: Boxes },
 ];
 
 export default function BusinessNav() {

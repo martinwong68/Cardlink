@@ -119,7 +119,17 @@ export async function POST(request: Request) {
       Number(order.total ?? 0)
     );
 
-    // Cross-module: create accounting journal entry for POS sale
+    // Compute total cost of goods sold from line items
+    let totalCost = 0;
+    if (body.line_items?.length) {
+      for (const li of body.line_items as Array<{ cost?: number; quantity: number }>) {
+        if (li.cost && li.cost > 0) {
+          totalCost += li.cost * li.quantity;
+        }
+      }
+    }
+
+    // Cross-module: create accounting journal entry for POS sale (with COGS)
     void createPosOrderJournalEntry(
       supabase,
       guard.context.activeCompanyId,
@@ -127,6 +137,7 @@ export async function POST(request: Request) {
       order.id as string,
       Number(order.total ?? 0),
       String(order.order_number ?? order.id),
+      totalCost,
     );
 
     // Cross-module: deduct inventory for items linked to inv_products

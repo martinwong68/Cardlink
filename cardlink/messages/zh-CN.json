@@ -1673,7 +1673,8 @@
       "pos": "销售点",
       "crm": "客户管理",
       "procurement": "采购",
-      "companyCards": "公司卡片"
+      "companyCards": "公司卡片",
+      "items": "商品主档"
     },
     "moduleStats": {
       "pending": "{count} 待处理"
