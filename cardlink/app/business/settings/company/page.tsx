@@ -222,8 +222,8 @@ export default function CompanyProfileSettingsPage() {
       } else {
         setCompany((prev) => ({ ...prev, cover_url: publicUrl }));
       }
-    } catch {
-      setError("Failed to upload image.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to upload image.");
     }
     setter(false);
   };
