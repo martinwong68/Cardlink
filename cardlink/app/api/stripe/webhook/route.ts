@@ -92,7 +92,7 @@ export async function POST(request: Request) {
   const webhookSecretValue = webhookSecret as string;
 
   const stripe = new Stripe(stripeSecretKey, {
-    apiVersion: "2026-01-28.clover",
+    apiVersion: "2026-02-25.clover",
   });
 
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);

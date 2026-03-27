@@ -9,7 +9,7 @@ const ACTIVE_STRIPE_STATUSES = new Set(["active", "trialing", "past_due"]);
 function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) return null;
-  return new Stripe(key, { apiVersion: "2026-01-28.clover" });
+  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
 }
 
 const toIsoFromUnix = (value?: number | null) => {
