@@ -2529,7 +2529,15 @@
       "dailyReview": "每日審查",
       "dailyReviewDesc": "快速每日業務健康檢查",
       "monthlyAudit": "每月審計",
-      "monthlyAuditDesc": "全面每月業務審計"
+      "monthlyAuditDesc": "全面每月業務審計",
+      "createPurchaseOrder": "建立採購訂單",
+      "createPurchaseOrderDesc": "向供應商建立新採購訂單",
+      "receiveGoods": "收貨",
+      "receiveGoodsDesc": "記錄收貨並更新庫存及應付賬款",
+      "payVendorBill": "支付供應商帳單",
+      "payVendorBillDesc": "將供應商帳單標記為已付並記錄AP付款",
+      "transferStock": "調撥庫存",
+      "transferStockDesc": "在倉庫間移動庫存"
     },
     "fields": {
       "amount": "金額",
@@ -2545,7 +2553,14 @@
       "leadName": "潛在客戶名稱",
       "email": "電郵",
       "debitAccount": "借方賬戶",
-      "creditAccount": "貸方賬戶"
+      "creditAccount": "貸方賬戶",
+      "vendorName": "供應商名稱",
+      "items": "品項（JSON或描述）",
+      "purchaseOrderId": "採購訂單ID",
+      "billId": "供應商帳單ID",
+      "fromWarehouse": "來源倉庫",
+      "toWarehouse": "目的倉庫",
+      "quantity": "數量"
     },
     "quickActions": {
       "recordSale": "記錄銷售",

@@ -2529,7 +2529,15 @@
       "dailyReview": "每日审查",
       "dailyReviewDesc": "快速每日业务健康检查",
       "monthlyAudit": "每月审计",
-      "monthlyAuditDesc": "全面每月业务审计"
+      "monthlyAuditDesc": "全面每月业务审计",
+      "createPurchaseOrder": "创建采购订单",
+      "createPurchaseOrderDesc": "向供应商建立新采购订单",
+      "receiveGoods": "收货",
+      "receiveGoodsDesc": "记录收货并更新库存及应付账款",
+      "payVendorBill": "支付供应商账单",
+      "payVendorBillDesc": "将供应商账单标记为已付并记录AP付款",
+      "transferStock": "调拨库存",
+      "transferStockDesc": "在仓库之间移动库存"
     },
     "fields": {
       "amount": "金额",
@@ -2545,7 +2553,14 @@
       "leadName": "潜在客户名称",
       "email": "邮箱",
       "debitAccount": "借方账户",
-      "creditAccount": "贷方账户"
+      "creditAccount": "贷方账户",
+      "vendorName": "供应商名称",
+      "items": "项目（JSON或描述）",
+      "purchaseOrderId": "采购订单ID",
+      "billId": "供应商账单ID",
+      "fromWarehouse": "来源仓库",
+      "toWarehouse": "目的仓库",
+      "quantity": "数量"
     },
     "quickActions": {
       "recordSale": "记录销售",
