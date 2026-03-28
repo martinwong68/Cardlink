@@ -81,10 +81,75 @@ export async function createReceiptJournalEntry(
 }
 
 /**
+ * When an invoice is created (accrual-basis revenue recognition),
+ * create an accounting journal entry:
+ *   Debit: Accounts Receivable (asset)
+ *   Credit: Sales Revenue (revenue)
+ */
+export async function createInvoiceJournalEntry(
+  supabase: SupabaseClient,
+  orgId: string,
+  userId: string,
+  invoiceId: string,
+  totalAmount: number,
+  invoiceNumber: string,
+) {
+  const arAccount = await ensureAccount(supabase, orgId, ACCOUNT_AR.code, ACCOUNT_AR.name, ACCOUNT_AR.type);
+  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
+
+  if (!arAccount || !revenueAccount) return null;
+
+  const idempotencyKey = `invoice-created-${invoiceId}`;
+
+  const { data: tx, error: txErr } = await supabase
+    .from("transactions")
+    .insert({
+      org_id: orgId,
+      date: new Date().toISOString().slice(0, 10),
+      description: `Invoice Created: ${invoiceNumber}`,
+      reference_number: `INV-${invoiceNumber}`,
+      status: "posted",
+      created_by: userId,
+      idempotency_key: idempotencyKey,
+    })
+    .select("id")
+    .single();
+
+  if (txErr) {
+    if (txErr.code === "23505") return null;
+    console.error("[cross-module] invoice created journal error:", txErr.message);
+    return null;
+  }
+
+  await supabase.from("transaction_lines").insert([
+    {
+      transaction_id: tx.id,
+      account_id: arAccount,
+      debit: totalAmount,
+      credit: 0,
+      description: `AR: Invoice ${invoiceNumber}`,
+    },
+    {
+      transaction_id: tx.id,
+      account_id: revenueAccount,
+      debit: 0,
+      credit: totalAmount,
+      description: `Revenue recognised: Invoice ${invoiceNumber}`,
+    },
+  ]);
+
+  return tx.id;
+}
+
+/**
  * When an invoice is marked as paid,
  * create an accounting journal entry:
  *   Debit: Cash/Bank (asset)
- *   Credit: Accounts Receivable (asset) or Revenue (revenue)
+ *   Credit: Accounts Receivable (asset)
+ *
+ * Revenue was already recognised when the invoice was created
+ * (see createInvoiceJournalEntry). This entry records the cash
+ * collection and clears the AR balance — do NOT credit Revenue here.
  */
 export async function createInvoicePaidJournalEntry(
   supabase: SupabaseClient,
@@ -95,9 +160,9 @@ export async function createInvoicePaidJournalEntry(
   invoiceNumber: string,
 ) {
   const cashAccount = await ensureAccount(supabase, orgId, ACCOUNT_CASH.code, ACCOUNT_CASH.name, ACCOUNT_CASH.type);
-  const revenueAccount = await ensureAccount(supabase, orgId, ACCOUNT_REVENUE.code, ACCOUNT_REVENUE.name, ACCOUNT_REVENUE.type);
+  const arAccount = await ensureAccount(supabase, orgId, ACCOUNT_AR.code, ACCOUNT_AR.name, ACCOUNT_AR.type);
 
-  if (!cashAccount || !revenueAccount) return null;
+  if (!cashAccount || !arAccount) return null;
 
   const idempotencyKey = `invoice-paid-${invoiceId}`;
 
@@ -127,14 +192,14 @@ export async function createInvoicePaidJournalEntry(
       account_id: cashAccount,
       debit: totalAmount,
       credit: 0,
-      description: `Payment: Invoice ${invoiceNumber}`,
+      description: `Cash received: Invoice ${invoiceNumber}`,
     },
     {
       transaction_id: tx.id,
-      account_id: revenueAccount,
+      account_id: arAccount,
       debit: 0,
       credit: totalAmount,
-      description: `Revenue: Invoice ${invoiceNumber}`,
+      description: `AR cleared: Invoice ${invoiceNumber}`,
     },
   ]);
 

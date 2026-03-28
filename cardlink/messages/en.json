@@ -2529,7 +2529,15 @@
       "dailyReview": "Daily Review",
       "dailyReviewDesc": "Run a quick daily business health check",
       "monthlyAudit": "Monthly Audit",
-      "monthlyAuditDesc": "Run a comprehensive monthly business audit"
+      "monthlyAuditDesc": "Run a comprehensive monthly business audit",
+      "createPurchaseOrder": "Create Purchase Order",
+      "createPurchaseOrderDesc": "Raise a new purchase order for a vendor",
+      "receiveGoods": "Receive Goods",
+      "receiveGoodsDesc": "Record goods receipt and update inventory & AP",
+      "payVendorBill": "Pay Vendor Bill",
+      "payVendorBillDesc": "Mark a vendor bill as paid and record the AP payment",
+      "transferStock": "Transfer Stock",
+      "transferStockDesc": "Move stock between warehouses"
     },
     "fields": {
       "amount": "Amount",
@@ -2545,7 +2553,14 @@
       "leadName": "Lead Name",
       "email": "Email",
       "debitAccount": "Debit Account",
-      "creditAccount": "Credit Account"
+      "creditAccount": "Credit Account",
+      "vendorName": "Vendor Name",
+      "items": "Items (JSON or description)",
+      "purchaseOrderId": "Purchase Order ID",
+      "billId": "Vendor Bill ID",
+      "fromWarehouse": "From Warehouse",
+      "toWarehouse": "To Warehouse",
+      "quantity": "Quantity"
     },
     "quickActions": {
       "recordSale": "Record a sale",

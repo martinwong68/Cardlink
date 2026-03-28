@@ -106,7 +106,7 @@ type PresetOperation = {
   labelKey: string;
   descKey: string;
   icon: typeof Bot;
-  category: "accounting" | "inventory" | "report" | "crm" | "setup" | "review";
+  category: "accounting" | "inventory" | "report" | "crm" | "setup" | "review" | "procurement";
   /** Additional fields the user can fill in before running */
   fields: { key: string; labelKey: string; type: "text" | "number" | "date" | "textarea" | "file" | "account-select" }[];
   /** If true this is a "hard" operation that defaults to sonnet */
@@ -211,6 +211,57 @@ const PRESET_OPERATIONS: PresetOperation[] = [
       { key: "notes", labelKey: "fields.notes", type: "textarea" },
     ],
     complex: true,
+  },
+  {
+    key: "createPurchaseOrder",
+    labelKey: "presets.createPurchaseOrder",
+    descKey: "presets.createPurchaseOrderDesc",
+    icon: ShoppingCart,
+    category: "procurement",
+    fields: [
+      { key: "vendorName", labelKey: "fields.vendorName", type: "text" },
+      { key: "items", labelKey: "fields.items", type: "textarea" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "receiveGoods",
+    labelKey: "presets.receiveGoods",
+    descKey: "presets.receiveGoodsDesc",
+    icon: Package,
+    category: "procurement",
+    fields: [
+      { key: "purchaseOrderId", labelKey: "fields.purchaseOrderId", type: "text" },
+      { key: "vendorName", labelKey: "fields.vendorName", type: "text" },
+      { key: "amount", labelKey: "fields.amount", type: "number" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "payVendorBill",
+    labelKey: "presets.payVendorBill",
+    descKey: "presets.payVendorBillDesc",
+    icon: DollarSign,
+    category: "procurement",
+    fields: [
+      { key: "billId", labelKey: "fields.billId", type: "text" },
+      { key: "vendorName", labelKey: "fields.vendorName", type: "text" },
+      { key: "amount", labelKey: "fields.amount", type: "number" },
+      { key: "notes", labelKey: "fields.notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "transferStock",
+    labelKey: "presets.transferStock",
+    descKey: "presets.transferStockDesc",
+    icon: Package,
+    category: "inventory",
+    fields: [
+      { key: "productName", labelKey: "fields.productName", type: "text" },
+      { key: "fromWarehouse", labelKey: "fields.fromWarehouse", type: "text" },
+      { key: "toWarehouse", labelKey: "fields.toWarehouse", type: "text" },
+      { key: "quantity", labelKey: "fields.quantity", type: "number" },
+    ],
   },
 ];
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 import { createAdminClient } from "@/src/lib/supabase/admin";
+import { validateTransactionBalance } from "@/src/lib/accounting-utils";
 
 /**
  * POST /api/business/ai/execute
@@ -259,6 +260,8 @@ async function executeStep(
       return executeCrmStep(supabase, companyId, step.operation, params);
     case "pos":
       return executePosStep(supabase, companyId, userId, step.operation, params);
+    case "procurement":
+      return executeProcurementStep(supabase, companyId, userId, step.operation, params);
     default:
       return executeGenericStep(supabase, companyId, step.operation, params);
   }
@@ -289,8 +292,9 @@ async function executeAccountingStep(
         ? String(params.date).slice(0, 10)
         : new Date().toISOString().slice(0, 10);
 
-      // Ensure the expense account exists for this category
-      const accountId = await ensureAccount(supabase, companyId, category, "expense");
+      // Ensure the expense account and the cash/bank account exist
+      const expenseAccountId = await ensureAccount(supabase, companyId, category, "expense");
+      const cashAccountId = await ensureAccount(supabase, companyId, "Cash / Bank", "asset");
 
       // Insert the transaction with org_id (accounting schema FK)
       const { data: txn, error: txnError } = await supabase
@@ -307,16 +311,34 @@ async function executeAccountingStep(
         .single();
       if (txnError) throw new Error(txnError.message);
 
-      // Create the transaction line linking to the expense account
+      // Double-entry: Debit Expense, Credit Cash/Bank
+      const expenseLines = [
+        { debit: amount, credit: 0 },
+        { debit: 0, credit: amount },
+      ];
+      const balance = validateTransactionBalance(expenseLines);
+      if (!balance.valid) {
+        throw new Error(`Expense journal entry does not balance (debits ${balance.debitTotal} ≠ credits ${balance.creditTotal}).`);
+      }
+
       const { error: lineError } = await supabase
         .from("transaction_lines")
-        .insert({
-          transaction_id: txn.id,
-          account_id: accountId,
-          debit: amount,
-          credit: 0,
-          description,
-        });
+        .insert([
+          {
+            transaction_id: txn.id,
+            account_id: expenseAccountId,
+            debit: amount,
+            credit: 0,
+            description,
+          },
+          {
+            transaction_id: txn.id,
+            account_id: cashAccountId,
+            debit: 0,
+            credit: amount,
+            description: `Cash out: ${description}`,
+          },
+        ]);
       if (lineError) throw new Error(lineError.message);
 
       return;
@@ -393,6 +415,11 @@ async function executeAccountingStep(
           });
         }
         if (lines.length > 0) {
+          // Validate balance before inserting
+          const balance = validateTransactionBalance(lines);
+          if (!balance.valid) {
+            throw new Error(`Journal entry does not balance: debits ${balance.debitTotal.toFixed(2)} ≠ credits ${balance.creditTotal.toFixed(2)}.`);
+          }
           const { error: lineError } = await supabase.from("transaction_lines").insert(lines);
           if (lineError) throw new Error(lineError.message);
         }
@@ -438,7 +465,8 @@ async function executeAccountingStep(
           params.description || `Payment received — ${method}`,
         );
         const category = sanitizeText(params.category || "Payment", 100);
-        const accountId = await ensureAccount(supabase, companyId, category, "revenue");
+        const revenueAccountId = await ensureAccount(supabase, companyId, category, "revenue");
+        const cashAccountId = await ensureAccount(supabase, companyId, "Cash / Bank", "asset");
 
         const { data: txn, error: txnError } = await supabase
           .from("transactions")
@@ -454,15 +482,34 @@ async function executeAccountingStep(
           .single();
         if (txnError) throw new Error(txnError.message);
 
+        // Double-entry: Debit Cash/Bank, Credit Revenue
+        const paymentLines = [
+          { debit: amount, credit: 0 },
+          { debit: 0, credit: amount },
+        ];
+        const balance = validateTransactionBalance(paymentLines);
+        if (!balance.valid) {
+          throw new Error(`Payment journal entry does not balance (debits ${balance.debitTotal} ≠ credits ${balance.creditTotal}).`);
+        }
+
         const { error: lineError } = await supabase
           .from("transaction_lines")
-          .insert({
-            transaction_id: txn.id,
-            account_id: accountId,
-            credit: amount,
-            debit: 0,
-            description,
-          });
+          .insert([
+            {
+              transaction_id: txn.id,
+              account_id: cashAccountId,
+              debit: amount,
+              credit: 0,
+              description,
+            },
+            {
+              transaction_id: txn.id,
+              account_id: revenueAccountId,
+              credit: amount,
+              debit: 0,
+              description,
+            },
+          ]);
         if (lineError) throw new Error(lineError.message);
       }
       return;
@@ -584,8 +631,249 @@ async function executeInventoryStep(
       }
       return;
     }
+    case "transfer_stock": {
+      const productName = sanitizeText(params.product ?? params.product_name, 200);
+      if (!productName) throw new Error("Product name is required for stock transfer.");
+
+      const fromWarehouse = sanitizeText(params.from_warehouse, 200);
+      const toWarehouse = sanitizeText(params.to_warehouse, 200);
+      if (!fromWarehouse || !toWarehouse) {
+        throw new Error("Both from_warehouse and to_warehouse are required for stock transfer.");
+      }
+
+      const qty = sanitizeAmount(params.quantity ?? params.qty);
+      if (qty <= 0) throw new Error("Transfer quantity must be greater than zero.");
+
+      const escapedName = escapeIlikePattern(productName);
+      const { data: product, error: findError } = await supabase
+        .from("inv_products")
+        .select("id, name")
+        .eq("company_id", companyId)
+        .ilike("name", `%${escapedName}%`)
+        .limit(1)
+        .maybeSingle();
+      if (findError) throw new Error(findError.message);
+      if (!product) throw new Error(`Product not found: ${productName}`);
+
+      // Record the stock movement
+      const { error: movError } = await supabase.from("inv_movements").insert({
+        company_id: companyId,
+        product_id: product.id,
+        movement_type: "transfer",
+        quantity: qty,
+        from_warehouse: fromWarehouse,
+        to_warehouse: toWarehouse,
+        notes: sanitizeText(params.notes, 500) || null,
+        movement_date: new Date().toISOString().slice(0, 10),
+      });
+      if (movError) throw new Error(movError.message);
+      return;
+    }
+    case "create_stock_take": {
+      const warehouse = sanitizeText(params.warehouse, 200) || null;
+      const products = Array.isArray(params.products) ? params.products.slice(0, 200) : [];
+
+      const stockTakeNumber = generateUniqueCode("ST");
+
+      const { data: stockTake, error: stError } = await supabase
+        .from("inv_stock_takes")
+        .insert({
+          company_id: companyId,
+          stock_take_number: stockTakeNumber,
+          warehouse: warehouse,
+          status: "draft",
+          take_date: new Date().toISOString().slice(0, 10),
+          notes: sanitizeText(params.notes, 500) || null,
+        })
+        .select("id")
+        .single();
+      if (stError) throw new Error(stError.message);
+
+      // Insert counted items if provided
+      if (products.length > 0 && stockTake) {
+        for (const item of products) {
+          const pName = sanitizeText((item as Record<string, unknown>).product_name ?? (item as Record<string, unknown>).name, 200);
+          if (!pName) continue;
+
+          const escapedPName = escapeIlikePattern(pName);
+          const { data: prod } = await supabase
+            .from("inv_products")
+            .select("id")
+            .eq("company_id", companyId)
+            .ilike("name", `%${escapedPName}%`)
+            .limit(1)
+            .maybeSingle();
+
+          if (prod) {
+            await supabase.from("inv_stock_take_lines").insert({
+              stock_take_id: stockTake.id,
+              product_id: prod.id,
+              counted_qty: sanitizeAmount((item as Record<string, unknown>).counted_qty ?? (item as Record<string, unknown>).quantity),
+            });
+          }
+        }
+      }
+      return;
+    }
     default:
       throw new Error(`Unsupported inventory operation: ${operation}`);
+  }
+}
+
+async function executeProcurementStep(
+  supabase: ReturnType<typeof createAdminClient>,
+  companyId: string,
+  userId: string,
+  operation: string,
+  params: Record<string, unknown>,
+) {
+  switch (operation) {
+    case "create_purchase_order": {
+      const vendorName = sanitizeText(params.vendor_name ?? params.vendor, 200);
+      if (!vendorName) throw new Error("Vendor name is required for a purchase order.");
+
+      const items = Array.isArray(params.items) ? params.items.slice(0, 100) : [];
+      const totalAmount = items.reduce((sum: number, item: Record<string, unknown>) => {
+        const qty = Math.max(1, Math.round(Number(item.qty ?? item.quantity ?? 1)));
+        return sum + sanitizeAmount(item.unit_price) * qty;
+      }, 0);
+
+      const poNumber = generateUniqueCode("PO");
+
+      const { data: po, error: poError } = await supabase
+        .from("purchase_orders")
+        .insert({
+          company_id: companyId,
+          po_number: poNumber,
+          vendor_name: vendorName,
+          status: "draft",
+          total: totalAmount,
+          notes: sanitizeText(params.notes, 500) || null,
+          order_date: new Date().toISOString().slice(0, 10),
+          created_by: userId,
+        })
+        .select("id")
+        .single();
+      if (poError) throw new Error(poError.message);
+
+      // Insert line items if provided
+      if (items.length > 0 && po) {
+        const poItems = items.map((item: Record<string, unknown>) => {
+          const qty = Math.max(1, Math.round(Number(item.qty ?? item.quantity ?? 1)));
+          const unitPrice = sanitizeAmount(item.unit_price);
+          return {
+            po_id: po.id,
+            item_name: sanitizeText(item.name ?? item.product_name, 200) || "Item",
+            qty,
+            unit_price: unitPrice,
+            subtotal: unitPrice * qty,
+          };
+        });
+        const { error: itemsError } = await supabase.from("purchase_order_items").insert(poItems);
+        if (itemsError) {
+          console.error("[create_purchase_order] Failed to insert PO items:", itemsError.message);
+        }
+      }
+      return;
+    }
+    case "receive_goods": {
+      const poId = params.purchase_order_id ? String(params.purchase_order_id) : null;
+      const vendorName = sanitizeText(params.vendor_name ?? params.vendor, 200);
+      const totalAmount = sanitizeAmount(params.total_amount ?? params.amount);
+
+      if (!poId && !vendorName) {
+        throw new Error("Either purchase_order_id or vendor_name is required to receive goods.");
+      }
+
+      const receiptNumber = generateUniqueCode("GR");
+
+      const { data: receipt, error: receiptError } = await supabase
+        .from("goods_receipts")
+        .insert({
+          company_id: companyId,
+          receipt_number: receiptNumber,
+          purchase_order_id: poId,
+          vendor_name: vendorName || null,
+          status: "received",
+          total: totalAmount,
+          receipt_date: new Date().toISOString().slice(0, 10),
+          notes: sanitizeText(params.notes, 500) || null,
+          created_by: userId,
+        })
+        .select("id")
+        .single();
+      if (receiptError) throw new Error(receiptError.message);
+
+      // Create accounting journal entry: Debit Inventory, Credit AP
+      await ensureOrgExists(supabase, companyId);
+      if (totalAmount > 0) {
+        const { createReceiptJournalEntry } = await import("@/src/lib/cross-module-integration");
+        await createReceiptJournalEntry(
+          supabase,
+          companyId,
+          userId,
+          receipt.id,
+          totalAmount,
+          `Goods receipt ${receiptNumber}`,
+        );
+      }
+      return;
+    }
+    case "pay_vendor_bill": {
+      const billId = params.bill_id ? String(params.bill_id) : null;
+      const vendorName = sanitizeText(params.vendor_name ?? params.vendor, 200);
+      const amount = sanitizeAmount(params.amount);
+      if (amount <= 0) throw new Error("Payment amount must be greater than zero.");
+
+      const paymentMethod = sanitizeText(params.payment_method || "bank_transfer", 50);
+      const billNumber = sanitizeText(params.bill_number, 100) || generateUniqueCode("BILL");
+
+      // If bill_id given, mark the vendor bill as paid
+      if (billId) {
+        const { error: updateError } = await supabase
+          .from("vendor_bills")
+          .update({ status: "paid", paid_at: new Date().toISOString() })
+          .eq("id", billId)
+          .eq("company_id", companyId);
+        if (updateError) throw new Error(updateError.message);
+      }
+
+      // Record payment
+      const paymentNumber = generateUniqueCode("PAY");
+      const { data: payment, error: payError } = await supabase
+        .from("payments")
+        .insert({
+          org_id: companyId,
+          payment_number: paymentNumber,
+          payment_type: "made",
+          related_type: billId ? "vendor_bill" : null,
+          related_id: billId,
+          amount,
+          payment_method: paymentMethod,
+          payment_date: new Date().toISOString().slice(0, 10),
+          notes: vendorName ? `Payment to ${vendorName}` : null,
+          created_by: userId,
+        })
+        .select("id")
+        .single();
+      if (payError) throw new Error(payError.message);
+
+      // Create accounting journal entry: Debit AP, Credit Cash
+      await ensureOrgExists(supabase, companyId);
+      const { createVendorBillPaidJournalEntry } = await import("@/src/lib/cross-module-integration");
+      await createVendorBillPaidJournalEntry(
+        supabase,
+        companyId,
+        userId,
+        billId ?? paymentNumber,
+        amount,
+        billNumber,
+        payment.id,
+      );
+      return;
+    }
+    default:
+      throw new Error(`Unsupported procurement operation: ${operation}`);
   }
 }
 

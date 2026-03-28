@@ -2529,7 +2529,15 @@
       "dailyReview": "일일 리뷰",
       "dailyReviewDesc": "Run a quick daily business health check",
       "monthlyAudit": "월간 감사",
-      "monthlyAuditDesc": "Run a comprehensive monthly business audit"
+      "monthlyAuditDesc": "Run a comprehensive monthly business audit",
+      "createPurchaseOrder": "구매 주문 생성",
+      "createPurchaseOrderDesc": "공급업체에 새 구매 주문 발행",
+      "receiveGoods": "상품 입고",
+      "receiveGoodsDesc": "입고 기록 및 재고·AP 업데이트",
+      "payVendorBill": "공급업체 청구서 지불",
+      "payVendorBillDesc": "공급업체 청구서를 지불 완료로 표시하고 AP 지불 기록",
+      "transferStock": "재고 이전",
+      "transferStockDesc": "창고 간 재고 이동"
     },
     "fields": {
       "amount": "금액",
@@ -2545,7 +2553,14 @@
       "leadName": "리드 이름",
       "email": "이메일",
       "debitAccount": "차변 계정",
-      "creditAccount": "대변 계정"
+      "creditAccount": "대변 계정",
+      "vendorName": "공급업체 이름",
+      "items": "항목 (JSON 또는 설명)",
+      "purchaseOrderId": "구매 주문 ID",
+      "billId": "공급업체 청구서 ID",
+      "fromWarehouse": "출발 창고",
+      "toWarehouse": "도착 창고",
+      "quantity": "수량"
     },
     "quickActions": {
       "recordSale": "Record a 판매",
