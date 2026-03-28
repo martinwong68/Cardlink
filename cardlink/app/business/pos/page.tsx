@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Monitor, ClipboardList, Package, Clock, BarChart3, Crown } from "lucide-react";
+import { Monitor, ClipboardList, Package, Clock, BarChart3, Crown, Settings2 } from "lucide-react";
 
 import ModuleFunctionSlider from "@/components/business/ModuleFunctionSlider";
 import ModuleFunctionDetailCard from "@/components/business/ModuleFunctionDetailCard";
@@ -61,6 +61,15 @@ const posFunctions: ModuleFunctionDefinition[] = [
     color: "bg-amber-50 text-amber-600",
     ctaLabel: "Member Lookup",
     ctaHref: "/business/pos/membership",
+  },
+  {
+    id: "settings",
+    title: "Settings",
+    description: "Configure tax rates and POS-specific settings",
+    icon: Settings2,
+    color: "bg-gray-50 text-gray-600",
+    ctaLabel: "POS Settings",
+    ctaHref: "/business/pos/settings",
   },
 ];
 

@@ -20,6 +20,8 @@ type ItemDraft = {
   sync_to_pos?: boolean;
   sync_to_store?: boolean;
   sync_to_inventory?: boolean;
+  credit_account_id?: string | null;
+  debit_account_id?: string | null;
 };
 
 /**
@@ -60,6 +62,8 @@ export async function GET(request: Request) {
     synced_to_pos: row.synced_to_pos ?? true,
     synced_to_store: row.synced_to_store ?? true,
     synced_to_inventory: row.synced_to_inventory ?? true,
+    credit_account_id: row.credit_account_id ?? null,
+    debit_account_id: row.debit_account_id ?? null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   }));
@@ -107,6 +111,8 @@ export async function POST(request: Request) {
       synced_to_pos: body.sync_to_pos ?? true,
       synced_to_store: body.sync_to_store ?? true,
       synced_to_inventory: body.sync_to_inventory ?? true,
+      credit_account_id: body.credit_account_id || null,
+      debit_account_id: body.debit_account_id || null,
     })
     .select("*")
     .single();
@@ -155,6 +161,8 @@ export async function PATCH(request: Request) {
   if (body.sync_to_pos !== undefined) payload.synced_to_pos = body.sync_to_pos;
   if (body.sync_to_store !== undefined) payload.synced_to_store = body.sync_to_store;
   if (body.sync_to_inventory !== undefined) payload.synced_to_inventory = body.sync_to_inventory;
+  if (body.credit_account_id !== undefined) payload.credit_account_id = body.credit_account_id || null;
+  if (body.debit_account_id !== undefined) payload.debit_account_id = body.debit_account_id || null;
 
   const { data, error } = await supabase
     .from("items")

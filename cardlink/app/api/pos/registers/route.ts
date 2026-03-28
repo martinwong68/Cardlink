@@ -17,3 +17,27 @@ export async function GET(request: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ registers: data ?? [] });
 }
+
+export async function POST(request: Request) {
+  const guard = await requireBusinessActiveCompanyContext({ request });
+  if (!guard.ok) return guard.response;
+
+  const body = await request.json();
+  const name = (body.name ?? "").trim();
+  if (!name) return NextResponse.json({ error: "name is required." }, { status: 400 });
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("pos_registers")
+    .insert({
+      company_id: guard.context.activeCompanyId,
+      name,
+      location: body.location?.trim() || null,
+      is_active: true,
+    })
+    .select("id, name")
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  return NextResponse.json({ register: data }, { status: 201 });
+}
