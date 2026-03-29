@@ -15,12 +15,23 @@ import {
   Check,
   X,
   Pencil,
+  CreditCard,
+  ArrowRightLeft,
+  ShoppingCart,
+  ClipboardList,
+  Users,
+  Contact,
+  FileStack,
 } from "lucide-react";
 
 /* ── Types ── */
 export type AiActionCardData = {
   id: string;
-  card_type: "journal_entry" | "invoice" | "inventory_update" | "expense" | "navigation" | "report" | "general";
+  card_type:
+    | "journal_entry" | "invoice" | "inventory_update" | "expense"
+    | "navigation" | "report" | "general"
+    | "payment" | "stock_adjustment" | "product" | "purchase_order"
+    | "sale" | "lead" | "contact" | "bulk_import";
   title: string;
   description: string | null;
   suggested_data: Record<string, unknown>;
@@ -49,6 +60,14 @@ const TYPE_CONFIG: Record<
   navigation: { icon: Navigation, label: "Navigation", color: "bg-purple-50 text-purple-600" },
   report: { icon: BarChart3, label: "Report", color: "bg-teal-50 text-teal-600" },
   general: { icon: Info, label: "General", color: "bg-gray-50 text-gray-600" },
+  payment: { icon: CreditCard, label: "Payment", color: "bg-emerald-50 text-emerald-600" },
+  stock_adjustment: { icon: ArrowRightLeft, label: "Stock Adjustment", color: "bg-amber-50 text-amber-600" },
+  product: { icon: Package, label: "Product", color: "bg-cyan-50 text-cyan-600" },
+  purchase_order: { icon: ClipboardList, label: "Purchase Order", color: "bg-violet-50 text-violet-600" },
+  sale: { icon: ShoppingCart, label: "Sale", color: "bg-lime-50 text-lime-600" },
+  lead: { icon: Users, label: "Lead", color: "bg-pink-50 text-pink-600" },
+  contact: { icon: Contact, label: "Contact", color: "bg-sky-50 text-sky-600" },
+  bulk_import: { icon: FileStack, label: "Bulk Import", color: "bg-indigo-50 text-indigo-600" },
 };
 
 const STATUS_BADGES: Record<string, { label: string; color: string }> = {

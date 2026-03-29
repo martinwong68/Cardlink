@@ -22,6 +22,8 @@ type ItemDraft = {
   sync_to_inventory?: boolean;
   credit_account_id?: string | null;
   debit_account_id?: string | null;
+  variant_attribute?: string | null;
+  variant_value?: string | null;
 };
 
 /**
@@ -64,6 +66,8 @@ export async function GET(request: Request) {
     synced_to_inventory: row.synced_to_inventory ?? true,
     credit_account_id: row.credit_account_id ?? null,
     debit_account_id: row.debit_account_id ?? null,
+    variant_attribute: row.variant_attribute ?? null,
+    variant_value: row.variant_value ?? null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   }));
@@ -113,6 +117,8 @@ export async function POST(request: Request) {
       synced_to_inventory: body.sync_to_inventory ?? true,
       credit_account_id: body.credit_account_id || null,
       debit_account_id: body.debit_account_id || null,
+      variant_attribute: body.variant_attribute?.trim() || null,
+      variant_value: body.variant_value?.trim() || null,
     })
     .select("*")
     .single();
@@ -163,6 +169,8 @@ export async function PATCH(request: Request) {
   if (body.sync_to_inventory !== undefined) payload.synced_to_inventory = body.sync_to_inventory;
   if (body.credit_account_id !== undefined) payload.credit_account_id = body.credit_account_id || null;
   if (body.debit_account_id !== undefined) payload.debit_account_id = body.debit_account_id || null;
+  if (body.variant_attribute !== undefined) payload.variant_attribute = body.variant_attribute?.trim() || null;
+  if (body.variant_value !== undefined) payload.variant_value = body.variant_value?.trim() || null;
 
   const { data, error } = await supabase
     .from("items")
