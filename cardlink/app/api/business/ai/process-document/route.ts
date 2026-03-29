@@ -16,8 +16,10 @@ const MAX_IMAGE_CONTENT_LENGTH = 20000;
  */
 async function extractPdfText(base64Content: string): Promise<string | null> {
   try {
-    // Dynamic import to avoid bundling issues
-    const pdfParse = (await import("pdf-parse")).default;
+    // Import from lib sub-path to avoid the top-level require('fs') in pdf-parse/index.js
+    // which causes Vercel/Turbopack bundling failures
+    const pdfParse = (await import("pdf-parse/lib/pdf-parse.js")) as unknown as
+      (buf: Buffer) => Promise<{ text: string }>;
     const buffer = Buffer.from(base64Content, "base64");
     const data = await pdfParse(buffer);
     return data.text;
