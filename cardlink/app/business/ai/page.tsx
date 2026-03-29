@@ -440,6 +440,7 @@ export default function AiPage() {
     if (selectedRows.length === 0) return;
 
     setExecuting(true);
+    setProcessError(null);
 
     try {
       const stepsPayload = selectedRows.map((r) => ({
@@ -459,12 +460,31 @@ export default function AiPage() {
       });
 
       const json = (await res.json()) as {
-        results?: Array<{ stepIndex: number; success: boolean; error?: string }>;
-        successCount?: number;
+        success?: boolean;
+        results?: Array<{ step: number; label: string; success: boolean; error?: string }>;
+        message?: string;
+        error?: string;
       };
 
+      // Handle HTTP errors or server error responses
+      if (!res.ok || json.error) {
+        const msg = json.error ?? json.message ?? `Server error (${res.status})`;
+        setProcessError(msg);
+        // Mark all selected rows as error
+        setRows((prev) =>
+          prev.map((row) => {
+            if (!row.selected || row.status !== "pending") return row;
+            return { ...row, status: "error" as StepStatus, errorMessage: msg };
+          }),
+        );
+        setExecutionCount(0);
+        setExecutionDone(true);
+        return;
+      }
+
+      // Process per-step results
       let successCount = 0;
-      if (json.results) {
+      if (json.results && Array.isArray(json.results)) {
         setRows((prev) =>
           prev.map((row) => {
             if (!row.selected || row.status !== "pending") return row;
@@ -475,19 +495,19 @@ export default function AiPage() {
             if (resultItem.success) successCount++;
             return {
               ...row,
-              status: resultItem.success ? "success" : "error",
+              status: resultItem.success ? ("success" as StepStatus) : ("error" as StepStatus),
               errorMessage: resultItem.error,
             };
           }),
         );
-      } else {
-        successCount = json.successCount ?? selectedRows.length;
       }
 
       setExecutionCount(successCount);
       setExecutionDone(true);
     } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to execute actions. Please try again.";
       console.error("[execute]", err);
+      setProcessError(msg);
     } finally {
       setExecuting(false);
     }
