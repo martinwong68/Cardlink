@@ -72,7 +72,7 @@ export type DocumentActionStep = {
 };
 
 export type DocumentProcessResult = {
-  documentType: DocumentType;
+  documentType: DocumentType | string;
   summary: string;
   steps: DocumentActionStep[];
 };

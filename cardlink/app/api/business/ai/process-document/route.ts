@@ -11,6 +11,23 @@ const MAX_TEXT_CONTENT_LENGTH = 15000;
 const MAX_IMAGE_CONTENT_LENGTH = 20000;
 
 /**
+ * Extract text from a base64-encoded PDF using pdf-parse.
+ * Returns the extracted text, or null if extraction fails.
+ */
+async function extractPdfText(base64Content: string): Promise<string | null> {
+  try {
+    // Dynamic import to avoid bundling issues
+    const pdfParse = (await import("pdf-parse")).default;
+    const buffer = Buffer.from(base64Content, "base64");
+    const data = await pdfParse(buffer);
+    return data.text;
+  } catch (err) {
+    console.error("[process-document] PDF extraction error:", err);
+    return null;
+  }
+}
+
+/**
  * POST /api/business/ai/process-document
  *
  * Smart document processing endpoint.
@@ -117,10 +134,18 @@ ${JSON.stringify(rows, null, 2)}`;
 [Image content provided as base64 for vision analysis]
 ${body.fileContent.slice(0, MAX_IMAGE_CONTENT_LENGTH)}`;
   } else if (isPDF) {
-    // fileContent for PDFs should already be extracted text (via pdf-parse)
-    documentContent = `FILE: ${body.fileName} (PDF — extracted text)
+    // PDF content is now base64-encoded — extract text server-side
+    const pdfText = await extractPdfText(body.fileContent);
+    if (pdfText && pdfText.trim().length > 0) {
+      documentContent = `FILE: ${body.fileName} (PDF — extracted text)
 CONTENT:
-${body.fileContent.slice(0, MAX_TEXT_CONTENT_LENGTH)}${body.fileContent.length > MAX_TEXT_CONTENT_LENGTH ? "\n... (truncated)" : ""}`;
+${pdfText.slice(0, MAX_TEXT_CONTENT_LENGTH)}${pdfText.length > MAX_TEXT_CONTENT_LENGTH ? "\n... (truncated)" : ""}`;
+    } else {
+      // Fallback: send base64 for vision analysis if text extraction failed
+      documentContent = `FILE: ${body.fileName} (PDF — could not extract text, base64 provided for vision)
+[PDF content as base64]
+${body.fileContent.slice(0, MAX_IMAGE_CONTENT_LENGTH)}`;
+    }
   } else {
     // Plain text, JSON, XML, etc.
     documentContent = `FILE: ${body.fileName} (${ext ? ext.toUpperCase() : "TEXT"})
@@ -155,8 +180,9 @@ ${body.fileContent.slice(0, MAX_TEXT_CONTENT_LENGTH)}${body.fileContent.length >
     );
 
     if (!result || !result.steps) {
+      console.error("[process-document] AI response did not contain expected JSON structure. Raw:", response.content?.slice(0, 500));
       return NextResponse.json(
-        { error: "AI could not extract structured data from the document." },
+        { error: "AI could not extract structured data from the document. Please try adding more detailed instructions." },
         { status: 422 },
       );
     }

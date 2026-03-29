@@ -104,9 +104,11 @@ function readFileAsDataURL(file: File): Promise<string> {
 async function readUploadedFile(file: File): Promise<UploadedFile | null> {
   const ext = file.name.toLowerCase().split(".").pop() ?? "";
   const isImage = ["png", "jpg", "jpeg", "gif", "webp"].includes(ext);
+  const isPdf = ext === "pdf";
 
   let content: string;
-  if (isImage) {
+  if (isImage || isPdf) {
+    // PDFs and images are read as base64 for server-side processing
     content = await readFileAsDataURL(file);
   } else {
     content = await readFileAsText(file);
@@ -180,6 +182,9 @@ export default function AiPage() {
   const [voiceSupported, setVoiceSupported] = useState(true);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
+  /* ── Text instruction state ── */
+  const [textInstruction, setTextInstruction] = useState<string>("");
+
   /* ── Processing state ── */
   const [processing, setProcessing] = useState(false);
   const [processError, setProcessError] = useState<string | null>(null);
@@ -226,12 +231,12 @@ export default function AiPage() {
 
       if (valid.length > 0) {
         setUploadedFiles((prev) => [...prev, ...valid]);
-        // Reset results when new files are added, then trigger processing
+        // Reset results when new files are added
         setResult(null);
         setRows([]);
         setExecutionDone(false);
         setProcessError(null);
-        setProcessKey((k) => k + 1);
+        // Don't auto-process — let the user add text instruction and click Process
       }
     },
     [t],
@@ -311,13 +316,18 @@ export default function AiPage() {
   /* ── Process document ── */
   const uploadedFilesRef = useRef<UploadedFile[]>([]);
   const voiceTranscriptRef = useRef<string>("");
+  const textInstructionRef = useRef<string>("");
   uploadedFilesRef.current = uploadedFiles;
   voiceTranscriptRef.current = voiceTranscript;
+  textInstructionRef.current = textInstruction;
 
   const processDocuments = useCallback(async () => {
     const files = uploadedFilesRef.current;
     const transcript = voiceTranscriptRef.current;
-    if (files.length === 0 && !transcript) return;
+    const instruction = textInstructionRef.current;
+    // Combine voice + text instructions
+    const combinedInstruction = [transcript, instruction].filter(Boolean).join("\n").trim();
+    if (files.length === 0 && !combinedInstruction) return;
     setProcessing(true);
     setProcessError(null);
     setResult(null);
@@ -325,19 +335,19 @@ export default function AiPage() {
     setExecutionDone(false);
 
     try {
-      // Process the first file; voice instruction is sent alongside
+      // Process the first file; instruction is sent alongside
       const file = files[0];
       const payload: Record<string, unknown> = {
-        voiceInstruction: transcript || undefined,
+        voiceInstruction: combinedInstruction || undefined,
       };
 
       if (file) {
         payload.fileContent = file.content;
         payload.fileName = file.name;
       } else {
-        // Voice-only: send the voice transcript as a "virtual" text file
-        payload.fileContent = transcript;
-        payload.fileName = "voice-instruction.txt";
+        // Text/voice-only: send the instruction as a "virtual" text file
+        payload.fileContent = combinedInstruction;
+        payload.fileName = "text-instruction.txt";
       }
 
       const res = await fetch("/api/business/ai/process-document", {
@@ -486,6 +496,7 @@ export default function AiPage() {
   const resetAll = () => {
     setUploadedFiles([]);
     setVoiceTranscript("");
+    setTextInstruction("");
     setResult(null);
     setRows([]);
     setProcessError(null);
@@ -626,45 +637,60 @@ export default function AiPage() {
               ))}
             </ul>
           )}
-        </div>
-      )}
 
-      {/* ── Voice Button ── */}
-      {!processing && !result && !executionDone && (
-        <div className="app-card p-6 mb-6 flex flex-col items-center">
-          {!voiceSupported ? (
-            <p className="text-xs text-gray-400">{t("voiceNotSupported")}</p>
-          ) : (
-            <>
+          {/* Text instruction input */}
+          <div className="mt-4">
+            <label htmlFor="text-instruction" className="block text-xs font-medium text-gray-600 mb-1">
+              {t("instructionLabel")}
+            </label>
+            <textarea
+              id="text-instruction"
+              value={textInstruction}
+              onChange={(e) => setTextInstruction(e.target.value)}
+              placeholder={t("instructionPlaceholder")}
+              rows={3}
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none"
+            />
+          </div>
+
+          {/* Voice input (compact) */}
+          {voiceSupported && (
+            <div className="mt-3 flex items-center gap-3">
               <button
                 onClick={isRecording ? stopRecording : startRecording}
-                className={`relative flex h-20 w-20 items-center justify-center rounded-full shadow-lg transition-all focus:outline-none focus:ring-4 focus:ring-indigo-300 ${
+                className={`flex h-10 w-10 items-center justify-center rounded-full shadow transition-all focus:outline-none focus:ring-2 focus:ring-indigo-300 ${
                   isRecording
                     ? "bg-red-500 text-white"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                    : "bg-gray-100 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600"
                 }`}
+                title={isRecording ? t("voiceRecording") : t("voiceButton")}
               >
-                {isRecording && (
-                  <span className="absolute inset-0 animate-ping rounded-full bg-red-400 opacity-50" />
-                )}
                 {isRecording ? (
-                  <MicOff className="h-8 w-8" />
+                  <MicOff className="h-4 w-4" />
                 ) : (
-                  <Mic className="h-8 w-8" />
+                  <Mic className="h-4 w-4" />
                 )}
               </button>
-              <p className="mt-3 text-sm text-gray-500">
+              <span className="text-xs text-gray-400">
                 {isRecording ? t("voiceRecording") : t("voiceButton")}
-              </p>
+              </span>
               {voiceTranscript && (
-                <div className="mt-3 rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-700 w-full max-w-sm text-center">
-                  <span className="font-medium text-gray-500 mr-1">
-                    {t("voiceTranscribed")}
-                  </span>
+                <span className="text-xs text-gray-600 truncate flex-1">
                   {voiceTranscript}
-                </div>
+                </span>
               )}
-            </>
+            </div>
+          )}
+
+          {/* Process button */}
+          {(uploadedFiles.length > 0 || textInstruction.trim() || voiceTranscript) && (
+            <button
+              onClick={() => setProcessKey((k) => k + 1)}
+              className="mt-4 w-full rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-700 transition flex items-center justify-center gap-2"
+            >
+              <Upload className="h-4 w-4" />
+              {t("processButton")}
+            </button>
           )}
         </div>
       )}
