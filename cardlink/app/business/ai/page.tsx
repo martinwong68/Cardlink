@@ -459,18 +459,18 @@ export default function AiPage() {
         body: JSON.stringify({ steps: stepsPayload }),
       });
 
-      const json = (await res.json()) as {
+      // Parse response — handle non-JSON responses gracefully
+      let json: {
         success?: boolean;
         results?: Array<{ step: number; label: string; success: boolean; error?: string }>;
         message?: string;
         error?: string;
       };
-
-      // Handle HTTP errors or server error responses
-      if (!res.ok || json.error) {
-        const msg = json.error ?? json.message ?? `Server error (${res.status})`;
+      try {
+        json = await res.json();
+      } catch {
+        const msg = `Server error (${res.status}). Please try again.`;
         setProcessError(msg);
-        // Mark all selected rows as error
         setRows((prev) =>
           prev.map((row) => {
             if (!row.selected || row.status !== "pending") return row;
@@ -482,17 +482,33 @@ export default function AiPage() {
         return;
       }
 
-      // Process per-step results
-      let successCount = 0;
-      if (json.results && Array.isArray(json.results)) {
+      // Handle HTTP errors or server error responses
+      if (!res.ok || json.error) {
+        const msg = json.error ?? json.message ?? `Server error (${res.status})`;
+        setProcessError(msg);
+        setRows((prev) =>
+          prev.map((row) => {
+            if (!row.selected || row.status !== "pending") return row;
+            return { ...row, status: "error" as StepStatus, errorMessage: msg };
+          }),
+        );
+        setExecutionCount(0);
+        setExecutionDone(true);
+        return;
+      }
+
+      // Compute successCount from results before updating rows
+      const results = json.results && Array.isArray(json.results) ? json.results : [];
+      const successCount = results.filter((r) => r.success).length;
+
+      if (results.length > 0) {
         setRows((prev) =>
           prev.map((row) => {
             if (!row.selected || row.status !== "pending") return row;
             const idx = selectedRows.findIndex((s) => s.id === row.id);
             if (idx === -1) return row;
-            const resultItem = json.results?.[idx];
+            const resultItem = results[idx];
             if (!resultItem) return row;
-            if (resultItem.success) successCount++;
             return {
               ...row,
               status: resultItem.success ? ("success" as StepStatus) : ("error" as StepStatus),
