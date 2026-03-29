@@ -22,7 +22,8 @@ async function extractPdfText(base64Content: string): Promise<string | null> {
     const data = await pdfParse(buffer);
     return data.text;
   } catch (err) {
-    console.error("[process-document] PDF extraction error:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[process-document] PDF text extraction failed:", message);
     return null;
   }
 }
@@ -180,7 +181,7 @@ ${body.fileContent.slice(0, MAX_TEXT_CONTENT_LENGTH)}${body.fileContent.length >
     );
 
     if (!result || !result.steps) {
-      console.error("[process-document] AI response did not contain expected JSON structure. Raw:", response.content?.slice(0, 500));
+      console.error("[process-document] AI response did not contain expected JSON structure for file:", body.fileName);
       return NextResponse.json(
         { error: "AI could not extract structured data from the document. Please try adding more detailed instructions." },
         { status: 422 },
