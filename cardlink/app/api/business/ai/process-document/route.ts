@@ -7,6 +7,9 @@ import { buildDocumentProcessorPrompt } from "@/src/lib/ai/agent-prompts";
 import { parseCSV, extractJSONFromResponse } from "@/src/lib/ai/data-transformer";
 import type { DocumentProcessResult } from "@/src/lib/ai/data-transformer";
 
+const MAX_TEXT_CONTENT_LENGTH = 15000;
+const MAX_IMAGE_CONTENT_LENGTH = 20000;
+
 /**
  * POST /api/business/ai/process-document
  *
@@ -92,7 +95,9 @@ export async function POST(request: Request) {
   ];
 
   // Build document content for the AI
-  const ext = body.fileName.toLowerCase().split(".").pop() ?? "";
+  // Safely extract file extension (handles names with no extension or multiple dots)
+  const lastDot = body.fileName.lastIndexOf(".");
+  const ext = lastDot !== -1 ? body.fileName.slice(lastDot + 1).toLowerCase() : "";
   const isCSV = ["csv", "tsv"].includes(ext);
   const isImage = ["png", "jpg", "jpeg", "gif", "webp"].includes(ext);
   const isPDF = ext === "pdf";
@@ -107,20 +112,20 @@ HEADERS: ${rows.length > 0 ? Object.keys(rows[0]).join(", ") : "none"}
 DATA (JSON):
 ${JSON.stringify(rows, null, 2)}`;
   } else if (isImage) {
-    // For images, send base64 content
+    // For images, send base64 content for vision analysis
     documentContent = `FILE: ${body.fileName} (Image — base64 encoded)
 [Image content provided as base64 for vision analysis]
-${body.fileContent.slice(0, 20000)}`;
+${body.fileContent.slice(0, MAX_IMAGE_CONTENT_LENGTH)}`;
   } else if (isPDF) {
-    // fileContent for PDFs should already be extracted text (from pdf-parse on client or server)
+    // fileContent for PDFs should already be extracted text (via pdf-parse)
     documentContent = `FILE: ${body.fileName} (PDF — extracted text)
 CONTENT:
-${body.fileContent.slice(0, 15000)}${body.fileContent.length > 15000 ? "\n... (truncated)" : ""}`;
+${body.fileContent.slice(0, MAX_TEXT_CONTENT_LENGTH)}${body.fileContent.length > MAX_TEXT_CONTENT_LENGTH ? "\n... (truncated)" : ""}`;
   } else {
     // Plain text, JSON, XML, etc.
-    documentContent = `FILE: ${body.fileName} (${ext.toUpperCase()})
+    documentContent = `FILE: ${body.fileName} (${ext ? ext.toUpperCase() : "TEXT"})
 CONTENT:
-${body.fileContent.slice(0, 15000)}${body.fileContent.length > 15000 ? "\n... (truncated)" : ""}`;
+${body.fileContent.slice(0, MAX_TEXT_CONTENT_LENGTH)}${body.fileContent.length > MAX_TEXT_CONTENT_LENGTH ? "\n... (truncated)" : ""}`;
   }
 
   const systemPrompt = buildDocumentProcessorPrompt({

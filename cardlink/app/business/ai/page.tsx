@@ -74,7 +74,7 @@ const ACCEPTED_EXTENSIONS = [
 /* ── Helpers ── */
 
 function generateId(): string {
-  return Math.random().toString(36).slice(2, 10);
+  return crypto.randomUUID();
 }
 
 function readFileAsText(file: File): Promise<string> {
@@ -91,8 +91,9 @@ function readFileAsDataURL(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
-      // Strip the data:...;base64, prefix
-      const base64 = result.split(",")[1] ?? result;
+      // Extract base64 payload from data URL (data:<mime>;base64,<payload>)
+      const commaIdx = result.indexOf(",");
+      const base64 = commaIdx !== -1 ? result.slice(commaIdx + 1) : result;
       resolve(base64);
     };
     reader.onerror = reject;
@@ -182,6 +183,8 @@ export default function AiPage() {
   /* ── Processing state ── */
   const [processing, setProcessing] = useState(false);
   const [processError, setProcessError] = useState<string | null>(null);
+  /** Increment to trigger processing — avoids stale closure in useEffect */
+  const [processKey, setProcessKey] = useState(0);
 
   /* ── Results state ── */
   const [result, setResult] = useState<ProcessResult | null>(null);
@@ -223,11 +226,12 @@ export default function AiPage() {
 
       if (valid.length > 0) {
         setUploadedFiles((prev) => [...prev, ...valid]);
-        // Reset results when new files are added
+        // Reset results when new files are added, then trigger processing
         setResult(null);
         setRows([]);
         setExecutionDone(false);
         setProcessError(null);
+        setProcessKey((k) => k + 1);
       }
     },
     [t],
@@ -279,6 +283,8 @@ export default function AiPage() {
         .trim();
       setVoiceTranscript(transcript);
       setIsRecording(false);
+      // Trigger processing for voice-only input
+      setProcessKey((k) => k + 1);
     };
 
     rec.onerror = () => {
@@ -303,8 +309,15 @@ export default function AiPage() {
   }, []);
 
   /* ── Process document ── */
+  const uploadedFilesRef = useRef<UploadedFile[]>([]);
+  const voiceTranscriptRef = useRef<string>("");
+  uploadedFilesRef.current = uploadedFiles;
+  voiceTranscriptRef.current = voiceTranscript;
+
   const processDocuments = useCallback(async () => {
-    if (uploadedFiles.length === 0 && !voiceTranscript) return;
+    const files = uploadedFilesRef.current;
+    const transcript = voiceTranscriptRef.current;
+    if (files.length === 0 && !transcript) return;
     setProcessing(true);
     setProcessError(null);
     setResult(null);
@@ -312,11 +325,10 @@ export default function AiPage() {
     setExecutionDone(false);
 
     try {
-      // Process each file; if multiple files, process the first one
-      // (for simplicity — could be extended to batch)
-      const file = uploadedFiles[0];
+      // Process the first file; voice instruction is sent alongside
+      const file = files[0];
       const payload: Record<string, unknown> = {
-        voiceInstruction: voiceTranscript || undefined,
+        voiceInstruction: transcript || undefined,
       };
 
       if (file) {
@@ -324,7 +336,7 @@ export default function AiPage() {
         payload.fileName = file.name;
       } else {
         // Voice-only: send the voice transcript as a "virtual" text file
-        payload.fileContent = voiceTranscript;
+        payload.fileContent = transcript;
         payload.fileName = "voice-instruction.txt";
       }
 
@@ -361,19 +373,14 @@ export default function AiPage() {
     } finally {
       setProcessing(false);
     }
-  }, [uploadedFiles, voiceTranscript]);
+  }, []);
 
-  /* ── Auto-process when files are uploaded or voice finishes ── */
+  /* ── Auto-process when processKey changes (triggered by file upload or voice) ── */
   useEffect(() => {
-    if (
-      (uploadedFiles.length > 0 || voiceTranscript) &&
-      !processing &&
-      !result
-    ) {
+    if (processKey > 0) {
       void processDocuments();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadedFiles, voiceTranscript]);
+  }, [processKey, processDocuments]);
 
   /* ── Row editing ── */
   const toggleSelected = (id: string) => {
