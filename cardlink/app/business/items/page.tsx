@@ -74,10 +74,16 @@ const productTypes = [
   { value: "digital", label: "Digital product" },
 ];
 
+const MAX_VARIATIONS = 100;
+
 /* ── Helper: generate variation combos from attributes ──── */
 function generateCombinations(attrs: ProductAttribute[]): Record<string, string>[] {
   const variationAttrs = attrs.filter((a) => a.variation && a.options.length > 0);
   if (variationAttrs.length === 0) return [];
+
+  // Pre-check total count to avoid runaway generation
+  const totalCount = variationAttrs.reduce((acc, a) => acc * a.options.length, 1);
+  if (totalCount > MAX_VARIATIONS) return [];
 
   const combine = (index: number): Record<string, string>[] => {
     if (index >= variationAttrs.length) return [{}];
@@ -381,6 +387,15 @@ export default function ItemMasterPage() {
 
   const handleGenerateVariations = async () => {
     if (!editingId) return;
+
+    // Check limit before generating
+    const variationAttrs = productAttributes.filter((a) => a.variation && a.options.length > 0);
+    const totalCount = variationAttrs.reduce((acc, a) => acc * a.options.length, 1);
+    if (totalCount > MAX_VARIATIONS) {
+      setMessage({ type: "error", text: `Too many combinations (${totalCount}). Maximum is ${MAX_VARIATIONS}. Reduce attribute options.` });
+      return;
+    }
+
     const combos = generateCombinations(productAttributes);
     if (combos.length === 0) return;
 
@@ -388,19 +403,22 @@ export default function ItemMasterPage() {
     const existingKeys = new Set(
       variations.map((v) => JSON.stringify(v.attributes))
     );
+    const newCombos = combos.filter((c) => !existingKeys.has(JSON.stringify(c)));
+    if (newCombos.length === 0) {
+      setMessage({ type: "success", text: "All variations already exist." });
+      return;
+    }
 
-    let created = 0;
-    for (const combo of combos) {
-      if (existingKeys.has(JSON.stringify(combo))) continue;
-      try {
-        await fetch("/api/items/variations", {
+    const results = await Promise.allSettled(
+      newCombos.map((combo) =>
+        fetch("/api/items/variations", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...SCOPE_HEADERS },
           body: JSON.stringify({ item_id: editingId, attributes: combo }),
-        });
-        created++;
-      } catch { /* silent */ }
-    }
+        })
+      )
+    );
+    const created = results.filter((r) => r.status === "fulfilled").length;
 
     if (created > 0) {
       setMessage({ type: "success", text: `${created} variation${created > 1 ? "s" : ""} generated.` });

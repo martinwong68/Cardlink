@@ -66,31 +66,39 @@ export default function CardSlotsPage() {
   useEffect(() => {
     if (searchParams.get("card_slot") !== "success") return;
 
+    const purchasedQty = Math.max(1, Number(searchParams.get("qty")) || 1);
+
     const updateSlots = async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData?.user) return;
 
-      const { data: updated, error } = await supabase.rpc(
-        "increment_purchased_card_slots" as string,
-        { p_user_id: userData.user.id },
-      );
-      if (error) {
-        // Fallback: read-then-write if RPC doesn't exist
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("purchased_card_slots")
-          .eq("id", userData.user.id)
-          .maybeSingle();
-        const currentSlots = (profile as ProfileData | null)?.purchased_card_slots ?? 0;
-        await supabase
-          .from("profiles")
-          .update({ purchased_card_slots: currentSlots + 1 })
-          .eq("id", userData.user.id);
-        setPurchasedSlots(currentSlots + 1);
-      } else {
-        setPurchasedSlots(typeof updated === "number" ? updated : purchasedSlots + 1);
+      // Increment slots by the purchased quantity
+      let newTotal = purchasedSlots;
+      for (let i = 0; i < purchasedQty; i++) {
+        const { data: updated, error } = await supabase.rpc(
+          "increment_purchased_card_slots" as string,
+          { p_user_id: userData.user.id },
+        );
+        if (error) {
+          // Fallback: read-then-write if RPC doesn't exist
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("purchased_card_slots")
+            .eq("id", userData.user.id)
+            .maybeSingle();
+          const currentSlots = (profile as ProfileData | null)?.purchased_card_slots ?? 0;
+          newTotal = currentSlots + (purchasedQty - i);
+          await supabase
+            .from("profiles")
+            .update({ purchased_card_slots: newTotal })
+            .eq("id", userData.user.id);
+          break;
+        } else {
+          newTotal = typeof updated === "number" ? updated : newTotal + 1;
+        }
       }
-      setMessage({ type: "success", text: "Card slot purchased successfully!" });
+      setPurchasedSlots(newTotal);
+      setMessage({ type: "success", text: `${purchasedQty} card slot${purchasedQty > 1 ? "s" : ""} purchased successfully!` });
 
       // Clean URL
       router.replace("/dashboard/settings/card-slots", { scroll: false });
@@ -110,7 +118,7 @@ export default function CardSlotsPage() {
           mode: "payment",
           amount: SLOT_PRICE * qty,
           description: `Extra Namecard Slot${qty > 1 ? ` x${qty}` : ""}`,
-          successUrl: `${origin}/dashboard/settings/card-slots?card_slot=success`,
+          successUrl: `${origin}/dashboard/settings/card-slots?card_slot=success&qty=${qty}`,
           cancelUrl: `${origin}/dashboard/settings/card-slots`,
         }),
       });
