@@ -42,7 +42,7 @@ type StepResult = {
 /* ── Data validation limits ── */
 const MAX_AMOUNT = 999_999_999_999.99;
 const MAX_TEXT_LENGTH = 2000;
-const MAX_STEPS_PER_REQUEST = 20;
+const MAX_STEPS_PER_REQUEST = 100;
 const MAX_JOURNAL_ENTRY_LINES = 50;
 
 const VALID_ACCOUNT_TYPES = ["asset", "liability", "equity", "revenue", "expense"] as const;

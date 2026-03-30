@@ -29,6 +29,9 @@ type Item = {
   // Accounting
   credit_account_id: string | null;
   debit_account_id: string | null;
+  // Variants
+  variant_attribute: string | null;
+  variant_value: string | null;
 };
 
 type Account = { id: string; code: string; name: string; type: string };
@@ -68,6 +71,8 @@ export default function ItemMasterPage() {
   const [syncInventory, setSyncInventory] = useState(true);
   const [creditAccountId, setCreditAccountId] = useState("");
   const [debitAccountId, setDebitAccountId] = useState("");
+  const [variantAttribute, setVariantAttribute] = useState("");
+  const [variantValue, setVariantValue] = useState("");
   const [accounts, setAccounts] = useState<Account[]>([]);
 
   const loadItems = useCallback(async () => {
@@ -126,6 +131,7 @@ export default function ItemMasterPage() {
     setStockQuantity(""); setReorderLevel(""); setTrackInventory(true);
     setIsActive(true); setSyncPos(true); setSyncStore(true); setSyncInventory(true);
     setCreditAccountId(""); setDebitAccountId("");
+    setVariantAttribute(""); setVariantValue("");
     setEditingId(null); setShowForm(false);
   };
 
@@ -150,6 +156,8 @@ export default function ItemMasterPage() {
       sync_to_inventory: syncInventory,
       credit_account_id: creditAccountId || null,
       debit_account_id: debitAccountId || null,
+      variant_attribute: variantAttribute || null,
+      variant_value: variantValue || null,
       ...(editingId ? { id: editingId } : {}),
     };
 
@@ -206,6 +214,8 @@ export default function ItemMasterPage() {
     setSyncInventory(item.synced_to_inventory ?? true);
     setCreditAccountId(item.credit_account_id ?? "");
     setDebitAccountId(item.debit_account_id ?? "");
+    setVariantAttribute(item.variant_attribute ?? "");
+    setVariantValue(item.variant_value ?? "");
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -228,6 +238,8 @@ export default function ItemMasterPage() {
     setSyncPos(true);
     setSyncStore(true);
     setSyncInventory(true);
+    setVariantAttribute(item.variant_attribute ?? "");
+    setVariantValue(item.variant_value ?? "");
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -324,6 +336,15 @@ export default function ItemMasterPage() {
               <input value={barcode} onChange={(e) => setBarcode(e.target.value)} placeholder="Barcode / EAN" className="app-input px-3 py-2 text-sm" />
             </div>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" rows={2} className="app-input w-full px-3 py-2 text-sm resize-none mt-2" />
+          </div>
+
+          {/* Variant */}
+          <div>
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Variant (optional)</h3>
+            <div className="grid gap-2 md:grid-cols-2">
+              <input value={variantAttribute} onChange={(e) => setVariantAttribute(e.target.value)} placeholder="Attribute (e.g. Color, Size, Storage)" className="app-input px-3 py-2 text-sm" />
+              <input value={variantValue} onChange={(e) => setVariantValue(e.target.value)} placeholder="Value (e.g. White, 256GB)" className="app-input px-3 py-2 text-sm" />
+            </div>
           </div>
 
           {/* Pricing */}
@@ -449,7 +470,10 @@ export default function ItemMasterPage() {
                       <button onClick={() => setExpandedId(isExpanded ? null : item.id)} className="flex items-center gap-1.5 text-left w-full">
                         {isExpanded ? <ChevronDown className="h-3.5 w-3.5 text-indigo-500 shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-gray-400 shrink-0" />}
                         <div className="min-w-0">
-                          <p className="font-semibold text-gray-900 truncate">{item.name}</p>
+                          <p className="font-semibold text-gray-900 truncate">
+                            {item.name}
+                            {item.variant_value && <span className="ml-1.5 text-xs font-normal text-indigo-500">{item.variant_value}</span>}
+                          </p>
                           {item.barcode && <p className="text-[10px] font-mono text-gray-400 truncate">{item.barcode}</p>}
                         </div>
                       </button>
@@ -501,6 +525,9 @@ export default function ItemMasterPage() {
                             <p><span className="text-gray-500">Unit:</span> <span className="text-gray-800">{item.unit}</span></p>
                             <p><span className="text-gray-500">Tax Rate:</span> <span className="text-gray-800">{item.tax_rate}%</span></p>
                             <p><span className="text-gray-500">Barcode:</span> <span className="text-gray-800 font-mono">{item.barcode || "—"}</span></p>
+                            {item.variant_attribute && (
+                              <p><span className="text-gray-500">Variant:</span> <span className="text-gray-800">{item.variant_attribute}: {item.variant_value || "—"}</span></p>
+                            )}
                           </div>
                         </div>
                         <div>

@@ -16,6 +16,10 @@ export type DocumentType =
   | "pos_products"
   | "sales_records"
   | "bank_statement"
+  | "receipt"
+  | "invoice"
+  | "journal_entries"
+  | "vendor_bill"
   | "other";
 
 export type TargetModule =
@@ -58,6 +62,19 @@ export type OperationStep = {
   module: string;
   operation: string;
   params: Record<string, unknown>;
+};
+
+export type DocumentActionStep = {
+  label: string;
+  module: string;
+  operation: string;
+  params: Record<string, unknown>;
+};
+
+export type DocumentProcessResult = {
+  documentType: DocumentType | string;
+  summary: string;
+  steps: DocumentActionStep[];
 };
 
 export type ActionPlan = {

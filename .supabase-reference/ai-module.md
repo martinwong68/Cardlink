@@ -95,7 +95,7 @@
 | id | uuid PK | | |
 | conversation_id | uuid | | FK → ai_conversations.id (nullable) |
 | company_id | uuid | | FK → companies.id (NOT NULL) |
-| card_type | text | | NOT NULL. journal_entry, invoice, inventory_update, expense, navigation, report, general |
+| card_type | text | | NOT NULL. journal_entry, invoice, inventory_update, expense, navigation, report, general, payment, stock_adjustment, product, purchase_order, sale, lead, contact, bulk_import |
 | title | text | | NOT NULL |
 | description | text | | |
 | suggested_data | jsonb | '{}' | NOT NULL. Stores action steps/params |
@@ -110,7 +110,7 @@
 
 ### Constraints
 
-- `CHECK (card_type IN ('journal_entry','invoice','inventory_update','expense','navigation','report','general'))`
+- `CHECK (card_type IN ('journal_entry','invoice','inventory_update','expense','navigation','report','general','payment','stock_adjustment','product','purchase_order','sale','lead','contact','bulk_import'))`
 - `CHECK (status IN ('pending','approved','amended','rejected'))`
 - `CHECK (confidence_score >= 0 AND confidence_score <= 1)`
 
