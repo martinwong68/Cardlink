@@ -110,6 +110,19 @@ export default function StoreOrdersPage() {
     await updateStatus(orderId, "refunded", { refund_reason: refundReason.trim() || "Customer request" });
   };
 
+  const handleConfirmPayment = async (orderId: string) => {
+    setUpdating(true);
+    try {
+      await fetch(`/api/business/store/orders/${orderId}`, {
+        method: "PATCH",
+        headers: HEADERS,
+        body: JSON.stringify({ payment_status: "paid", paid_at: new Date().toISOString() }),
+      });
+      setSelectedOrder(null);
+      await load();
+    } catch { /* silent */ } finally { setUpdating(false); }
+  };
+
   const getNextStatus = (status: string): string | null => {
     const flow: Record<string, string> = {
       pending: "confirmed",
@@ -223,7 +236,17 @@ export default function StoreOrdersPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
+                      {/* Confirm Payment button for unpaid/pending orders (QR / bank transfer) */}
+                      {(order.payment_status === "unpaid" || order.payment_status === "pending") && !["cancelled", "refunded"].includes(order.status) && (
+                        <button
+                          onClick={() => handleConfirmPayment(order.id)}
+                          disabled={updating}
+                          className="rounded-lg bg-green-600 px-3 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50 transition"
+                        >
+                          {updating ? "..." : "✓ Confirm Payment"}
+                        </button>
+                      )}
                       {getNextStatus(order.status) && (
                         <button
                           onClick={() => updateStatus(order.id, getNextStatus(order.status)!)}

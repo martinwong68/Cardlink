@@ -299,6 +299,25 @@ export async function POST(request: Request) {
             }
           }
         }
+
+        // ── Handle store order payments via Stripe Connect ──
+        const storeOrderId = session.metadata?.store_order_id;
+        const storeCompanyId = session.metadata?.company_id;
+        if (storeOrderId && storeCompanyId && session.payment_status === "paid") {
+          const { error: storeOrderError } = await supabaseAdmin
+            .from("store_orders")
+            .update({
+              payment_status: "paid",
+              paid_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", storeOrderId)
+            .eq("company_id", storeCompanyId);
+          if (storeOrderError) {
+            console.error("[stripe-webhook] failed to mark store order paid", storeOrderError);
+          }
+        }
+
         break;
       }
       case "invoice.paid": {
