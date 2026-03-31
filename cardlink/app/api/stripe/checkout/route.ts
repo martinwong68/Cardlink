@@ -25,6 +25,8 @@ type CheckoutBody = {
   successUrl?: string;
   /** Custom cancel URL */
   cancelUrl?: string;
+  /** Card slot subscription: quantity of slots */
+  cardSlotQty?: number;
 } | null;
 
 export async function POST(request: Request) {
@@ -67,6 +69,25 @@ export async function POST(request: Request) {
             unit_amount: amountCents,
           },
           quantity: 1,
+        },
+      ];
+    } else if (body?.planSlug === "__card_slot__") {
+      // Card slot monthly subscription
+      // Price must match SLOT_PRICE_MONTHLY in app/dashboard/settings/card-slots/page.tsx
+      const slotQty = Math.max(1, body.cardSlotQty ?? 1);
+      const SLOT_PRICE_CENTS = 800; // $8/month per slot
+      lineItems = [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Namecard Slot",
+              description: `Extra digital namecard slot — billed monthly`,
+            },
+            unit_amount: SLOT_PRICE_CENTS,
+            recurring: { interval: "month" },
+          },
+          quantity: slotQty,
         },
       ];
     } else {

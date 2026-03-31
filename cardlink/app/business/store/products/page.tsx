@@ -269,12 +269,12 @@ export default function StoreProductsPage() {
     // Upload new images
     const uploadedUrls: string[] = [...formImages];
     for (const file of formNewImages) {
-      const path = `store-products/${companyId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+      const path = `${companyId}/store-products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
       const { error: uploadErr } = await supabase.storage
-        .from("avatars")
+        .from("company-assets")
         .upload(path, file, { upsert: true, contentType: "image/jpeg" });
       if (!uploadErr) {
-        const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+        const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
         uploadedUrls.push(urlData.publicUrl);
       }
     }
@@ -363,10 +363,12 @@ export default function StoreProductsPage() {
         </div>
         <div className="flex items-center gap-2">
           <ImportFromItems onImport={handleImportFromItems} />
-          <button onClick={openNewForm} className="app-primary-btn flex items-center gap-1.5 text-xs px-3 py-2">
-            <Plus className="h-3.5 w-3.5" /> {t("addProduct")}
-          </button>
         </div>
+      </div>
+
+      {/* Info banner */}
+      <div className="rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-3 text-xs text-indigo-700">
+        Store products are added from the <strong>Item Master</strong>. Use the <strong>Import from Items</strong> button to add products to your store.
       </div>
 
       {/* Delete Confirmation */}

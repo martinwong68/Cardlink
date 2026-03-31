@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Upload, Trash2, QrCode, CreditCard } from "lucide-react";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
 type DeliveryOptions = { enabled: boolean; fee: number; free_threshold: number };
-type PaymentMethods = { cash: boolean; bank_transfer: boolean; online: boolean };
+type QrCodeEntry = { label: string; image_url: string };
+type PaymentMethods = {
+  cash: boolean;
+  bank_transfer: boolean;
+  online: boolean;
+  qr_codes: QrCodeEntry[];
+};
 
 export default function StoreSettingsPage() {
   const t = useTranslations("businessStore.storeSettings");
@@ -19,8 +25,16 @@ export default function StoreSettingsPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [delivery, setDelivery] = useState<DeliveryOptions>({ enabled: false, fee: 0, free_threshold: 0 });
-  const [payments, setPayments] = useState<PaymentMethods>({ cash: true, bank_transfer: false, online: false });
+  const [payments, setPayments] = useState<PaymentMethods>({ cash: true, bank_transfer: false, online: false, qr_codes: [] });
   const [policies, setPolicies] = useState("");
+
+  // Stripe Connect status
+  const [stripeConnected, setStripeConnected] = useState(false);
+
+  // QR code upload
+  const [uploadingQr, setUploadingQr] = useState(false);
+  const [newQrLabel, setNewQrLabel] = useState("");
+  const qrInputRef = useRef<HTMLInputElement>(null);
 
   const loadData = useCallback(async () => {
     if (!companyId) return;
@@ -34,9 +48,30 @@ export default function StoreSettingsPage() {
 
     if (data) {
       if (data.delivery_options) setDelivery(data.delivery_options as DeliveryOptions);
-      if (data.payment_methods) setPayments(data.payment_methods as PaymentMethods);
+      if (data.payment_methods) {
+        const pm = data.payment_methods as Record<string, unknown>;
+        setPayments({
+          cash: pm.cash === true,
+          bank_transfer: pm.bank_transfer === true,
+          online: pm.online === true,
+          qr_codes: Array.isArray(pm.qr_codes) ? (pm.qr_codes as QrCodeEntry[]) : [],
+        });
+      }
       if (data.store_policies) setPolicies(data.store_policies as string);
     }
+
+    // Check Stripe Connect status
+    try {
+      const res = await fetch("/api/stripe/connect/status", {
+        headers: { "x-business-scope": "true" },
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const status = await res.json();
+        setStripeConnected(!!status.chargesEnabled);
+      }
+    } catch { /* silent */ }
+
     setLoading(false);
   }, [companyId, supabase]);
 
@@ -44,6 +79,41 @@ export default function StoreSettingsPage() {
     if (!companyLoading && !companyId) { setLoading(false); return; }
     if (companyId) void loadData();
   }, [companyId, companyLoading, loadData]);
+
+  const handleQrUpload = async (file: File) => {
+    if (!companyId) return;
+    setUploadingQr(true);
+
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${companyId}/qr-codes/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+    const { error: uploadErr } = await supabase.storage
+      .from("company-assets")
+      .upload(path, file, { upsert: true, contentType: file.type || "image/png" });
+
+    if (uploadErr) {
+      setMessage({ type: "error", text: "Failed to upload QR code." });
+      setUploadingQr(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
+    const imageUrl = urlData.publicUrl;
+
+    setPayments((prev) => ({
+      ...prev,
+      qr_codes: [...prev.qr_codes, { label: newQrLabel.trim() || "QR Payment", image_url: imageUrl }],
+    }));
+    setNewQrLabel("");
+    setUploadingQr(false);
+  };
+
+  const removeQrCode = (index: number) => {
+    setPayments((prev) => ({
+      ...prev,
+      qr_codes: prev.qr_codes.filter((_, i) => i !== index),
+    }));
+  };
 
   const handleSave = async () => {
     if (!companyId) return;
@@ -129,23 +199,109 @@ export default function StoreSettingsPage() {
       </div>
 
       {/* Payment Methods */}
-      <div className="app-card rounded-2xl p-5 space-y-3">
+      <div className="app-card rounded-2xl p-5 space-y-4">
         <h2 className="text-sm font-semibold text-gray-700">{t("paymentTitle")}</h2>
 
-        {(["cash", "bankTransfer", "onlinePayment"] as const).map((method) => {
-          const key = method === "bankTransfer" ? "bank_transfer" : method === "onlinePayment" ? "online" : "cash";
-          return (
-            <label key={method} className="flex items-center justify-between cursor-pointer">
-              <span className="text-xs font-medium text-gray-600">{t(method)}</span>
-              <input
-                type="checkbox"
-                checked={payments[key]}
-                onChange={(e) => setPayments((p) => ({ ...p, [key]: e.target.checked }))}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              />
-            </label>
-          );
-        })}
+        {/* Cash */}
+        <label className="flex items-center justify-between cursor-pointer">
+          <span className="text-xs font-medium text-gray-600">{t("cash")}</span>
+          <input
+            type="checkbox"
+            checked={payments.cash}
+            onChange={(e) => setPayments((p) => ({ ...p, cash: e.target.checked }))}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          />
+        </label>
+
+        {/* Bank Transfer */}
+        <label className="flex items-center justify-between cursor-pointer">
+          <span className="text-xs font-medium text-gray-600">{t("bankTransfer")}</span>
+          <input
+            type="checkbox"
+            checked={payments.bank_transfer}
+            onChange={(e) => setPayments((p) => ({ ...p, bank_transfer: e.target.checked }))}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          />
+        </label>
+
+        {/* Stripe Online Payment */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4 text-indigo-500" />
+            <div>
+              <span className="text-xs font-medium text-gray-600">Stripe Online Payment</span>
+              {!stripeConnected && (
+                <p className="text-[10px] text-amber-600">
+                  Connect Stripe first in{" "}
+                  <button onClick={() => router.push("/business/settings/stripe-connect")} className="underline font-medium">Settings → Stripe Connect</button>
+                </p>
+              )}
+              {stripeConnected && <p className="text-[10px] text-green-600">✓ Stripe connected</p>}
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            checked={payments.online}
+            onChange={(e) => setPayments((p) => ({ ...p, online: e.target.checked }))}
+            disabled={!stripeConnected}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-50"
+          />
+        </div>
+
+        {/* QR Code Payments */}
+        <div className="border-t border-gray-100 pt-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <QrCode className="h-4 w-4 text-gray-500" />
+            <h3 className="text-xs font-semibold text-gray-700">QR Code Payments</h3>
+          </div>
+          <p className="text-[10px] text-gray-400">Upload QR codes for payment methods like bank apps, e-wallets, etc. Customers choose a QR code at checkout and you confirm payment manually.</p>
+
+          {/* Existing QR codes */}
+          {payments.qr_codes.map((qr, i) => (
+            <div key={i} className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
+              <div className="h-16 w-16 rounded-lg bg-white border border-gray-200 overflow-hidden shrink-0">
+                <img src={qr.image_url} alt={qr.label} className="h-full w-full object-contain" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-700 truncate">{qr.label}</p>
+                <p className="text-[10px] text-gray-400">QR payment method</p>
+              </div>
+              <button onClick={() => removeQrCode(i)} className="p-1.5 text-gray-400 hover:text-red-500 transition">
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+
+          {/* Add new QR code */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newQrLabel}
+              onChange={(e) => setNewQrLabel(e.target.value)}
+              placeholder="Label (e.g. PayNow, GrabPay)"
+              className="app-input flex-1 text-xs"
+            />
+            <button
+              onClick={() => qrInputRef.current?.click()}
+              disabled={uploadingQr}
+              className="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-200 transition disabled:opacity-50"
+            >
+              {uploadingQr ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+              Upload QR
+            </button>
+          </div>
+          <input
+            ref={qrInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void handleQrUpload(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
       </div>
 
       {/* Store Policies */}

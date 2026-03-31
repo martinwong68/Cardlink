@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/src/lib/supabase/server";
 import { requireBusinessActiveCompanyContext } from "@/src/lib/business/active-company-guard";
 
+type ProductAttribute = {
+  name: string;
+  options: string[];
+  variation?: boolean;
+};
+
 type ItemDraft = {
   name?: string;
   sku?: string;
@@ -24,6 +30,13 @@ type ItemDraft = {
   debit_account_id?: string | null;
   variant_attribute?: string | null;
   variant_value?: string | null;
+  product_type?: string;
+  product_attributes?: ProductAttribute[];
+  images?: string[];
+  slug?: string;
+  compare_at_price?: number | null;
+  weight?: number | null;
+  max_stock_level?: number | null;
 };
 
 /**
@@ -68,6 +81,13 @@ export async function GET(request: Request) {
     debit_account_id: row.debit_account_id ?? null,
     variant_attribute: row.variant_attribute ?? null,
     variant_value: row.variant_value ?? null,
+    product_type: row.product_type ?? "simple",
+    product_attributes: row.product_attributes ?? [],
+    images: row.images ?? [],
+    slug: row.slug ?? null,
+    compare_at_price: row.compare_at_price != null ? Number(row.compare_at_price) : null,
+    weight: row.weight != null ? Number(row.weight) : null,
+    max_stock_level: row.max_stock_level ?? null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   }));
@@ -119,6 +139,13 @@ export async function POST(request: Request) {
       debit_account_id: body.debit_account_id || null,
       variant_attribute: body.variant_attribute?.trim() || null,
       variant_value: body.variant_value?.trim() || null,
+      product_type: body.product_type?.trim() || "simple",
+      product_attributes: body.product_attributes ?? [],
+      images: body.images ?? [],
+      slug: body.slug?.trim() || null,
+      compare_at_price: body.compare_at_price ?? null,
+      weight: body.weight ?? null,
+      max_stock_level: body.max_stock_level ?? null,
     })
     .select("*")
     .single();
@@ -171,6 +198,13 @@ export async function PATCH(request: Request) {
   if (body.debit_account_id !== undefined) payload.debit_account_id = body.debit_account_id || null;
   if (body.variant_attribute !== undefined) payload.variant_attribute = body.variant_attribute?.trim() || null;
   if (body.variant_value !== undefined) payload.variant_value = body.variant_value?.trim() || null;
+  if (body.product_type !== undefined) payload.product_type = body.product_type?.trim() || "simple";
+  if (body.product_attributes !== undefined) payload.product_attributes = body.product_attributes;
+  if (body.images !== undefined) payload.images = body.images;
+  if (body.slug !== undefined) payload.slug = body.slug?.trim() || null;
+  if (body.compare_at_price !== undefined) payload.compare_at_price = body.compare_at_price;
+  if (body.weight !== undefined) payload.weight = body.weight;
+  if (body.max_stock_level !== undefined) payload.max_stock_level = body.max_stock_level;
 
   const { data, error } = await supabase
     .from("items")

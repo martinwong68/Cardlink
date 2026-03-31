@@ -232,6 +232,18 @@ export default function StoreManagementPage() {
         {publishing ? "Processing..." : isPublished ? "Unpublish Store" : "Publish Store"}
       </button>
 
+      {/* View Live Store Link */}
+      {isPublished && companyId && (
+        <a
+          href={`/store/${companyId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold border border-indigo-200 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition"
+        >
+          <Globe className="h-4 w-4" /> View Live Store
+        </a>
+      )}
+
       {/* Store Readiness */}
       {readinessScore < 100 && (
         <div className="app-card p-4 border-l-4 border-amber-400">

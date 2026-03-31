@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { ClipboardList, CalendarDays, Calendar, Settings, Loader2, BarChart3, Users } from "lucide-react";
+import { ClipboardList, CalendarDays, Calendar, Settings, Loader2, BarChart3, Users, Globe, ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
@@ -156,6 +156,27 @@ export default function BusinessBookingPage() {
 
   return (
     <div className="space-y-4 pb-28">
+      {/* Public Booking Link */}
+      {companyId && (
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-indigo-600" />
+            <div>
+              <p className="text-sm font-semibold text-indigo-800">Public Booking Form</p>
+              <p className="text-xs text-indigo-600">Share this link with customers to book online</p>
+            </div>
+          </div>
+          <a
+            href={`/booking/${companyId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700 transition"
+          >
+            <ExternalLink className="h-3 w-3" /> Open Form
+          </a>
+        </div>
+      )}
+
       <ModuleFunctionSlider items={functionsWithBadges} activeId={activeId} onSelect={setActiveId} />
       <ModuleFunctionDetailCard
         title={activeFunc.title}

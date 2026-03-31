@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { ChevronLeft, Plus, Trash2, Star, Settings2 } from "lucide-react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { ChevronLeft, Plus, Trash2, Star, Settings2, Upload, QrCode, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useActiveCompany } from "@/components/business/useActiveCompany";
 
 type TaxConfig = {
   id: string;
@@ -14,9 +15,12 @@ type TaxConfig = {
   created_at: string;
 };
 
+type QrCodeEntry = { label: string; image_url: string };
+
 const HEADERS = { "x-cardlink-app-scope": "business" };
 
 export default function PosSettingsPage() {
+  const { companyId, supabase } = useActiveCompany();
   const [taxConfigs, setTaxConfigs] = useState<TaxConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +32,14 @@ export default function PosSettingsPage() {
   const [formDefault, setFormDefault] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // QR code payment state
+  const [qrCodes, setQrCodes] = useState<QrCodeEntry[]>([]);
+  const [newQrLabel, setNewQrLabel] = useState("");
+  const [uploadingQr, setUploadingQr] = useState(false);
+  const [qrSaving, setQrSaving] = useState(false);
+  const [qrMessage, setQrMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const qrInputRef = useRef<HTMLInputElement>(null);
 
   const loadTaxConfigs = useCallback(async () => {
     try {
@@ -41,7 +53,21 @@ export default function PosSettingsPage() {
     }
   }, []);
 
-  useEffect(() => { void loadTaxConfigs(); }, [loadTaxConfigs]);
+  // Load QR codes from store_settings (company-level payment QR codes)
+  const loadQrCodes = useCallback(async () => {
+    if (!companyId || !supabase) return;
+    const { data } = await supabase
+      .from("store_settings")
+      .select("payment_methods")
+      .eq("company_id", companyId)
+      .maybeSingle();
+    if (data?.payment_methods) {
+      const pm = data.payment_methods as Record<string, unknown>;
+      setQrCodes(Array.isArray(pm.qr_codes) ? (pm.qr_codes as QrCodeEntry[]) : []);
+    }
+  }, [companyId, supabase]);
+
+  useEffect(() => { void loadTaxConfigs(); void loadQrCodes(); }, [loadTaxConfigs, loadQrCodes]);
 
   const handleCreate = async () => {
     setError(null);
@@ -93,6 +119,52 @@ export default function PosSettingsPage() {
       });
       void loadTaxConfigs();
     } catch { /* silent */ }
+  };
+
+  const handleQrUpload = async (file: File) => {
+    if (!companyId || !supabase) return;
+    setUploadingQr(true);
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${companyId}/qr-codes/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error: uploadErr } = await supabase.storage
+      .from("company-assets")
+      .upload(path, file, { upsert: true, contentType: file.type || "image/png" });
+    if (uploadErr) {
+      setQrMessage({ type: "error", text: "Failed to upload QR code." });
+      setUploadingQr(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
+    setQrCodes((prev) => [...prev, { label: newQrLabel.trim() || "QR Payment", image_url: urlData.publicUrl }]);
+    setNewQrLabel("");
+    setUploadingQr(false);
+  };
+
+  const removeQrCode = (index: number) => {
+    setQrCodes((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const saveQrCodes = async () => {
+    if (!companyId || !supabase) return;
+    setQrSaving(true);
+    setQrMessage(null);
+
+    // Load existing payment_methods to preserve other fields
+    const { data: existing } = await supabase
+      .from("store_settings")
+      .select("id, payment_methods")
+      .eq("company_id", companyId)
+      .maybeSingle();
+
+    const currentPm = (existing?.payment_methods as Record<string, unknown>) ?? {};
+    const updatedPm = { ...currentPm, qr_codes: qrCodes };
+
+    const { error: saveErr } = existing
+      ? await supabase.from("store_settings").update({ payment_methods: updatedPm, updated_at: new Date().toISOString() }).eq("company_id", companyId)
+      : await supabase.from("store_settings").insert({ company_id: companyId, payment_methods: updatedPm });
+
+    setQrSaving(false);
+    setQrMessage(saveErr ? { type: "error", text: "Failed to save." } : { type: "success", text: "QR codes saved!" });
   };
 
   if (loading) {
@@ -209,6 +281,71 @@ export default function PosSettingsPage() {
           <li>• Tax is calculated <strong>after</strong> any discounts are applied.</li>
           <li>• If no tax rate is configured, a default 8% rate is used.</li>
         </ul>
+      </div>
+
+      {/* QR Code Payment Methods */}
+      <div className="app-card rounded-2xl p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <QrCode className="h-4 w-4 text-indigo-500" />
+          <h2 className="text-sm font-bold text-gray-800">QR Code Payments</h2>
+        </div>
+        <p className="text-[10px] text-gray-400">Upload QR codes for payment methods like bank apps, e-wallets, etc. When a customer pays via QR code, the cashier selects this method and confirms payment manually.</p>
+
+        {/* Existing QR codes */}
+        {qrCodes.map((qr, i) => (
+          <div key={i} className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
+            <div className="h-16 w-16 rounded-lg bg-white border border-gray-200 overflow-hidden shrink-0">
+              <img src={qr.image_url} alt={qr.label} className="h-full w-full object-contain" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-700 truncate">{qr.label}</p>
+              <p className="text-[10px] text-gray-400">QR payment method</p>
+            </div>
+            <button onClick={() => removeQrCode(i)} className="p-1.5 text-gray-400 hover:text-red-500 transition">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+
+        {/* Add new QR code */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newQrLabel}
+            onChange={(e) => setNewQrLabel(e.target.value)}
+            placeholder="Label (e.g. PayNow, GrabPay)"
+            className="app-input flex-1 text-xs"
+          />
+          <button
+            onClick={() => qrInputRef.current?.click()}
+            disabled={uploadingQr}
+            className="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-200 transition disabled:opacity-50"
+          >
+            {uploadingQr ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+            Upload QR
+          </button>
+        </div>
+        <input
+          ref={qrInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) void handleQrUpload(file);
+            e.target.value = "";
+          }}
+        />
+
+        {qrMessage && (
+          <p className={`text-xs ${qrMessage.type === "success" ? "text-green-600" : "text-red-600"}`}>
+            {qrMessage.text}
+          </p>
+        )}
+
+        <button onClick={() => void saveQrCodes()} disabled={qrSaving} className="app-primary-btn w-full text-sm font-semibold disabled:opacity-50">
+          {qrSaving ? "Saving…" : "Save QR Codes"}
+        </button>
       </div>
     </div>
   );

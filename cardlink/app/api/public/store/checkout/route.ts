@@ -198,8 +198,8 @@ export async function POST(request: Request) {
       total,
       status: "pending",
       payment_method: body.payment_method ?? null,
-      payment_status: body.payment_method ? "paid" : "unpaid",
-      paid_at: body.payment_method ? new Date().toISOString() : null,
+      payment_status: body.payment_method === "cash" ? "paid" : "unpaid",
+      paid_at: body.payment_method === "cash" ? new Date().toISOString() : null,
       shipping_address: body.shipping_address ?? null,
       shipping_method: body.shipping_method ?? null,
       notes: body.notes ?? null,
@@ -242,13 +242,16 @@ export async function POST(request: Request) {
     }
   }
 
+  const paymentStatus = body.payment_method === "cash" ? "paid" : "unpaid";
+
   return NextResponse.json({
     order: {
       id: order?.id,
       order_number: orderNumber,
       total,
       status: "pending",
-      payment_status: body.payment_method ? "paid" : "unpaid",
+      payment_status: paymentStatus,
+      payment_method: body.payment_method ?? null,
     },
   }, { status: 201 });
 }
