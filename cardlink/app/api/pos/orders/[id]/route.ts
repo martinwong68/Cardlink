@@ -140,7 +140,7 @@ export async function PATCH(
       order.id as string,
       Number(order.total ?? 0),
       String(order.order_number ?? order.id),
-      0, // COGS not tracked on confirmation
+      0, // COGS: line-item costs aren't stored on the order row; the initial POST already records COGS when status=completed
     );
 
     // Deduct inventory for items now that payment is confirmed
