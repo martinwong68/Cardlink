@@ -1262,6 +1262,28 @@
       "download": "下载 QR",
       "copy": "复制链接",
       "copied": "已复制"
+    },
+    "myOrders": {
+      "title": "我的订单",
+      "loading": "加载订单中...",
+      "empty": "暂无订单。",
+      "signInToView": "请登录以查看您的订单。",
+      "orderNumber": "订单",
+      "total": "总计",
+      "status": "状态",
+      "date": "日期",
+      "trackingNumber": "追踪号码",
+      "statuses": {
+        "pending": "待处理",
+        "confirmed": "已确认",
+        "processing": "处理中",
+        "shipped": "已发货",
+        "delivered": "已送达",
+        "completed": "已完成",
+        "cancelled": "已取消",
+        "refunded": "已退款"
+      },
+      "errorLoading": "加载订单失败。"
     }
   },
   "discover": {
@@ -2387,7 +2409,14 @@
         "completed": "完成",
         "cancel": "取消",
         "refund": "退款"
-      }
+      },
+      "shipTitle": "发货",
+      "shippingProvider": "物流供应商",
+      "shippingProviderPlaceholder": "例如 顺丰、中通、圆通...",
+      "trackingNumber": "追踪号码",
+      "trackingNumberPlaceholder": "输入追踪号码...",
+      "confirmShip": "确认发货",
+      "sendWhatsApp": "通过 WhatsApp 发送确认"
     },
     "customers": {
       "title": "客户",

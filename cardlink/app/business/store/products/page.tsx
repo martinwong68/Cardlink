@@ -248,9 +248,16 @@ export default function StoreProductsPage() {
     if (!files) return;
     const compressed: File[] = [];
     for (const file of Array.from(files)) {
-      compressed.push(await compressImage(file));
+      try {
+        compressed.push(await compressImage(file));
+      } catch {
+        // Fall back to original file if compression fails
+        compressed.push(file);
+      }
     }
     setFormNewImages((prev) => [...prev, ...compressed]);
+    // Reset input so same file can be re-selected
+    e.target.value = "";
   };
 
   const removeExistingImage = (idx: number) => {

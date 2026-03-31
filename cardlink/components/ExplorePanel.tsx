@@ -687,7 +687,7 @@ export default function ExplorePanel() {
                     </p>
                   </div>
                   <Link
-                    href={`/api/public/store/products?company_id=${store.company_id}`}
+                    href={`/store/${store.company_id}`}
                     className="rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-100 transition-colors"
                   >
                     {t("actions.viewStore")}

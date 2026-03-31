@@ -415,7 +415,83 @@ export default function ItemMasterPage() {
   /* ── Variation Helpers ─────────────────────────────────── */
 
   const handleGenerateVariations = async () => {
-    if (!editingId) return;
+    // If item hasn't been saved yet, save it first
+    let itemId = editingId;
+    if (!itemId) {
+      if (!name.trim()) {
+        setMessage({ type: "error", text: "Please enter an item name first." });
+        return;
+      }
+      setMessage(null);
+
+      // Upload new images to company-assets bucket
+      const allImages = [...itemImages];
+      if (newImageFiles.length > 0 && companyId) {
+        setUploadingImage(true);
+        for (const file of newImageFiles) {
+          const ext = file.name.split(".").pop() ?? "jpg";
+          const path = `${companyId}/items/${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+          const { error: uploadErr } = await supabase.storage
+            .from("company-assets")
+            .upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" });
+          if (!uploadErr) {
+            const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
+            allImages.push(urlData.publicUrl);
+          }
+        }
+        setUploadingImage(false);
+      }
+
+      const payload = {
+        name,
+        sku: sku || undefined,
+        barcode: barcode || undefined,
+        description: description || undefined,
+        category: category || undefined,
+        unit_price: unitPrice ? Number(unitPrice) : 0,
+        cost_price: costPrice ? Number(costPrice) : 0,
+        unit: unit || "pcs",
+        tax_rate: taxRate ? Number(taxRate) : 0,
+        stock_quantity: stockQuantity ? Number(stockQuantity) : 0,
+        reorder_level: reorderLevel ? Number(reorderLevel) : 0,
+        track_inventory: trackInventory,
+        is_active: isActive,
+        sync_to_pos: syncPos,
+        sync_to_store: syncStore,
+        sync_to_inventory: syncInventory,
+        credit_account_id: creditAccountId || null,
+        debit_account_id: debitAccountId || null,
+        product_type: productType,
+        product_attributes: productAttributes,
+        compare_at_price: compareAtPrice ? Number(compareAtPrice) : null,
+        weight: weight ? Number(weight) : null,
+        images: allImages,
+        image_url: allImages.length > 0 ? allImages[0] : null,
+      };
+
+      try {
+        const res = await fetch("/api/items", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...SCOPE_HEADERS },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const d = await res.json().catch(() => ({}));
+          setMessage({ type: "error", text: (d as { error?: string }).error ?? "Failed to save item before generating variations." });
+          return;
+        }
+        const data = await res.json();
+        const newItem = data.item as Item;
+        itemId = newItem.id;
+        setEditingId(newItem.id);
+        setItemImages(allImages);
+        setNewImageFiles([]);
+        void loadItems();
+      } catch {
+        setMessage({ type: "error", text: "Network error while saving item." });
+        return;
+      }
+    }
 
     // Check limit before generating
     const variationAttrs = productAttributes.filter((a) => a.variation && a.options.length > 0);
@@ -438,20 +514,35 @@ export default function ItemMasterPage() {
       return;
     }
 
+    // Auto-generate SKU for each variation based on parent SKU + attribute values
+    const baseSku = sku ? sku.trim() : "";
     const results = await Promise.allSettled(
-      newCombos.map((combo) =>
-        fetch("/api/items/variations", {
+      newCombos.map((combo) => {
+        const variantSuffix = Object.values(combo).map((v) => v.replace(/\s+/g, "").substring(0, 10)).join("-");
+        const autoSku = baseSku ? `${baseSku}-${variantSuffix}` : variantSuffix;
+        return fetch("/api/items/variations", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...SCOPE_HEADERS },
-          body: JSON.stringify({ item_id: editingId, attributes: combo }),
-        })
-      )
+          body: JSON.stringify({
+            item_id: itemId,
+            attributes: combo,
+            sku: autoSku,
+            price: unitPrice ? Number(unitPrice) : null,
+            cost_price: costPrice ? Number(costPrice) : null,
+          }),
+        }).then(async (res) => {
+          if (!res.ok) throw new Error("API error");
+          return res;
+        });
+      })
     );
     const created = results.filter((r) => r.status === "fulfilled").length;
 
     if (created > 0) {
       setMessage({ type: "success", text: `${created} variation${created > 1 ? "s" : ""} generated.` });
-      void loadVariations(editingId);
+      void loadVariations(itemId);
+    } else if (newCombos.length > 0) {
+      setMessage({ type: "error", text: "Failed to generate variations. Please try again." });
     }
   };
 
@@ -459,19 +550,40 @@ export default function ItemMasterPage() {
     if (!editingId) return;
     try {
       const res = await fetch(`/api/items/variations?id=${variationId}`, { method: "DELETE", headers: SCOPE_HEADERS });
-      if (res.ok) void loadVariations(editingId);
+      if (res.ok) {
+        // Update local state instead of reloading
+        setVariations((prev) => prev.filter((v) => v.id !== variationId));
+      }
     } catch { /* silent */ }
   };
 
   const handleUpdateVariation = async (variation: Variation, field: string, value: unknown) => {
+    // Update local state immediately to avoid reloads
+    setVariations((prev) =>
+      prev.map((v) => v.id === variation.id ? { ...v, [field]: value } : v)
+    );
     try {
       await fetch("/api/items/variations", {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...SCOPE_HEADERS },
         body: JSON.stringify({ id: variation.id, [field]: value }),
       });
-      if (editingId) void loadVariations(editingId);
-    } catch { /* silent */ }
+      // No reload — local state is already updated
+    } catch { /* silent — revert not needed for inline edits */ }
+  };
+
+  const handleVariationImageUpload = async (variation: Variation, file: File) => {
+    if (!companyId) return;
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const path = `${companyId}/items/var-${variation.id}-${Date.now()}.${ext}`;
+    const { error: uploadErr } = await supabase.storage
+      .from("company-assets")
+      .upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" });
+    if (!uploadErr) {
+      const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
+      const imageUrl = urlData.publicUrl;
+      void handleUpdateVariation(variation, "image_url", imageUrl);
+    }
   };
 
   const formatCurrency = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -708,7 +820,7 @@ export default function ItemMasterPage() {
           )}
 
           {/* Variations (WooCommerce-style) */}
-          {productType === "variable" && editingId && (
+          {productType === "variable" && (
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -754,10 +866,40 @@ export default function ItemMasterPage() {
                         </div>
                         {isExpV && (
                           <div className="px-3 py-3 border-t border-gray-100 bg-gray-50/30">
+                            {/* Variation Image */}
+                            <div className="mb-3 flex items-center gap-3">
+                              {v.image_url ? (
+                                <div className="relative h-16 w-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                                  <img src={v.image_url} alt="" className="h-full w-full object-cover" />
+                                  <button
+                                    onClick={() => void handleUpdateVariation(v, "image_url", null)}
+                                    className="absolute top-0.5 right-0.5 rounded-full bg-black/50 p-0.5"
+                                  >
+                                    <X className="h-2.5 w-2.5 text-white" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <label className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-200 hover:border-indigo-300 transition shrink-0">
+                                  <Upload className="h-4 w-4 text-gray-400" />
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) void handleVariationImageUpload(v, file);
+                                      e.target.value = "";
+                                    }}
+                                  />
+                                </label>
+                              )}
+                              <span className="text-[10px] text-gray-400">Variation image</span>
+                            </div>
                             <div className="grid gap-2 md:grid-cols-4">
                               <div>
                                 <label className="block text-[10px] text-gray-500 mb-0.5">SKU</label>
                                 <input
+                                  key={`sku-${v.id}`}
                                   defaultValue={v.sku ?? ""}
                                   onBlur={(e) => void handleUpdateVariation(v, "sku", e.target.value || null)}
                                   className="w-full rounded-lg border border-gray-200 px-2 py-1 text-xs"
@@ -766,6 +908,7 @@ export default function ItemMasterPage() {
                               <div>
                                 <label className="block text-[10px] text-gray-500 mb-0.5">Price</label>
                                 <input
+                                  key={`price-${v.id}`}
                                   type="number" step="0.01"
                                   defaultValue={v.price ?? ""}
                                   onBlur={(e) => void handleUpdateVariation(v, "price", e.target.value ? Number(e.target.value) : null)}
@@ -775,6 +918,7 @@ export default function ItemMasterPage() {
                               <div>
                                 <label className="block text-[10px] text-gray-500 mb-0.5">Cost Price</label>
                                 <input
+                                  key={`cost-${v.id}`}
                                   type="number" step="0.01"
                                   defaultValue={v.cost_price ?? ""}
                                   onBlur={(e) => void handleUpdateVariation(v, "cost_price", e.target.value ? Number(e.target.value) : null)}
@@ -784,6 +928,7 @@ export default function ItemMasterPage() {
                               <div>
                                 <label className="block text-[10px] text-gray-500 mb-0.5">Stock Qty</label>
                                 <input
+                                  key={`stock-${v.id}`}
                                   type="number"
                                   defaultValue={v.stock_quantity}
                                   onBlur={(e) => void handleUpdateVariation(v, "stock_quantity", Number(e.target.value || 0))}
@@ -795,6 +940,7 @@ export default function ItemMasterPage() {
                               <div>
                                 <label className="block text-[10px] text-gray-500 mb-0.5">Barcode</label>
                                 <input
+                                  key={`barcode-${v.id}`}
                                   defaultValue={v.barcode ?? ""}
                                   onBlur={(e) => void handleUpdateVariation(v, "barcode", e.target.value || null)}
                                   className="w-full rounded-lg border border-gray-200 px-2 py-1 text-xs"
@@ -803,6 +949,7 @@ export default function ItemMasterPage() {
                               <div>
                                 <label className="block text-[10px] text-gray-500 mb-0.5">Weight</label>
                                 <input
+                                  key={`weight-${v.id}`}
                                   type="number" step="0.01"
                                   defaultValue={v.weight ?? ""}
                                   onBlur={(e) => void handleUpdateVariation(v, "weight", e.target.value ? Number(e.target.value) : null)}
@@ -813,7 +960,7 @@ export default function ItemMasterPage() {
                                 <label className="flex items-center gap-1.5 text-xs text-gray-600">
                                   <input
                                     type="checkbox"
-                                    defaultChecked={v.is_active}
+                                    checked={v.is_active}
                                     onChange={(e) => void handleUpdateVariation(v, "is_active", e.target.checked)}
                                     className="rounded"
                                   />

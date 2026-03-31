@@ -1262,6 +1262,28 @@
       "download": "ダウンロード QR",
       "copy": "コピー Link",
       "copied": "Copied"
+    },
+    "myOrders": {
+      "title": "注文履歴",
+      "loading": "注文を読み込み中...",
+      "empty": "注文はまだありません。",
+      "signInToView": "注文を表示するにはログインしてください。",
+      "orderNumber": "注文",
+      "total": "合計",
+      "status": "状態",
+      "date": "日付",
+      "trackingNumber": "追跡番号",
+      "statuses": {
+        "pending": "保留中",
+        "confirmed": "確認済",
+        "processing": "処理中",
+        "shipped": "発送済",
+        "delivered": "配達済",
+        "completed": "完了",
+        "cancelled": "キャンセル",
+        "refunded": "返金済"
+      },
+      "errorLoading": "注文の読み込みに失敗しました。"
     }
   },
   "discover": {
@@ -2387,7 +2409,14 @@
         "completed": "Complete",
         "cancel": "キャンセル",
         "refund": "返金"
-      }
+      },
+      "shipTitle": "出荷",
+      "shippingProvider": "配送業者",
+      "shippingProviderPlaceholder": "例: ヤマト運輸、佐川急便...",
+      "trackingNumber": "追跡番号",
+      "trackingNumberPlaceholder": "追跡番号を入力...",
+      "confirmShip": "確認して出荷",
+      "sendWhatsApp": "WhatsAppで確認を送信"
     },
     "customers": {
       "title": "顧客",
