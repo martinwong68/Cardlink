@@ -13,9 +13,10 @@ export default function VariantsPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const REDIRECT_DELAY_MS = 3000;
     const timeout = setTimeout(() => {
       router.push("/business/items");
-    }, 5000);
+    }, REDIRECT_DELAY_MS);
     return () => clearTimeout(timeout);
   }, [router]);
 

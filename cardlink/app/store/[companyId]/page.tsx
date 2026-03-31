@@ -123,7 +123,7 @@ export default function PublicStorePage() {
           </div>
         </div>
       ) : (
-        <div className="px-4 pt-10 pb-4 text-center" style={{ backgroundColor: primaryColor + "10" }}>
+        <div className="px-4 pt-10 pb-4 text-center bg-gray-50">
           <h1 className="text-3xl font-bold text-gray-900">{data.store.name}</h1>
           {data.store.description && <p className="mt-2 text-gray-600">{data.store.description}</p>}
         </div>

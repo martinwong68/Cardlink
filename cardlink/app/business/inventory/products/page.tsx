@@ -6,6 +6,7 @@ import { Package, Pencil, Search, Loader2 } from "lucide-react";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
 const SCOPE_HEADERS = { "x-cardlink-app-scope": "business" };
+const INVENTORY_PRODUCT_TYPES = ["simple", "variable", "digital"];
 
 type ItemMaster = {
   id: string;
@@ -59,7 +60,7 @@ export default function InventoryProductsPage() {
 
   const filtered = items.filter(
     (item) =>
-      (item.product_type === "simple" || item.product_type === "variable" || item.product_type === "digital") &&
+      INVENTORY_PRODUCT_TYPES.includes(item.product_type) &&
       (item.name.toLowerCase().includes(search.toLowerCase()) ||
         (item.sku ?? "").toLowerCase().includes(search.toLowerCase()))
   );

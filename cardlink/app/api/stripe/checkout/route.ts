@@ -73,6 +73,7 @@ export async function POST(request: Request) {
       ];
     } else if (body?.planSlug === "__card_slot__") {
       // Card slot monthly subscription
+      // Price must match SLOT_PRICE_MONTHLY in app/dashboard/settings/card-slots/page.tsx
       const slotQty = Math.max(1, body.cardSlotQty ?? 1);
       const SLOT_PRICE_CENTS = 800; // $8/month per slot
       lineItems = [
