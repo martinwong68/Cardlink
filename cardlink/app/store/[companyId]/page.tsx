@@ -561,10 +561,10 @@ export default function PublicStorePage() {
                     ✓ I&apos;ve Paid
                   </button>
                   <button
-                    onClick={() => { setCheckoutStep("success"); setCart([]); }}
+                    onClick={() => { setShowCart(false); setCheckoutStep("cart"); }}
                     className="flex-1 rounded-xl py-3 text-sm font-semibold text-gray-700 border border-gray-200 transition hover:bg-gray-50"
                   >
-                    Cancel
+                    Close
                   </button>
                 </div>
               </div>
