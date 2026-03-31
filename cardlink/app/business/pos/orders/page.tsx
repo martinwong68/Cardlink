@@ -64,6 +64,19 @@ export default function PosOrdersPage() {
     } catch { /* silent */ } finally { setRefunding(false); }
   };
 
+  const [confirming, setConfirming] = useState(false);
+
+  const handleConfirmPayment = async (id: string) => {
+    setConfirming(true);
+    try {
+      await fetch(`/api/pos/orders/${id}`, {
+        method: "PATCH", headers,
+        body: JSON.stringify({ status: "completed" }),
+      });
+      await load();
+    } catch { /* silent */ } finally { setConfirming(false); }
+  };
+
   const toggleExpand = (orderId: string) => {
     if (expandedId === orderId) { setExpandedId(null); return; }
     setExpandedId(orderId);
@@ -127,12 +140,23 @@ export default function PosOrdersPage() {
               {/* Footer */}
               <div className="mt-2 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] capitalize text-gray-500">Paid: {o.payment_method}</span>
+                  <span className="text-[10px] capitalize text-gray-500">Payment: {o.payment_method}</span>
                   {o.cash_tendered && <span className="ml-2 text-[10px] text-gray-400">(tendered ${Number(o.cash_tendered).toFixed(2)}, change ${Number(o.cash_change ?? 0).toFixed(2)})</span>}
                 </div>
-                {o.status === "completed" && (
-                  <button onClick={() => setRefundOrderId(o.id)} className="rounded bg-rose-50 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-100">Refund</button>
-                )}
+                <div className="flex gap-1">
+                  {o.status === "pending" && (
+                    <button
+                      onClick={() => void handleConfirmPayment(o.id)}
+                      disabled={confirming}
+                      className="rounded bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
+                    >
+                      {confirming ? "…" : "✓ Confirm Payment"}
+                    </button>
+                  )}
+                  {o.status === "completed" && (
+                    <button onClick={() => setRefundOrderId(o.id)} className="rounded bg-rose-50 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-100">Refund</button>
+                  )}
+                </div>
               </div>
               <p className="mt-1 text-[10px] text-gray-400">{new Date(o.created_at).toLocaleString()}</p>
             </div>

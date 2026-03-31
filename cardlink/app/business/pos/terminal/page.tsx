@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
+import { useActiveCompany } from "@/components/business/useActiveCompany";
 
 type Product = { id: string; name: string; sku: string | null; price: number; cost?: number; stock: number; is_active: boolean; inv_product_id?: string | null };
 type CartItem = { productId: string; name: string; price: number; cost?: number; quantity: number; inv_product_id?: string | null };
@@ -9,6 +10,7 @@ type TaxConfig = { id: string; name: string; rate: number; is_default: boolean }
 type Discount = { id: string; name: string; discount_type: "percentage" | "fixed"; value: number; min_order: number; is_active: boolean };
 type MemberAccount = { id: string; user_id: string; email: string | null; full_name: string | null; status: string; tier_name: string | null; points_balance: number };
 type MemberOffer = { id: string; title: string; description: string | null; offer_type: string; discount_type: string | null; discount_value: number; points_cost: number };
+type QrCodeEntry = { label: string; image_url: string };
 
 /** Fallback tax rate when no tax config is defined */
 const DEFAULT_TAX_RATE = 0.08;
@@ -17,14 +19,15 @@ const DEFAULT_TAX_RATE = 0.08;
 const POINTS_PER_DOLLAR = 1;
 
 export default function PosTerminalPage() {
+  const { companyId, supabase } = useActiveCompany();
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [search, setSearch] = useState("");
-  const [payMethod, setPayMethod] = useState<"cash" | "card" | "wallet">("cash");
+  const [payMethod, setPayMethod] = useState<"cash" | "card" | "wallet" | "qr">("cash");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [noShift, setNoShift] = useState(false);
-  const [orderComplete, setOrderComplete] = useState<{ receiptNumber: string; total: number; change: number; pointsAwarded?: number; memberName?: string } | null>(null);
+  const [orderComplete, setOrderComplete] = useState<{ receiptNumber: string; total: number; change: number; pointsAwarded?: number; memberName?: string; pending?: boolean } | null>(null);
 
   // Dynamic tax
   const [taxConfigs, setTaxConfigs] = useState<TaxConfig[]>([]);
@@ -52,6 +55,10 @@ export default function PosTerminalPage() {
   const [scannerActive, setScannerActive] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
+
+  // QR code payment methods
+  const [qrCodes, setQrCodes] = useState<QrCodeEntry[]>([]);
+  const [selectedQrIndex, setSelectedQrIndex] = useState(0);
 
   // Membership offers (company_offers)
   const [memberOffers, setMemberOffers] = useState<MemberOffer[]>([]);
@@ -95,7 +102,21 @@ export default function PosTerminalPage() {
     } catch { /* silent */ } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  // Load QR codes from store_settings
+  const loadQrCodes = useCallback(async () => {
+    if (!companyId || !supabase) return;
+    const { data } = await supabase
+      .from("store_settings")
+      .select("payment_methods")
+      .eq("company_id", companyId)
+      .maybeSingle();
+    if (data?.payment_methods) {
+      const pm = data.payment_methods as Record<string, unknown>;
+      setQrCodes(Array.isArray(pm.qr_codes) ? (pm.qr_codes as QrCodeEntry[]) : []);
+    }
+  }, [companyId, supabase]);
+
+  useEffect(() => { load(); void loadQrCodes(); }, [load, loadQrCodes]);
 
   // Tax calculation
   const activeTax = taxConfigs.find((t) => t.id === selectedTaxId);
@@ -312,6 +333,8 @@ export default function PosTerminalPage() {
     if (payMethod === "cash" && cashTenderedNum > 0 && cashTenderedNum < total) return; // insufficient cash
     setProcessing(true);
     const receiptNumber = `RCP-${Date.now().toString(36).toUpperCase()}`;
+    const isPending = payMethod === "qr";
+    const qrLabel = payMethod === "qr" && qrCodes[selectedQrIndex] ? qrCodes[selectedQrIndex].label : undefined;
     try {
       const res = await fetch("/api/pos/orders", {
         method: "POST", headers,
@@ -323,8 +346,8 @@ export default function PosTerminalPage() {
           total,
           discount_amount: discountAmount,
           discount_name: discountLabel || null,
-          payment_method: payMethod,
-          status: "completed",
+          payment_method: payMethod === "qr" ? `qr:${qrLabel ?? "QR"}` : payMethod,
+          status: isPending ? "pending" : "completed",
           customer_name: customerName.trim() || null,
           cash_tendered: payMethod === "cash" ? cashTenderedNum || null : null,
           cash_change: payMethod === "cash" ? Math.max(0, cashChange) : null,
@@ -359,7 +382,7 @@ export default function PosTerminalPage() {
             }),
           });
         }
-        setOrderComplete({ receiptNumber, total, change: Math.max(0, cashChange), pointsAwarded, memberName });
+        setOrderComplete({ receiptNumber, total, change: Math.max(0, cashChange), pointsAwarded, memberName, pending: isPending });
         setCart([]);
         setCustomerName("");
         setCashTendered("");
@@ -382,12 +405,18 @@ export default function PosTerminalPage() {
   if (orderComplete) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
-        <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center">
-          <span className="text-3xl">✓</span>
+        <div className={`h-16 w-16 rounded-full flex items-center justify-center ${orderComplete.pending ? "bg-amber-100" : "bg-emerald-100"}`}>
+          <span className="text-3xl">{orderComplete.pending ? "⏳" : "✓"}</span>
         </div>
-        <h2 className="text-xl font-bold text-gray-900">Order Complete</h2>
+        <h2 className="text-xl font-bold text-gray-900">{orderComplete.pending ? "Order Pending Payment" : "Order Complete"}</h2>
         <p className="text-sm text-gray-500">{orderComplete.receiptNumber}</p>
         <p className="text-2xl font-bold text-gray-900">${orderComplete.total.toFixed(2)}</p>
+        {orderComplete.pending && (
+          <div className="rounded-xl bg-amber-50 px-4 py-3 text-center space-y-1 max-w-xs">
+            <p className="text-sm text-amber-700 font-semibold">Awaiting Payment Confirmation</p>
+            <p className="text-xs text-amber-600">Customer is paying via QR code. Confirm payment in the Orders page once received.</p>
+          </div>
+        )}
         {orderComplete.change > 0 && (
           <div className="rounded-xl bg-amber-50 px-4 py-2 text-center">
             <p className="text-sm text-amber-700 font-semibold">Change Due: ${orderComplete.change.toFixed(2)}</p>
@@ -582,10 +611,13 @@ export default function PosTerminalPage() {
             </div>
 
             {/* Payment method */}
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex gap-2 flex-wrap">
               {(["cash", "card", "wallet"] as const).map((m) => (
                 <button key={m} onClick={() => setPayMethod(m)} className={`flex-1 rounded-lg py-1.5 text-center text-xs font-semibold capitalize ${payMethod === m ? "bg-purple-600 text-white" : "border border-gray-100 text-gray-600"}`}>{m}</button>
               ))}
+              {qrCodes.length > 0 && (
+                <button onClick={() => setPayMethod("qr")} className={`flex-1 rounded-lg py-1.5 text-center text-xs font-semibold ${payMethod === "qr" ? "bg-purple-600 text-white" : "border border-gray-100 text-gray-600"}`}>QR Code</button>
+              )}
             </div>
 
             {/* Cash tendered input */}
@@ -603,8 +635,32 @@ export default function PosTerminalPage() {
               </div>
             )}
 
-            <button onClick={handleCheckout} disabled={cart.length === 0 || processing || (payMethod === "cash" && cashTenderedNum > 0 && cashTenderedNum < total)} className={`mt-3 w-full rounded-xl py-3 text-sm font-bold text-white ${cart.length === 0 || processing ? "bg-gray-300" : "bg-emerald-500 hover:bg-emerald-600"}`}>
-              {processing ? "Processing…" : `Charge $${total.toFixed(2)}`}
+            {/* QR Code payment selector */}
+            {payMethod === "qr" && qrCodes.length > 0 && (
+              <div className="mt-2 space-y-2">
+                <p className="text-[10px] text-amber-600 font-medium">⚠ QR orders require manual payment confirmation</p>
+                <div className="space-y-2">
+                  {qrCodes.map((qr, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedQrIndex(i)}
+                      className={`w-full flex items-center gap-3 rounded-xl p-2 text-left transition ${selectedQrIndex === i ? "bg-purple-50 border-2 border-purple-400" : "border border-gray-100 hover:bg-gray-50"}`}
+                    >
+                      <div className="h-12 w-12 rounded-lg bg-white border border-gray-200 overflow-hidden shrink-0">
+                        <img src={qr.image_url} alt={qr.label} className="h-full w-full object-contain" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700">{qr.label}</p>
+                        <p className="text-[10px] text-gray-400">Show QR to customer</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button onClick={handleCheckout} disabled={cart.length === 0 || processing || (payMethod === "cash" && cashTenderedNum > 0 && cashTenderedNum < total)} className={`mt-3 w-full rounded-xl py-3 text-sm font-bold text-white ${cart.length === 0 || processing ? "bg-gray-300" : payMethod === "qr" ? "bg-amber-500 hover:bg-amber-600" : "bg-emerald-500 hover:bg-emerald-600"}`}>
+              {processing ? "Processing…" : payMethod === "qr" ? `Create Pending Order $${total.toFixed(2)}` : `Charge $${total.toFixed(2)}`}
             </button>
           </div>
         </div>
