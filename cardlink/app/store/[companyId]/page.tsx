@@ -540,16 +540,20 @@ export default function PublicStorePage() {
             )}
 
             {/* Step: QR Code Confirmation */}
-            {checkoutStep === "qr-confirm" && selectedQrCode && (
+            {checkoutStep === "qr-confirm" && (
               <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                 <QrCode className="h-8 w-8 text-indigo-500 mb-3" />
-                <h3 className="text-lg font-bold text-gray-900">Scan to Pay</h3>
+                <h3 className="text-lg font-bold text-gray-900">{selectedQrCode ? "Scan to Pay" : "Payment Pending"}</h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  Scan the QR code below with <strong>{selectedQrCode.label}</strong> and pay <strong>${orderResult?.total?.toFixed(2)}</strong>
+                  {selectedQrCode
+                    ? <>Scan the QR code below with <strong>{selectedQrCode.label}</strong> and pay <strong>${orderResult?.total?.toFixed(2)}</strong></>
+                    : <>Your order for <strong>${orderResult?.total?.toFixed(2)}</strong> has been created.</>}
                 </p>
-                <div className="my-6 rounded-2xl bg-white border-2 border-gray-200 p-3 shadow-sm">
-                  <img src={selectedQrCode.image_url} alt={selectedQrCode.label} className="w-48 h-48 object-contain mx-auto" />
-                </div>
+                {selectedQrCode && (
+                  <div className="my-6 rounded-2xl bg-white border-2 border-gray-200 p-3 shadow-sm">
+                    <img src={selectedQrCode.image_url} alt={selectedQrCode.label} className="w-48 h-48 object-contain mx-auto" />
+                  </div>
+                )}
                 <p className="text-xs text-gray-400 mb-4">
                   Order #{orderResult?.order_number} · The merchant will confirm your payment manually.
                 </p>
