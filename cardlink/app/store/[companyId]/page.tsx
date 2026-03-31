@@ -246,9 +246,11 @@ export default function PublicStorePage() {
     );
   }
 
+  // Filter out service products (shown in booking section instead)
+  const nonServiceProducts = data.products.filter((p) => p.product_type !== "service");
   const filtered = filterCat === "all"
-    ? data.products.filter((p) => p.product_type !== "service")
-    : data.products.filter((p) => p.category_id === filterCat && p.product_type !== "service");
+    ? nonServiceProducts
+    : nonServiceProducts.filter((p) => p.category_id === filterCat);
 
   return (
     <div className="min-h-screen bg-gray-50">
