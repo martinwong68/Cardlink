@@ -262,6 +262,19 @@ card sharing.
 Business notification center for system alerts, overdue invoices, low
 stock, and plan renewal reminders.
 
+### 15. Community (`/community`)
+**Status: ✅ Working**
+
+Public forum with boards, sub-boards, and user-generated posts.
+
+| Board | Sub-boards | Description |
+|-------|------------|-------------|
+| 📢 Announcements | Platform Updates · Feature Releases | Official platform news |
+| 📖 User Guide | Getting Started · Business Modules Guide · NFC & Digital Cards · Billing & Subscription | How-to tutorials |
+| 💬 General Discussion | Tips & Tricks · Feature Requests · Showcase | Community Q&A and feedback |
+
+The seed script creates 8 admin-authored user guide posts covering company registration, dashboard navigation, commerce modules, NFC cards, and billing.
+
 ---
 
 ## Billing & Subscription Flow
@@ -342,6 +355,7 @@ node scripts/seed-trial-data.mjs your-email@example.com
 | Store     | 2 customers, 2 orders, 2 coupons                              |
 | Billing   | 2 billing history entries, 88 AI credits                      |
 | Notifications | 2 sample notifications                                    |
+| Community | 3 boards, 9 sub-boards, 8 user-guide forum posts (admin-authored) |
 
 ---
 

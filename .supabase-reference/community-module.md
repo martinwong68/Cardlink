@@ -2,6 +2,7 @@
 
 > Auto-generated from Supabase database on 2025-07-21
 > Updated 2026-03-25 with company-scope and visibility columns
+> Updated 2026-03-31 with 3 global boards, 9 sub-boards, and admin seed posts
 > 6 tables | All verified ✅ in live DB
 
 ---
@@ -19,8 +20,16 @@
 
 ## boards
 
-**Status:** ✅ Exists (5 rows)
+**Status:** ✅ Exists (3+ global boards seeded)
 **Description:** Top-level forum categories. Supports company-scoped communities.
+
+### Seeded Global Boards
+
+| Name | Slug | Icon | Sub-boards |
+|------|------|------|------------|
+| Announcements | `announcements` | 📢 | Platform Updates · Feature Releases |
+| User Guide | `user-guide` | 📖 | Getting Started · Business Modules Guide · NFC & Digital Cards · Billing & Subscription |
+| General Discussion | `general-discussion` | 💬 | Tips & Tricks · Feature Requests · Showcase |
 
 ### Columns (12)
 
@@ -62,7 +71,7 @@
 
 ## sub_boards
 
-**Status:** ✅ Exists (22 rows)
+**Status:** ✅ Exists (9 global sub-boards seeded)
 **FK:** board_id → boards.id
 
 ### Columns (7)
@@ -91,7 +100,7 @@
 
 ## forum_posts
 
-**Status:** ✅ Exists (6 rows)
+**Status:** ✅ Exists (8 admin-authored user-guide posts seeded)
 **FKs:** sub_board_id → sub_boards.id, author_id → auth.users
 
 ### Columns (14)

@@ -76,6 +76,31 @@ Cardlink is a SaaS platform that combines digital business card management (NFC 
 | **Settings** | 11 pages | — | ✅ Working |
 | **Community** | 4+ pages | 1 route | ✅ Working |
 
+### Community Boards
+
+Cardlink ships with **3 pre-configured community boards** providing a built-in forum for platform announcements, user guides, and general discussion.
+
+| Board | Slug | Sub-boards | Description |
+|-------|------|------------|-------------|
+| 📢 **Announcements** | `announcements` | Platform Updates · Feature Releases | Official platform updates and notices from the Cardlink team |
+| 📖 **User Guide** | `user-guide` | Getting Started · Business Modules Guide · NFC & Digital Cards · Billing & Subscription | Step-by-step tutorials for every Cardlink feature |
+| 💬 **General Discussion** | `general-discussion` | Tips & Tricks · Feature Requests · Showcase | Community Q&A, feature suggestions, and user showcases |
+
+**Seeded admin posts** (created by the seed script):
+
+| Board | Post Title | Content |
+|-------|-----------|---------|
+| 📢 Announcements | Welcome to the Cardlink Community! | Introduction and getting-started pointers |
+| 📖 User Guide | How to Register and Set Up Your Company | 5-step company onboarding walkthrough |
+| 📖 User Guide | Navigating the Dashboard | Dashboard layout, module cards, alerts |
+| 📖 User Guide | Quick Guide: POS, Inventory & Online Store | Commerce modules overview |
+| 📖 User Guide | Quick Guide: Accounting, HR & CRM | Back-office modules overview |
+| 📖 User Guide | Setting Up Your NFC Digital Business Card | NFC card creation, QR codes, sharing |
+| 📖 User Guide | Understanding Billing Plans & Upgrades | Plan comparison, upgrade flow, card slots |
+| 💬 General Discussion | 5 Tips to Get the Most Out of Cardlink | Power-user tips for AI, booking, i18n, Stripe |
+
+Browse the community at `/community`. Each board is publicly visible without login.
+
 ### Public / External
 | Feature | Endpoint | Status |
 |---------|----------|--------|
@@ -120,6 +145,8 @@ cp .env.example .env.local
 
 # 5. (Optional) Seed demo data
 node scripts/seed-trial-data.mjs demo@cardlink.test
+# Seeds: company, HR, inventory, booking, CRM, store, billing,
+#        notifications, 3 community boards, and 8 user-guide posts
 
 # 6. Start dev server
 npm run dev
