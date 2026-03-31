@@ -553,13 +553,20 @@ export default function PublicStorePage() {
                 <p className="text-xs text-gray-400 mb-4">
                   Order #{orderResult?.order_number} · The merchant will confirm your payment manually.
                 </p>
-                <button
-                  onClick={() => { setCheckoutStep("success"); setCart([]); }}
-                  className="rounded-xl px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  I&apos;ve Made the Payment
-                </button>
+                <div className="flex gap-3 w-full max-w-xs">
+                  <button
+                    onClick={() => { setCheckoutStep("success"); setCart([]); }}
+                    className="flex-1 rounded-xl py-3 text-sm font-semibold text-white transition hover:opacity-90 bg-emerald-500 hover:bg-emerald-600"
+                  >
+                    ✓ I&apos;ve Paid
+                  </button>
+                  <button
+                    onClick={() => { setCheckoutStep("success"); setCart([]); }}
+                    className="flex-1 rounded-xl py-3 text-sm font-semibold text-gray-700 border border-gray-200 transition hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
 

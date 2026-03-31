@@ -242,13 +242,16 @@ export async function POST(request: Request) {
     }
   }
 
+  const paymentStatus = body.payment_method === "cash" ? "paid" : "unpaid";
+
   return NextResponse.json({
     order: {
       id: order?.id,
       order_number: orderNumber,
       total,
       status: "pending",
-      payment_status: body.payment_method ? "paid" : "unpaid",
+      payment_status: paymentStatus,
+      payment_method: body.payment_method ?? null,
     },
   }, { status: 201 });
 }

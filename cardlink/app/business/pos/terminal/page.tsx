@@ -27,7 +27,7 @@ export default function PosTerminalPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [noShift, setNoShift] = useState(false);
-  const [orderComplete, setOrderComplete] = useState<{ receiptNumber: string; total: number; change: number; pointsAwarded?: number; memberName?: string; pending?: boolean } | null>(null);
+  const [orderComplete, setOrderComplete] = useState<{ receiptNumber: string; total: number; change: number; pointsAwarded?: number; memberName?: string; pending?: boolean; orderId?: string; qrCode?: QrCodeEntry } | null>(null);
 
   // Dynamic tax
   const [taxConfigs, setTaxConfigs] = useState<TaxConfig[]>([]);
@@ -364,12 +364,12 @@ export default function PosTerminalPage() {
         }),
       });
       if (res.ok) {
+        const orderJson = await res.json().catch(() => null);
+        const orderId = orderJson?.order?.id ?? receiptNumber;
         // Award membership points if a member is linked
         let pointsAwarded: number | undefined;
         const memberName = linkedMember?.full_name || linkedMember?.email || undefined;
         if (linkedMember && linkedMember.status === "active") {
-          const orderJson = await res.json().catch(() => null);
-          const orderId = orderJson?.order?.id ?? receiptNumber;
           pointsAwarded = Math.floor(total * POINTS_PER_DOLLAR);
           void fetch("/api/pos/membership-award", {
             method: "POST",
@@ -382,7 +382,8 @@ export default function PosTerminalPage() {
             }),
           });
         }
-        setOrderComplete({ receiptNumber, total, change: Math.max(0, cashChange), pointsAwarded, memberName, pending: isPending });
+        const selectedQr = isPending && qrCodes[selectedQrIndex] ? qrCodes[selectedQrIndex] : undefined;
+        setOrderComplete({ receiptNumber, total, change: Math.max(0, cashChange), pointsAwarded, memberName, pending: isPending, orderId, qrCode: selectedQr });
         setCart([]);
         setCustomerName("");
         setCashTendered("");
@@ -403,20 +404,70 @@ export default function PosTerminalPage() {
 
   // Order success screen
   if (orderComplete) {
+    const handleAcceptPayment = async () => {
+      if (!orderComplete.orderId) return;
+      try {
+        await fetch(`/api/pos/orders/${orderComplete.orderId}`, {
+          method: "PATCH", headers,
+          body: JSON.stringify({ status: "completed" }),
+        });
+        setOrderComplete({ ...orderComplete, pending: false });
+      } catch { /* silent */ }
+    };
+
+    const handleDeclinePayment = async () => {
+      if (!orderComplete.orderId) return;
+      try {
+        await fetch(`/api/pos/orders/${orderComplete.orderId}`, {
+          method: "PATCH", headers,
+          body: JSON.stringify({ status: "cancelled" }),
+        });
+        setOrderComplete(null);
+      } catch { /* silent */ }
+    };
+
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
         <div className={`h-16 w-16 rounded-full flex items-center justify-center ${orderComplete.pending ? "bg-amber-100" : "bg-emerald-100"}`}>
           <span className="text-3xl">{orderComplete.pending ? "⏳" : "✓"}</span>
         </div>
-        <h2 className="text-xl font-bold text-gray-900">{orderComplete.pending ? "Order Pending Payment" : "Order Complete"}</h2>
+        <h2 className="text-xl font-bold text-gray-900">{orderComplete.pending ? "QR Code Payment" : "Order Complete"}</h2>
         <p className="text-sm text-gray-500">{orderComplete.receiptNumber}</p>
         <p className="text-2xl font-bold text-gray-900">${orderComplete.total.toFixed(2)}</p>
-        {orderComplete.pending && (
+
+        {/* QR Code display for pending QR orders */}
+        {orderComplete.pending && orderComplete.qrCode && (
+          <div className="rounded-2xl border-2 border-gray-200 bg-white p-4 shadow-sm space-y-3 max-w-xs w-full">
+            <p className="text-sm font-semibold text-gray-700 text-center">{orderComplete.qrCode.label}</p>
+            <div className="flex justify-center">
+              <img src={orderComplete.qrCode.image_url} alt={orderComplete.qrCode.label} className="w-48 h-48 object-contain rounded-lg" />
+            </div>
+            <p className="text-xs text-gray-400 text-center">Show this QR code to customer for payment</p>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => void handleAcceptPayment()}
+                className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-sm font-bold text-white hover:bg-emerald-600 transition"
+              >
+                ✓ Accept
+              </button>
+              <button
+                onClick={() => void handleDeclinePayment()}
+                className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition"
+              >
+                ✕ Decline
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Generic pending message (no QR code image available) */}
+        {orderComplete.pending && !orderComplete.qrCode && (
           <div className="rounded-xl bg-amber-50 px-4 py-3 text-center space-y-1 max-w-xs">
             <p className="text-sm text-amber-700 font-semibold">Awaiting Payment Confirmation</p>
             <p className="text-xs text-amber-600">Customer is paying via QR code. Confirm payment in the Orders page once received.</p>
           </div>
         )}
+
         {orderComplete.change > 0 && (
           <div className="rounded-xl bg-amber-50 px-4 py-2 text-center">
             <p className="text-sm text-amber-700 font-semibold">Change Due: ${orderComplete.change.toFixed(2)}</p>
