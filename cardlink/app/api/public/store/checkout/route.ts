@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/src/lib/supabase/server";
+import { createAdminClient } from "@/src/lib/supabase/admin";
 
 /**
  * POST /api/public/store/checkout — Public checkout endpoint
  *
  * Creates a store order from a public cart. No auth required.
+ * Uses admin client to bypass RLS for anonymous checkout.
  * Requires company_id in the body.
  */
 export async function POST(request: Request) {
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "company_id is required" }, { status: 400 });
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Verify store is published
   const { data: settings } = await supabase

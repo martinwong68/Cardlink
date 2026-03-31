@@ -530,6 +530,9 @@ export default function ItemMasterPage() {
             price: unitPrice ? Number(unitPrice) : null,
             cost_price: costPrice ? Number(costPrice) : null,
           }),
+        }).then(async (res) => {
+          if (!res.ok) throw new Error("API error");
+          return res;
         });
       })
     );
@@ -538,6 +541,8 @@ export default function ItemMasterPage() {
     if (created > 0) {
       setMessage({ type: "success", text: `${created} variation${created > 1 ? "s" : ""} generated.` });
       void loadVariations(itemId);
+    } else if (newCombos.length > 0) {
+      setMessage({ type: "error", text: "Failed to generate variations. Please try again." });
     }
   };
 

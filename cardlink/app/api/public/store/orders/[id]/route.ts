@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/src/lib/supabase/server";
+import { createAdminClient } from "@/src/lib/supabase/admin";
 
 /**
  * PATCH /api/public/store/orders/[id] — Public order update (limited)
  *
  * Allows cancelling a pending store order from the public storefront.
+ * Uses admin client to bypass RLS for anonymous operations.
  * Only status=cancelled is allowed, and only for orders with payment_status=unpaid or pending.
  */
 export async function PATCH(
@@ -13,7 +14,7 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Only allow cancellation
   if (body.status !== "cancelled") {

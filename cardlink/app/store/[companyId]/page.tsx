@@ -2,11 +2,21 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { ShoppingBag, Package, Loader2, X, Plus, Minus, ShoppingCart as CartIcon, CreditCard, QrCode, Banknote, ArrowLeft, CheckCircle } from "lucide-react";
+import { ShoppingBag, Package, Loader2, X, Plus, Minus, ShoppingCart as CartIcon, CreditCard, QrCode, Banknote, ArrowLeft, CheckCircle, Calendar, Clock } from "lucide-react";
 import { createClient } from "@/src/lib/supabase/client";
 
 /* ── Types ── */
 type QrCodeEntry = { label: string; image_url: string };
+
+type BookingService = {
+  id: string;
+  name: string;
+  description: string | null;
+  duration_minutes: number;
+  price: number;
+  category: string | null;
+  image_url: string | null;
+};
 
 type PaymentConfig = {
   stripe_enabled: boolean;
@@ -53,6 +63,9 @@ export default function PublicStorePage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
 
+  // Booking services
+  const [bookingServices, setBookingServices] = useState<BookingService[]>([]);
+
   // Checkout state
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>("cart");
   const [customerName, setCustomerName] = useState("");
@@ -69,15 +82,25 @@ export default function PublicStorePage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/public/store/products?company_id=${companyId}`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({ error: "Store not available" }));
+      const [storeRes, bookingRes] = await Promise.all([
+        fetch(`/api/public/store/products?company_id=${companyId}`),
+        fetch(`/api/public/booking/services?company_id=${companyId}`).catch(() => null),
+      ]);
+
+      if (!storeRes.ok) {
+        const body = await storeRes.json().catch(() => ({ error: "Store not available" }));
         setError((body as { error?: string }).error || "Store not available");
         setLoading(false);
         return;
       }
-      const json = (await res.json()) as StoreData;
+      const json = (await storeRes.json()) as StoreData;
       setData(json);
+
+      // Load booking services
+      if (bookingRes?.ok) {
+        const bookingData = await bookingRes.json();
+        setBookingServices(bookingData.services ?? []);
+      }
     } catch {
       setError("Failed to load store.");
     }
@@ -224,8 +247,8 @@ export default function PublicStorePage() {
   }
 
   const filtered = filterCat === "all"
-    ? data.products
-    : data.products.filter((p) => p.category_id === filterCat);
+    ? data.products.filter((p) => p.product_type !== "service")
+    : data.products.filter((p) => p.category_id === filterCat && p.product_type !== "service");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -249,36 +272,87 @@ export default function PublicStorePage() {
 
       {/* Content */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
-        {/* Categories */}
-        {data.categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-8">
-            <button
-              onClick={() => setFilterCat("all")}
-              className="rounded-full px-4 py-1.5 text-sm font-medium border transition"
-              style={filterCat === "all" ? { backgroundColor: primaryColor, color: "white", borderColor: primaryColor } : { borderColor: "#e5e7eb", color: "#374151" }}
-            >
-              All
-            </button>
-            {data.categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setFilterCat(cat.id)}
-                className="rounded-full px-4 py-1.5 text-sm font-medium border transition"
-                style={filterCat === cat.id ? { backgroundColor: primaryColor, color: "white", borderColor: primaryColor } : { borderColor: "#e5e7eb", color: "#374151" }}
-              >
-                {cat.name}
-              </button>
-            ))}
+
+        {/* ── Booking Section ── */}
+        {bookingServices.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center gap-2 mb-6">
+              <Calendar className="h-5 w-5" style={{ color: primaryColor }} />
+              <h2 className="text-xl font-bold text-gray-900">Booking</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {bookingServices.map((service) => (
+                <div key={service.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
+                  {service.image_url && (
+                    <div className="h-40 bg-gray-100 overflow-hidden">
+                      <img src={service.image_url} alt={service.name} className="h-full w-full object-cover" />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-gray-800">{service.name}</h3>
+                    {service.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{service.description}</p>}
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-sm font-bold" style={{ color: primaryColor }}>${service.price.toFixed(2)}</span>
+                      <span className="flex items-center gap-1 text-xs text-gray-400">
+                        <Clock className="h-3 w-3" /> {service.duration_minutes} min
+                      </span>
+                    </div>
+                    <a
+                      href={`/booking/${companyId}`}
+                      className="mt-3 block w-full rounded-lg py-2 text-xs font-semibold text-white text-center transition hover:opacity-90"
+                      style={{ backgroundColor: primaryColor }}
+                    >
+                      Book Now
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
+        {/* ── Products Section ── */}
+        {(filtered.length > 0 || data.categories.length > 0) && (
+          <>
+            {bookingServices.length > 0 && filtered.length > 0 && (
+              <div className="flex items-center gap-2 mb-6">
+                <ShoppingBag className="h-5 w-5" style={{ color: primaryColor }} />
+                <h2 className="text-xl font-bold text-gray-900">Products</h2>
+              </div>
+            )}
+
+            {/* Categories */}
+            {data.categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-8">
+                <button
+                  onClick={() => setFilterCat("all")}
+                  className="rounded-full px-4 py-1.5 text-sm font-medium border transition"
+                  style={filterCat === "all" ? { backgroundColor: primaryColor, color: "white", borderColor: primaryColor } : { borderColor: "#e5e7eb", color: "#374151" }}
+                >
+                  All
+                </button>
+                {data.categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setFilterCat(cat.id)}
+                    className="rounded-full px-4 py-1.5 text-sm font-medium border transition"
+                    style={filterCat === cat.id ? { backgroundColor: primaryColor, color: "white", borderColor: primaryColor } : { borderColor: "#e5e7eb", color: "#374151" }}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
         {/* Product grid */}
-        {filtered.length === 0 ? (
+        {filtered.length === 0 && bookingServices.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <Package className="h-10 w-10 text-gray-300" />
             <p className="mt-3 text-sm text-gray-500">No products available.</p>
           </div>
-        ) : (
+        ) : filtered.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((product) => (
               <div key={product.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group">
@@ -315,7 +389,7 @@ export default function PublicStorePage() {
               </div>
             ))}
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Cart floating button */}
