@@ -1282,7 +1282,8 @@
         "completed": "Completed",
         "cancelled": "Cancelled",
         "refunded": "Refunded"
-      }
+      },
+      "errorLoading": "Failed to load orders."
     }
   },
   "discover": {
@@ -2414,7 +2415,8 @@
       "shippingProviderPlaceholder": "e.g. FedEx, UPS, DHL...",
       "trackingNumber": "Tracking Number",
       "trackingNumberPlaceholder": "Enter tracking number...",
-      "confirmShip": "Confirm & Ship"
+      "confirmShip": "Confirm & Ship",
+      "sendWhatsApp": "Send Confirmation via WhatsApp"
     },
     "customers": {
       "title": "Customers",

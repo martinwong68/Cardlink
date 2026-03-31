@@ -1282,7 +1282,8 @@
         "completed": "已完成",
         "cancelled": "已取消",
         "refunded": "已退款"
-      }
+      },
+      "errorLoading": "加载订单失败。"
     }
   },
   "discover": {
@@ -2414,7 +2415,8 @@
       "shippingProviderPlaceholder": "例如 顺丰、中通、圆通...",
       "trackingNumber": "追踪号码",
       "trackingNumberPlaceholder": "输入追踪号码...",
-      "confirmShip": "确认发货"
+      "confirmShip": "确认发货",
+      "sendWhatsApp": "通过 WhatsApp 发送确认"
     },
     "customers": {
       "title": "客户",

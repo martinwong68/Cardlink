@@ -321,7 +321,7 @@ export default function StoreOrdersPage() {
                           className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 hover:bg-green-100 transition"
                         >
                           <MessageCircle className="h-3.5 w-3.5" />
-                          Send Confirmation via WhatsApp
+                          {t("sendWhatsApp")}
                         </a>
                       </div>
                     )}

@@ -1282,7 +1282,8 @@
         "completed": "완료",
         "cancelled": "취소됨",
         "refunded": "환불됨"
-      }
+      },
+      "errorLoading": "주문 로드에 실패했습니다."
     }
   },
   "discover": {
@@ -2414,7 +2415,8 @@
       "shippingProviderPlaceholder": "예: 대한통운, CJ대한통운...",
       "trackingNumber": "운송장 번호",
       "trackingNumberPlaceholder": "운송장 번호 입력...",
-      "confirmShip": "확인 및 배송"
+      "confirmShip": "확인 및 배송",
+      "sendWhatsApp": "WhatsApp으로 확인 보내기"
     },
     "customers": {
       "title": "고객",

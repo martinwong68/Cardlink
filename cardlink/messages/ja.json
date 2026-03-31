@@ -1282,7 +1282,8 @@
         "completed": "完了",
         "cancelled": "キャンセル",
         "refunded": "返金済"
-      }
+      },
+      "errorLoading": "注文の読み込みに失敗しました。"
     }
   },
   "discover": {
@@ -2414,7 +2415,8 @@
       "shippingProviderPlaceholder": "例: ヤマト運輸、佐川急便...",
       "trackingNumber": "追跡番号",
       "trackingNumberPlaceholder": "追跡番号を入力...",
-      "confirmShip": "確認して出荷"
+      "confirmShip": "確認して出荷",
+      "sendWhatsApp": "WhatsAppで確認を送信"
     },
     "customers": {
       "title": "顧客",

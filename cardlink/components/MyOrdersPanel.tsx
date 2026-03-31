@@ -82,7 +82,7 @@ export default function MyOrdersPanel() {
       .limit(50);
 
     if (ordersError) {
-      setMessage("Failed to load orders.");
+      setMessage(t("myOrders.errorLoading"));
       setIsLoading(false);
       return;
     }

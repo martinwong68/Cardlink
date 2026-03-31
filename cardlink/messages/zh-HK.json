@@ -1282,7 +1282,8 @@
         "completed": "已完成",
         "cancelled": "已取消",
         "refunded": "已退款"
-      }
+      },
+      "errorLoading": "載入訂單失敗。"
     }
   },
   "discover": {
@@ -2414,7 +2415,8 @@
       "shippingProviderPlaceholder": "例如 順豐、中通、圓通...",
       "trackingNumber": "追蹤號碼",
       "trackingNumberPlaceholder": "輸入追蹤號碼...",
-      "confirmShip": "確認發貨"
+      "confirmShip": "確認發貨",
+      "sendWhatsApp": "透過 WhatsApp 發送確認"
     },
     "customers": {
       "title": "客戶",
