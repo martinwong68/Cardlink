@@ -167,12 +167,12 @@ export default function StoreSetupPage() {
     if (bannerFile) {
       const { data: userData } = await supabase.auth.getUser();
       if (userData.user) {
-        const path = `store-banners/${companyId}/${Date.now()}-banner.jpg`;
+        const path = `${companyId}/store-banner-${Date.now()}.jpg`;
         const { error: uploadErr } = await supabase.storage
-          .from("avatars")
+          .from("company-assets")
           .upload(path, bannerFile, { upsert: true, contentType: "image/jpeg" });
         if (!uploadErr) {
-          const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+          const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
           bannerUrl = urlData.publicUrl;
         }
       }

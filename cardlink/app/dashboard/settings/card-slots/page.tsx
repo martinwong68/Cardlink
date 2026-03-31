@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, CreditCard, Loader2, Minus, Plus, ShoppingCart } from "lucide-react";
+import { ArrowLeft, CreditCard, Loader2, Minus, Plus, Settings, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 import { createClient } from "@/src/lib/supabase/client";
@@ -13,7 +13,7 @@ type ProfileData = {
   purchased_card_slots?: number | null;
 };
 
-const SLOT_PRICE = 8; // dollars per slot
+const SLOT_PRICE_MONTHLY = 8; // dollars per slot per month
 
 export default function CardSlotsPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -24,6 +24,7 @@ export default function CardSlotsPage() {
   const [usedSlots, setUsedSlots] = useState(0);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
+  const [managingBilling, setManagingBilling] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [qty, setQty] = useState(1);
 
@@ -62,7 +63,7 @@ export default function CardSlotsPage() {
     void loadData();
   }, [loadData]);
 
-  // Handle purchase success redirect
+  // Handle subscription success redirect
   useEffect(() => {
     if (searchParams.get("card_slot") !== "success") return;
 
@@ -98,7 +99,7 @@ export default function CardSlotsPage() {
         }
       }
       setPurchasedSlots(newTotal);
-      setMessage({ type: "success", text: `${purchasedQty} card slot${purchasedQty > 1 ? "s" : ""} purchased successfully!` });
+      setMessage({ type: "success", text: `${purchasedQty} card slot${purchasedQty > 1 ? "s" : ""} subscribed successfully!` });
 
       // Clean URL
       router.replace("/dashboard/settings/card-slots", { scroll: false });
@@ -106,7 +107,7 @@ export default function CardSlotsPage() {
     void updateSlots();
   }, [searchParams, supabase, router, purchasedSlots]);
 
-  const handlePurchase = async () => {
+  const handleSubscribe = async () => {
     setMessage(null);
     setPurchasing(true);
     try {
@@ -115,9 +116,9 @@ export default function CardSlotsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mode: "payment",
-          amount: SLOT_PRICE * qty,
-          description: `Extra Namecard Slot${qty > 1 ? ` x${qty}` : ""}`,
+          mode: "subscription",
+          planSlug: "__card_slot__",
+          cardSlotQty: qty,
           successUrl: `${origin}/dashboard/settings/card-slots?card_slot=success&qty=${qty}`,
           cancelUrl: `${origin}/dashboard/settings/card-slots`,
         }),
@@ -138,6 +139,49 @@ export default function CardSlotsPage() {
     setPurchasing(false);
   };
 
+  const handleManageBilling = async () => {
+    setManagingBilling(true);
+    try {
+      const response = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (response.ok) {
+        const data = (await response.json()) as { url?: string };
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+      }
+      setMessage({ type: "error", text: "Failed to open billing portal." });
+    } catch {
+      setMessage({ type: "error", text: "Failed to open billing portal." });
+    }
+    setManagingBilling(false);
+  };
+
+  const handleRemoveSlot = async () => {
+    if (purchasedSlots <= 0) return;
+    if (usedSlots > totalSlots - 1) {
+      setMessage({ type: "error", text: "Cannot remove slot — all slots are in use. Delete a card first." });
+      return;
+    }
+    setMessage(null);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) return;
+      const newCount = Math.max(0, purchasedSlots - 1);
+      await supabase
+        .from("profiles")
+        .update({ purchased_card_slots: newCount })
+        .eq("id", userData.user.id);
+      setPurchasedSlots(newCount);
+      setMessage({ type: "success", text: "Slot removed. Update your subscription via Manage Billing to reflect the change." });
+    } catch {
+      setMessage({ type: "error", text: "Failed to remove slot." });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -155,7 +199,7 @@ export default function CardSlotsPage() {
         </Link>
         <div>
           <h1 className="text-lg font-bold text-gray-900">Card Slots</h1>
-          <p className="text-xs text-gray-500">Manage your namecard slots</p>
+          <p className="text-xs text-gray-500">Manage your namecard slot subscriptions</p>
         </div>
       </div>
 
@@ -185,7 +229,7 @@ export default function CardSlotsPage() {
           </div>
           <div className="rounded-xl bg-indigo-50 p-3 text-center">
             <p className="text-2xl font-bold text-indigo-600">{purchasedSlots}</p>
-            <p className="text-[10px] text-indigo-500 uppercase tracking-wider">Purchased</p>
+            <p className="text-[10px] text-indigo-500 uppercase tracking-wider">Subscribed</p>
           </div>
           <div className="rounded-xl bg-emerald-50 p-3 text-center">
             <p className="text-2xl font-bold text-emerald-600">{totalSlots}</p>
@@ -194,23 +238,55 @@ export default function CardSlotsPage() {
         </div>
       </div>
 
-      {/* Purchase Section */}
+      {/* Manage Existing Slots */}
+      {purchasedSlots > 0 && (
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <Settings className="h-4 w-4 text-gray-600" />
+            <h2 className="text-sm font-semibold text-gray-700">Manage Subscription</h2>
+          </div>
+          <p className="text-xs text-gray-500">
+            You have <span className="font-semibold text-gray-700">{purchasedSlots}</span> active card slot subscription{purchasedSlots > 1 ? "s" : ""} at <span className="font-semibold text-gray-700">${SLOT_PRICE_MONTHLY}/mo</span> each.
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => void handleManageBilling()}
+              disabled={managingBilling}
+              className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60 flex items-center justify-center gap-2"
+            >
+              {managingBilling ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+              Manage Billing
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleRemoveSlot()}
+              disabled={purchasedSlots <= 0}
+              className="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-40 flex items-center justify-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" /> Remove Slot
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Subscribe Section */}
       <div className="rounded-2xl border border-gray-100 bg-white p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <ShoppingCart className="h-4 w-4 text-indigo-600" />
-          <h2 className="text-sm font-semibold text-gray-700">Purchase Card Slots</h2>
+          <Plus className="h-4 w-4 text-indigo-600" />
+          <h2 className="text-sm font-semibold text-gray-700">Add Card Slots</h2>
         </div>
 
         <p className="text-xs text-gray-500">
-          Each extra namecard slot costs <span className="font-semibold text-gray-700">${SLOT_PRICE}</span>.
-          Card slots are one-time purchases and do not expire.
+          Each extra namecard slot costs <span className="font-semibold text-gray-700">${SLOT_PRICE_MONTHLY}/month</span>.
+          Subscriptions can be managed or cancelled at any time via the billing portal.
         </p>
 
         {/* Quantity selector */}
         <div className="flex items-center justify-between rounded-xl bg-gray-50 p-4">
           <div>
             <p className="text-sm font-medium text-gray-800">Quantity</p>
-            <p className="text-xs text-gray-500">${SLOT_PRICE} × {qty} = <span className="font-semibold text-gray-800">${SLOT_PRICE * qty}</span></p>
+            <p className="text-xs text-gray-500">${SLOT_PRICE_MONTHLY}/mo × {qty} = <span className="font-semibold text-gray-800">${SLOT_PRICE_MONTHLY * qty}/mo</span></p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -234,7 +310,7 @@ export default function CardSlotsPage() {
 
         <button
           type="button"
-          onClick={() => void handlePurchase()}
+          onClick={() => void handleSubscribe()}
           disabled={purchasing}
           className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60 flex items-center justify-center gap-2"
         >
@@ -243,7 +319,7 @@ export default function CardSlotsPage() {
           ) : (
             <>
               <CreditCard className="h-4 w-4" />
-              Purchase {qty} Slot{qty > 1 ? "s" : ""} — ${SLOT_PRICE * qty}
+              Subscribe {qty} Slot{qty > 1 ? "s" : ""} — ${SLOT_PRICE_MONTHLY * qty}/mo
             </>
           )}
         </button>
@@ -254,9 +330,10 @@ export default function CardSlotsPage() {
         <p className="font-semibold text-gray-600">About Card Slots</p>
         <ul className="space-y-1 list-disc list-inside">
           <li>Every account includes <span className="font-medium text-gray-700">1 free</span> namecard slot.</li>
-          <li>Additional slots can be purchased at <span className="font-medium text-gray-700">${SLOT_PRICE} each</span>.</li>
-          <li>Card slots are <span className="font-medium text-gray-700">permanent</span> — they do not expire or renew.</li>
-          <li>Each slot allows you to create one additional digital namecard.</li>
+          <li>Additional slots are <span className="font-medium text-gray-700">${SLOT_PRICE_MONTHLY}/month</span> each, billed monthly.</li>
+          <li>You can <span className="font-medium text-gray-700">add or remove</span> slots at any time.</li>
+          <li>Manage your payment method and invoices via <span className="font-medium text-gray-700">Manage Billing</span>.</li>
+          <li>Cancelling removes the slot at the end of the billing period.</li>
         </ul>
       </div>
 

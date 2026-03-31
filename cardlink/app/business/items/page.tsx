@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Plus, Trash2, Pencil, Package, Search, ChevronDown, ChevronRight, RefreshCw, Copy, X, Layers, Loader2 } from "lucide-react";
+import { Plus, Trash2, Pencil, Package, Search, ChevronDown, ChevronRight, RefreshCw, Copy, X, Layers, Loader2, Upload } from "lucide-react";
 import { useActiveCompany } from "@/components/business/useActiveCompany";
 
 /* ── Types ───────────────────────────────────────────────── */
@@ -108,7 +108,7 @@ function variationLabel(attrs: Record<string, string>): string {
 /* ── Component ──────────────────────────────────────────── */
 
 export default function ItemMasterPage() {
-  const { loading: companyLoading } = useActiveCompany();
+  const { loading: companyLoading, companyId, supabase } = useActiveCompany();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -150,6 +150,11 @@ export default function ItemMasterPage() {
   const [variations, setVariations] = useState<Variation[]>([]);
   const [variationsLoading, setVariationsLoading] = useState(false);
   const [expandedVariation, setExpandedVariation] = useState<string | null>(null);
+
+  // Image upload
+  const [itemImages, setItemImages] = useState<string[]>([]);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   /* ── Data Loading ──────────────────────────────────────── */
 
@@ -227,6 +232,7 @@ export default function ItemMasterPage() {
     setCreditAccountId(""); setDebitAccountId("");
     setProductType("simple"); setProductAttributes([]); setCompareAtPrice(""); setWeight("");
     setVariations([]); setExpandedVariation(null);
+    setItemImages([]); setNewImageFiles([]); setUploadingImage(false);
     setEditingId(null); setShowForm(false);
   };
 
@@ -234,6 +240,25 @@ export default function ItemMasterPage() {
 
   const handleSave = async () => {
     setMessage(null);
+
+    // Upload new images to company-assets bucket
+    const allImages = [...itemImages];
+    if (newImageFiles.length > 0 && companyId) {
+      setUploadingImage(true);
+      for (const file of newImageFiles) {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `${companyId}/items/${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("company-assets")
+          .upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" });
+        if (!uploadErr) {
+          const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
+          allImages.push(urlData.publicUrl);
+        }
+      }
+      setUploadingImage(false);
+    }
+
     const payload = {
       name,
       sku: sku || undefined,
@@ -257,6 +282,8 @@ export default function ItemMasterPage() {
       product_attributes: productAttributes,
       compare_at_price: compareAtPrice ? Number(compareAtPrice) : null,
       weight: weight ? Number(weight) : null,
+      images: allImages,
+      image_url: allImages.length > 0 ? allImages[0] : null,
       ...(editingId ? { id: editingId } : {}),
     };
 
@@ -317,6 +344,8 @@ export default function ItemMasterPage() {
     setProductAttributes(item.product_attributes ?? []);
     setCompareAtPrice(item.compare_at_price != null ? String(item.compare_at_price) : "");
     setWeight(item.weight != null ? String(item.weight) : "");
+    setItemImages(item.images ?? []);
+    setNewImageFiles([]);
     setShowForm(true);
     if (item.product_type === "variable") {
       void loadVariations(item.id);
@@ -545,6 +574,55 @@ export default function ItemMasterPage() {
               <input value={barcode} onChange={(e) => setBarcode(e.target.value)} placeholder="Barcode / EAN" className="app-input px-3 py-2 text-sm" />
             </div>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" rows={2} className="app-input w-full px-3 py-2 text-sm resize-none mt-2" />
+          </div>
+
+          {/* Images */}
+          <div>
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Images</h3>
+            <div className="flex flex-wrap gap-2">
+              {itemImages.map((url, idx) => (
+                <div key={url} className="relative h-20 w-20 rounded-xl overflow-hidden bg-gray-100">
+                  <img src={url} alt="" className="h-full w-full object-cover" />
+                  <button
+                    onClick={() => setItemImages((prev) => prev.filter((_, i) => i !== idx))}
+                    className="absolute top-0.5 right-0.5 rounded-full bg-black/50 p-0.5"
+                  >
+                    <X className="h-3 w-3 text-white" />
+                  </button>
+                </div>
+              ))}
+              {newImageFiles.map((file, idx) => (
+                <div key={file.name + idx} className="relative h-20 w-20 rounded-xl overflow-hidden bg-gray-100">
+                  <img src={URL.createObjectURL(file)} alt="" className="h-full w-full object-cover" />
+                  <button
+                    onClick={() => setNewImageFiles((prev) => prev.filter((_, i) => i !== idx))}
+                    className="absolute top-0.5 right-0.5 rounded-full bg-black/50 p-0.5"
+                  >
+                    <X className="h-3 w-3 text-white" />
+                  </button>
+                </div>
+              ))}
+              <label className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-300 transition">
+                <Upload className="h-5 w-5 text-gray-400" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (!files) return;
+                    setNewImageFiles((prev) => [...prev, ...Array.from(files)]);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            {uploadingImage && (
+              <p className="text-xs text-indigo-600 mt-1 flex items-center gap-1">
+                <Loader2 className="h-3 w-3 animate-spin" /> Uploading images…
+              </p>
+            )}
           </div>
 
           {/* Pricing */}

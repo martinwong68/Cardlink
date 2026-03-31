@@ -424,23 +424,23 @@ export default function RegisterCompanyPage() {
       }
 
       if (logoFile) {
-        const path = `company-logos/${userData.user.id}/${Date.now()}-logo.jpg`;
+        const path = `${userData.user.id}/${Date.now()}-logo.jpg`;
         const { error: uploadErr } = await supabase.storage
-          .from("avatars")
+          .from("company-assets")
           .upload(path, logoFile, { upsert: true, contentType: "image/jpeg" });
         if (!uploadErr) {
-          const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+          const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
           logoUrl = urlData.publicUrl;
         }
       }
 
       if (coverFile) {
-        const path = `company-covers/${userData.user.id}/${Date.now()}-cover.jpg`;
+        const path = `${userData.user.id}/${Date.now()}-cover.jpg`;
         const { error: uploadErr } = await supabase.storage
-          .from("avatars")
+          .from("company-assets")
           .upload(path, coverFile, { upsert: true, contentType: "image/jpeg" });
         if (!uploadErr) {
-          const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+          const { data: urlData } = supabase.storage.from("company-assets").getPublicUrl(path);
           coverUrl = urlData.publicUrl;
         }
       }
