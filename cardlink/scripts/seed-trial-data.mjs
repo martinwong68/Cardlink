@@ -30,6 +30,7 @@
  *   • POS products and sample orders
  *   • AI credits
  *   • Billing history entries
+ *   • Community boards (3), sub-boards (9), and user-guide forum posts (8)
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -303,6 +304,258 @@ async function main() {
     { company_id: companyId, user_id: userId, type: "low_stock", title: "Low Inventory Alert", body: "USB-C Cables are below reorder level (5 remaining).", is_read: false, priority: "urgent" },
   ]));
 
+  /* ── Community Boards & User Guide Posts ── */
+  console.log("\n💬 Community Boards");
+
+  // Well-known board / sub-board IDs (must match the SQL migration 20260331_002)
+  const BOARD_ANNOUNCEMENTS  = "00000000-0000-0000-0000-000000000b01";
+  const BOARD_USER_GUIDE     = "00000000-0000-0000-0000-000000000b02";
+  const BOARD_GENERAL        = "00000000-0000-0000-0000-000000000b03";
+
+  const SUB_PLATFORM_UPDATES    = "00000000-0000-0000-0000-000000000s01";
+  const SUB_GETTING_STARTED     = "00000000-0000-0000-0000-000000000s03";
+  const SUB_BIZ_MODULES         = "00000000-0000-0000-0000-000000000s04";
+  const SUB_NFC_CARDS           = "00000000-0000-0000-0000-000000000s05";
+  const SUB_BILLING             = "00000000-0000-0000-0000-000000000s06";
+  const SUB_TIPS                = "00000000-0000-0000-0000-000000000s07";
+
+  // Ensure the 3 global boards exist (idempotent — skips if already present)
+  const boardRows = [
+    { id: BOARD_ANNOUNCEMENTS, name: "Announcements", slug: "announcements", description: "Official platform updates, feature releases, and important notices from the Cardlink team.", icon: "📢", sort_order: 1, company_id: null, visibility: "public" },
+    { id: BOARD_USER_GUIDE, name: "User Guide", slug: "user-guide", description: "Step-by-step tutorials and guides to help you get the most out of every Cardlink feature.", icon: "📖", sort_order: 2, company_id: null, visibility: "public" },
+    { id: BOARD_GENERAL, name: "General Discussion", slug: "general-discussion", description: "Ask questions, share tips, request features, and connect with other Cardlink users.", icon: "💬", sort_order: 3, company_id: null, visibility: "public" },
+  ];
+  await must("Upsert boards", supabase.from("boards").upsert(boardRows, { onConflict: "id" }));
+
+  // Ensure sub-boards exist
+  const subBoardRows = [
+    { id: SUB_PLATFORM_UPDATES, board_id: BOARD_ANNOUNCEMENTS, name: "Platform Updates", slug: "platform-updates", description: "Release notes, bug fixes, and infrastructure changes.", sort_order: 1 },
+    { id: "00000000-0000-0000-0000-000000000s02", board_id: BOARD_ANNOUNCEMENTS, name: "Feature Releases", slug: "feature-releases", description: "Announcements for new modules and major feature launches.", sort_order: 2 },
+    { id: SUB_GETTING_STARTED, board_id: BOARD_USER_GUIDE, name: "Getting Started", slug: "getting-started", description: "First-time setup, registration, and company onboarding guides.", sort_order: 1 },
+    { id: SUB_BIZ_MODULES, board_id: BOARD_USER_GUIDE, name: "Business Modules Guide", slug: "business-modules-guide", description: "How-to guides for Accounting, HR, CRM, POS, Inventory, and more.", sort_order: 2 },
+    { id: SUB_NFC_CARDS, board_id: BOARD_USER_GUIDE, name: "NFC & Digital Cards", slug: "nfc-digital-cards", description: "Setting up NFC cards, QR codes, and public card sharing.", sort_order: 3 },
+    { id: SUB_BILLING, board_id: BOARD_USER_GUIDE, name: "Billing & Subscription", slug: "billing-subscription", description: "Plans, upgrades, Stripe payments, and billing FAQ.", sort_order: 4 },
+    { id: SUB_TIPS, board_id: BOARD_GENERAL, name: "Tips & Tricks", slug: "tips-tricks", description: "Share workflows, shortcuts, and best practices.", sort_order: 1 },
+    { id: "00000000-0000-0000-0000-000000000s08", board_id: BOARD_GENERAL, name: "Feature Requests", slug: "feature-requests", description: "Suggest and vote on features you would like to see.", sort_order: 2 },
+    { id: "00000000-0000-0000-0000-000000000s09", board_id: BOARD_GENERAL, name: "Showcase", slug: "showcase", description: "Show off your Cardlink setup, cards, and store.", sort_order: 3 },
+  ];
+  await must("Upsert sub-boards", supabase.from("sub_boards").upsert(subBoardRows, { onConflict: "id" }));
+
+  // Create user-guide forum posts authored by the seed user (acts as admin)
+  const now = isoNow();
+  const forumPosts = [
+    // ── Announcements › Platform Updates ──
+    {
+      id: uuid(),
+      sub_board_id: SUB_PLATFORM_UPDATES,
+      author_id: userId,
+      title: "Welcome to the Cardlink Community!",
+      body:
+        "Welcome! This is the official Cardlink community forum.\n\n" +
+        "Here you can:\n" +
+        "• Read platform updates and feature announcements\n" +
+        "• Follow step-by-step user guides for every module\n" +
+        "• Ask questions and get help from the team\n" +
+        "• Share tips, showcase your setup, and request new features\n\n" +
+        "Start by browsing the **User Guide** board — it covers everything from company registration to NFC card setup.\n\n" +
+        "Happy exploring! 🚀",
+      is_pinned: true,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(7),
+    },
+
+    // ── User Guide › Getting Started ──
+    {
+      id: uuid(),
+      sub_board_id: SUB_GETTING_STARTED,
+      author_id: userId,
+      title: "How to Register and Set Up Your Company",
+      body:
+        "Follow these steps to get your company up and running on Cardlink:\n\n" +
+        "**Step 1 — Create an Account**\n" +
+        "Go to /signup and register with your email or sign in with Google.\n\n" +
+        "**Step 2 — Register Your Company**\n" +
+        "After logging in, navigate to /register-company. Fill in your company name, business type, and contact details. Upload a logo if you have one.\n\n" +
+        "**Step 3 — Invite Team Members**\n" +
+        "Go to Business → Owner → Users to invite colleagues. You can assign roles: Owner, Admin, or Member.\n\n" +
+        "**Step 4 — Configure Modules**\n" +
+        "Head to Business → Owner → Modules to enable the modules you need (Accounting, HR, CRM, POS, Inventory, etc.).\n\n" +
+        "**Step 5 — Choose a Plan**\n" +
+        "Visit Settings → Plan & Billing to view available plans. The Free plan lets you explore all features. Upgrade to Professional or Business for higher limits.\n\n" +
+        "That's it! Your company dashboard is now ready. 🎉",
+      is_pinned: true,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(6),
+    },
+    {
+      id: uuid(),
+      sub_board_id: SUB_GETTING_STARTED,
+      author_id: userId,
+      title: "Navigating the Dashboard",
+      body:
+        "The Business Dashboard is your command center. Here's what you'll find:\n\n" +
+        "**Module Cards** — Each enabled module (Accounting, HR, CRM, etc.) shows as a card with a quick-stats badge.\n\n" +
+        "**AI Action Queue** — If AI is configured, pending action cards appear at the top for review.\n\n" +
+        "**Alerts** — Low-stock inventory warnings and overdue invoice reminders appear in the notification panel.\n\n" +
+        "**Quick Navigation** — Click any module card to jump directly to that module. Use the sidebar for sub-pages.\n\n" +
+        "**Company Switcher** — If you manage multiple companies, use the company switcher in the top-left to toggle between them.\n\n" +
+        "**Tip:** Bookmark /business for quick access to your dashboard.",
+      is_pinned: false,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(6),
+    },
+
+    // ── User Guide › Business Modules Guide ──
+    {
+      id: uuid(),
+      sub_board_id: SUB_BIZ_MODULES,
+      author_id: userId,
+      title: "Quick Guide: POS, Inventory & Online Store",
+      body:
+        "Cardlink includes three integrated commerce modules. Here's a quick overview:\n\n" +
+        "## POS (Point of Sale)\n" +
+        "• Open the **POS Terminal** (/business/pos/terminal) to start a checkout session.\n" +
+        "• Add products, apply discounts, and accept **cash, card, wallet, or QR** payments.\n" +
+        "• View past orders under POS → Orders.\n\n" +
+        "## Inventory\n" +
+        "• Manage products, categories, and warehouses under /business/inventory.\n" +
+        "• Record stock movements (in/out/transfer) and run physical stock takes.\n" +
+        "• Low-stock alerts appear on your dashboard automatically.\n\n" +
+        "## Online Store\n" +
+        "• Set up your storefront under /business/store/setup.\n" +
+        "• Configure payment methods (Stripe, QR code, cash) in Store → Settings.\n" +
+        "• Customers can browse and order at /store/{your-company-id}.\n" +
+        "• Manage orders, coupons, and customer records from the Store module.\n\n" +
+        "All three modules share the same product catalog via the Items master table.",
+      is_pinned: false,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(5),
+    },
+    {
+      id: uuid(),
+      sub_board_id: SUB_BIZ_MODULES,
+      author_id: userId,
+      title: "Quick Guide: Accounting, HR & CRM",
+      body:
+        "## Accounting\n" +
+        "• Chart of Accounts — set up your account structure under Accounting → Accounts.\n" +
+        "• Create invoices, record bills, and track payments.\n" +
+        "• Journal entries are automatically created by other modules (POS sales, payroll, etc.).\n" +
+        "• Run P&L, Balance Sheet, and Trial Balance reports.\n\n" +
+        "## HR (Human Resources)\n" +
+        "• Add employees, departments, and positions under /business/hr.\n" +
+        "• Manage leave requests, attendance clock-in/out, and holiday calendars.\n" +
+        "• Run payroll and generate payslips.\n" +
+        "• Configure tax brackets and leave policies.\n\n" +
+        "## CRM (Customer Relationship Management)\n" +
+        "• Track leads from initial contact through to deals won.\n" +
+        "• Manage contacts with full company/phone/email details.\n" +
+        "• Use the deal pipeline to move opportunities through stages.\n" +
+        "• Log activities (calls, meetings, tasks) against contacts or deals.\n" +
+        "• Create marketing campaigns and track performance.\n\n" +
+        "Each module has built-in reports accessible from its Reports sub-page.",
+      is_pinned: false,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(5),
+    },
+
+    // ── User Guide › NFC & Digital Cards ──
+    {
+      id: uuid(),
+      sub_board_id: SUB_NFC_CARDS,
+      author_id: userId,
+      title: "Setting Up Your NFC Digital Business Card",
+      body:
+        "Cardlink's flagship feature is NFC-powered digital business cards. Here's how to get started:\n\n" +
+        "**1. Create a Card**\n" +
+        "Go to Dashboard → Cards and click 'Create Card'. Choose a template, add your name, title, phone, email, and social links.\n\n" +
+        "**2. Generate a QR Code**\n" +
+        "Every card automatically gets a shareable QR code. You can print it or display it on screen.\n\n" +
+        "**3. Link an NFC Tag (optional)**\n" +
+        "If you have an NFC-enabled card or tag, go to Dashboard → NFC and pair it. When someone taps the NFC tag with their phone, they'll see your digital card instantly.\n\n" +
+        "**4. Share Your Card**\n" +
+        "Your public card URL is /c/{your-slug}. Share it via email, messaging apps, or embed it in your email signature.\n\n" +
+        "**5. Track Engagement**\n" +
+        "View tap logs and visit analytics in Dashboard → NFC to see who's interacting with your card.\n\n" +
+        "**Tip:** Company cards can be managed under Business → Company Cards for branded team cards.",
+      is_pinned: true,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(4),
+    },
+
+    // ── User Guide › Billing & Subscription ──
+    {
+      id: uuid(),
+      sub_board_id: SUB_BILLING,
+      author_id: userId,
+      title: "Understanding Billing Plans & Upgrades",
+      body:
+        "Cardlink offers three subscription tiers:\n\n" +
+        "| Plan | Price | Companies | Users | Storage | AI Actions |\n" +
+        "|------|-------|-----------|-------|---------|------------|\n" +
+        "| Free | $0/mo | 1 | 1 | 500 MB | — |\n" +
+        "| Professional | $29/mo | 3 | 5 | 5 GB | 200/mo |\n" +
+        "| Business | $79/mo | Unlimited | 20 | 50 GB | 2,000/mo |\n\n" +
+        "**How to Upgrade**\n" +
+        "1. Go to Settings → Plan & Billing.\n" +
+        "2. Click 'Upgrade' on the plan you want.\n" +
+        "3. Complete payment on the Stripe checkout page.\n" +
+        "4. Your plan activates immediately.\n\n" +
+        "**Managing Your Subscription**\n" +
+        "• View billing history under Owner → Billing.\n" +
+        "• Cancel or change plans at any time from Settings → Plan & Billing.\n" +
+        "• If you downgrade, the new limits apply at the end of the current billing cycle.\n\n" +
+        "**Card Slots**\n" +
+        "Need more digital business card slots? Purchase additional slots at $8/month each from Settings → Card Slots.\n\n" +
+        "All payments are securely processed via Stripe.",
+      is_pinned: false,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(4),
+    },
+
+    // ── General Discussion › Tips & Tricks ──
+    {
+      id: uuid(),
+      sub_board_id: SUB_TIPS,
+      author_id: userId,
+      title: "5 Tips to Get the Most Out of Cardlink",
+      body:
+        "Here are some power-user tips:\n\n" +
+        "**1. Use the AI Assistant**\n" +
+        "Enable AI in Settings → AI Settings and let it suggest business actions, draft invoices, or analyze your operations.\n\n" +
+        "**2. Set Up the Public Booking Page**\n" +
+        "If you offer services, enable Booking and share your public booking link (/booking/{company-id}). Customers can book without logging in.\n\n" +
+        "**3. Enable Multi-Language Support**\n" +
+        "Cardlink supports 6 languages (EN, zh-CN, zh-TW, zh-HK, ko, ja). Switch languages from Settings → Language to serve international customers.\n\n" +
+        "**4. Connect Stripe for Payments**\n" +
+        "Set up Stripe Connect (Business → Settings → Payments) to accept online payments through your store and POS.\n\n" +
+        "**5. Use the Seed Script for Testing**\n" +
+        "Running `node scripts/seed-trial-data.mjs` populates every module with realistic demo data — perfect for learning the platform.\n\n" +
+        "Got your own tips? Reply below! 👇",
+      is_pinned: false,
+      reply_count: 0,
+      is_banned: false,
+      last_activity_at: now,
+      created_at: daysAgo(3),
+    },
+  ];
+
+  await must("Create community forum posts", supabase.from("forum_posts").insert(forumPosts));
+
   /* ── Done ── */
   console.log("\n✨  Trial data seeded successfully!\n");
   console.log("📋  Quick Reference:");
@@ -312,6 +565,7 @@ async function main() {
   console.log("    Modules:  HR (5 employees, 3 depts), Inventory (2 categories, 2 warehouses),");
   console.log("              Booking (3 services), CRM (2 leads, 3 contacts, 2 deals),");
   console.log("              Store (2 customers, 2 orders, 2 coupons), Billing (2 entries)");
+  console.log("    Community: 3 boards, 9 sub-boards, 8 user-guide posts");
   console.log("\n💡  To log in:  Open the app and sign in as the target user.");
   console.log("    The demo company will be auto-selected.\n");
 }
