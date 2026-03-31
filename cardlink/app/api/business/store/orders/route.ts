@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const supabase = await createClient();
   let query = supabase
     .from("store_orders")
-    .select("id, order_number, customer_name, customer_email, subtotal, discount_amount, discount_name, coupon_code, tax_amount, shipping_amount, total, status, payment_method, payment_status, shipping_method, tracking_number, notes, created_at, updated_at")
+    .select("id, order_number, customer_name, customer_email, customer_phone, subtotal, discount_amount, discount_name, coupon_code, tax_amount, shipping_amount, total, status, payment_method, payment_status, shipping_method, tracking_number, notes, created_at, updated_at")
     .eq("company_id", guard.context.activeCompanyId)
     .order("created_at", { ascending: false });
 

@@ -115,6 +115,7 @@ export async function PATCH(
 
   if (body.payment_method) updates.payment_method = body.payment_method;
   if (body.tracking_number !== undefined) updates.tracking_number = body.tracking_number;
+  if (body.shipping_method !== undefined) updates.shipping_method = body.shipping_method;
   if (body.internal_notes !== undefined) updates.internal_notes = body.internal_notes;
   if (body.notes !== undefined) updates.notes = body.notes;
 

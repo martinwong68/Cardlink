@@ -1262,6 +1262,27 @@
       "download": "Download QR",
       "copy": "Copy Link",
       "copied": "Copied"
+    },
+    "myOrders": {
+      "title": "My Orders",
+      "loading": "Loading orders...",
+      "empty": "No orders yet.",
+      "signInToView": "Please sign in to view your orders.",
+      "orderNumber": "Order",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "trackingNumber": "Tracking",
+      "statuses": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
+      }
     }
   },
   "discover": {
@@ -2387,7 +2408,13 @@
         "completed": "Complete",
         "cancel": "Cancel",
         "refund": "Refund"
-      }
+      },
+      "shipTitle": "Ship Order",
+      "shippingProvider": "Shipping Provider",
+      "shippingProviderPlaceholder": "e.g. FedEx, UPS, DHL...",
+      "trackingNumber": "Tracking Number",
+      "trackingNumberPlaceholder": "Enter tracking number...",
+      "confirmShip": "Confirm & Ship"
     },
     "customers": {
       "title": "Customers",

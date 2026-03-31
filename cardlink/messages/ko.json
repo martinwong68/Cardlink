@@ -1262,6 +1262,27 @@
       "download": "다운로드 QR",
       "copy": "복사 Link",
       "copied": "Copied"
+    },
+    "myOrders": {
+      "title": "내 주문",
+      "loading": "주문 로드 중...",
+      "empty": "아직 주문이 없습니다.",
+      "signInToView": "주문을 보려면 로그인하세요.",
+      "orderNumber": "주문",
+      "total": "합계",
+      "status": "상태",
+      "date": "날짜",
+      "trackingNumber": "운송장 번호",
+      "statuses": {
+        "pending": "대기중",
+        "confirmed": "확인됨",
+        "processing": "처리중",
+        "shipped": "배송중",
+        "delivered": "배달됨",
+        "completed": "완료",
+        "cancelled": "취소됨",
+        "refunded": "환불됨"
+      }
     }
   },
   "discover": {
@@ -2387,7 +2408,13 @@
         "completed": "Complete",
         "cancel": "취소",
         "refund": "환불"
-      }
+      },
+      "shipTitle": "배송",
+      "shippingProvider": "배송 업체",
+      "shippingProviderPlaceholder": "예: 대한통운, CJ대한통운...",
+      "trackingNumber": "운송장 번호",
+      "trackingNumberPlaceholder": "운송장 번호 입력...",
+      "confirmShip": "확인 및 배송"
     },
     "customers": {
       "title": "고객",

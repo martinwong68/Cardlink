@@ -1262,6 +1262,27 @@
       "download": "下載 QR",
       "copy": "複製連結",
       "copied": "已複製"
+    },
+    "myOrders": {
+      "title": "我的訂單",
+      "loading": "載入訂單中...",
+      "empty": "暫無訂單。",
+      "signInToView": "請登入以查看您的訂單。",
+      "orderNumber": "訂單",
+      "total": "總計",
+      "status": "狀態",
+      "date": "日期",
+      "trackingNumber": "追蹤號碼",
+      "statuses": {
+        "pending": "待處理",
+        "confirmed": "已確認",
+        "processing": "處理中",
+        "shipped": "已發貨",
+        "delivered": "已送達",
+        "completed": "已完成",
+        "cancelled": "已取消",
+        "refunded": "已退款"
+      }
     }
   },
   "discover": {
@@ -2387,7 +2408,13 @@
         "completed": "完成",
         "cancel": "取消",
         "refund": "退款"
-      }
+      },
+      "shipTitle": "發貨",
+      "shippingProvider": "物流供應商",
+      "shippingProviderPlaceholder": "例如 順豐、中通、圓通...",
+      "trackingNumber": "追蹤號碼",
+      "trackingNumberPlaceholder": "輸入追蹤號碼...",
+      "confirmShip": "確認發貨"
     },
     "customers": {
       "title": "客戶",

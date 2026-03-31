@@ -13,6 +13,7 @@ import {
   XCircle,
   Clock,
   RefreshCw,
+  MessageCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -21,6 +22,7 @@ type Order = {
   order_number: string;
   customer_name: string | null;
   customer_email: string | null;
+  customer_phone: string | null;
   subtotal: number;
   discount_amount: number;
   tax_amount: number;
@@ -77,6 +79,11 @@ export default function StoreOrdersPage() {
   const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
   const [refundReason, setRefundReason] = useState("");
 
+  // Ship modal (tracking & shipping provider)
+  const [shipOrderId, setShipOrderId] = useState<string | null>(null);
+  const [shipTracking, setShipTracking] = useState("");
+  const [shipProvider, setShipProvider] = useState("");
+
   const load = useCallback(async () => {
     try {
       const params = new URLSearchParams();
@@ -102,6 +109,9 @@ export default function StoreOrdersPage() {
       setSelectedOrder(null);
       setRefundOrderId(null);
       setRefundReason("");
+      setShipOrderId(null);
+      setShipTracking("");
+      setShipProvider("");
       await load();
     } catch { /* silent */ } finally { setUpdating(false); }
   };
@@ -121,6 +131,22 @@ export default function StoreOrdersPage() {
       setSelectedOrder(null);
       await load();
     } catch { /* silent */ } finally { setUpdating(false); }
+  };
+
+  const handleShipOrder = async (orderId: string) => {
+    const extra: Record<string, unknown> = {};
+    if (shipTracking.trim()) extra.tracking_number = shipTracking.trim();
+    if (shipProvider.trim()) extra.shipping_method = shipProvider.trim();
+    await updateStatus(orderId, "shipped", extra);
+  };
+
+  const buildWhatsAppLink = (order: Order) => {
+    const phone = (order.customer_phone ?? "").replace(/[^0-9]/g, "");
+    if (!phone) return null;
+    const msg = `Hi ${order.customer_name || "there"}! Your order #${order.order_number} ($${Number(order.total).toFixed(2)}) has been confirmed. ` +
+      (order.tracking_number ? `Tracking: ${order.tracking_number}. ` : "") +
+      `Thank you for your purchase! 🎉\n\nManage all your memberships and orders easily with Cardlink — https://cardlink.app`;
+    return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
   };
 
   const getNextStatus = (status: string): string | null => {
@@ -248,13 +274,23 @@ export default function StoreOrdersPage() {
                         </button>
                       )}
                       {getNextStatus(order.status) && (
-                        <button
-                          onClick={() => updateStatus(order.id, getNextStatus(order.status)!)}
-                          disabled={updating}
-                          className="flex-1 rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition"
-                        >
-                          {updating ? "..." : t(`actions.${getNextStatus(order.status)}`)}
-                        </button>
+                        getNextStatus(order.status) === "shipped" ? (
+                          <button
+                            onClick={() => { setShipOrderId(order.id); setShipTracking(order.tracking_number ?? ""); setShipProvider(order.shipping_method ?? ""); }}
+                            disabled={updating}
+                            className="flex-1 rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                          >
+                            {t("actions.shipped")}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => updateStatus(order.id, getNextStatus(order.status)!)}
+                            disabled={updating}
+                            className="flex-1 rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                          >
+                            {updating ? "..." : t(`actions.${getNextStatus(order.status)}`)}
+                          </button>
+                        )
                       )}
                       {!["cancelled", "refunded", "completed"].includes(order.status) && (
                         <button
@@ -274,6 +310,21 @@ export default function StoreOrdersPage() {
                         </button>
                       )}
                     </div>
+
+                    {/* WhatsApp reminder — send confirmation to customer */}
+                    {order.payment_status === "paid" && order.customer_phone && (
+                      <div className="pt-2 border-t border-gray-100">
+                        <a
+                          href={buildWhatsAppLink(order) ?? "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 hover:bg-green-100 transition"
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          Send Confirmation via WhatsApp
+                        </a>
+                      </div>
+                    )}
                   </div>
                 )}
               </button>
@@ -304,6 +355,47 @@ export default function StoreOrdersPage() {
                 className="flex-1 rounded-lg bg-rose-600 py-2.5 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
               >
                 {updating ? "..." : t("confirmRefund")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ship Modal — enter tracking number & shipping provider */}
+      {shipOrderId && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={() => setShipOrderId(null)}>
+          <div className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-white p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-gray-800">{t("shipTitle")}</h3>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("shippingProvider")}</label>
+              <input
+                type="text"
+                value={shipProvider}
+                onChange={(e) => setShipProvider(e.target.value)}
+                placeholder={t("shippingProviderPlaceholder")}
+                className="app-input w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("trackingNumber")}</label>
+              <input
+                type="text"
+                value={shipTracking}
+                onChange={(e) => setShipTracking(e.target.value)}
+                placeholder={t("trackingNumberPlaceholder")}
+                className="app-input w-full"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setShipOrderId(null)} className="flex-1 rounded-lg bg-gray-100 py-2.5 text-xs font-medium text-gray-600">
+                {t("cancel")}
+              </button>
+              <button
+                onClick={() => handleShipOrder(shipOrderId)}
+                disabled={updating}
+                className="flex-1 rounded-lg bg-indigo-600 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {updating ? "..." : t("confirmShip")}
               </button>
             </div>
           </div>
