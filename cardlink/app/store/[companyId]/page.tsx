@@ -145,7 +145,10 @@ export default function PublicStorePage() {
           customer_email: customerEmail.trim() || undefined,
           customer_phone: customerPhone.trim() || undefined,
           shipping_address: shippingAddress.trim() ? { address: shippingAddress.trim() } : undefined,
-          payment_method: selectedPayment === "stripe" ? "stripe" : selectedPayment === "qr" ? "qr_code" : selectedPayment,
+          payment_method: (() => {
+            const methodMap: Record<string, string> = { stripe: "stripe", qr: "qr_code" };
+            return methodMap[selectedPayment] ?? selectedPayment;
+          })(),
         }),
       });
 

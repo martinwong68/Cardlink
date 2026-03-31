@@ -85,7 +85,7 @@ export default function StoreSettingsPage() {
     setUploadingQr(true);
 
     const ext = file.name.split(".").pop() || "png";
-    const path = `${companyId}/qr-codes/${Date.now()}.${ext}`;
+    const path = `${companyId}/qr-codes/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
     const { error: uploadErr } = await supabase.storage
       .from("company-assets")
