@@ -10,6 +10,8 @@ const PUBLIC_ROUTES = [
   "/c/",
   "/tap/",
   "/community/",
+  "/store/",
+  "/booking/",
 ];
 
 function isPublicRoute(pathname: string): boolean {

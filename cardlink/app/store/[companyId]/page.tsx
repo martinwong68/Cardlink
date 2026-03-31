@@ -533,7 +533,7 @@ export default function PublicStorePage() {
                     style={{ backgroundColor: primaryColor }}
                   >
                     {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                    {selectedPayment === "stripe" ? "Pay with Stripe" : "Place Order"}
+                    {selectedPayment === "stripe" ? "Pay with Stripe" : selectedPayment === "qr" ? "Create Pending Order" : "Place Order"}
                   </button>
                 </div>
               </div>
@@ -558,13 +558,29 @@ export default function PublicStorePage() {
                     onClick={() => { setCheckoutStep("success"); setCart([]); }}
                     className="flex-1 rounded-xl py-3 text-sm font-semibold text-white transition hover:opacity-90 bg-emerald-500 hover:bg-emerald-600"
                   >
-                    ✓ I&apos;ve Paid
+                    ✓ Accept
                   </button>
                   <button
-                    onClick={() => { setShowCart(false); setCheckoutStep("cart"); }}
+                    onClick={async () => {
+                      // Cancel the pending order
+                      if (orderResult?.id) {
+                        try {
+                          await fetch(`/api/public/store/orders/${orderResult.id}`, {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ status: "cancelled" }),
+                          });
+                        } catch { /* silent */ }
+                      }
+                      setCheckoutStep("cart");
+                      setShowCart(false);
+                      setOrderResult(null);
+                      setSelectedPayment("");
+                      setSelectedQrCode(null);
+                    }}
                     className="flex-1 rounded-xl py-3 text-sm font-semibold text-gray-700 border border-gray-200 transition hover:bg-gray-50"
                   >
-                    Close
+                    ✕ Decline
                   </button>
                 </div>
               </div>
