@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
@@ -152,6 +153,24 @@ function normalizeTemplateId(template: string | null): TemplateId {
     return "profile-community";
   }
   return "classic-business";
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const card = await getPublicCardBySlug(slug);
+    const name = card?.full_name || card?.profiles?.full_name;
+    if (!name) {
+      return { title: "名片不存在 · Cardlink" };
+    }
+    return { title: `${name} · Cardlink` };
+  } catch {
+    return { title: "Cardlink" };
+  }
 }
 
 export default async function PublicCardPage({

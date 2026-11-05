@@ -23,6 +23,17 @@ Auth stays on Cardlink Supabase. Authenticated calls send `Authorization: Bearer
 
 Client: `cardlink/src/lib/cardlink-api/`.
 
+## Response fields
+
+- Read: `card_fields` / `card_links` / `card_experiences` / `profiles` (snake_case).
+- PATCH also accepts aliases `fields` / `links` / `experiences`; UI always reads `card_*`.
+- NFC tap 200: `{ slug, card, action }` where `action` is `redirect` | `register` | `suspended` | `deactivated` | `expired` | `no_card`. Missing uid → 404.
+
+## UI (Ink Signal)
+
+- Public `/c/[slug]` and edit share the Ink Signal visual language (`components/namecard/`).
+- Edit includes NFC bind via `POST /me/nfc/bind` only — no editable chip uid field.
+
 ## Rules
 
 - Do not read/write `business_cards` / `card_*` / `nfc_*` from the Next app for namecard CRUD.

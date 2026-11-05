@@ -574,3 +574,217 @@ body {
     animation: none;
   }
 }
+
+/* ───────────────────────────────────────────────
+   Ink Signal — namecard redesign (PROJ-69)
+   Scoped under .ink-signal so dashboard chrome stays intact.
+   ─────────────────────────────────────────────── */
+
+.ink-signal {
+  --ink: #14181c;
+  --ink-muted: #5c6570;
+  --ink-faint: #8b949e;
+  --paper: #f2f4f6;
+  --paper-elevated: #fafbfc;
+  --line: #d7dce2;
+  --accent: #0f766e;
+  --accent-pressed: #0b5f59;
+  --accent-soft: #d8efea;
+  --danger: #b42318;
+  --danger-soft: #fcebea;
+  --avatar-fallback: #1f2a30;
+  --ink-font-display: var(--font-syne), "Noto Sans TC", sans-serif;
+  --ink-font-body: var(--font-manrope), "Noto Sans TC", sans-serif;
+  --ink-font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  color: var(--ink);
+  font-family: var(--ink-font-body);
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 255, 255, 0.7), transparent 55%),
+    radial-gradient(ellipse 70% 40% at 50% 110%, rgba(20, 24, 28, 0.04), transparent 50%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  min-height: 100vh;
+}
+
+.ink-signal-column {
+  width: 100%;
+  max-width: 420px;
+  margin-inline: auto;
+  padding: 28px 20px 48px;
+}
+
+@media (min-width: 768px) {
+  .ink-signal-column {
+    padding-inline: 24px;
+  }
+}
+
+.ink-signal-display {
+  font-family: var(--ink-font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.ink-signal-section-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
+.ink-signal-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  width: 100%;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 1px 2px rgba(20, 24, 28, 0.06);
+  transition: background 160ms ease-out, transform 120ms ease-out;
+}
+
+.ink-signal-btn-primary:hover {
+  background: var(--accent-pressed);
+}
+
+.ink-signal-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.ink-signal-btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ink-signal-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 160ms ease-out, transform 120ms ease-out;
+}
+
+.ink-signal-btn-secondary:hover {
+  background: rgba(20, 24, 28, 0.04);
+}
+
+.ink-signal-btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.ink-signal-input {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--paper-elevated);
+  padding: 10px 12px;
+  font-size: 15px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 160ms ease-out, box-shadow 160ms ease-out;
+}
+
+.ink-signal-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.ink-signal-fade-up {
+  animation: ink-fade-up 280ms var(--ease-out, ease-out) both;
+}
+
+.ink-signal-fade-up-delay-1 {
+  animation-delay: 60ms;
+}
+
+.ink-signal-fade-up-delay-2 {
+  animation-delay: 120ms;
+}
+
+.ink-signal-fade-up-delay-3 {
+  animation-delay: 180ms;
+}
+
+@keyframes ink-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ink-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.ink-signal-progress {
+  height: 2px;
+  width: 120px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.ink-signal-progress > span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: var(--accent);
+  animation: ink-indeterminate 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-signal-fade-up,
+  .ink-signal-fade-up-delay-1,
+  .ink-signal-fade-up-delay-2,
+  .ink-signal-fade-up-delay-3 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .ink-signal-progress > span {
+    animation: none;
+    width: 100%;
+  }
+}
+
+.ink-signal-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 50;
+  transform: translateX(-50%);
+  border-radius: 12px;
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  animation: ink-fade-up 220ms ease-out both;
+}

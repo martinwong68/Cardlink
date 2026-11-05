@@ -66,6 +66,7 @@ const MOCK_CARD: PublicCard = {
 let mockEditable: EditableCard = {
   ...MOCK_CARD,
   card_name: "我的名片",
+  nfc: [],
 };
 
 export async function mockGetPublicCard(slug: string): Promise<PublicCard | null> {

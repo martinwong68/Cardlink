@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Mono, Inter, Manrope, Syne } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -11,6 +11,23 @@ import { defaultLocale, locales } from "@/next-intl.config";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const syne = Syne({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-syne",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-plex-mono",
 });
 
 export const metadata: Metadata = {
@@ -42,7 +59,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${inter.className} ${inter.variable} min-h-screen bg-neutral-50 text-neutral-900 antialiased`}
+        className={`${inter.className} ${inter.variable} ${syne.variable} ${manrope.variable} ${plexMono.variable} min-h-screen bg-neutral-50 text-neutral-900 antialiased`}
       >
         <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
           <LoggedInTopHeader />

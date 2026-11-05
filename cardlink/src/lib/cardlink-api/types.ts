@@ -60,6 +60,15 @@ export type PublicCard = {
 /** Editable card from GET/PATCH /api/cardlink/me/card */
 export type EditableCard = PublicCard & {
   card_name?: string | null;
+  /** Bound NFC chips (read-only helper; never patch nfc_uid via me/card) */
+  nfc?: Array<{
+    id: string;
+    nfc_uid: string | null;
+    status: string | null;
+    linked_card_id: string | null;
+    total_taps: number | null;
+    last_tapped_at: string | null;
+  }>;
 };
 
 export type PatchMyCardBody = {

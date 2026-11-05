@@ -249,7 +249,9 @@
       "uploadPhoto": "上傳照片",
       "uploading": "正在上傳...",
       "uploadBackground": "上傳背景圖片",
-      "removeBackground": "移除背景圖片"
+      "removeBackground": "移除背景圖片",
+      "viewPublic": "檢視公開頁",
+      "copyPublicLink": "複製連結"
     },
     "sections": {
       "background": "背景設定",
@@ -310,7 +312,24 @@
       "public": "公開",
       "friends": "好友",
       "hidden": "隱藏"
-    }
+    },
+    "nfc": {
+      "title": "綁定 NFC 名片",
+      "help": "把實體名片貼近手機，或輸入晶片編號，綁到你現在這張電子名片。",
+      "uidLabel": "晶片編號",
+      "uidPlaceholder": "輸入或貼上 uid",
+      "bind": "綁定",
+      "binding": "綁定中…",
+      "scan": "掃描晶片",
+      "bound": "已綁定實體名片",
+      "masked": "編號末碼 {mask}",
+      "conflict": "此晶片已綁定其他名片，無法使用。",
+      "error": "綁定失敗，請確認編號後再試。",
+      "authError": "無法綁定，請重新登入後再試。",
+      "emptyUid": "請輸入 UID。",
+      "noEditUidNote": "晶片編號綁定後無法在此修改。"
+    },
+    "slugReadonly": "公開連結"
   },
   "contactDetail": {
     "states": {
@@ -463,18 +482,20 @@
       "missingShare": "缺少分享連結。",
       "copyLink": "無法複製連結。",
       "missingContact": "缺少聯絡資訊。",
-      "copyWechat": "無法複製微信 ID。"
+      "copyWechat": "無法複製微信號。"
     },
     "toast": {
-      "linkCopied": "連結已複製到剪貼簿。",
-      "wechatCopied": "微信 ID 已複製。"
+      "linkCopied": "連結已複製",
+      "wechatCopied": "已複製微信號",
+      "shareFailed": "無法分享，請改複製連結"
     },
     "actions": {
       "saveContact": "儲存聯絡人",
-      "share": "分享"
+      "share": "分享",
+      "copyLink": "複製連結"
     },
     "sections": {
-      "contact": "聯絡方式",
+      "contact": "聯絡",
       "links": "連結",
       "experience": "經歷"
     },
@@ -483,15 +504,30 @@
     },
     "experience": {
       "roleAt": "{company} · {role}",
-      "present": "現職"
+      "present": "至今"
     },
     "footer": {
-      "madeWith": "由 CardLink 製作"
+      "brand": "Cardlink",
+      "madeWith": "Cardlink"
     },
     "wechat": {
       "title": "微信 ID",
       "close": "關閉",
       "copy": "複製微信 ID"
+    },
+    "loading": "載入名片中…",
+    "notFound": {
+      "title": "找不到這張名片",
+      "body": "連結可能已失效，或名片尚未公開。"
+    },
+    "error": {
+      "title": "暫時無法載入",
+      "body": "請檢查網路後再試一次。",
+      "retry": "再試一次"
+    },
+    "bio": {
+      "more": "顯示更多",
+      "less": "收合"
     }
   },
   "notifications": {
@@ -558,26 +594,33 @@
   "tap": {
     "suspended": {
       "title": "名片已暫停",
-      "body": "此名片已暫時停用，請聯絡名片持有人或 CardLink 支援。",
+      "body": "此名片暫時無法開啟，請稍後再試或聯絡持有人。",
       "link": "了解更多"
     },
     "deactivated": {
       "title": "名片已停用",
-      "body": "此名片已不再有效。"
+      "body": "此名片已停用，無法開啟。"
     },
     "expired": {
-      "title": "訂閱已到期",
-      "body": "持有人的訂閱已到期。如為你的名片，請續訂。",
+      "title": "已過期",
+      "body": "此名片連結已過期。",
       "link": "續訂"
     },
     "noCard": {
-      "title": "未綁定名片",
-      "body": "此 NFC 名片尚未綁定數位名片。",
+      "title": "找不到對應名片",
+      "body": "這張 NFC 尚未綁定，或編號無效。",
       "link": "設定你的名片"
     },
     "error": {
-      "title": "找不到名片",
-      "body": "此 NFC 名片無法識別。"
+      "title": "暫時無法開啟",
+      "body": "請再試一次；若仍失敗，請改用對方分享的連結。",
+      "retry": "再試一次"
+    },
+    "resolving": "正在開啟名片…",
+    "redirecting": "即將開啟…",
+    "register": {
+      "title": "尚未註冊",
+      "body": "這張 NFC 可以綁定到你的電子名片。"
     }
   },
   "register": {

@@ -249,7 +249,8 @@
       "uploadPhoto": "上传照片",
       "uploading": "正在上传...",
       "uploadBackground": "上传背景图片",
-      "removeBackground": "移除背景图片"
+      "removeBackground": "移除背景图片",
+      "viewPublic": "查看公开页"
     },
     "sections": {
       "background": "背景设置",
@@ -310,6 +311,22 @@
       "public": "公开",
       "friends": "好友",
       "hidden": "隐藏"
+    },
+    "nfc": {
+      "title": "Bind NFC card",
+      "help": "Enter the chip UID to bind it to this digital card.",
+      "uidLabel": "Chip UID",
+      "uidPlaceholder": "Paste or type UID",
+      "bind": "Bind",
+      "binding": "Binding…",
+      "scan": "Scan chip",
+      "bound": "Physical card bound",
+      "masked": "Ending {mask}",
+      "conflict": "This UID is already bound to another card.",
+      "error": "Bind failed. Check the UID and try again.",
+      "authError": "Please sign in again to bind.",
+      "emptyUid": "Please enter a UID.",
+      "noEditUidNote": "UID cannot be edited here after binding."
     }
   },
   "contactDetail": {
@@ -467,7 +484,8 @@
     },
     "toast": {
       "linkCopied": "链接已复制到剪贴板。",
-      "wechatCopied": "微信 ID 已复制。"
+      "wechatCopied": "微信 ID 已复制。",
+      "shareFailed": "Unable to share — copy the link instead"
     },
     "actions": {
       "saveContact": "保存联系人",
@@ -486,12 +504,17 @@
       "present": "至今"
     },
     "footer": {
-      "madeWith": "由 CardLink 制作"
+      "madeWith": "由 CardLink 制作",
+      "brand": "由 CardLink 制作"
     },
     "wechat": {
       "title": "微信 ID",
       "close": "关闭",
       "copy": "复制微信 ID"
+    },
+    "bio": {
+      "more": "Show more",
+      "less": "Show less"
     }
   },
   "notifications": {
@@ -578,7 +601,9 @@
     "error": {
       "title": "未找到名片",
       "body": "此 NFC 名片无法识别。"
-    }
+    },
+    "resolving": "Opening card…",
+    "redirecting": "Opening…"
   },
   "register": {
     "brand": "CardLink",
