@@ -13,9 +13,16 @@ import {
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
+import {
+  CardlinkApiError,
+  getMyCard,
+  patchMyCard,
+} from "@/src/lib/cardlink-api";
+import { getSupabaseAccessToken } from "@/src/lib/cardlink-api/auth-token";
 import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
-import TemplateSelector from "@/components/TemplateSelector";
 import type { TemplateId } from "@/src/lib/templates";
+import InkSignalCard from "@/components/namecard/InkSignalCard";
+import NfcBindPanel from "@/components/namecard/NfcBindPanel";
 
 const fieldTypes = [
   "Phone",
@@ -84,36 +91,23 @@ function normalizeTemplateId(template: string | null | undefined): TemplateId {
   return "classic-business";
 }
 
+// Kept for legacy background upload helpers (UI hidden in Ink Signal phase 1).
 const BACKGROUND_BUCKET = "avatars";
 const BACKGROUND_FILE_NAME = "background.jpg";
 const BACKGROUND_MAX_DIMENSION = 1920;
 const BACKGROUND_JPEG_QUALITY = 0.85;
 const BACKGROUND_MAX_SIZE_BYTES = 500 * 1024;
 
-const patternOptions = [
-  "gradient-1",
-  "gradient-2",
-  "gradient-3",
-  "gradient-4",
-  "gradient-5",
-  "pattern-dots",
-  "pattern-waves",
-  "pattern-grid",
-  "pattern-circles",
-  "pattern-topography",
-];
-
-const patternClassMap: Record<string, string> = {
-  "gradient-1": "cardlink-pattern-gradient-1",
-  "gradient-2": "cardlink-pattern-gradient-2",
-  "gradient-3": "cardlink-pattern-gradient-3",
-  "gradient-4": "cardlink-pattern-gradient-4",
-  "gradient-5": "cardlink-pattern-gradient-5",
-  "pattern-dots": "cardlink-pattern-dots",
-  "pattern-waves": "cardlink-pattern-waves",
-  "pattern-grid": "cardlink-pattern-grid",
-  "pattern-circles": "cardlink-pattern-circles",
-  "pattern-topography": "cardlink-pattern-topography",
+const contactPreviewClasses: Record<string, string> = {
+  Phone: "bg-emerald-500",
+  Email: "bg-rose-500",
+  WhatsApp: "bg-emerald-600",
+  LinkedIn: "bg-sky-600",
+  WeChat: "bg-green-600",
+  Telegram: "bg-sky-500",
+  Instagram: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400",
+  Twitter: "bg-gray-900",
+  Website: "bg-indigo-600",
 };
 
 const createClientId = () => {
@@ -127,33 +121,8 @@ const createClientId = () => {
   });
 };
 
-const colorOptions = [
-  "#4f46e5",
-  "#6366f1",
-  "#0ea5e9",
-  "#14b8a6",
-  "#10b981",
-  "#f97316",
-  "#f43f5e",
-  "#111827",
-  "#a855f7",
-  "#f59e0b",
-];
-
 const FREE_CONTACT_FIELDS_LIMIT = 2;
 const FREE_LINKS_LIMIT = 2;
-
-const contactPreviewClasses: Record<string, string> = {
-  Phone: "bg-emerald-500",
-  Email: "bg-rose-500",
-  WhatsApp: "bg-emerald-600",
-  LinkedIn: "bg-sky-600",
-  WeChat: "bg-green-600",
-  Telegram: "bg-sky-500",
-  Instagram: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400",
-  Twitter: "bg-gray-900",
-  Website: "bg-indigo-600",
-};
 
 function moveItem<T>(items: T[], from: number, to: number) {
   const copy = [...items];
@@ -285,6 +254,8 @@ export default function CardEditorPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [viewerPlan, setViewerPlan] = useState<"free" | "premium">("free");
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [boundNfcUids, setBoundNfcUids] = useState<string[]>([]);
 
   const isFreePlan = viewerPlan === "free";
 
@@ -299,31 +270,35 @@ export default function CardEditorPage() {
       return;
     }
 
-    const [{ data: cardData, error: cardError }, { data: profileData }] =
-      await Promise.all([
-        supabase
-          .from("business_cards")
-          .select(
-            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, background_image_url, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
-          )
-          .eq("id", cardId)
-          .eq("user_id", userData.user.id)
-          .order("sort_order", { foreignTable: "card_fields", ascending: true })
-          .order("sort_order", { foreignTable: "card_links", ascending: true })
-          .order("sort_order", {
-            foreignTable: "card_experiences",
-            ascending: true,
-          })
-          .maybeSingle(),
-        supabase
-          .from("profiles")
-          .select("avatar_url, plan, premium_until")
-          .eq("id", userData.user.id)
-          .maybeSingle(),
-      ]);
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInEdit"));
+      setIsLoading(false);
+      return;
+    }
 
-    if (cardError || !cardData) {
-      setMessage(cardError?.message ?? t("errors.notFound"));
+    // Plan / avatar still from Supabase Auth profile; card body from backend.
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("avatar_url, plan, premium_until")
+      .eq("id", userData.user.id)
+      .maybeSingle();
+
+    let cardData;
+    try {
+      cardData = await getMyCard(token);
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!cardData || cardData.id !== cardId) {
+      setMessage(t("errors.notFound"));
       setIsLoading(false);
       return;
     }
@@ -375,8 +350,14 @@ export default function CardEditorPage() {
       }))
     );
 
-    setAvatarUrl(profileData?.avatar_url ?? "");
+    setAvatarUrl(profileData?.avatar_url ?? cardData.profiles?.avatar_url ?? "");
     setViewerPlan(resolveEffectiveViewerPlan(profileData));
+    setAccessToken(token);
+    setBoundNfcUids(
+      (cardData.nfc ?? [])
+        .map((chip) => chip.nfc_uid)
+        .filter((value): value is string => Boolean(value))
+    );
     setIsLoading(false);
   };
 
@@ -606,17 +587,23 @@ export default function CardEditorPage() {
 
     const nextBackgroundImageUrl = publicUrlData.publicUrl;
 
-    const { error: updateError } = await supabase
-      .from("business_cards")
-      .update({
-        background_image_url: nextBackgroundImageUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", card.id)
-      .eq("user_id", userData.user.id);
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInUpload"));
+      setIsUploading(false);
+      return;
+    }
 
-    if (updateError) {
-      setMessage(updateError.message);
+    try {
+      await patchMyCard(token, {
+        background_image_url: nextBackgroundImageUrl,
+      });
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
       setIsUploading(false);
       return;
     }
@@ -657,17 +644,21 @@ export default function CardEditorPage() {
       await supabase.storage.from(BACKGROUND_BUCKET).remove([previousStoragePath]);
     }
 
-    const { error: updateError } = await supabase
-      .from("business_cards")
-      .update({
-        background_image_url: null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", card.id)
-      .eq("user_id", userData.user.id);
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInUpload"));
+      setIsUploading(false);
+      return;
+    }
 
-    if (updateError) {
-      setMessage(updateError.message);
+    try {
+      await patchMyCard(token, { background_image_url: null });
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
       setIsUploading(false);
       return;
     }
@@ -699,9 +690,59 @@ export default function CardEditorPage() {
       return;
     }
 
-    const { error: cardError } = await supabase
-      .from("business_cards")
-      .update({
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInSave"));
+      setIsSaving(false);
+      return;
+    }
+
+    const cleanedFields = fields
+      .map((field, index) => ({
+        id: field.id,
+        field_type: field.field_type,
+        field_label: field.field_label.trim() || field.field_type,
+        field_value: field.field_value.trim(),
+        visibility: field.visibility,
+        sort_order: index,
+      }))
+      .filter((field) => field.field_value !== "");
+
+    const freeLimitedFields = isFreePlan
+      ? cleanedFields.slice(0, FREE_CONTACT_FIELDS_LIMIT)
+      : cleanedFields;
+
+    const cleanedLinks = links
+      .map((link, index) => ({
+        id: link.id,
+        label: link.label.trim(),
+        url: link.url.trim(),
+        icon: link.icon.trim() || "link",
+        sort_order: index,
+      }))
+      .filter((link) => link.label !== "" && link.url !== "");
+
+    const freeLimitedLinks = isFreePlan
+      ? cleanedLinks.slice(0, FREE_LINKS_LIMIT)
+      : cleanedLinks;
+
+    const cleanedExperiences = experiences
+      .map((experience, index) => ({
+        id: experience.id,
+        role: experience.role.trim(),
+        company: experience.company.trim(),
+        start_date: experience.start_date.trim() || null,
+        end_date: experience.end_date.trim() || null,
+        description: experience.description.trim() || null,
+        sort_order: index,
+      }))
+      .filter((experience) => experience.role !== "" && experience.company !== "");
+
+    const freeLimitedExperiences = isFreePlan ? [] : cleanedExperiences;
+
+    try {
+      // Card CRUD via Geekbobo-backend; never patch nfc_uid here.
+      await patchMyCard(token, {
         card_name: card.card_name.trim(),
         full_name: card.full_name.trim(),
         title: card.title.trim(),
@@ -711,179 +752,30 @@ export default function CardEditorPage() {
         background_color: card.background_color,
         background_image_url: card.background_image_url,
         template: card.template,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", card.id)
-      .eq("user_id", userData.user.id);
-
-    if (cardError) {
-      setMessage(cardError.message);
+        card_fields: freeLimitedFields,
+        card_links: freeLimitedLinks,
+        card_experiences: freeLimitedExperiences,
+      });
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
       setIsSaving(false);
       return;
     }
 
-    const cleanedFields = fields
-      .map((field, index) => {
-        const payload = {
-          card_id: card.id,
-          field_type: field.field_type,
-          field_label: field.field_label.trim() || field.field_type,
-          field_value: field.field_value.trim(),
-          visibility: field.visibility,
-          sort_order: index,
-        };
-
-        const fieldId = field.id ?? createClientId();
-        return { id: fieldId, ...payload };
-      })
-      .filter((field) => field.field_value !== "");
-
-    const freeLimitedFields = isFreePlan
-      ? cleanedFields.slice(0, FREE_CONTACT_FIELDS_LIMIT)
-      : cleanedFields;
-
-    const cleanedLinks = links
-      .map((link, index) => {
-        const payload = {
-          card_id: card.id,
-          label: link.label.trim(),
-          url: link.url.trim(),
-          icon: link.icon.trim() || "link",
-          sort_order: index,
-        };
-
-        return link.id ? { id: link.id, ...payload } : payload;
-      })
-      .filter((link) => link.label !== "" && link.url !== "");
-
-    const freeLimitedLinks = isFreePlan
-      ? cleanedLinks.slice(0, FREE_LINKS_LIMIT)
-      : cleanedLinks;
-
-    const cleanedExperiences = experiences
-      .map((experience, index) => {
-        const payload = {
-          card_id: card.id,
-          role: experience.role.trim(),
-          company: experience.company.trim(),
-          start_date: experience.start_date.trim() || null,
-          end_date: experience.end_date.trim() || null,
-          description: experience.description.trim() || null,
-          sort_order: index,
-        };
-
-        return experience.id ? { id: experience.id, ...payload } : payload;
-      })
-      .filter((experience) => experience.role !== "" && experience.company !== "");
-
-    const freeLimitedExperiences = isFreePlan ? [] : cleanedExperiences;
-
-    const freeTrimmedFieldIds = isFreePlan
-      ? cleanedFields
-          .slice(FREE_CONTACT_FIELDS_LIMIT)
-          .map((field) => field.id)
-          .filter((id): id is string => typeof id === "string" && id.length > 0)
-      : [];
-    const freeTrimmedLinkIds = isFreePlan
-      ? cleanedLinks
-          .slice(FREE_LINKS_LIMIT)
-          .map((link) => ("id" in link ? (link.id as string | undefined) : undefined))
-          .filter((id): id is string => typeof id === "string" && id.length > 0)
-      : [];
-    const freeRemovedExperienceIds = isFreePlan
-      ? experiences
-          .map((experience) => experience.id)
-          .filter((id): id is string => typeof id === "string" && id.length > 0)
-      : [];
-
-    if (freeLimitedFields.length > 0) {
-      const { error } = await supabase.from("card_fields").upsert(freeLimitedFields, {
-        onConflict: "id",
-      });
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-    }
-
-    if (freeLimitedLinks.length > 0) {
-      const { error } = await supabase.from("card_links").upsert(freeLimitedLinks, {
-        onConflict: "id",
-      });
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-    }
-
-    if (freeLimitedExperiences.length > 0) {
-      const { error } = await supabase
-        .from("card_experiences")
-        .upsert(freeLimitedExperiences, { onConflict: "id" });
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-    }
-
-    const allRemovedFieldIds = Array.from(
-      new Set([...removedFieldIds, ...freeTrimmedFieldIds])
-    );
-    if (allRemovedFieldIds.length > 0) {
-      const { error } = await supabase
-        .from("card_fields")
-        .delete()
-        .in("id", allRemovedFieldIds);
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-      setRemovedFieldIds([]);
-    }
-
-    const allRemovedLinkIds = Array.from(
-      new Set([...removedLinkIds, ...freeTrimmedLinkIds])
-    );
-    if (allRemovedLinkIds.length > 0) {
-      const { error } = await supabase
-        .from("card_links")
-        .delete()
-        .in("id", allRemovedLinkIds);
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-      setRemovedLinkIds([]);
-    }
-
-    const allRemovedExperienceIds = Array.from(
-      new Set([...removedExperienceIds, ...freeRemovedExperienceIds])
-    );
-    if (allRemovedExperienceIds.length > 0) {
-      const { error } = await supabase
-        .from("card_experiences")
-        .delete()
-        .in("id", allRemovedExperienceIds);
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-      setRemovedExperienceIds([]);
-    }
-
+    setRemovedFieldIds([]);
+    setRemovedLinkIds([]);
+    setRemovedExperienceIds([]);
     setMessage(t("messages.saved"));
     setIsSaving(false);
   };
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-gray-500">
+      <div className="ink-signal flex min-h-[60vh] items-center justify-center text-sm text-[color:var(--ink-muted)]">
         {t("messages.loading")}
       </div>
     );
@@ -891,189 +783,86 @@ export default function CardEditorPage() {
 
   if (!card) {
     return (
-      <div className="rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-500 shadow-sm">
-        {message ?? t("errors.notFound")}
+      <div className="ink-signal mx-auto max-w-[420px] px-5 py-16 text-center">
+        <h1 className="ink-signal-display text-[24px]">
+          {message ?? t("errors.notFound")}
+        </h1>
       </div>
     );
   }
 
-  const patternClass =
-    patternClassMap[card.background_pattern] ?? patternClassMap["gradient-1"];
+  const previewFields = fields
+    .filter((field) => field.visibility === "public")
+    .map((field, index) => ({
+      id: field.id ?? `field-${index}`,
+      field_type: field.field_type,
+      field_label: field.field_label,
+      field_value: field.field_value,
+      visibility: field.visibility,
+      sort_order: index,
+    }));
+  const previewLinks = links.map((link, index) => ({
+    id: link.id ?? `link-${index}`,
+    label: link.label,
+    url: link.url,
+    icon: link.icon || null,
+    sort_order: index,
+  }));
+  const previewExperiences = experiences.map((experience, index) => ({
+    id: experience.id ?? `exp-${index}`,
+    role: experience.role,
+    company: experience.company,
+    start_date: experience.start_date || null,
+    end_date: experience.end_date || null,
+    description: experience.description || null,
+    sort_order: index,
+  }));
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="space-y-6">
+    <div className="ink-signal min-h-screen">
+    <div className="mx-auto grid max-w-5xl gap-8 px-5 py-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
+      <div className="space-y-6 pb-24 lg:pb-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-indigo-600">
-              {t("brand")}
-            </p>
-            <h1 className="mt-2 text-2xl font-semibold text-gray-900">
+            <h1 className="ink-signal-display text-[24px] md:text-[28px]">
               {t("title")}
             </h1>
+            {card.slug ? (
+              <p className="mt-2 text-sm text-[color:var(--ink-muted)]">
+                /c/{card.slug}
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setShowPreview((prev) => !prev)}
-              className="rounded-full border border-gray-100 bg-white px-4 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600 lg:hidden"
+              className="ink-signal-btn-secondary !w-auto px-4 text-sm lg:hidden"
             >
               {showPreview ? t("actions.hidePreview") : t("actions.showPreview")}
             </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              <Save className="h-4 w-4" />
-              {isSaving ? t("actions.saving") : t("actions.save")}
-            </button>
+            {card.slug ? (
+              <a
+                href={`/c/${card.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="ink-signal-btn-secondary !w-auto px-4 text-sm"
+              >
+                {t("actions.viewPublic")}
+              </a>
+            ) : null}
             <button
               type="button"
               onClick={() => router.push("/dashboard/cards")}
-              className="rounded-full border border-gray-100 bg-white px-4 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600"
+              className="ink-signal-btn-secondary !w-auto px-4 text-sm"
             >
               {t("actions.back")}
             </button>
           </div>
         </div>
 
-        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-          <TemplateSelector
-            currentTemplate={card.template}
-            isPremiumUser={viewerPlan === "premium"}
-            onChange={(template) =>
-              setCard((prev) => (prev ? { ...prev, template } : prev))
-            }
-          />
-        </section>
-
-        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {t("sections.background")}
-          </h2>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <label className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-100 bg-white px-4 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) {
-                    void handleUploadBackgroundImage(file);
-                  }
-                }}
-              />
-              {isUploading
-                ? t("actions.uploading")
-                : t("actions.uploadBackground")}
-            </label>
-            <button
-              type="button"
-              onClick={() => void handleRemoveBackgroundImage()}
-              disabled={!card.background_image_url || isUploading}
-              className="rounded-full border border-gray-100 bg-white px-4 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:border-rose-200 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {t("actions.removeBackground")}
-            </button>
-            <p className="text-xs text-gray-500">
-              {t("misc.backgroundUploadNote")}
-            </p>
-          </div>
-          <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_200px]">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {patternOptions.map((pattern) => (
-                <button
-                  key={pattern}
-                  type="button"
-                  onClick={() =>
-                    setCard((prev) =>
-                      prev
-                        ? { ...prev, background_pattern: pattern }
-                        : prev
-                    )
-                  }
-                  className={`rounded-2xl border p-1 transition ${
-                    card.background_pattern === pattern
-                      ? "border-indigo-500"
-                      : "border-gray-100"
-                  }`}
-                >
-                  <div
-                    className={`cardlink-cover ${
-                      patternClassMap[pattern]
-                    } h-16 w-full rounded-xl`}
-                    style={{
-                      "--cardlink-base": card.background_color,
-                    } as React.CSSProperties}
-                  />
-                </button>
-              ))}
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold uppercase text-gray-500">
-                  {t("labels.color")}
-                </label>
-                <input
-                  type="color"
-                  value={card.background_color}
-                  onChange={(event) =>
-                    setCard((prev) =>
-                      prev
-                        ? { ...prev, background_color: event.target.value }
-                        : prev
-                    )
-                  }
-                  className="mt-2 h-10 w-full cursor-pointer rounded-lg border border-gray-100"
-                />
-              </div>
-              <div className="grid grid-cols-5 gap-2">
-                {colorOptions.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() =>
-                      setCard((prev) =>
-                        prev ? { ...prev, background_color: color } : prev
-                      )
-                    }
-                    className={`h-8 w-8 rounded-full border transition ${
-                      card.background_color === color
-                        ? "border-slate-900"
-                        : "border-gray-100"
-                    }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-              <div className="rounded-2xl border border-gray-100 p-3">
-                <p className="text-xs font-semibold uppercase text-gray-500">
-                  {t("labels.preview")}
-                </p>
-                <div
-                  className={`cardlink-cover ${patternClass} mt-2 h-20 rounded-xl`}
-                  style={{
-                    "--cardlink-base": card.background_color,
-                  } as React.CSSProperties}
-                >
-                  {card.background_image_url ? (
-                    <img
-                      src={card.background_image_url}
-                      alt="Background"
-                      className="h-full w-full rounded-xl object-cover"
-                    />
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <section className="border-b border-[color:var(--line)] pb-6">
+          <h2 className="ink-signal-section-label !mb-4">
             {t("sections.profilePhoto")}
           </h2>
           <div className="mt-4 flex flex-wrap items-center gap-4">
@@ -1575,83 +1364,62 @@ export default function CardEditorPage() {
           </div>
         </section>
 
+        <NfcBindPanel
+          token={accessToken}
+          boundUids={boundNfcUids}
+          onBound={(uid) =>
+            setBoundNfcUids((prev) => (prev.includes(uid) ? prev : [...prev, uid]))
+          }
+        />
+
         {message ? (
-          <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+          <p
+            className={`rounded-[10px] px-3 py-2 text-sm ${
+              message === t("messages.saved")
+                ? "bg-[color:var(--accent-soft)] text-[color:var(--accent-pressed)]"
+                : "bg-[color:var(--danger-soft)] text-[color:var(--danger)]"
+            }`}
+          >
             {message}
           </p>
         ) : null}
+
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[color:var(--line)] bg-[color:var(--paper-elevated)] px-5 py-3 lg:static lg:border-0 lg:bg-transparent lg:p-0">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="ink-signal-btn-primary mx-auto flex max-w-[420px] items-center gap-2 lg:max-w-none"
+          >
+            <Save className="h-4 w-4" />
+            {isSaving ? t("actions.saving") : t("actions.save")}
+          </button>
+        </div>
       </div>
 
       <aside
-        className={`space-y-4 lg:sticky lg:top-24 ${
+        className={`lg:sticky lg:top-24 lg:self-start ${
           showPreview ? "block" : "hidden lg:block"
         }`}
       >
-        <div className="rounded-3xl border border-gray-100 bg-white p-4 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-            {t("sections.livePreview")}
-          </p>
-          <div className="mt-4 rounded-3xl border border-gray-100 bg-gray-50">
-            <div
-              className={`cardlink-cover ${patternClass} h-24 rounded-t-3xl`}
-              style={{
-                "--cardlink-base": card.background_color,
-              } as React.CSSProperties}
-            >
-              {card.background_image_url ? (
-                <img
-                  src={card.background_image_url}
-                  alt="Background preview"
-                  className="h-full w-full rounded-t-3xl object-cover"
-                />
-              ) : null}
-            </div>
-            <div className="-mt-8 flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white text-sm font-semibold text-gray-700 shadow-md">
-                {card.full_name.trim()
-                  ? card.full_name.trim().slice(0, 2).toUpperCase()
-                  : "CL"}
-              </div>
-            </div>
-            <div className="px-4 pb-4 pt-2">
-              <p className="text-base font-semibold text-gray-900">
-                {card.full_name || t("placeholders.yourName")}
-              </p>
-              <p className="text-xs text-gray-500">
-                {[card.title, card.company].filter(Boolean).join(" • ")}
-              </p>
-              {card.bio ? (
-                <p className="mt-2 text-xs text-gray-600">{card.bio}</p>
-              ) : null}
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {fields
-                  .filter((field) => field.visibility === "public")
-                  .slice(0, 4)
-                  .map((field) => (
-                    <div
-                      key={`${field.field_type}-${field.id ?? "new"}`}
-                      className={`rounded-full px-2 py-1 text-[10px] font-semibold text-white ${
-                        contactPreviewClasses[field.field_type] ?? "bg-slate-600"
-                      }`}
-                    >
-                      {field.field_label || field.field_type}
-                    </div>
-                  ))}
-              </div>
-              {links.length > 0 ? (
-                <div className="mt-3 rounded-2xl border border-gray-100 bg-white p-3">
-                  <p className="text-xs font-semibold text-gray-500">
-                    {t("sections.links")}
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    {links[0]?.label || t("placeholders.linkLabel")}
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          </div>
+        <p className="ink-signal-section-label">{t("sections.livePreview")}</p>
+        <div className="overflow-hidden rounded-[12px] border border-[color:var(--line)] bg-[color:var(--paper-elevated)]">
+          <InkSignalCard
+            compact
+            fullName={card.full_name || t("placeholders.yourName")}
+            title={card.title || null}
+            company={card.company || null}
+            bio={card.bio || null}
+            slug={card.slug || "preview"}
+            avatarUrl={avatarUrl || null}
+            vcardHref="#"
+            cardFields={previewFields}
+            cardLinks={previewLinks}
+            cardExperiences={previewExperiences}
+          />
         </div>
       </aside>
+    </div>
     </div>
   );
 }

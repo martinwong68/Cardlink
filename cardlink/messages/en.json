@@ -249,7 +249,8 @@
       "uploadPhoto": "Upload Photo",
       "uploading": "Uploading...",
       "uploadBackground": "Upload Background Image",
-      "removeBackground": "Remove Background Image"
+      "removeBackground": "Remove Background Image",
+      "viewPublic": "View public card"
     },
     "sections": {
       "background": "Background Settings",
@@ -310,6 +311,22 @@
       "public": "Public",
       "friends": "Friends",
       "hidden": "Hidden"
+    },
+    "nfc": {
+      "title": "Bind NFC card",
+      "help": "Enter the chip UID to bind it to this digital card.",
+      "uidLabel": "Chip UID",
+      "uidPlaceholder": "Paste or type UID",
+      "bind": "Bind",
+      "binding": "Binding…",
+      "scan": "Scan chip",
+      "bound": "Physical card bound",
+      "masked": "Ending {mask}",
+      "conflict": "This UID is already bound to another card.",
+      "error": "Bind failed. Check the UID and try again.",
+      "authError": "Please sign in again to bind.",
+      "emptyUid": "Please enter a UID.",
+      "noEditUidNote": "UID cannot be edited here after binding."
     }
   },
   "contactDetail": {
@@ -467,7 +484,8 @@
     },
     "toast": {
       "linkCopied": "Link copied to clipboard.",
-      "wechatCopied": "WeChat ID copied."
+      "wechatCopied": "WeChat ID copied.",
+      "shareFailed": "Unable to share — copy the link instead"
     },
     "actions": {
       "saveContact": "Save Contact",
@@ -486,12 +504,17 @@
       "present": "Present"
     },
     "footer": {
-      "madeWith": "Made with CardLink"
+      "madeWith": "Made with CardLink",
+      "brand": "Made with CardLink"
     },
     "wechat": {
       "title": "WeChat ID",
       "close": "Close",
       "copy": "Copy WeChat ID"
+    },
+    "bio": {
+      "more": "Show more",
+      "less": "Show less"
     }
   },
   "notifications": {
@@ -578,7 +601,9 @@
     "error": {
       "title": "Card Not Found",
       "body": "This NFC card is not recognized."
-    }
+    },
+    "resolving": "Opening card…",
+    "redirecting": "Opening…"
   },
   "register": {
     "brand": "CardLink",

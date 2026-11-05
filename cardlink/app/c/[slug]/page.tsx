@@ -1,55 +1,13 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/src/lib/supabase/server";
+import { getPublicCardBySlug } from "@/src/lib/cardlink-api";
+import type { PublicCard } from "@/src/lib/cardlink-api";
 import { resolveEffectiveViewerPlan, type ViewerPlan } from "@/src/lib/visibility";
 import PublicCardView from "@/components/PublicCardView";
 import type { TemplateId } from "@/src/lib/templates";
-
-type CardField = {
-  id: string;
-  field_type: string;
-  field_label: string | null;
-  field_value: string;
-  visibility: "public" | "friends" | "hidden";
-  sort_order: number | null;
-};
-
-type CardLink = {
-  id: string;
-  label: string;
-  url: string;
-  icon: string | null;
-  sort_order: number | null;
-};
-
-type CardExperience = {
-  id: string;
-  role: string;
-  company: string;
-  start_date: string | null;
-  end_date: string | null;
-  description: string | null;
-  sort_order: number | null;
-};
-
-type CardRecord = {
-  id: string;
-  user_id: string;
-  full_name: string | null;
-  title: string | null;
-  company: string | null;
-  bio: string | null;
-  slug: string | null;
-  background_pattern: string | null;
-  background_color: string | null;
-  background_image_url: string | null;
-  template: string | null;
-  card_fields: CardField[] | null;
-  card_links: CardLink[] | null;
-  card_experiences: CardExperience[] | null;
-  profiles: { id: string; full_name: string | null; avatar_url: string | null } | null;
-};
 
 function escapeVCardValue(value: string) {
   return value
@@ -106,8 +64,7 @@ function buildProfileUrl(fieldType: string, rawValue: string) {
   }
 }
 
-
-function buildVCard(card: CardRecord, resolvedFullName: string) {
+function buildVCard(card: PublicCard, resolvedFullName: string) {
   const nameParts = resolvedFullName.trim().split(/\s+/).filter(Boolean);
   const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : nameParts[0] ?? "";
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
@@ -185,12 +142,6 @@ function buildVCard(card: CardRecord, resolvedFullName: string) {
   return lines.join("\n");
 }
 
-function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    value
-  );
-}
-
 function normalizeTemplateId(template: string | null): TemplateId {
   if (template === "fullscreen-hero-tabs") {
     return "fullscreen-hero-tabs";
@@ -202,6 +153,24 @@ function normalizeTemplateId(template: string | null): TemplateId {
     return "profile-community";
   }
   return "classic-business";
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const card = await getPublicCardBySlug(slug);
+    const name = card?.full_name || card?.profiles?.full_name;
+    if (!name) {
+      return { title: "名片不存在 · Cardlink" };
+    }
+    return { title: `${name} · Cardlink` };
+  } catch {
+    return { title: "Cardlink" };
+  }
 }
 
 export default async function PublicCardPage({
@@ -226,50 +195,13 @@ export default async function PublicCardPage({
     viewerPlan = resolveEffectiveViewerPlan(profileData);
   }
 
-  const { data: cardBySlug, error: slugError } = await supabase
-    .from("business_cards")
-    .select(
-      "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, background_image_url, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
-    )
-    .eq("slug", slug)
-    .order("sort_order", { foreignTable: "card_fields", ascending: true })
-    .order("sort_order", { foreignTable: "card_links", ascending: true })
-    .order("sort_order", { foreignTable: "card_experiences", ascending: true })
-    .maybeSingle<CardRecord>();
+  // Card payload comes from Geekbobo-backend — not direct business_cards reads.
+  const card = await getPublicCardBySlug(slug);
 
-  let card = cardBySlug ?? null;
-  let error = slugError ?? null;
-
-  if (!card && isUuid(slug)) {
-    const { data: cardById, error: idError } = await supabase
-      .from("business_cards")
-      .select(
-        "id, user_id, full_name, title, company, bio, slug, background_pattern, background_color, background_image_url, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order), profiles(id, full_name, avatar_url)"
-      )
-      .eq("id", slug)
-      .order("sort_order", { foreignTable: "card_fields", ascending: true })
-      .order("sort_order", { foreignTable: "card_links", ascending: true })
-      .order("sort_order", { foreignTable: "card_experiences", ascending: true })
-      .maybeSingle<CardRecord>();
-    card = cardById ?? null;
-    error = idError ?? null;
-  }
-
-  if (error || !card) {
-    console.error("Public card lookup failed", {
-      slug,
-      slugError: slugError?.message ?? null,
-      idError: error?.message ?? null,
-      hasCard: Boolean(card),
-    });
+  if (!card) {
+    console.error("Public card lookup failed via cardlink API", { slug });
     notFound();
   }
-
-  await supabase.from("card_shares").insert({
-    card_id: card.id,
-    viewed_by_user_id: user?.id ?? null,
-    share_method: "link",
-  });
 
   const fullName =
     card.full_name || card.profiles?.full_name || t("defaultUser");

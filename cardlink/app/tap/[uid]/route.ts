@@ -1,74 +1,58 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+
+import { getNfcTap } from "@/src/lib/cardlink-api";
 
 const redirectFor = (requestUrl: string, path: string) =>
   NextResponse.redirect(new URL(path, requestUrl));
 
+/**
+ * NFC entry: uid is never rewritten.
+ * Resolves via Geekbobo-backend GET /api/cardlink/nfc/:uid, then redirects.
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ uid: string }> }
 ) {
   const { uid } = await params;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!uid || !supabaseUrl || !serviceRoleKey) {
+  if (!uid) {
     return redirectFor(request.url, "/tap/error");
   }
 
-  const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
-  const requestIp = forwardedFor.split(",")[0]?.trim() || "";
-  const requestUserAgent = request.headers.get("user-agent") ?? "";
+  try {
+    const data = await getNfcTap(uid);
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey);
-  const { data, error } = await supabase.rpc("handle_nfc_tap", {
-    nfc_uid: uid,
-    ip: requestIp,
-    user_agent: requestUserAgent,
-  });
-
-  // Debug logging
-  console.log("NFC Tap Debug:", {
-    uid,
-    hasData: !!data,
-    data,
-    hasError: !!error,
-    error: error?.message,
-  });
-
-  if (error || !data) {
-    console.error("NFC tap error:", error);
-    return redirectFor(request.url, "/tap/error");
-  }
-
-  const action = typeof data.action === "string" ? data.action : "error";
-
-  console.log("NFC Tap Action:", action, "Full data:", data);
-
-  if (action === "redirect") {
-    const slug =
-      data.slug ??
-      data.card_slug ??
-      data.linked_card_slug ??
-      data.redirect_slug;
-    if (typeof slug === "string" && slug) {
-      return redirectFor(request.url, `/c/${slug}`);
-    }
-    return redirectFor(request.url, "/tap/error");
-  }
-
-  switch (action) {
-    case "register":
-      return redirectFor(request.url, `/register/${uid}`);
-    case "suspended":
-      return redirectFor(request.url, "/tap/suspended");
-    case "deactivated":
-      return redirectFor(request.url, "/tap/deactivated");
-    case "expired":
-      return redirectFor(request.url, "/tap/expired");
-    case "no_card":
+    if (!data) {
       return redirectFor(request.url, "/tap/no-card");
-    default:
+    }
+
+    const action =
+      typeof data.action === "string" && data.action ? data.action : "redirect";
+
+    if (action === "redirect" || !data.action) {
+      const slug = data.slug;
+      if (typeof slug === "string" && slug) {
+        return redirectFor(request.url, `/c/${slug}`);
+      }
       return redirectFor(request.url, "/tap/error");
+    }
+
+    switch (action) {
+      case "register":
+        return redirectFor(request.url, `/register/${uid}`);
+      case "suspended":
+        return redirectFor(request.url, "/tap/suspended");
+      case "deactivated":
+        return redirectFor(request.url, "/tap/deactivated");
+      case "expired":
+        return redirectFor(request.url, "/tap/expired");
+      case "no_card":
+        return redirectFor(request.url, "/tap/no-card");
+      default:
+        return redirectFor(request.url, "/tap/error");
+    }
+  } catch (error) {
+    console.error("NFC tap via cardlink API failed", { uid, error });
+    return redirectFor(request.url, "/tap/error");
   }
 }
