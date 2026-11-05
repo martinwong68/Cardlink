@@ -13,6 +13,12 @@ import {
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/src/lib/supabase/client";
+import {
+  CardlinkApiError,
+  getMyCard,
+  patchMyCard,
+} from "@/src/lib/cardlink-api";
+import { getSupabaseAccessToken } from "@/src/lib/cardlink-api/auth-token";
 import { resolveEffectiveViewerPlan } from "@/src/lib/visibility";
 import TemplateSelector from "@/components/TemplateSelector";
 import type { TemplateId } from "@/src/lib/templates";
@@ -299,31 +305,35 @@ export default function CardEditorPage() {
       return;
     }
 
-    const [{ data: cardData, error: cardError }, { data: profileData }] =
-      await Promise.all([
-        supabase
-          .from("business_cards")
-          .select(
-            "id, card_name, full_name, title, company, bio, slug, background_pattern, background_color, background_image_url, template, card_fields(id, field_type, field_label, field_value, visibility, sort_order), card_links(id, label, url, icon, sort_order), card_experiences(id, role, company, start_date, end_date, description, sort_order)"
-          )
-          .eq("id", cardId)
-          .eq("user_id", userData.user.id)
-          .order("sort_order", { foreignTable: "card_fields", ascending: true })
-          .order("sort_order", { foreignTable: "card_links", ascending: true })
-          .order("sort_order", {
-            foreignTable: "card_experiences",
-            ascending: true,
-          })
-          .maybeSingle(),
-        supabase
-          .from("profiles")
-          .select("avatar_url, plan, premium_until")
-          .eq("id", userData.user.id)
-          .maybeSingle(),
-      ]);
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInEdit"));
+      setIsLoading(false);
+      return;
+    }
 
-    if (cardError || !cardData) {
-      setMessage(cardError?.message ?? t("errors.notFound"));
+    // Plan / avatar still from Supabase Auth profile; card body from backend.
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("avatar_url, plan, premium_until")
+      .eq("id", userData.user.id)
+      .maybeSingle();
+
+    let cardData;
+    try {
+      cardData = await getMyCard(token);
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!cardData || cardData.id !== cardId) {
+      setMessage(t("errors.notFound"));
       setIsLoading(false);
       return;
     }
@@ -606,17 +616,23 @@ export default function CardEditorPage() {
 
     const nextBackgroundImageUrl = publicUrlData.publicUrl;
 
-    const { error: updateError } = await supabase
-      .from("business_cards")
-      .update({
-        background_image_url: nextBackgroundImageUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", card.id)
-      .eq("user_id", userData.user.id);
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInUpload"));
+      setIsUploading(false);
+      return;
+    }
 
-    if (updateError) {
-      setMessage(updateError.message);
+    try {
+      await patchMyCard(token, {
+        background_image_url: nextBackgroundImageUrl,
+      });
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
       setIsUploading(false);
       return;
     }
@@ -657,17 +673,21 @@ export default function CardEditorPage() {
       await supabase.storage.from(BACKGROUND_BUCKET).remove([previousStoragePath]);
     }
 
-    const { error: updateError } = await supabase
-      .from("business_cards")
-      .update({
-        background_image_url: null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", card.id)
-      .eq("user_id", userData.user.id);
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInUpload"));
+      setIsUploading(false);
+      return;
+    }
 
-    if (updateError) {
-      setMessage(updateError.message);
+    try {
+      await patchMyCard(token, { background_image_url: null });
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
       setIsUploading(false);
       return;
     }
@@ -699,9 +719,59 @@ export default function CardEditorPage() {
       return;
     }
 
-    const { error: cardError } = await supabase
-      .from("business_cards")
-      .update({
+    const token = await getSupabaseAccessToken(supabase);
+    if (!token) {
+      setMessage(t("errors.signInSave"));
+      setIsSaving(false);
+      return;
+    }
+
+    const cleanedFields = fields
+      .map((field, index) => ({
+        id: field.id,
+        field_type: field.field_type,
+        field_label: field.field_label.trim() || field.field_type,
+        field_value: field.field_value.trim(),
+        visibility: field.visibility,
+        sort_order: index,
+      }))
+      .filter((field) => field.field_value !== "");
+
+    const freeLimitedFields = isFreePlan
+      ? cleanedFields.slice(0, FREE_CONTACT_FIELDS_LIMIT)
+      : cleanedFields;
+
+    const cleanedLinks = links
+      .map((link, index) => ({
+        id: link.id,
+        label: link.label.trim(),
+        url: link.url.trim(),
+        icon: link.icon.trim() || "link",
+        sort_order: index,
+      }))
+      .filter((link) => link.label !== "" && link.url !== "");
+
+    const freeLimitedLinks = isFreePlan
+      ? cleanedLinks.slice(0, FREE_LINKS_LIMIT)
+      : cleanedLinks;
+
+    const cleanedExperiences = experiences
+      .map((experience, index) => ({
+        id: experience.id,
+        role: experience.role.trim(),
+        company: experience.company.trim(),
+        start_date: experience.start_date.trim() || null,
+        end_date: experience.end_date.trim() || null,
+        description: experience.description.trim() || null,
+        sort_order: index,
+      }))
+      .filter((experience) => experience.role !== "" && experience.company !== "");
+
+    const freeLimitedExperiences = isFreePlan ? [] : cleanedExperiences;
+
+    try {
+      // Card CRUD via Geekbobo-backend; never patch nfc_uid here.
+      await patchMyCard(token, {
         card_name: card.card_name.trim(),
         full_name: card.full_name.trim(),
         title: card.title.trim(),
@@ -711,172 +781,23 @@ export default function CardEditorPage() {
         background_color: card.background_color,
         background_image_url: card.background_image_url,
         template: card.template,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", card.id)
-      .eq("user_id", userData.user.id);
-
-    if (cardError) {
-      setMessage(cardError.message);
+        card_fields: freeLimitedFields,
+        card_links: freeLimitedLinks,
+        card_experiences: freeLimitedExperiences,
+      });
+    } catch (error) {
+      const msg =
+        error instanceof CardlinkApiError
+          ? error.message
+          : t("errors.notFound");
+      setMessage(msg);
       setIsSaving(false);
       return;
     }
 
-    const cleanedFields = fields
-      .map((field, index) => {
-        const payload = {
-          card_id: card.id,
-          field_type: field.field_type,
-          field_label: field.field_label.trim() || field.field_type,
-          field_value: field.field_value.trim(),
-          visibility: field.visibility,
-          sort_order: index,
-        };
-
-        const fieldId = field.id ?? createClientId();
-        return { id: fieldId, ...payload };
-      })
-      .filter((field) => field.field_value !== "");
-
-    const freeLimitedFields = isFreePlan
-      ? cleanedFields.slice(0, FREE_CONTACT_FIELDS_LIMIT)
-      : cleanedFields;
-
-    const cleanedLinks = links
-      .map((link, index) => {
-        const payload = {
-          card_id: card.id,
-          label: link.label.trim(),
-          url: link.url.trim(),
-          icon: link.icon.trim() || "link",
-          sort_order: index,
-        };
-
-        return link.id ? { id: link.id, ...payload } : payload;
-      })
-      .filter((link) => link.label !== "" && link.url !== "");
-
-    const freeLimitedLinks = isFreePlan
-      ? cleanedLinks.slice(0, FREE_LINKS_LIMIT)
-      : cleanedLinks;
-
-    const cleanedExperiences = experiences
-      .map((experience, index) => {
-        const payload = {
-          card_id: card.id,
-          role: experience.role.trim(),
-          company: experience.company.trim(),
-          start_date: experience.start_date.trim() || null,
-          end_date: experience.end_date.trim() || null,
-          description: experience.description.trim() || null,
-          sort_order: index,
-        };
-
-        return experience.id ? { id: experience.id, ...payload } : payload;
-      })
-      .filter((experience) => experience.role !== "" && experience.company !== "");
-
-    const freeLimitedExperiences = isFreePlan ? [] : cleanedExperiences;
-
-    const freeTrimmedFieldIds = isFreePlan
-      ? cleanedFields
-          .slice(FREE_CONTACT_FIELDS_LIMIT)
-          .map((field) => field.id)
-          .filter((id): id is string => typeof id === "string" && id.length > 0)
-      : [];
-    const freeTrimmedLinkIds = isFreePlan
-      ? cleanedLinks
-          .slice(FREE_LINKS_LIMIT)
-          .map((link) => ("id" in link ? (link.id as string | undefined) : undefined))
-          .filter((id): id is string => typeof id === "string" && id.length > 0)
-      : [];
-    const freeRemovedExperienceIds = isFreePlan
-      ? experiences
-          .map((experience) => experience.id)
-          .filter((id): id is string => typeof id === "string" && id.length > 0)
-      : [];
-
-    if (freeLimitedFields.length > 0) {
-      const { error } = await supabase.from("card_fields").upsert(freeLimitedFields, {
-        onConflict: "id",
-      });
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-    }
-
-    if (freeLimitedLinks.length > 0) {
-      const { error } = await supabase.from("card_links").upsert(freeLimitedLinks, {
-        onConflict: "id",
-      });
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-    }
-
-    if (freeLimitedExperiences.length > 0) {
-      const { error } = await supabase
-        .from("card_experiences")
-        .upsert(freeLimitedExperiences, { onConflict: "id" });
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-    }
-
-    const allRemovedFieldIds = Array.from(
-      new Set([...removedFieldIds, ...freeTrimmedFieldIds])
-    );
-    if (allRemovedFieldIds.length > 0) {
-      const { error } = await supabase
-        .from("card_fields")
-        .delete()
-        .in("id", allRemovedFieldIds);
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-      setRemovedFieldIds([]);
-    }
-
-    const allRemovedLinkIds = Array.from(
-      new Set([...removedLinkIds, ...freeTrimmedLinkIds])
-    );
-    if (allRemovedLinkIds.length > 0) {
-      const { error } = await supabase
-        .from("card_links")
-        .delete()
-        .in("id", allRemovedLinkIds);
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-      setRemovedLinkIds([]);
-    }
-
-    const allRemovedExperienceIds = Array.from(
-      new Set([...removedExperienceIds, ...freeRemovedExperienceIds])
-    );
-    if (allRemovedExperienceIds.length > 0) {
-      const { error } = await supabase
-        .from("card_experiences")
-        .delete()
-        .in("id", allRemovedExperienceIds);
-      if (error) {
-        setMessage(error.message);
-        setIsSaving(false);
-        return;
-      }
-      setRemovedExperienceIds([]);
-    }
-
+    setRemovedFieldIds([]);
+    setRemovedLinkIds([]);
+    setRemovedExperienceIds([]);
     setMessage(t("messages.saved"));
     setIsSaving(false);
   };
